@@ -42,10 +42,10 @@
 			<div class='col-sm-4'>
 				<select name='cost_center' id='cost_center' class='form-control input-md chosen-select'>
 					<option value="">- Cost Center -</option>
-					<?php 
-						foreach($list_costcenter as $item_costcenter) {
-							echo '<option value="'.$item_costcenter['id'].'">'.strtoupper($item_costcenter['nm_gudang']).'</option>';
-						}
+					<?php
+					foreach ($list_costcenter as $item_costcenter) {
+						echo '<option value="' . $item_costcenter['id_costcenter'] . '">' . strtoupper($item_costcenter['nama_costcenter']) . '</option>';
+					}
 					?>
 				</select>
 			</div>

@@ -74,7 +74,7 @@ class Asset extends Admin_Controller
 		$dataArr = array(
 			'list_dept' => $this->db->get_where('ms_department', ['deleted_by' => null])->result_array(),
 			'list_catg' => $this->Asset_model->getList('asset_category'),
-			'list_costcenter' => $this->db->get_where('warehouse', ['desc' => 'costcenter'])->result_array()
+			'list_costcenter' => $this->db->get_where('ms_costcenter', ['deleted_by' => null])->result_array()
 		);
 
 		$this->template->render('modal', $dataArr);
