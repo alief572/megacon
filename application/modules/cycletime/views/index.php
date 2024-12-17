@@ -33,8 +33,6 @@ $ENABLE_DELETE  = has_permission('Cycletime.Delete');
 					<th>No BOM</th>
 					<th>Product Name</th>
 					<th>Variant</th>
-					<th>Color</th>
-					<th>Surface</th>
 					<th>CT Setting</th>
 					<th>CT Production</th>
 					<th>MOQ</th>
