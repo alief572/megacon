@@ -133,7 +133,7 @@ class Price_sup_raw_material extends Admin_Controller
       echo json_encode($status);
     } else {
       $listData = $this->db->get_where('new_inventory_4', array('id' => $id))->result();
-      $list_packing = $this->db->get_where('ms_satuan', ['category' => 'packing'])->result();
+      $list_packing = $this->db->get_where('ms_satuan', ['category' => 'packing', 'deleted' => 'N'])->result();
 
       $data = [
         'listData' => $listData,
