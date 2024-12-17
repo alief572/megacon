@@ -12,12 +12,12 @@ $(".chosen-select").chosen({
       <input type="hidden" id="emp" value="0">
       <form id="data-form" method="post" autocomplete="off">
         <?php
-        echo form_button(array('type'=>'button','class'=>'btn btn-sm btn-success','style'=>'float:right; margin-bottom:5px;','value'=>'back','content'=>'Add Costcenter','id'=>'add-payment'));
+        echo form_button(array('type'=>'button','class'=>'btn btn-sm btn-success','style'=>'float:right; margin-bottom:5px;','value'=>'back','content'=>'Add Area','id'=>'add-payment'));
         ?>
         <table class='table table-bordered table-striped'>
           <thead>
             <tr class='bg-blue'>
-              <td align='center'><b>Costcenter Name</b></td>
+              <td align='center'><b>Area Name</b></td>
               <td align='center'><b>Shift 1</b></td>
               <td align='center'><b>Shift 2</b></td>
               <td align='center'><b>Shift 3</b></td>
@@ -66,7 +66,7 @@ $(".chosen-select").chosen({
 
       Template	='<tr id="tr_'+loop+'">';
       Template	+='<td align="left">';
-      Template	+='<input type="text" class="form-control input-md" name="detail['+loop+'][costcenter]" id="data1_'+loop+'_costcenter" label="FALSE" div="FALSE" placeholder="Costcenter Name">';
+      Template	+='<input type="text" class="form-control input-md" name="detail['+loop+'][costcenter]" id="data1_'+loop+'_costcenter" label="FALSE" div="FALSE" placeholder="Area Name">';
       Template	+='</td>';
       Template	+='<td align="center">';
       Template	+='<input type="text" class="form-control input-md text-center" name="detail['+loop+'][mp_1]" id="data1_'+loop+'_manpower" label="FALSE" div="FALSE" placeholder="Qty Man Power Shif 1" onkeyup="this.value = this.value.match(/^-?\\\d*[.]?\\\d*$/);">';

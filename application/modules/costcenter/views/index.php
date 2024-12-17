@@ -27,7 +27,7 @@ $ENABLE_DELETE  = has_permission('Costcenter.Delete');
 			<thead>
 				<tr>
 					<th>#</th>
-					<th class='text-center'>Costcenter Name</th>
+					<th class='text-center'>Area Name</th>
 					<th class='text-center'>Qty MP Shift1</th>
 					<th class='text-center'>Qty MP Shift2</th>
 					<th class='text-center'>Qty MP Shift3</th>
