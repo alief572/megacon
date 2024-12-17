@@ -1,47 +1,51 @@
 <?php
 
-$no_bom          = (!empty($header))?$header[0]->no_bom:'';
-$id_product      = (!empty($header))?$header[0]->id_product:'';
-$waste_product   = (!empty($header))?$header[0]->waste_product:'';
-$waste_setting   = (!empty($header))?$header[0]->waste_setting:'';
-$waste_setting_resin   = (!empty($header))?$header[0]->waste_setting_resin:'';
-$waste_setting_glass   = (!empty($header))?$header[0]->waste_setting_glass:'';
-$moq   = (!empty($header))?$header[0]->moq:'';
-$variant_product   	= (!empty($header))?$header[0]->variant_product:'';
-$keterangan   		= (!empty($header))?$header[0]->keterangan:'';
-$color_product   	= (!empty($header))?$header[0]->color:'';
-$width   			= (!empty($header))?$header[0]->width:'';
-$length   			= (!empty($header))?$header[0]->length:'';
-$waste_total   		= (!empty($header))?$header[0]->waste_total:'';
-$kode   		= (!empty($header))?$header[0]->kode:'';
+$no_bom          = (!empty($header)) ? $header[0]->no_bom : '';
+$id_product      = (!empty($header)) ? $header[0]->id_product : '';
+$variant_product   	= (!empty($header)) ? $header[0]->variant_product : '';
+$id_variant_product   	= (!empty($header)) ? $header[0]->id_variant_product : '';
+$keterangan   		= (!empty($header)) ? $header[0]->keterangan : '';
+$id_jenis_beton = (!empty($header)) ? $header[0]->id_jenis_beton : '';
+$volume_m3 = (!empty($header)) ? $header[0]->volume_m3 : 0;
 
 // print_r($header);
 ?>
 
- <div class="box box-primary">
-    <div class="box-body">
+<div class="box box-primary">
+	<div class="box-body">
 		<form id="data-form" method="post"><br>
 			<div class="form-group row">
 				<div class="col-md-2">
 					<label for="customer">Product Master <span class='text-red'>*</span></label>
 				</div>
 				<div class="col-md-4">
-					<input type="hidden" name="no_bom" value="<?=$no_bom;?>">
+					<input type="hidden" name="no_bom" value="<?= $no_bom; ?>">
 					<select id="id_product" name="id_product" class="form-control input-md chosen-select" required>
 						<option value="0">Select An Option</option>
-						<?php foreach ($results['product'] as $product){
-						$sel = ($product->code_lv4 == $id_product)?'selected':'';
+						<?php foreach ($results['product'] as $product) {
+							$sel = ($product->code_lv4 == $id_product) ? 'selected' : '';
 						?>
-						<option value="<?= $product->code_lv4;?>" <?=$sel;?> data-kode='<?= $product->code?>'><?= strtoupper(strtolower($product->nama))?></option>
+							<option value="<?= $product->code_lv4; ?>" <?= $sel; ?> data-kode='<?= $product->code ?>'><?= strtoupper(strtolower($product->nama)) ?></option>
 						<?php } ?>
 					</select>
 				</div>
 				<div class="col-md-2">
-					<label for="customer">Kode</label>
+					<label for="">Jenis Beton</label>
 				</div>
 				<div class="col-md-4">
-					<input type="text" name="kode" id="kode" class='form-control input-md' readonly value="<?=$kode;?>">
-					<span style='cursor:pointer;' class='text-primary' id='updateManualCode'>Update Code Program</span>
+					<select name="jenis_beton" id="jenis_beton" class="form-control input-md chosen-select">
+						<option value="">- Pilih Jenis Beton -</option>
+						<?php
+						foreach ($results['jenis_beton'] as $item) {
+							$selected = '';
+							if ($id_jenis_beton == $item->id_komposisi_beton) {
+								$selected = 'selected';
+							}
+
+							echo '<option value="' . $item->id_komposisi_beton . '" ' . $selected . '>' . $item->nm_jenis_beton . '</option>';
+						}
+						?>
+					</select>
 				</div>
 			</div>
 			<div class="form-group row">
@@ -49,42 +53,17 @@ $kode   		= (!empty($header))?$header[0]->kode:'';
 					<label for="customer">Varian Product</label>
 				</div>
 				<div class="col-md-4">
-					<!-- <input type="text" name="variant_product" class='form-control input-md' placeholder='Variant Product' value="<?=$variant_product;?>"> -->
-					<select id="variant_product" name="variant_product" class="form-control input-md chosen-select" required>
-						<option value="0">Select An Option</option>
-						<?php foreach ($results['list_variant_product'] as $product){
-						$sel = ($product->value == $variant_product)?'selected':'';
-						?>
-						<option value="<?= $product->value;?>" <?=$sel;?> data-kode='<?= $product->kode?>'><?= $product->view?> (<?= $product->kode?>)</option>
-						<?php } ?>
-					</select>
+					<input type="text" name="variant_product" id="" class="form-control input-md" value="<?= $variant_product ?>" readonly>
+					<input type="hidden" name="id_variant_product" value="<?= $id_variant_product ?>">
 				</div>
-				<div class="col-md-2">
-					<label for="customer">Color Product</label>
-				</div>
-				<div class="col-md-4">
-					<select id="color_product" name="color_product" class="form-control input-md chosen-select" required>
-						<option value="0">Select An Option</option>
-						<?php foreach ($results['list_color_product'] as $product){
-						$sel = ($product->value == $color_product)?'selected':'';
-						?>
-						<option value="<?= $product->value;?>" <?=$sel;?> data-kode='<?= $product->kode?>'><?= $product->view?> (<?= $product->kode?>)</option>
-						<?php } ?>
-					</select>
-				</div>
+
 			</div>
 			<div class="form-group row">
 				<div class="col-md-2">
 					<label for="customer">Keterangan</label>
 				</div>
 				<div class="col-md-4">
-					<textarea name="keterangan" class='form-control input-md' placeholder='Keterangan' rows='2'><?=$keterangan;?></textarea>
-				</div>
-				<div class="col-md-2">
-					<label for="customer">MOQ</label>
-				</div>
-				<div class="col-md-4">
-					<input type="text" name="moq" id="moq" class='form-control input-md autoNumeric4' value="<?=$moq;?>">
+					<textarea name="keterangan" class='form-control input-md' placeholder='Keterangan' rows='2'><?= $keterangan; ?></textarea>
 				</div>
 			</div>
 			<br>
@@ -93,225 +72,253 @@ $kode   		= (!empty($header))?$header[0]->kode:'';
 					<h3 class='box-title'>Detail Material</h3>
 					<div class='box-tool pull-right'>
 						<!--<button type='button' data-id='frp_".$a."' class='btn btn-md btn-info panelSH'>SHOW</button>-->
-					</div><br><br>
-					<div class="form-group row">
-						<div class="col-md-2">
-							<label for="customer">Copy From BOM</label>
-						</div>
-						<div class="col-md-9">
-							<select id="bom_standard_list" name="bom_standard_list" class="form-control input-md chosen-select" required>
-								<option value="0">Select An Option</option>
-								<?php foreach ($results['bom_standard_list'] as $valx => $product){
-								?>
-								<option value="<?= $product['no_bom'];?>"><?= strtoupper($product['nama'].'; '.$product['variant_product'].'; '.$product['color'].'; '.$product['surface'])?></option>
-								<?php } ?>
-							</select>
-						</div>
-						<div class="col-md-1">
-							<button type="button" class="btn btn-default" id="copyBOM">Copy</button>
-						</div>
-					</div>
+					</div><br>
 				</div>
 				<div class='box-body hide_header'>
+					<div class="col-md-6">
+						<table class="table w-100">
+							<tr>
+								<th>Volume Produk (m3)</th>
+								<th>:</th>
+								<th>
+									<input type="number" name="volume_produk" id="" class="form-control input-md text-right" step="0.01" min="0" value="<?= $volume_m3 ?>">
+								</th>
+							</tr>
+						</table>
+					</div>
 					<table class='table table-striped table-bordered table-hover table-condensed' width='100%'>
 						<thead>
 							<tr class='bg-blue'>
 								<th class='text-center' style='width: 4%;'>#</th>
 								<th class='text-center' style='width: 40%;'>Material Name</th>
-								<th class='text-center'>Weight /kg</th>
-								<th class='text-center'>Keterangan</th>
-								<th class='text-center' style='width: 4%;'>#</th>
+								<th class="text-center">Volume (m3)</th>
 							</tr>
 						</thead>
 						<tbody id='body_table'>
 							<?php
-								$val = 0;
-								$SUM = 0;
-								if(!empty($detail)){
-									foreach($detail AS $val => $valx){ $val++;
-										$weight = $valx['weight'];
-										$SUM += $weight;
-										echo "<tr class='header_".$val."'>";
-											echo "<td align='center'>".$val."</td>";
-											echo "<td align='left'>";
-											echo "<select name='Detail[".$val."][code_material]' class='chosen-select form-control input-sm inline-blockd material'>";
-											echo "<option value='0'>Select Material Name</option>";
-											foreach($material AS $valx4){
-												$sel2 = ($valx4->code_lv4 == $valx['code_material'])?'selected':'';
-												echo "<option value='".$valx4->code_lv4."' ".$sel2.">".strtoupper($valx4->nama)."</option>";
-											}
-											echo 		"</select>";
-											echo "</td>";
-											echo "<td align='left'>";
-											echo "<input type='text' name='Detail[".$val."][weight]' class='form-control input-md text-right autoNumeric4 qty' placeholder='Weight /kg' value='".$weight."'>";
-											echo "</td>";
-											echo "<td align='left'>";
-											echo "<input type='text' name='Detail[".$val."][ket]' class='form-control input-md' placeholder='Keterangan' value='".$valx['ket']."'>";
-											echo "</td>";
-											echo "<td align='left'>";
-											echo "&nbsp;<button type='button' class='btn btn-sm btn-danger delPart' title='Delete Part'><i class='fa fa-close'></i></button>";
-											echo "</td>";
-										echo "</tr>";
-									}
+							$no = 1;
+							if (!empty($detail)) {
+								foreach ($detail as $item) {
+									echo '<tr>';
+
+									echo '<td class="text-center">';
+									echo $no;
+									echo '<input type="hidden" name="detail_material['.$no.'][id_detail_material]" value="'.$item->code_material.'">';
+									echo'</td>';
+
+									echo '<td class="text-left">' . $item->nm_material . '</td>';
+									echo '<td class="text-center">';
+									echo number_format($item->volume_m3, 2);
+									echo '<input type="hidden" name="detail_material['.$no.'][volume_material]" value="'.$item->volume_m3.'">';
+									echo '</td>';
+
+									echo '</tr>';
+
+									$no++;
 								}
+							}
 							?>
-							<tr id='add_<?=$val?>'>
-								<td align='center'></td>
-								<td align='left'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button type='button' class='btn btn-sm btn-warning addPart' title='Add Material'><i class='fa fa-plus'></i>&nbsp;&nbsp;Add Material</button></td>
-								<td align='center'></td>
-								<td align='center'></td>
-								<td align='center'></td>
-							</tr>
 						</tbody>
-						<tfoot>
-							<tr>
-								<th></th>
-								<th class='text-right font20'>Total Berat Material</th>
-								<th id='total_material' class='text-right font20'><?=number_format($SUM,4);?></th>
-								<th><input type="hidden" name="tot_material" id="tot_material" value="<?=$SUM;?>"></th>
-							</tr>
-						</tfoot>
 					</table>
 					<br>
-					<div class="form-group row">
-						<div class="col-md-2">
-							<label for="customer">Waste Product (Kg)</label>
-						</div>
-						<div class="col-md-2">
-							<input type="text" name="waste_product" id="waste_product" class='form-control input-md autoNumeric4' value="<?=$waste_product;?>">
-						</div>
-						<div class="col-md-2">
-							<label for="customer">Width (m)</label>
-						</div>
-						<div class="col-md-2">
-							<input type="text" name="width" class='form-control input-md autoNumeric4' value="<?=$width;?>">
-						</div>
-					</div>
-					<div class="form-group row">
-						<div class="col-md-2">
-							<label for="customer">Waste Setting & Cleaning Resin (Kg)</label>
-						</div>
-						<div class="col-md-2">
-							<input type="hidden" name="waste_setting" class='form-control input-md autoNumeric4' value="<?=$waste_setting;?>">
-							<input type="text" name="waste_setting_resin" id="waste_setting_resin" class='form-control input-md autoNumeric4' value="<?=$waste_setting_resin;?>">
-						</div>
-						<div class="col-md-2">
-							<label for="customer">Length (m)</label>
-						</div>
-						<div class="col-md-2">
-							<input type="text" name="length" class='form-control input-md autoNumeric4' value="<?=$length;?>">
-						</div>
-					</div>
-					<div class="form-group row">
-						<div class="col-md-2">
-							<label for="customer">Waste Setting & Cleaning Glass (Kg)</label>
-						</div>
-						<div class="col-md-2">
-							<input type="text" name="waste_setting_glass" id="waste_setting_glass" class='form-control input-md autoNumeric4' value="<?=$waste_setting_glass;?>">
-						</div>
-						<div class="col-md-2">
-							<label for="customer">Waste Total (%)</label>
-						</div>
-						<div class="col-md-2">
-							<input type="text" name="waste_total" id="waste_total" class='form-control input-md autoNumeric4' value="<?=$waste_total;?>" readonly>
-						</div>
-					</div>
-					<button type="button" class="btn btn-danger" style='float:right; margin-left:5px;' name="back" id="back"><i class="fa fa-reply"></i> Back</button>
-					<button type="submit" class="btn btn-primary" style='float:right;' name="save" id="save"><i class="fa fa-save"></i> Save</button>
-
 				</div>
 			</div>
+
+			<div class="box box-info">
+				<div class='box-header'>
+					<h3 class='box-title'>Material Lainnya</h3>
+					<div class='box-tool pull-right'>
+						<!--<button type='button' data-id='frp_".$a."' class='btn btn-md btn-info panelSH'>SHOW</button>-->
+					</div><br>
+				</div>
+				<div class="box-body hide_header">
+					<div class="form-group row">
+						<table class='table table-striped table-bordered table-hover table-condensed' width='100%'>
+							<thead>
+								<tr class='bg-blue'>
+									<th class='text-center' style='width: 4%;'>#</th>
+									<th class='text-center' style='width: 40%;'>Material Name</th>
+									<th class="text-center">Kebutuhan</th>
+									<th class="text-center">Satuan</th>
+									<th class="text-center">Keterangan</th>
+									<th class="text-center">#</th>
+								</tr>
+							</thead>
+							<tbody id='body_table_material_lain'>
+								<?php
+								$no_material_lain = 1;
+								foreach ($detail_material_lain as $item) {
+									echo '<tr class="row_material_lain_' . $no_material_lain . '">';
+
+									echo '<td class="text-center">' . $no_material_lain . '</td>';
+
+									echo '<td class="text-left">';
+									echo '<input type="text" class="form-control input-md" name="detail_material_lain[' . $no_material_lain . '][material_name]" value="' . $item->material_name . '">';
+									echo '</td>';
+
+									echo '<td class="text-left">';
+									echo '<input type="number" class="form-control input-md" name="detail_material_lain[' . $no_material_lain . '][kebutuhan]" step="0.01" value="' . $item->kebutuhan . '">';
+									echo '</td>';
+
+									echo '<td>';
+									echo '<select class="form-control input-md chosen-select" name="detail_material_lain[' . $no_material_lain . '][satuan]">';
+									echo '<option value="">- Pilih Satuan -</option>';
+									foreach ($results['list_satuan'] as $item_satuan) {
+										$selected = '';
+										if ($item_satuan->id == $item->id_satuan) {
+											$selected = 'selected';
+										}
+										echo '<option value="' . $item_satuan->id . '" ' . $selected . '>' . strtoupper($item_satuan->code) . '</option>';
+									}
+									echo '</select>';
+									echo '</td>';
+
+									echo '<td>';
+									echo '<textarea name="detail_material_lain['.$no_material_lain.'][keterangan]">'.$item->keterangan.'</textarea>';
+									echo '</td>';
+
+									echo '<td class="text-center">';
+									echo '<button type="button" class="btn btn-sm btn-danger del_material_lain" data-no="'.$no_material_lain.'" title="Delete"><i class="fa fa-trash"></i></button>';
+									echo '</td>';
+
+									echo '</tr>';
+
+									$no_material_lain++;
+								}
+								?>
+							</tbody>
+							<tbody>
+								<tr>
+									<td colspan="6">
+										<button type="button" class="btn btn-sm btn-warning add_material_lain">
+											<i class="fa fa-plus"></i> Add Material
+										</button>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+
+						<button type="button" class="btn btn-danger" style='float:right; margin-left:5px;' name="back" id="back"><i class="fa fa-reply"></i> Back</button>
+						<button type="submit" class="btn btn-primary" style='float:right;' name="save" id="save"><i class="fa fa-save"></i> Save</button>
+					</div>
+				</div>
 		</form>
 	</div>
 </div>
 
-<script src="<?= base_url('assets/js/autoNumeric.js')?>"></script>
+<script src="<?= base_url('assets/js/autoNumeric.js') ?>"></script>
 <style media="screen">
-  .datepicker{
-    cursor: pointer;
-    padding-left: 12px;
-  }
+	.datepicker {
+		cursor: pointer;
+		padding-left: 12px;
+	}
 
-  .font20{
-	font-size:16px;
-  }
+	.font20 {
+		font-size: 16px;
+	}
 </style>
 <script type="text/javascript">
 	//$('#input-kendaraan').hide();
-	var base_url			= '<?php echo base_url(); ?>';
-	var active_controller	= '<?php echo($this->uri->segment(1)); ?>';
+	var base_url = '<?php echo base_url(); ?>';
+	var active_controller = '<?php echo ($this->uri->segment(1)); ?>';
 
-	$(document).ready(function(){
+	var no_material_lain = <?= $no_material_lain ?>;
+
+	$(document).ready(function() {
 		$('.chosen-select').select2();
-		$( ".datepicker" ).datepicker();
-		$( ".autoNumeric4" ).autoNumeric('init', {mDec: '4', aPad: false});
+		$(".datepicker").datepicker();
+		$(".autoNumeric4").autoNumeric('init', {
+			mDec: '4',
+			aPad: false
+		});
 
 		//add part
-		$(document).on('click', '.addPart', function(){
+		$(document).on('click', '.addPart', function() {
 			// loading_spinner();
-			var get_id 		= $(this).parent().parent().attr('id');
+			var get_id = $(this).parent().parent().attr('id');
 			// console.log(get_id);
-			var split_id	= get_id.split('_');
-			var id 		= parseInt(split_id[1])+1;
-			var id_bef 	= split_id[1];
+			var split_id = get_id.split('_');
+			var id = parseInt(split_id[1]) + 1;
+			var id_bef = split_id[1];
 
 			$.ajax({
-				url: base_url+active_controller+'/get_add/'+id,
+				url: base_url + active_controller + '/get_add/' + id,
 				cache: false,
 				type: "POST",
 				dataType: "json",
-				success: function(data){
-					$("#add_"+id_bef).before(data.header);
-					$("#add_"+id_bef).remove();
-					$('.chosen_select').select2({width: '100%'});
-					$('.autoNumeric4').autoNumeric('init', {mDec: '4', aPad: false});
+				success: function(data) {
+					$("#add_" + id_bef).before(data.header);
+					$("#add_" + id_bef).remove();
+					$('.chosen_select').select2({
+						width: '100%'
+					});
+					$('.autoNumeric4').autoNumeric('init', {
+						mDec: '4',
+						aPad: false
+					});
 					swal.close();
 				},
 				error: function() {
 					swal({
-						title				: "Error Message !",
-						text				: 'Connection Time Out. Please try again..',
-						type				: "warning",
-						timer				: 3000,
-						showCancelButton	: false,
-						showConfirmButton	: false,
-						allowOutsideClick	: false
+						title: "Error Message !",
+						text: 'Connection Time Out. Please try again..',
+						type: "warning",
+						timer: 3000,
+						showCancelButton: false,
+						showConfirmButton: false,
+						allowOutsideClick: false
 					});
 				}
 			});
 		});
 
-		$(document).on('change','#id_product, #variant_product, #color_product',function(){
-			var id_product 		= ($("#id_product").val() != '0')?$("#id_product").find(':selected').data('kode'):'';
-			var variant_product = ($("#variant_product").val() != '0')?$("#variant_product").find(':selected').data('kode'):'';
-			var color_product 	= ($("#color_product").val() != '0')?$("#color_product").find(':selected').data('kode'):'';
+		$(document).on('change', '#id_product', function() {
+			var id_product = $(this).val();
 
-			var newKode = id_product+'-'+variant_product+'-'+color_product;
+			$.ajax({
+				type: 'post',
+				url: siteurl + active_controller + '/get_varian_product',
+				data: {
+					'id_product': id_product
+				},
+				dataType: 'json',
+				cache: false,
+				success: function(result) {
+					$('input[name="variant_product"]').val(result.nm_variant_product);
+					$('input[name="id_variant_product"]').val(result.id_variant_product);
+				},
+				error: function(result) {
+					swal({
+						type: 'error',
+						title: 'Error !',
+						text: 'Please try again later !'
+					});
+				}
+			});
+		});
+
+		$(document).on('click', '#updateManualCode', function() {
+			var id_product = ($("#id_product").val() != '0') ? $("#id_product").find(':selected').data('kode') : '';
+			var variant_product = ($("#variant_product").val() != '0') ? $("#variant_product").find(':selected').data('kode') : '';
+			var color_product = ($("#color_product").val() != '0') ? $("#color_product").find(':selected').data('kode') : '';
+
+			var newKode = id_product + '-' + variant_product + '-' + color_product;
 			$('#kode').val(newKode)
 		});
 
-		$(document).on('click','#updateManualCode',function(){
-			var id_product 		= ($("#id_product").val() != '0')?$("#id_product").find(':selected').data('kode'):'';
-			var variant_product = ($("#variant_product").val() != '0')?$("#variant_product").find(':selected').data('kode'):'';
-			var color_product 	= ($("#color_product").val() != '0')?$("#color_product").find(':selected').data('kode'):'';
-
-			var newKode = id_product+'-'+variant_product+'-'+color_product;
-			$('#kode').val(newKode)
-		});
-
-	   //delete part
-		$(document).on('click', '.delPart', function(){
-			var get_id 		= $(this).parent().parent().attr('class');
-			$("."+get_id).remove();
+		//delete part
+		$(document).on('click', '.delPart', function() {
+			var get_id = $(this).parent().parent().attr('class');
+			$("." + get_id).remove();
 			sumMaterial()
 		});
 
-    	//add part
-		$(document).on('click', '#back', function(){
-		    window.location.href = base_url + active_controller;
+		//add part
+		$(document).on('click', '#back', function() {
+			window.location.href = base_url + active_controller;
 		});
 
-		$(document).on('keyup', '.qty, #waste_setting_resin, #waste_setting_glass, #moq, #waste_product', function(){
+		$(document).on('keyup', '.qty, #waste_setting_resin, #waste_setting_glass, #moq, #waste_product', function() {
 			let waste_product = getNum($('#waste_product').val().split(',').join(''))
 			let waste_resin = getNum($('#waste_setting_resin').val().split(',').join(''))
 			let waste_glass = getNum($('#waste_setting_glass').val().split(',').join(''))
@@ -319,143 +326,148 @@ $kode   		= (!empty($header))?$header[0]->kode:'';
 
 			let SumTotal = 0
 			let qty
-			$('.qty').each(function(){
+			$('.qty').each(function() {
 				qty = getNum($(this).val().split(',').join(''))
 				SumTotal += qty
 			})
 
 			// console.log(SumTotal)
-			$('#total_material').text(number_format(SumTotal,4))
+			$('#total_material').text(number_format(SumTotal, 4))
 			$('#tot_material').val(SumTotal)
 
 			let waste_total = (((waste_resin + waste_glass + (waste_product * moq))) / ((SumTotal + waste_product) * moq + (waste_resin + waste_glass))) * 100
-			$('#waste_total').val(number_format(waste_total,4))
+			$('#waste_total').val(number_format(waste_total, 4))
 
 		});
 
-		$(document).on('click', '#copyBOM', function(){
-			var id 		= $('#bom_standard_list').val();
+		$(document).on('click', '#copyBOM', function() {
+			var id = $('#bom_standard_list').val();
 
 			$.ajax({
-				url: base_url+active_controller+'/get_add_copy/'+id,
+				url: base_url + active_controller + '/get_add_copy/' + id,
 				cache: false,
 				type: "POST",
 				dataType: "json",
-				success: function(data){
+				success: function(data) {
 					$("#body_table").html(data.header);
-					$('.chosen_select').select2({width: '100%'});
-					$('.autoNumeric4').autoNumeric('init', {mDec: '4', aPad: false});
+					$('.chosen_select').select2({
+						width: '100%'
+					});
+					$('.autoNumeric4').autoNumeric('init', {
+						mDec: '4',
+						aPad: false
+					});
 
 					sumMaterial()
 					swal.close();
 				},
 				error: function() {
 					swal({
-						title				: "Error Message !",
-						text				: 'Connection Time Out. Please try again..',
-						type				: "warning",
-						timer				: 3000,
-						showCancelButton	: false,
-						showConfirmButton	: false,
-						allowOutsideClick	: false
+						title: "Error Message !",
+						text: 'Connection Time Out. Please try again..',
+						type: "warning",
+						timer: 3000,
+						showCancelButton: false,
+						showConfirmButton: false,
+						allowOutsideClick: false
 					});
 				}
 			});
 		});
 
-		$('#save').click(function(e){
+		$('#save').click(function(e) {
 			e.preventDefault();
-			var id_product		  	= $('#id_product').val();
-			var material	      	= $('.material').val();
-			var qty		        	= $('.qty').val();
+			var id_product = $('#id_product').val();
+			var material = $('.material').val();
+			var qty = $('.qty').val();
 
-			if(id_product == '0' ){
+			if (id_product == '0') {
 				swal({
-					title	: "Error Message!",
-					text	: 'Product name empty, select first ...',
-					type	: "warning"
+					title: "Error Message!",
+					text: 'Product name empty, select first ...',
+					type: "warning"
 				});
 
-				$('#save').prop('disabled',false);
+				$('#save').prop('disabled', false);
 				return false;
 			}
-			if(material == '0' ){
+			if (material == '0') {
 				swal({
-					title	: "Error Message!",
-					text	: 'Material name empty, select first ...',
-					type	: "warning"
+					title: "Error Message!",
+					text: 'Material name empty, select first ...',
+					type: "warning"
 				});
 
-				$('#save').prop('disabled',false);
+				$('#save').prop('disabled', false);
 				return false;
 			}
-      		if(qty == '' ){
+			if (qty == '') {
 				swal({
-					title	: "Error Message!",
-					text	: 'Weight empty, select first ...',
-					type	: "warning"
+					title: "Error Message!",
+					text: 'Weight empty, select first ...',
+					type: "warning"
 				});
 
-				$('#save').prop('disabled',false);
+				$('#save').prop('disabled', false);
 				return false;
 			}
 
 			swal({
-				  title: "Are you sure?",
-				  text: "You will not be able to process again this data!",
-				  type: "warning",
-				  showCancelButton: true,
-				  confirmButtonClass: "btn-danger",
-				  confirmButtonText: "Yes, Process it!",
-				  cancelButtonText: "No, cancel process!",
-				  closeOnConfirm: true,
-				  closeOnCancel: false
+					title: "Are you sure?",
+					text: "You will not be able to process again this data!",
+					type: "warning",
+					showCancelButton: true,
+					confirmButtonClass: "btn-danger",
+					confirmButtonText: "Yes, Process it!",
+					cancelButtonText: "No, cancel process!",
+					closeOnConfirm: true,
+					closeOnCancel: false
 				},
 				function(isConfirm) {
-				  if (isConfirm) {
-						var formData 	=new FormData($('#data-form')[0]);
-						var baseurl = base_url+active_controller+'/add'
+					if (isConfirm) {
+						var formData = new FormData($('#data-form')[0]);
+						var baseurl = base_url + active_controller + '/add'
 						$.ajax({
-							url			: baseurl,
-							type		: "POST",
-							data		: formData,
-							cache		: false,
-							dataType	: 'json',
-							processData	: false,
-							contentType	: false,
-							success		: function(data){
-								if(data.status == 1){
+							url: baseurl,
+							type: "POST",
+							data: formData,
+							cache: false,
+							dataType: 'json',
+							processData: false,
+							contentType: false,
+							success: function(data) {
+								if (data.status == 1) {
 									swal({
-										  title	: "Save Success!",
-										  text	: data.pesan,
-										  type	: "success",
-										  timer	: 3000,
-										  showCancelButton	: false,
-										  showConfirmButton	: false,
-										  allowOutsideClick	: false
-										});
+										title: "Save Success!",
+										text: data.pesan,
+										type: "success",
+										timer: 3000,
+										showCancelButton: false,
+										showConfirmButton: false,
+										allowOutsideClick: false
+									});
 									window.location.href = base_url + active_controller;
-								}else{
+								} else {
 
-									if(data.status == 2){
+									if (data.status == 2) {
 										swal({
-										  title	: "Save Failed!",
-										  text	: data.pesan,
-										  type	: "warning",
-										  timer	: 3000,
-										  showCancelButton	: false,
-										  showConfirmButton	: false,
-										  allowOutsideClick	: false
+											title: "Save Failed!",
+											text: data.pesan,
+											type: "warning",
+											timer: 3000,
+											showCancelButton: false,
+											showConfirmButton: false,
+											allowOutsideClick: false
 										});
-									}else{
+									} else {
 										swal({
-										  title	: "Save Failed!",
-										  text	: data.pesan,
-										  type	: "warning",
-										  timer	: 3000,
-										  showCancelButton	: false,
-										  showConfirmButton	: false,
-										  allowOutsideClick	: false
+											title: "Save Failed!",
+											text: data.pesan,
+											type: "warning",
+											timer: 3000,
+											showCancelButton: false,
+											showConfirmButton: false,
+											allowOutsideClick: false
 										});
 									}
 
@@ -464,37 +476,113 @@ $kode   		= (!empty($header))?$header[0]->kode:'';
 							error: function() {
 
 								swal({
-								  title				: "Error Message !",
-								  text				: 'An Error Occured During Process. Please try again..',
-								  type				: "warning",
-								  timer				: 7000,
-								  showCancelButton	: false,
-								  showConfirmButton	: false,
-								  allowOutsideClick	: false
+									title: "Error Message !",
+									text: 'An Error Occured During Process. Please try again..',
+									type: "warning",
+									timer: 7000,
+									showCancelButton: false,
+									showConfirmButton: false,
+									allowOutsideClick: false
 								});
 							}
 						});
-				  } else {
-					swal("Cancelled", "Data can be process again :)", "error");
-					return false;
-				  }
+					} else {
+						swal("Cancelled", "Data can be process again :)", "error");
+						return false;
+					}
+				});
+		});
+
+		$(document).on('change', '#jenis_beton, input[name="volume_produk"]', function() {
+			var jenis_beton = $('#jenis_beton').val();
+			var volume_produk = $('input[name="volume_produk"]').val();
+			if (volume_produk == '') {
+				volume_produk = 0;
+			}
+
+			$.ajax({
+				type: 'post',
+				url: siteurl + active_controller + '/get_detail_material',
+				data: {
+					'jenis_beton': jenis_beton,
+					'volume_produk': volume_produk
+				},
+				dataType: 'json',
+				cache: false,
+				success: function(result) {
+					$('#body_table').html(result.hasil);
+				},
+				error: function(result) {
+					swal({
+						type: 'error',
+						title: 'Error !',
+						text: 'Please try again later !'
+					});
+				}
 			});
 		});
 
-		function sumMaterial(){
+		$(document).on('click', '.add_material_lain', function() {
+			var hasil = '<tr class="row_material_lain_' + no_material_lain + '">';
+
+			hasil += '<td class="text-center">';
+			hasil += no_material_lain;
+			hasil += '</td>';
+
+			hasil += '<td class="text-left">';
+			hasil += '<input type="text" class="form-control input-md" name="detail_material_lain[' + no_material_lain + '][material_name]">'
+			hasil += '</td>';
+
+			hasil += '<td class="text-left">';
+			hasil += '<input type="number" class="form-control input-md" name="detail_material_lain[' + no_material_lain + '][kebutuhan]" step="0.01">'
+			hasil += '</td>';
+
+			hasil += '<td>';
+			hasil += '<select class="form-control input-md chosen-select" name="detail_material_lain[' + no_material_lain + '][satuan]">';
+			hasil += '<option value="">- Pilih Satuan -</option>';
+			<?php
+			foreach ($results['list_satuan'] as $item) {
+			?>
+				hasil += '<option value="' + <?= $item->id ?> + '">';
+				hasil += '<?= strtoupper($item->code) ?>';
+				hasil += '</option>';
+			<?php
+			}
+			?>
+			hasil += '</select>';
+			hasil += '</td>';
+
+			hasil += '<td class="text-left">';
+			hasil += '<textarea name="detail_material_lain[' + no_material_lain + '][keterangan]"></textarea>'
+			hasil += '</td>';
+
+			hasil += '<td class="text-center">';
+			hasil += '<button type="button" class="btn btn-sm btn-danger del_material_lain" data-no="' + no_material_lain + '" title="Delete"><i class="fa fa-trash"></i></button>';
+			hasil += '</td>';
+
+			hasil += '</tr>';
+
+			no_material_lain++;
+
+			$('#body_table_material_lain').append(hasil);
+
+			$('.chosen-select').chosen();
+		});
+
+		function sumMaterial() {
 			let SumTotal = 0
 			let qty
-			$('.qty').each(function(){
+			$('.qty').each(function() {
 				qty = getNum($(this).val().split(',').join(''))
 				SumTotal += qty
 			})
 
 			// console.log(SumTotal)
-			$('#total_material').text(number_format(SumTotal,4))
+			$('#total_material').text(number_format(SumTotal, 4))
 			$('#tot_material').val(SumTotal)
 		}
 
-		function number_format (number, decimals, dec_point, thousands_sep) {
+		function number_format(number, decimals, dec_point, thousands_sep) {
 			// Strip all characters but numerical ones.
 			number = (number + '').replace(/[^0-9+\-Ee.]/g, '');
 			var n = !isFinite(+number) ? 0 : +number,
@@ -502,7 +590,7 @@ $kode   		= (!empty($header))?$header[0]->kode:'';
 				sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep,
 				dec = (typeof dec_point === 'undefined') ? '.' : dec_point,
 				s = '',
-				toFixedFix = function (n, prec) {
+				toFixedFix = function(n, prec) {
 					var k = Math.pow(10, prec);
 					return '' + Math.round(n * k) / k;
 				};
@@ -519,5 +607,4 @@ $kode   		= (!empty($header))?$header[0]->kode:'';
 		}
 
 	});
-
 </script>
