@@ -35,9 +35,9 @@ class Costcenter extends Admin_Controller
 		$data = $this->Costcenter_model->get_data('ms_costcenter', 'deleted', $deleted);
 		$data = $this->db->select('a.*, b.kd_gudang')->join('warehouse b', 'a.id_costcenter=b.kd_gudang', 'left')->get_where('ms_costcenter a', array('a.deleted' => 0))->result();
 
-		history("View index costcenter");
+		history("View index Area");
 		$this->template->set('results', $data);
-		$this->template->title('Costcenter');
+		$this->template->title('Area');
 		$this->template->render('index');
 	}
 	public function add()
@@ -59,9 +59,8 @@ class Costcenter extends Admin_Controller
 		];
 		$this->template->set('results', $data);
 
-		$this->template->title('Add Costcenter');
+		$this->template->title('Add Area');
 		$this->template->page_icon('fa fa-edit');
-		$this->template->title('Add Costcenter');
 		$this->template->render('add');
 	}
 
