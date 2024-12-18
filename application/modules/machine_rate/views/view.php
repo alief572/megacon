@@ -15,18 +15,16 @@ $cost_m3 = (!empty($listData[0]->cost_m3)) ? $listData[0]->cost_m3 : 0;
 			<input type="hidden" name="id" value="<?= $id ?>">
 			<div class="form-group row">
 				<div class="col-md-2">
-					<label for="">Mold Name <span class='text-danger'>*</span></label>
+					<label for="">Machine Name <span class='text-danger'>*</span></label>
 				</div>
 				<div class="col-md-10">
 					<select name="kd_mesin" id="kd_mesin" class='chosen-select'>
-						<option value="">- Select Mold -</option>
 						<?php
 						foreach ($list_asset as $item) {
-							$selected = '';
 							if ($item['kd_asset'] == $kd_mesin) {
 								$selected = 'selected';
+                                echo '<option value="' . $item['kd_asset'] . '" ' . $selected . '>' . $item['nm_asset'] . '</option>';
 							}
-							echo '<option value="' . $item['kd_asset'] . '" ' . $selected . '>' . $item['nm_asset'] . '</option>';
 						}
 						?>
 					</select>
@@ -36,7 +34,7 @@ $cost_m3 = (!empty($listData[0]->cost_m3)) ? $listData[0]->cost_m3 : 0;
 					<table class="table">
 						<thead>
 							<tr>
-								<th class="text-center">Asset Mold</th>
+								<th class="text-center">Asset Mesin</th>
 								<th class="text-center">Harga</th>
 								<th class="text-center">Depresiasi (Tahun)</th>
 								<th class="text-center">Depresiasi Per Tahun</th>
@@ -47,7 +45,7 @@ $cost_m3 = (!empty($listData[0]->cost_m3)) ? $listData[0]->cost_m3 : 0;
 						</thead>
 						<tbody id="list_mesin">
 						<?php 
-							if(isset($listData) && !empty($listData)) {
+							if(isset($listData)) {
 								echo '<tr>';
 								
 								echo '<td>'.$nm_mesin.'</td>';
@@ -65,11 +63,11 @@ $cost_m3 = (!empty($listData[0]->cost_m3)) ? $listData[0]->cost_m3 : 0;
 								echo '</td>';
 
 								echo '<td>';
-								echo '<input type="number" class="form-control input-md text-right" name="utilisasi_hari" min="1" value="'.$utilisasi_hari.'" onkeyup="hitung_cost_m3();">';
+								echo '<input type="number" class="form-control input-md text-right" name="utilisasi_hari" min="1" value="'.$utilisasi_hari.'" readonly>';
 								echo '</td>';
 
 								echo '<td>';
-								echo '<input type="text" class="form-control input-md text-right maskM" name="utilisasi_m3_per_hari" value="'.$utilisasi_m3_per_hari.'" onkeyup="hitung_cost_m3();">';
+								echo '<input type="text" class="form-control input-md text-right maskM" name="utilisasi_m3_per_hari" value="'.$utilisasi_m3_per_hari.'" readonly>';
 								echo '</td>';
 
 								echo '<td>';
@@ -109,7 +107,7 @@ $cost_m3 = (!empty($listData[0]->cost_m3)) ? $listData[0]->cost_m3 : 0;
 
 			$.ajax({
 				type: 'post',
-				url: siteurl + active_controller + 'get_asset_mold',
+				url: siteurl + active_controller + 'get_asset_mesin',
 				data: {
 					'kd_mesin': kd_mesin
 				},

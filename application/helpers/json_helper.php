@@ -293,7 +293,7 @@ function get_accessories()
 function get_list_machine()
 {
 	$CI = &get_instance();
-	$listGetCategory = $CI->db->group_by('kd_asset')->get_where('asset', array('deleted_date' => NULL, 'category' => '4'))->result_array();
+	$listGetCategory = $CI->db->group_by('kd_asset')->get_where('asset', array('deleted_date' => NULL, 'category' => '2'))->result_array();
 	$ArrGetCategory = [];
 	foreach ($listGetCategory as $key => $value) {
 		$ArrGetCategory[$value['kd_asset']]['kd_asset'] 	= $value['kd_asset'];
