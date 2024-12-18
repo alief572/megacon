@@ -38,10 +38,10 @@
 					?>
 				</select>
 			</div>
-			<label class='label-control col-sm-2'><b>Cost Center <span class='text-red'>*</span></b></label>
+			<label class='label-control col-sm-2'><b>Area <span class='text-red'>*</span></b></label>
 			<div class='col-sm-4'>
 				<select name='cost_center' id='cost_center' class='form-control input-md chosen-select'>
-					<option value="">- Cost Center -</option>
+					<option value="">- Area -</option>
 					<?php
 					foreach ($list_costcenter as $item_costcenter) {
 						echo '<option value="' . $item_costcenter['id_costcenter'] . '">' . strtoupper($item_costcenter['nama_costcenter']) . '</option>';

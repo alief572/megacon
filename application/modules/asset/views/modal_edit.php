@@ -54,10 +54,10 @@ $costcenter	= $this->db->query($QUERY)->result_array();
 					?>
 				</select>
 			</div>
-			<label class='label-control col-sm-2'><b>Cost Center <span class='text-red'>*</span></b></label>
+			<label class='label-control col-sm-2'><b>Area <span class='text-red'>*</span></b></label>
 			<div class='col-sm-4'>
 				<select name='cost_center' id='cost_center' class='form-control input-md chosen-select'>
-					<option value="0">Select Costcenter</option>
+					<option value="0">Select Area</option>
 					<?php
 					foreach ($costcenter as $val => $valx) {
 						$selx = ($dataD[0]['cost_center'] == $valx['id_costcenter']) ? 'selected' : '';
