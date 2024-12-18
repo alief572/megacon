@@ -34,9 +34,9 @@ class Bom extends Admin_Controller
 		$this->template->page_icon('fa fa-users');
 		$deleted = '0';
 		$data = $this->bom_model->get_data('bom_header', 'deleted', 'N');
-		history("View index BOM standard lainnya");
+		history("View index BOM");
 		$this->template->set('results', $data);
-		$this->template->title('BOM Standard Lainnya');
+		$this->template->title('BOM');
 		$this->template->render('index');
 	}
 
