@@ -95,8 +95,8 @@ class Cycletime extends Admin_Controller
     $material    = $this->Cycletime_model->get_data_where_array('new_inventory_4', array('deleted_date' => NULL, 'category' => 'product'));
     $header  = $this->db->query("SELECT * FROM cycletime_header WHERE id_time='" . $id_time . "' LIMIT 1 ")->result();
     $costcenter  = $this->db->query("SELECT * FROM ms_costcenter WHERE deleted='0' ORDER BY nama_costcenter ASC ")->result_array();
-    $machine  = $this->db->query("SELECT * FROM asset WHERE category='4' AND deleted_date IS NULL GROUP BY SUBSTR(kd_asset, 1, 20) ORDER BY nm_asset ASC ")->result_array();
-    $mould  = $this->db->query("SELECT * FROM asset WHERE category='7' AND deleted_date IS NULL GROUP BY SUBSTR(kd_asset, 1, 20) ORDER BY nm_asset ASC ")->result_array();
+    $machine  = $this->db->query("SELECT * FROM asset WHERE category='2' AND deleted_date IS NULL GROUP BY SUBSTR(kd_asset, 1, 20) ORDER BY nm_asset ASC ")->result_array();
+    $mould  = $this->db->query("SELECT * FROM asset WHERE category='1' AND deleted_date IS NULL GROUP BY SUBSTR(kd_asset, 1, 20) ORDER BY nm_asset ASC ")->result_array();
 
     $ArrlistCT = $this->db->group_by('no_bom')->get_where('cycletime_header', array('deleted_date' => NULL, 'no_bom !=' => $header[0]->no_bom))->result_array();
     $ArrProductCT = [];
@@ -417,7 +417,6 @@ class Cycletime extends Admin_Controller
         $ArrDetail2[$val2 . $val]['note']         = $valx2['note'];
         $ArrDetail2[$val2 . $val]['machine']       = $valx2['machine'];
         $ArrDetail2[$val2 . $val]['mould']         = $valx2['mould'];
-        $ArrDetail2[$val2 . $val]['va']           = $valx2['va'];
       }
     }
 
@@ -1068,8 +1067,8 @@ class Cycletime extends Admin_Controller
       $option  = "<option value='0'>Select BOM</option>";
       foreach ($result as $val => $valx) {
         // if (!in_array($valx['no_bom'], $ArrProductCT)) {
-          $variant_product  = (!empty($valx['variant_product'])) ? ' - ' . $valx['variant_product'] : '';
-          $option .= "<option value='" . $valx['no_bom'] . "'>" . strtoupper($valx['nama'] . $variant_product) . "</option>";
+        $variant_product  = (!empty($valx['variant_product'])) ? ' - ' . $valx['variant_product'] : '';
+        $option .= "<option value='" . $valx['no_bom'] . "'>" . strtoupper($valx['nama'] . $variant_product) . "</option>";
         // }
       }
     } else {

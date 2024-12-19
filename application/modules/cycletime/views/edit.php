@@ -84,7 +84,7 @@ $q_header_test = $this->db->query("SELECT * FROM cycletime_detail_header WHERE i
             <thead>
               <tr class='bg-blue'>
                 <th class='text-center' style='width: 4%;'>#</th>
-                <th class='text-center' style='width: 30%;'>Cost Center</th>
+                <th class='text-center' style='width: 30%;'>Area</th>
                 <th class='text-center' style='width: 15%;'></th>
                 <th class='text-center' style='width: 15%;'></th>
                 <th class='text-center'></th>
@@ -184,7 +184,7 @@ $q_header_test = $this->db->query("SELECT * FROM cycletime_detail_header WHERE i
               ?>
               <tr id='add_<?= $id; ?>'>
                 <td align='center'></td>
-                <td align='left'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button type='button' class='btn btn-sm btn-warning addPart' title='Add Costcenter'><i class='fa fa-plus'></i>&nbsp;&nbsp;Add Costcenter</button></td>
+                <td align='left'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button type='button' class='btn btn-sm btn-warning addPart' title='Add Area'><i class='fa fa-plus'></i>&nbsp;&nbsp;Add Area</button></td>
                 <td align='center'></td>
                 <td align='center'></td>
                 <td align='center'></td>

@@ -398,7 +398,7 @@ function get_price_ref()
 	$listGetCategory = $CI->db->get_where('new_inventory_4', array('deleted_date' => NULL))->result_array();
 	$ArrGetCategory = [];
 	foreach ($listGetCategory as $key => $value) {
-		$ArrGetCategory[$value['code_lv4']]['price_ref'] 	= $value['price_ref_use_usd'];
+		$ArrGetCategory[$value['code_lv4']]['price_ref'] 	= $value['up_to_value'];
 	}
 	return $ArrGetCategory;
 }
@@ -484,7 +484,7 @@ function get_rate_machine()
 	$listGetCategory = $CI->db->get_where('rate_machine', array('deleted_date' => NULL))->result_array();
 	$ArrGetCategory = [];
 	foreach ($listGetCategory as $key => $value) {
-		$ArrGetCategory[$value['kd_mesin']]['biaya_mesin'] 	= $value['biaya_mesin'];
+		$ArrGetCategory[$value['kd_mesin']]['cost_m3'] 	= $value['cost_m3'];
 	}
 	return $ArrGetCategory;
 }
@@ -495,7 +495,7 @@ function get_rate_mold()
 	$listGetCategory = $CI->db->get_where('rate_mold', array('deleted_date' => NULL))->result_array();
 	$ArrGetCategory = [];
 	foreach ($listGetCategory as $key => $value) {
-		$ArrGetCategory[$value['kd_mesin']]['biaya_mesin'] 	= $value['biaya_mesin'];
+		$ArrGetCategory[$value['kd_mesin']]['cost_m3'] 	= $value['cost_m3'];
 	}
 	return $ArrGetCategory;
 }
