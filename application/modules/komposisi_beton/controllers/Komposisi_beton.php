@@ -30,7 +30,7 @@ class Komposisi_beton extends Admin_Controller
     {
         $this->auth->restrict($this->viewPermission);
 
-        if ($id_komposisi_beton !== '') {
+        if ($id_komposisi_beton !== '' || $id_komposisi_beton !== null) {
             $get_header = $this->db->get_where('tr_jenis_beton_header', ['id_komposisi_beton' => $id_komposisi_beton])->row();
             $get_detail = $this->db->get_where('tr_jenis_beton_detail', ['id_komposisi_beton' => $id_komposisi_beton])->result();
 
@@ -42,7 +42,9 @@ class Komposisi_beton extends Admin_Controller
             $this->template->title('Add Komposisi Beton');
         }
 
+        $get_list_material = $this->db->get_where('new_inventory_4', ['category' => 'material', 'deleted_by' => null])->result();
 
+        $this->template->set('list_material', $get_list_material);
         $this->template->set('id_komposisi_beton', $id_komposisi_beton);
         $this->template->render('add');
     }
@@ -83,6 +85,7 @@ class Komposisi_beton extends Admin_Controller
 
                     $arr_detail[] = [
                         'id_komposisi_beton' => $id_komposisi_beton,
+                        'id_material' => $item['id_material'],
                         'nm_material' => $item['material_name'],
                         'volume' => $item['volume'],
                         'keterangan' => $item['keterangan'],
@@ -139,6 +142,7 @@ class Komposisi_beton extends Admin_Controller
                 foreach ($post['detail_material'] as $item) {
                     $arr_detail[] = [
                         'id_komposisi_beton' => $id_komposisi_beton,
+                        'id_material' => $item['id_material'],
                         'nm_material' => $item['material_name'],
                         'volume' => $item['volume'],
                         'keterangan' => $item['keterangan'],
@@ -209,6 +213,22 @@ class Komposisi_beton extends Admin_Controller
         echo json_encode([
             'status' => $valid,
             'pesan' => $pesan
+        ]);
+    }
+
+    public function get_material_name() {
+        $post = $this->input->post();
+
+        $nm_material = '';
+
+        $get_nm_material = $this->db->get_where('new_inventory_4', ['code_lv4' => $post['id_material']])->row();
+
+        if(!empty($get_nm_material)) {
+            $nm_material = $get_nm_material->nama;
+        }
+
+        echo json_encode([
+            'nm_material' => $nm_material
         ]);
     }
 

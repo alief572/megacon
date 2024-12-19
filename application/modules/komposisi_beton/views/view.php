@@ -58,6 +58,8 @@ $keterangan = (isset($header)) ? $header->keterangan : '';
                             echo '</td>';
 
                             echo '</tr>';
+
+                            $no++;
                         }
                     }
                     ?>
