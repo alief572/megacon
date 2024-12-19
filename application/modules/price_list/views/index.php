@@ -37,17 +37,8 @@
 						<th>#</th>
 						<th>Product Type</th>
 						<th>Product Name</th>
-						<!-- <th>Variant</th>
-			<th>Color</th>
-			<th>Surface</th> -->
 						<th class='text-right'>Total Weight</th>
-						<!-- <th class='text-right'>Price Material</th> -->
-						<!-- <th class='text-right'>Price MP</th> -->
-						<!-- <th class='text-right'>Product Costing</th> -->
-						<th class='text-right'>Price List USD</th>
 						<th class='text-right'>Price List IDR</th>
-						<th class='text-right'>Orindo (%)</th>
-						<th class='text-right'>Price Orindo</th>
 						<th>Status</th>
 						<th width='7%'>Action</th>
 					</tr>

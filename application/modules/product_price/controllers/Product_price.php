@@ -88,8 +88,8 @@ class Product_price extends Admin_Controller
 		$no_bom 			= $this->input->post('no_bom');
 
 		$header 			= $this->db->get_where('bom_header', array('no_bom' => $no_bom))->result();
-		$detail1   			= $this->db->select('code_material, weight')->get_where('bom_detail', array('no_bom' => $no_bom, 'category' => 'default'))->result_array();
-		$detail2   			= $this->db->select('a.code_material, (a.weight * b.qty) AS weight')->join('bom_detail b', 'a.no_bom_detail=b.no_bom_detail AND a.category=b.category', 'inner')->get_where('bom_detail_custom a', array('a.no_bom' => $no_bom, 'a.category' => 'hi grid std'))->result_array();
+		$detail1   			= $this->db->select('code_material, volume_m3')->get_where('bom_detail', array('no_bom' => $no_bom, 'category' => 'default'))->result_array();
+		$detail2   			= $this->db->select('a.code_material, (a.qty * b.volume_m3) AS volume_m3')->join('bom_detail b', 'a.no_bom_detail=b.no_bom_detail AND a.category=b.category', 'inner')->get_where('bom_detail_custom a', array('a.no_bom' => $no_bom, 'a.category' => 'hi grid std'))->result_array();
 		$detail_assembly   	= $this->db->select('a.*, b.code_lv4')->join('product_price b', 'a.kode=b.kode', 'inner')->get_where('product_price_bom_detail a', array('a.no_bom' => $no_bom, 'a.category' => 'hi grid std', 'b.deleted_date' => NULL))->result_array();
 		$detail   			= $detail1;
 		$detail_additive   	= $this->db->get_where('bom_detail', array('no_bom' => $no_bom, 'category' => 'additive'))->result_array();
@@ -126,7 +126,7 @@ class Product_price extends Admin_Controller
 		$dateTime 	= date('Y-m-d H:i:s');
 		$id_user	= $session['id_user'];
 
-		$SQL 	= "SELECT a.* FROM bom_header a WHERE a.deleted_date IS NULL AND a.category IN ('standard','grid standard','ftackel') AND a.id_product LIKE 'P%'";
+		$SQL 	= "SELECT a.* FROM bom_header a WHERE a.deleted_date IS NULL AND a.category = 'standard' AND a.id_product LIKE 'P%'";
 		$result = $this->db->query($SQL)->result_array();
 
 		$dateTime 	= date('Y-m-d H:i:s');
@@ -186,7 +186,7 @@ class Product_price extends Admin_Controller
 					$nm_category = strtolower(get_name('new_inventory_2', 'nama', 'code_lv2', $code_lv2));
 					$berat_pengurang_additive = ($nm_category == 'resin') ? $BERAT_MINUS : 0;
 
-					$berat_bersih = $valx['weight'] - $berat_pengurang_additive;
+					$berat_bersih = $valx['volume_m3'] - $berat_pengurang_additive;
 					$total_price = $berat_bersih * $price_ref;
 					$TOTAL_PRICE_ALL += $total_price;
 					$TOTAL_BERAT_BERSIH += $berat_bersih;
@@ -200,14 +200,9 @@ class Product_price extends Admin_Controller
 					$ArrDetailDefault[$UNIQ]['no_bom'] 			=  $valx['no_bom'];
 					$ArrDetailDefault[$UNIQ]['no_bom_detail'] 	=  $valx['no_bom_detail'];
 					$ArrDetailDefault[$UNIQ]['code_material'] 	=  $valx['code_material'];
-					$ArrDetailDefault[$UNIQ]['weight'] 			=  $valx['weight'];
-					$ArrDetailDefault[$UNIQ]['persen'] 			=  $valx['persen'];
-					$ArrDetailDefault[$UNIQ]['persen_add'] 		=  $valx['persen_add'];
-					$ArrDetailDefault[$UNIQ]['length'] 			=  $valx['length'];
-					$ArrDetailDefault[$UNIQ]['width'] 			=  $valx['width'];
-					$ArrDetailDefault[$UNIQ]['qty'] 				=  $valx['qty'];
-					$ArrDetailDefault[$UNIQ]['m2'] 				=  $valx['m2'];
-					$ArrDetailDefault[$UNIQ]['file_upload'] 		=  $valx['file_upload'];
+					$ArrDetailDefault[$UNIQ]['weight'] 			=  $valx['volume_m3'];
+					$ArrDetailDefault[$UNIQ]['persen'] 			=  100;
+					$ArrDetailDefault[$UNIQ]['persen_add'] 		=  100;
 					$ArrDetailDefault[$UNIQ]['pengurangan_additive'] = $berat_pengurang_additive;
 					$ArrDetailDefault[$UNIQ]['berat_bersih'] 		= $berat_bersih;
 					$ArrDetailDefault[$UNIQ]['price_ref'] 			= $price_ref;
@@ -228,7 +223,7 @@ class Product_price extends Admin_Controller
 					$price_ref      = (!empty($GET_PRICE_REF[$valx['code_material']]['price_ref'])) ? $GET_PRICE_REF[$valx['code_material']]['price_ref'] : 0;
 					$nm_category 	= strtolower(get_name('new_inventory_2', 'nama', 'code_lv2', $code_lv2));
 
-					$berat_bersih = $valx['weight'];
+					$berat_bersih = $valx['volume_m3'];
 					$total_price = $berat_bersih * $price_ref;
 					$TOTAL_PRICE_ALL += $total_price;
 					$TOTAL_BERAT_BERSIH += $berat_bersih;
@@ -238,13 +233,9 @@ class Product_price extends Admin_Controller
 					$ArrDetailDefault[$UNIQ]['no_bom'] 			=  $valx['no_bom'];
 					$ArrDetailDefault[$UNIQ]['no_bom_detail'] 	=  $valx['no_bom_detail'];
 					$ArrDetailDefault[$UNIQ]['code_material'] 	=  $valx['code_material'];
-					$ArrDetailDefault[$UNIQ]['weight'] 			=  $valx['weight'];
-					$ArrDetailDefault[$UNIQ]['persen'] 			=  $valx['persen'];
-					$ArrDetailDefault[$UNIQ]['persen_add'] 		=  $valx['persen_add'];
-					$ArrDetailDefault[$UNIQ]['length'] 			=  $valx['length'];
-					$ArrDetailDefault[$UNIQ]['width'] 			=  $valx['width'];
-					$ArrDetailDefault[$UNIQ]['qty'] 			=  $valx['qty'];
-					$ArrDetailDefault[$UNIQ]['m2'] 				=  $valx['m2'];
+					$ArrDetailDefault[$UNIQ]['weight'] 			=  $valx['volume_m3'];
+					$ArrDetailDefault[$UNIQ]['persen'] 			=  100;
+					$ArrDetailDefault[$UNIQ]['persen_add'] 		=  100;
 					$ArrDetailDefault[$UNIQ]['file_upload'] 			= NULL;
 					$ArrDetailDefault[$UNIQ]['pengurangan_additive'] 	= NULL;
 					$ArrDetailDefault[$UNIQ]['berat_bersih'] 			= $berat_bersih;
@@ -263,19 +254,14 @@ class Product_price extends Admin_Controller
 					$ArrDetailAdditive[$UNIQ]['no_bom'] 			=  $valx['no_bom'];
 					$ArrDetailAdditive[$UNIQ]['no_bom_detail'] 	=  $valx['no_bom_detail'];
 					$ArrDetailAdditive[$UNIQ]['code_material'] 	=  $valx['code_material'];
-					$ArrDetailAdditive[$UNIQ]['weight'] 			=  $valx['weight'];
-					$ArrDetailAdditive[$UNIQ]['persen'] 			=  $valx['persen'];
-					$ArrDetailAdditive[$UNIQ]['persen_add'] 		=  $valx['persen_add'];
-					$ArrDetailAdditive[$UNIQ]['length'] 			=  $valx['length'];
-					$ArrDetailAdditive[$UNIQ]['width'] 			=  $valx['width'];
-					$ArrDetailAdditive[$UNIQ]['qty'] 				=  $valx['qty'];
-					$ArrDetailAdditive[$UNIQ]['m2'] 				=  $valx['m2'];
-					$ArrDetailAdditive[$UNIQ]['file_upload'] 		=  $valx['file_upload'];
+					$ArrDetailAdditive[$UNIQ]['weight'] 			=  $valx['volume_m3'];
+					$ArrDetailAdditive[$UNIQ]['persen'] 			=  100;
+					$ArrDetailAdditive[$UNIQ]['persen_add'] 		=  100;
 
 					$detail_custom    = $this->db->get_where('bom_detail_custom', array('no_bom_detail' => $valx['no_bom_detail'], 'category' => 'additive'))->result_array();
 					foreach ($detail_custom as $val2 => $valx2) {
 						$price_ref      = (!empty($GET_PRICE_REF[$valx2['code_material']]['price_ref'])) ? $GET_PRICE_REF[$valx2['code_material']]['price_ref'] : 0;
-						$berat_bersih = $valx2['weight'];
+						$berat_bersih = $valx2['volume_m3'];
 						$total_price    = $berat_bersih * $price_ref;
 						$TOTAL_PRICE_ALL += $total_price;
 						$TOTAL_BERAT_BERSIH += $berat_bersih;
@@ -286,7 +272,7 @@ class Product_price extends Admin_Controller
 						$ArrDetailAdditiveCustom[$UNIQ]['no_bom_detail'] 		=  $valx2['no_bom_detail'];
 						$ArrDetailAdditiveCustom[$UNIQ]['code_material'] 		=  $valx2['code_material'];
 						$ArrDetailAdditiveCustom[$UNIQ]['nm_material'] 		=  $valx2['nm_material'];
-						$ArrDetailAdditiveCustom[$UNIQ]['weight'] 				=  $valx2['weight'];
+						$ArrDetailAdditiveCustom[$UNIQ]['weight'] 				=  $valx2['volume_m3'];
 						$ArrDetailAdditiveCustom[$UNIQ]['persen'] 				=  $valx2['persen'];
 						$ArrDetailAdditiveCustom[$UNIQ]['pengurangan_additive'] 	=  $BERAT_MINUS;
 						$ArrDetailAdditiveCustom[$UNIQ]['berat_bersih'] 			=  $berat_bersih;
@@ -305,20 +291,15 @@ class Product_price extends Admin_Controller
 					$ArrDetailTopping[$UNIQ]['no_bom'] 			=  $valx['no_bom'];
 					$ArrDetailTopping[$UNIQ]['no_bom_detail'] 	=  $valx['no_bom_detail'];
 					$ArrDetailTopping[$UNIQ]['code_material'] 	=  $valx['code_material'];
-					$ArrDetailTopping[$UNIQ]['weight'] 			=  $valx['weight'];
-					$ArrDetailTopping[$UNIQ]['persen'] 			=  $valx['persen'];
-					$ArrDetailTopping[$UNIQ]['persen_add'] 		=  $valx['persen_add'];
-					$ArrDetailTopping[$UNIQ]['length'] 			=  $valx['length'];
-					$ArrDetailTopping[$UNIQ]['width'] 			=  $valx['width'];
-					$ArrDetailTopping[$UNIQ]['qty'] 			=  $valx['qty'];
-					$ArrDetailTopping[$UNIQ]['m2'] 				=  $valx['m2'];
-					$ArrDetailTopping[$UNIQ]['file_upload'] 	=  $valx['file_upload'];
+					$ArrDetailTopping[$UNIQ]['weight'] 			=  $valx['volume_m3'];
+					$ArrDetailTopping[$UNIQ]['persen'] 			=  100;
+					$ArrDetailTopping[$UNIQ]['persen_add'] 		=  100;
 					$ArrDetailTopping[$UNIQ]['price_ref'] 		=  0;
 					$ArrDetailTopping[$UNIQ]['total_price'] 	=  0;
 					$detail_custom    = $this->db->get_where('bom_detail_custom', array('no_bom_detail' => $valx['no_bom_detail'], 'category' => 'topping'))->result_array();
 					foreach ($detail_custom as $val2 => $valx2) {
 						$price_ref      = (!empty($GET_PRICE_REF[$valx2['code_material']]['price_ref'])) ? $GET_PRICE_REF[$valx2['code_material']]['price_ref'] : 0;
-						$berat_bersih    = $valx2['weight'] * $valx['qty'];
+						$berat_bersih    = $valx2['volume_m3'] * $valx['qty'];
 						$total_price    = $berat_bersih * $price_ref;
 						$TOTAL_PRICE_ALL += $total_price;
 						$TOTAL_BERAT_BERSIH += $berat_bersih;
@@ -329,7 +310,7 @@ class Product_price extends Admin_Controller
 						$ArrDetailToppingCustom[$UNIQ]['no_bom_detail'] 	=  $valx2['no_bom_detail'];
 						$ArrDetailToppingCustom[$UNIQ]['code_material'] 	=  $valx2['code_material'];
 						$ArrDetailToppingCustom[$UNIQ]['nm_material'] 	=  $valx2['nm_material'];
-						$ArrDetailToppingCustom[$UNIQ]['weight'] 			=  $valx2['weight'];
+						$ArrDetailToppingCustom[$UNIQ]['weight'] 			=  $valx2['volume_m3'];
 						$ArrDetailToppingCustom[$UNIQ]['persen'] 			=  $valx2['persen'];
 						$ArrDetailToppingCustom[$UNIQ]['pengurangan_additive'] = NULL;
 						$ArrDetailToppingCustom[$UNIQ]['berat_bersih'] 		= $berat_bersih;
@@ -350,14 +331,9 @@ class Product_price extends Admin_Controller
 					$ArrDetailTopping[$UNIQ]['no_bom'] 			=  $valx['no_bom'];
 					$ArrDetailTopping[$UNIQ]['no_bom_detail'] 	=  $valx['no_bom_detail'];
 					$ArrDetailTopping[$UNIQ]['code_material'] 	=  $valx['code_material'];
-					$ArrDetailTopping[$UNIQ]['weight'] 			=  $valx['weight'];
-					$ArrDetailTopping[$UNIQ]['persen'] 			=  $valx['persen'];
-					$ArrDetailTopping[$UNIQ]['persen_add'] 		=  $valx['persen_add'];
-					$ArrDetailTopping[$UNIQ]['length'] 			=  $valx['length'];
-					$ArrDetailTopping[$UNIQ]['width'] 			=  $valx['width'];
-					$ArrDetailTopping[$UNIQ]['qty'] 			=  $valx['qty'];
-					$ArrDetailTopping[$UNIQ]['m2'] 				=  $valx['m2'];
-					$ArrDetailTopping[$UNIQ]['file_upload'] 	=  $valx['file_upload'];
+					$ArrDetailTopping[$UNIQ]['weight'] 			=  $valx['volume_m3'];
+					$ArrDetailTopping[$UNIQ]['persen'] 			=  100;
+					$ArrDetailTopping[$UNIQ]['persen_add'] 		=  100;
 
 					$price_assembly = (!empty($GET_PRODUCT_PRICE[$valx['code_material']]['price_list'])) ? $GET_PRODUCT_PRICE[$valx['code_material']]['price_list'] : 0;
 					$TOTAL_PRICE_ALL += $price_assembly * $valx['qty'];
@@ -369,7 +345,7 @@ class Product_price extends Admin_Controller
 					$detail_custom    = $this->db->get_where('bom_detail_custom', array('no_bom_detail' => $valx['no_bom_detail'], 'category' => 'hi grid std'))->result_array();
 					foreach ($detail_custom as $val2 => $valx2) {
 						$price_ref      = (!empty($GET_PRICE_REF[$valx2['code_material']]['price_ref'])) ? $GET_PRICE_REF[$valx2['code_material']]['price_ref'] : 0;
-						$berat_bersih    = $valx2['weight'] * $valx['qty'];
+						$berat_bersih    = $valx2['volume_m3'] * $valx['qty'];
 						$total_price    = $berat_bersih * $price_ref;
 						// $TOTAL_PRICE_ALL += $total_price;
 						// $TOTAL_BERAT_BERSIH += $berat_bersih;
@@ -380,7 +356,7 @@ class Product_price extends Admin_Controller
 						$ArrDetailToppingCustom[$UNIQ]['no_bom_detail'] 	=  $valx2['no_bom_detail'];
 						$ArrDetailToppingCustom[$UNIQ]['code_material'] 	=  $valx2['code_material'];
 						$ArrDetailToppingCustom[$UNIQ]['nm_material'] 	=  $valx2['nm_material'];
-						$ArrDetailToppingCustom[$UNIQ]['weight'] 			=  $valx2['weight'];
+						$ArrDetailToppingCustom[$UNIQ]['weight'] 			=  $valx2['volume_m3'];
 						$ArrDetailToppingCustom[$UNIQ]['persen'] 			=  $valx2['persen'];
 						$ArrDetailToppingCustom[$UNIQ]['pengurangan_additive'] = NULL;
 						$ArrDetailToppingCustom[$UNIQ]['berat_bersih'] 		= $berat_bersih;
@@ -438,17 +414,42 @@ class Product_price extends Admin_Controller
 			$kode_mesin 	= (!empty($GET_MACHINE_PRODUCT[$code_level4])) ? $GET_MACHINE_PRODUCT[$code_level4] : 0;
 			$kode_mold 		= (!empty($GET_MOLD_PRODUCT[$code_level4])) ? $GET_MOLD_PRODUCT[$code_level4] : 0;
 
-			$rate_depresiasi 	= (!empty($GET_MACHINE_RATE[$kode_mesin]['biaya_mesin'])) ? $GET_MACHINE_RATE[$kode_mesin]['biaya_mesin'] : 0;
-			$rate_mould 		= (!empty($GET_MOLD_RATE[$kode_mold]['biaya_mesin'])) ? $GET_MOLD_RATE[$kode_mold]['biaya_mesin'] : 0;
+			// $rate_depresiasi 	= (!empty($GET_MACHINE_RATE[$kode_mesin]['cost_m3'])) ? $GET_MACHINE_RATE[$kode_mesin]['cost_m3'] : 0;
+			// $rate_mould 		= (!empty($GET_MOLD_RATE[$kode_mold]['cost_m3'])) ? $GET_MOLD_RATE[$kode_mold]['cost_m3'] : 0;
+
+			$rate_depresiasi = 0;
+			$rate_mould = 0;
+
+			$this->db->select('a.cost_m3');
+			$this->db->from('rate_machine a');
+			$this->db->join('cycletime_detail_detail b', 'b.machine = a.kd_mesin');
+			$this->db->join('cycletime_header c', 'c.id_time = b.id_time');
+			$this->db->where('c.id_product', $code_level4);
+			$get_rate_machine = $this->db->get()->result();
+
+			foreach($get_rate_machine as $item_rate_machine) {
+				$rate_depresiasi += $item_rate_machine->cost_m3;
+			}
+
+			$this->db->select('a.cost_m3');
+			$this->db->from('rate_mold a');
+			$this->db->join('cycletime_detail_detail b', 'b.mould = a.kd_mesin');
+			$this->db->join('cycletime_header c', 'c.id_time = b.id_time');
+			$this->db->where('c.id_product', $code_level4);
+			$get_rate_mold = $this->db->get()->result();
+
+			foreach($get_rate_mold as $item_rate_mold) {
+				$rate_mould += $item_rate_mold->cost_m3;
+			}
 
 			//NEW========================
 			$ct_setting 		= (!empty($GET_CYCLETIME[$code_level4 . "-" . $no_bom]['total_ct_setting'])) ? $GET_CYCLETIME[$code_level4 . "-" . $no_bom]['total_ct_setting'] : 0;
 			$ct_produksi 		= (!empty($GET_CYCLETIME[$code_level4 . "-" . $no_bom]['total_ct_produksi'])) ? $GET_CYCLETIME[$code_level4 . "-" . $no_bom]['total_ct_produksi'] : 0;
 			$ct_moq 			= (!empty($GET_CYCLETIME[$code_level4 . "-" . $no_bom]['moq'])) ? $GET_CYCLETIME[$code_level4 . "-" . $no_bom]['moq'] : 0;
 			$berat_per_kg   	= $berat_per_kg;
-			$waste_set_resin 	= $value['waste_setting_resin'];
-			$waste_set_glass 	= $value['waste_setting_glass'];
-			$bom_moq 			= $value['moq'];
+			$waste_set_resin 	= 0;
+			$waste_set_glass 	= 0;
+			$bom_moq 			= '';
 			$qty_man_power 		= $qty_man_power;
 			//END NEW====================
 
@@ -457,61 +458,75 @@ class Product_price extends Admin_Controller
 			// 	echo $rate_depresiasi; exit;
 			// }
 
-			$persen_indirect 	= $GET_RATE_COSTING[3];
+			// $persen_indirect 	= $GET_RATE_COSTING[3];
+			$persen_indirect = 0;
 			$persen_consumable 	= $GET_RATE_COSTING[6];
-			$persen_packing 	= $GET_RATE_COSTING[7];
+			// $persen_packing 	= $GET_RATE_COSTING[7];
+			$persen_packing = 0;
 			$persen_enginnering = $GET_RATE_COSTING[9];
 			$persen_foh 		= $GET_RATE_COSTING[10];
 			$persen_fin_adm 	= $GET_RATE_COSTING[11];
 			$persen_mkt_sales 	= $GET_RATE_COSTING[12];
 			$persen_interest 	= $GET_RATE_COSTING[13];
-			$persen_profit 		= $GET_RATE_COSTING[14];
+			$persen_profit 		= $GET_RATE_COSTING[15];
 			$persen_allowance 	= $GET_RATE_COSTING[18];
 
 			//1 material
 			$cost_material 	= $TOTAL_PRICE_ALL;
 			//# khusus purtution
-			$biaya_setting_mp 		= ($rate_mp / 60) * $rate_manpower;
-			$biaya_setting_mesin 	= ($rate_mp / 60) * $rate_depresiasi;
-			$biaya_waste_set_mat	= ($waste_set_resin + $waste_set_glass) * $berat_per_kg;
-			$biaya_total_setting	= $biaya_setting_mp + $biaya_setting_mesin + $biaya_waste_set_mat;
-			$charge_setting_bom		= ($biaya_total_setting > 0 and $bom_moq > 0) ? $biaya_total_setting / $bom_moq : 0;
-			$charge_setting_ct		= ($biaya_total_setting > 0 and $ct_moq > 0) ? $biaya_total_setting / $ct_moq : 0;
+			// $biaya_setting_mp 		= ($rate_mp / 60) * $rate_manpower;
+			// $biaya_setting_mesin 	= ($rate_mp / 60) * $rate_depresiasi;
+			// $biaya_waste_set_mat	= ($waste_set_resin + $waste_set_glass) * $berat_per_kg;
+			// $biaya_total_setting	= $biaya_setting_mp + $biaya_setting_mesin + $biaya_waste_set_mat;
+			// $charge_setting_bom		= ($biaya_total_setting > 0 and $bom_moq > 0) ? $biaya_total_setting / $bom_moq : 0;
+			// $charge_setting_ct		= ($biaya_total_setting > 0 and $ct_moq > 0) ? $biaya_total_setting / $ct_moq : 0;
+
+			$biaya_setting_mp 		= 0;
+			$biaya_setting_mesin 	= 0;
+			$biaya_waste_set_mat	= 0;
+			$biaya_total_setting	= 0;
+			$charge_setting_bom		= 0;
+			$charge_setting_ct		= 0;
 			//2 man power
-			$direct_labour	= $rate_cycletime * $rate_manpower;
-			$indirect 		= $direct_labour * $persen_indirect / 100;
-			$cost_man_power = $direct_labour + $indirect;
+
+			$get_rate_borongan = $this->db->get_where('tr_rate_borongan', ['id_product' => $value['id_product']])->row();
+			$cost_man_power = (!empty($get_rate_borongan)) ? $get_rate_borongan->rate_borongan : 0;
 			//3 machine mould consumable
-			$machine 	= $rate_cycletime_mch * $rate_depresiasi;
-			$mould 		= $rate_cycletime_mch * $rate_mould;
+			$machine 	= $rate_depresiasi;
+			$mould 		= $rate_mould;
 			$consumable = $cost_material * ($persen_consumable / 100);
 			$cost_mesin	= $machine + $mould + $consumable;
 			//4 logistik
 			//getUpdate Shipping
-			$newLogistik 		= $this->db->get_where('product_price', array('no_bom' => $no_bom, 'deleted_date' => NULL))->result_array();
-			$stsUpdateLogistik 	= (!empty($newLogistik[0]['sts_logistik'])) ? $newLogistik[0]['sts_logistik'] : NULL;
-			$stsUpdatePacking 	= (!empty($newLogistik[0]['cost_packing'])) ? $newLogistik[0]['cost_packing'] : 0;
-			$stsUpdateTransport = (!empty($newLogistik[0]['cost_transport'])) ? $newLogistik[0]['cost_transport'] : 0;
-			if ($stsUpdateLogistik == 'Y') {
-				$packing 		= $stsUpdatePacking;
-				$transport		= $stsUpdateTransport;
-			} else {
-				$packing 		= ($cost_material + $cost_man_power + $cost_mesin) * $persen_packing / 100;
-				$transport		= 0;
-			}
-			$cost_logistik 	= $packing + $transport;
+			// $newLogistik 		= $this->db->get_where('product_price', array('no_bom' => $no_bom, 'deleted_date' => NULL))->result_array();
+			// $stsUpdateLogistik 	= (!empty($newLogistik[0]['sts_logistik'])) ? $newLogistik[0]['sts_logistik'] : NULL;
+			// $stsUpdatePacking 	= (!empty($newLogistik[0]['cost_packing'])) ? $newLogistik[0]['cost_packing'] : 0;
+			// $stsUpdateTransport = (!empty($newLogistik[0]['cost_transport'])) ? $newLogistik[0]['cost_transport'] : 0;
+			// if ($stsUpdateLogistik == 'Y') {
+			// 	$packing 		= $stsUpdatePacking;
+			// 	$transport		= $stsUpdateTransport;
+			// } else {
+			// 	$packing 		= ($cost_material + $cost_man_power + $cost_mesin) * $persen_packing / 100;
+			// 	$transport		= 0;
+			// }
+			$cost_logistik 	= 0;
 
-			$cost_enginnering 	= ($cost_material + $cost_man_power + $cost_mesin) * $persen_enginnering / 100;
-			$cost_foh 			= ($cost_material + $cost_man_power + $cost_mesin + $cost_logistik + $cost_enginnering) * $persen_foh / 100;
-			$cost_fin_adm 		= ($cost_material + $cost_man_power + $cost_mesin + $cost_logistik + $cost_enginnering) * $persen_fin_adm / 100;
-			$cost_mkt_sales 	= ($cost_material + $cost_man_power + $cost_mesin + $cost_logistik + $cost_enginnering) * $persen_mkt_sales / 100;
-			$cost_interest 		= ($cost_material + $cost_man_power + $cost_mesin + $cost_logistik + $cost_enginnering + $cost_foh + $cost_fin_adm + $cost_mkt_sales) * $persen_interest / 100;
-			$cost_profit 		= ($cost_material + $cost_man_power + $cost_mesin + $cost_logistik + $cost_enginnering + $cost_foh + $cost_fin_adm + $cost_mkt_sales + $cost_interest) * $persen_profit / 100;
-			$bottom_price 		= ($cost_material + $cost_man_power + $cost_mesin + $cost_logistik + $cost_enginnering + $cost_foh + $cost_fin_adm + $cost_mkt_sales + $cost_interest + $cost_profit);
-			$factor_kompetitif	= 1;
+			$cost_enginnering 	= $GET_RATE_COSTING[9];
+			$cost_foh 			= $GET_RATE_COSTING[10];
+			$cost_sdm_ho = $GET_RATE_COSTING[11];
+			$cost_marketing = $GET_RATE_COSTING[12];
+			$cost_interest = $GET_RATE_COSTING[13];
+
+			$harga_modal = ($TOTAL_PRICE_ALL + $cost_man_power + $cost_mesin + $cost_enginnering + $cost_foh + $cost_sdm_ho + $cost_marketing + $cost_interest);
+
+			$cost_profit 		= ($harga_modal * $persen_profit / 100);
+			$bottom_price 		= ($harga_modal + $cost_profit);
+			$factor_kompetitif	= $GET_RATE_COSTING[17];
 			$bottom_selling		= $bottom_price * $factor_kompetitif;
-			$nego_allowance		= $bottom_selling * ($persen_allowance / 100);
-			$price_final		= $bottom_selling + $nego_allowance;
+
+			$ppn = ($GET_RATE_COSTING[19]);
+			// $nego_allowance		= $bottom_selling * ($persen_allowance / 100);
+			$price_final		= ($bottom_selling + ($bottom_selling * $GET_RATE_COSTING[19] / 100));
 
 			$ArrHeader[$key]['ct_setting'] 				= $ct_setting;
 			$ArrHeader[$key]['ct_produksi'] 			= $ct_produksi;
@@ -554,21 +569,22 @@ class Product_price extends Admin_Controller
 			$ArrHeader[$key]['price_man_power'] 		= $cost_man_power;
 			$ArrHeader[$key]['price_machine'] 			= $cost_mesin;
 			$ArrHeader[$key]['price_total'] 			= $price_final;
-			$ArrHeader[$key]['cost_direct_labout'] 		= $direct_labour;
-			$ArrHeader[$key]['cost_indirect'] 			= $indirect;
+			$ArrHeader[$key]['cost_direct_labout'] 		= 0;
+			$ArrHeader[$key]['cost_indirect'] 			= 0;
 			$ArrHeader[$key]['cost_machine'] 			= $machine;
 			$ArrHeader[$key]['cost_mould'] 				= $mould;
 			$ArrHeader[$key]['cost_consumable'] 		= $consumable;
-			$ArrHeader[$key]['cost_packing'] 			= $packing;
-			$ArrHeader[$key]['cost_transport'] 			= $transport;
+			$ArrHeader[$key]['cost_packing'] 			= 0;
+			$ArrHeader[$key]['cost_transport'] 			= 0;
 			$ArrHeader[$key]['cost_enginnering'] 		= $cost_enginnering;
 			$ArrHeader[$key]['cost_foh'] 				= $cost_foh;
-			$ArrHeader[$key]['cost_fin_adm'] 			= $cost_fin_adm;
-			$ArrHeader[$key]['cost_mkt_sales'] 			= $cost_mkt_sales;
+			$ArrHeader[$key]['cost_fin_adm'] 			= $cost_sdm_ho;
+			$ArrHeader[$key]['cost_mkt_sales'] 			= $cost_marketing;
 			$ArrHeader[$key]['cost_interest'] 			= $cost_interest;
 			$ArrHeader[$key]['cost_profit'] 			= $cost_profit;
 			$ArrHeader[$key]['cost_bottom_selling'] 	= $bottom_selling;
-			$ArrHeader[$key]['cost_allowance'] 			= $nego_allowance;
+			// $ArrHeader[$key]['cost_allowance'] 			= $nego_allowance;
+			$ArrHeader[$key]['ppn'] 			= $ppn;
 
 			$GET_PRODUCT_COSTING = get_product_costing();
 
@@ -706,7 +722,7 @@ class Product_price extends Admin_Controller
 					$val++;
 					$price_ref      = (!empty($GET_PRICE_REF[$valx['code_material']]['price_ref'])) ? $GET_PRICE_REF[$valx['code_material']]['price_ref'] : 0;
 
-					$berat_bersih 		= $valx['weight'];
+					$berat_bersih 		= $valx['volume_m3'];
 					$total_price 		= $berat_bersih * $price_ref;
 					$TOTAL_PRICE_ALL 	+= $total_price;
 					$TOTAL_BERAT_BERSIH += $berat_bersih;
@@ -720,13 +736,9 @@ class Product_price extends Admin_Controller
 					$ArrDetailDefault[$UNIQ]['no_bom'] 			=  $valx['no_bom'];
 					$ArrDetailDefault[$UNIQ]['no_bom_detail'] 	=  $valx['no_bom_detail'];
 					$ArrDetailDefault[$UNIQ]['code_material'] 	=  $valx['code_material'];
-					$ArrDetailDefault[$UNIQ]['weight'] 			=  $valx['weight'];
-					$ArrDetailDefault[$UNIQ]['persen'] 			=  $valx['persen'];
-					$ArrDetailDefault[$UNIQ]['persen_add'] 		=  $valx['persen_add'];
-					$ArrDetailDefault[$UNIQ]['length'] 			=  $valx['length'];
-					$ArrDetailDefault[$UNIQ]['width'] 			=  $valx['width'];
-					$ArrDetailDefault[$UNIQ]['qty'] 			=  $valx['qty'];
-					$ArrDetailDefault[$UNIQ]['m2'] 				=  $valx['m2'];
+					$ArrDetailDefault[$UNIQ]['weight'] 			=  $valx['volume_m3'];
+					$ArrDetailDefault[$UNIQ]['persen'] 			=  100;
+					$ArrDetailDefault[$UNIQ]['persen_add'] 		=  100;
 					$ArrDetailDefault[$UNIQ]['file_upload'] 			= NULL;
 					$ArrDetailDefault[$UNIQ]['pengurangan_additive'] 	= NULL;
 					$ArrDetailDefault[$UNIQ]['berat_bersih'] 			= $berat_bersih;
@@ -770,7 +782,7 @@ class Product_price extends Admin_Controller
 
 							$price_ref      = (!empty($GET_PRICE_REF[$id_material]['price_ref'])) ? $GET_PRICE_REF[$id_material]['price_ref'] : 0;
 
-							$berat_bersih 		= $valx['weight'];
+							$berat_bersih 		= $valx['volume_m3'];
 							$total_price 		= $berat_bersih * $price_ref;
 
 							$UNIQ 				= $val . $nox . $key;
@@ -779,7 +791,7 @@ class Product_price extends Admin_Controller
 							$ArrDetailDefault[$UNIQ]['no_bom'] 			=  $valx['no_bom'];
 							$ArrDetailDefault[$UNIQ]['no_bom_detail'] 	=  $valx['no_bom_detail'];
 							$ArrDetailDefault[$UNIQ]['code_material'] 	=  $valx['code_material'];
-							$ArrDetailDefault[$UNIQ]['weight'] 			=  $valx['weight'];
+							$ArrDetailDefault[$UNIQ]['weight'] 			=  $valx['volume_m3'];
 							$ArrDetailDefault[$UNIQ]['persen'] 			= NULL;
 							$ArrDetailDefault[$UNIQ]['persen_add'] 		= NULL;
 							$ArrDetailDefault[$UNIQ]['length'] 			= NULL;
@@ -823,7 +835,7 @@ class Product_price extends Admin_Controller
 					$val++;
 					$price_ref      = (!empty($GET_PRICE_REF[$valx['code_material']]['price_ref'])) ? $GET_PRICE_REF[$valx['code_material']]['price_ref'] : 0;
 
-					$berat_bersih 		= $valx['weight'];
+					$berat_bersih 		= $valx['volume_m3'];
 					$total_price 		= $berat_bersih * $price_ref;
 					$TOTAL_PRICE_ALL 	+= $total_price;
 					$TOTAL_BERAT_BERSIH += $berat_bersih;
@@ -837,7 +849,7 @@ class Product_price extends Admin_Controller
 					$ArrDetailDefault[$UNIQ]['no_bom'] 			=  $valx['no_bom'];
 					$ArrDetailDefault[$UNIQ]['no_bom_detail'] 	=  $valx['no_bom_detail'];
 					$ArrDetailDefault[$UNIQ]['code_material'] 	=  $valx['code_material'];
-					$ArrDetailDefault[$UNIQ]['weight'] 			=  $valx['weight'];
+					$ArrDetailDefault[$UNIQ]['weight'] 			=  $valx['volume_m3'];
 					$ArrDetailDefault[$UNIQ]['persen'] 			= NULL;
 					$ArrDetailDefault[$UNIQ]['persen_add'] 		= NULL;
 					$ArrDetailDefault[$UNIQ]['length'] 			= NULL;
@@ -861,7 +873,7 @@ class Product_price extends Admin_Controller
 					$val++;
 					$price_ref      = (!empty($GET_PRICE_REF[$valx['code_material']]['price_ref'])) ? $GET_PRICE_REF[$valx['code_material']]['price_ref'] : 0;
 
-					$berat_bersih 		= $valx['weight'];
+					$berat_bersih 		= $valx['volume_m3'];
 					$total_price 		= $berat_bersih * $price_ref;
 					$TOTAL_PRICE_ALL 	+= $total_price;
 					$TOTAL_BERAT_BERSIH += $berat_bersih;
@@ -875,7 +887,7 @@ class Product_price extends Admin_Controller
 					$ArrDetailDefault[$UNIQ]['no_bom'] 			=  $valx['no_bom'];
 					$ArrDetailDefault[$UNIQ]['no_bom_detail'] 	=  $valx['no_bom_detail'];
 					$ArrDetailDefault[$UNIQ]['code_material'] 	=  $valx['code_material'];
-					$ArrDetailDefault[$UNIQ]['weight'] 			=  $valx['weight'];
+					$ArrDetailDefault[$UNIQ]['weight'] 			=  $valx['volume_m3'];
 					$ArrDetailDefault[$UNIQ]['persen'] 			= NULL;
 					$ArrDetailDefault[$UNIQ]['persen_add'] 		= NULL;
 					$ArrDetailDefault[$UNIQ]['length'] 			= NULL;
@@ -899,7 +911,7 @@ class Product_price extends Admin_Controller
 					$val++;
 					$price_ref      = (!empty($GET_PRICE_REF[$valx['code_material']]['price_ref'])) ? $GET_PRICE_REF[$valx['code_material']]['price_ref'] : 0;
 
-					$berat_bersih 		= $valx['weight'];
+					$berat_bersih 		= $valx['volume_m3'];
 					$total_price 		= $berat_bersih * $price_ref;
 					$TOTAL_PRICE_ALL 	+= $total_price;
 					$TOTAL_BERAT_BERSIH += $berat_bersih;
@@ -913,7 +925,7 @@ class Product_price extends Admin_Controller
 					$ArrDetailDefault[$UNIQ]['no_bom'] 			=  $valx['no_bom'];
 					$ArrDetailDefault[$UNIQ]['no_bom_detail'] 	=  $valx['no_bom_detail'];
 					$ArrDetailDefault[$UNIQ]['code_material'] 	=  $valx['code_material'];
-					$ArrDetailDefault[$UNIQ]['weight'] 			=  $valx['weight'];
+					$ArrDetailDefault[$UNIQ]['weight'] 			=  $valx['volume_m3'];
 					$ArrDetailDefault[$UNIQ]['persen'] 			= NULL;
 					$ArrDetailDefault[$UNIQ]['persen_add'] 		= NULL;
 					$ArrDetailDefault[$UNIQ]['length'] 			= NULL;
@@ -937,7 +949,7 @@ class Product_price extends Admin_Controller
 					$val++;
 					$price_ref      = (!empty($GET_PRICE_REF[$valx['code_material']]['price_ref'])) ? $GET_PRICE_REF[$valx['code_material']]['price_ref'] : 0;
 
-					$berat_bersih 		= $valx['weight'];
+					$berat_bersih 		= $valx['volume_m3'];
 					$total_price 		= $berat_bersih * $price_ref;
 					$TOTAL_PRICE_ALL 	+= $total_price;
 					$TOTAL_BERAT_BERSIH += $berat_bersih;
@@ -951,7 +963,7 @@ class Product_price extends Admin_Controller
 					$ArrDetailDefault[$UNIQ]['no_bom'] 			=  $valx['no_bom'];
 					$ArrDetailDefault[$UNIQ]['no_bom_detail'] 	=  $valx['no_bom_detail'];
 					$ArrDetailDefault[$UNIQ]['code_material'] 	=  $valx['code_material'];
-					$ArrDetailDefault[$UNIQ]['weight'] 			=  $valx['weight'];
+					$ArrDetailDefault[$UNIQ]['weight'] 			=  $valx['volume_m3'];
 					$ArrDetailDefault[$UNIQ]['persen'] 			= NULL;
 					$ArrDetailDefault[$UNIQ]['persen_add'] 		= NULL;
 					$ArrDetailDefault[$UNIQ]['length'] 			= NULL;
@@ -1056,8 +1068,8 @@ class Product_price extends Admin_Controller
 				$kode_mesin 	= (!empty($GET_MACHINE_ASSEMBLY[$keyMchAssembly])) ? $GET_MACHINE_ASSEMBLY[$keyMchAssembly] : 0;
 				$kode_mold 		= (!empty($GET_MOLD_ASSEMBLY[$keyMchAssembly])) ? $GET_MOLD_ASSEMBLY[$keyMchAssembly] : 0;
 
-				$rate_depresiasi 	= (!empty($GET_MACHINE_RATE[$kode_mesin]['biaya_mesin'])) ? $GET_MACHINE_RATE[$kode_mesin]['biaya_mesin'] : 0;
-				$rate_mould 		= (!empty($GET_MOLD_RATE[$kode_mold]['biaya_mesin'])) ? $GET_MOLD_RATE[$kode_mold]['biaya_mesin'] : 0;
+				$rate_depresiasi 	= (!empty($GET_MACHINE_RATE[$kode_mesin]['cost_m3'])) ? $GET_MACHINE_RATE[$kode_mesin]['cost_m3'] : 0;
+				$rate_mould 		= (!empty($GET_MOLD_RATE[$kode_mold]['cost_m3'])) ? $GET_MOLD_RATE[$kode_mold]['cost_m3'] : 0;
 
 				//getCT Setting & Produksi
 				$id_time		= (!empty($GET_CYCLETIME_ASSEMBLY[$keyCtAssembly]['id_time'])) ? $GET_CYCLETIME_ASSEMBLY[$keyCtAssembly]['id_time'] : NULL;
@@ -1106,8 +1118,8 @@ class Product_price extends Admin_Controller
 				$indirect 		= $direct_labour * $persen_indirect / 100;
 				$cost_man_power = $direct_labour + $indirect;
 				//3 machine mould consumable
-				$machine 	= $rate_cycletime * $rate_depresiasi;
-				$mould 		= $rate_cycletime * $rate_mould;
+				$machine 	= $rate_depresiasi;
+				$mould 		= $rate_mould;
 				$consumable = $cost_material * ($persen_consumable / 100);
 				$cost_mesin	= $machine + $mould + $consumable;
 
@@ -1397,8 +1409,10 @@ class Product_price extends Admin_Controller
 		$no_bom 	= $data['no_bom'];
 		$kode 	= $data['kode'];
 		$pengajuan_price_list 	= str_replace(',', '', $data['pengajuan_price_list']);
-		$kurs 	= str_replace(',', '', $data['kurs']);
-		$price_idr 	= str_replace(',', '', $data['price_idr']);
+		// $kurs 	= str_replace(',', '', $data['kurs']);
+		$kurs = 1;
+		// $price_idr 	= str_replace(',', '', $data['price_idr']);
+		$price_idr = $pengajuan_price_list;
 
 		$total_price_uj 	= (!empty($data['total_price_uj'])) ? str_replace(',', '', $data['total_price_uj']) : 0;
 		$total_idr_uj 		= (!empty($data['total_idr_uj'])) ? str_replace(',', '', $data['total_idr_uj']) : 0;
@@ -2306,7 +2320,7 @@ class Product_price extends Admin_Controller
 				$nm_jenis		= strtoupper(get_name('new_inventory_3', 'nama', 'code_lv3', $code_lv3));
 
 				$berat_pengurang_additive = ($nm_category == 'RESIN') ? $BERAT_MINUS : 0;
-				$berat_bersih 	= $valx['weight'] - $berat_pengurang_additive;
+				$berat_bersih 	= $valx['volume_m3'] - $berat_pengurang_additive;
 				$total_price 	= $berat_bersih * $price_ref;
 
 				$awal_col++;
@@ -2336,7 +2350,7 @@ class Product_price extends Admin_Controller
 				$sheet->getStyle($Cols . $awal_row)->applyFromArray($tableBodyLeft);
 
 				$awal_col++;
-				$weight 	= $valx['weight'];
+				$weight 	= $valx['volume_m3'];
 				$Cols       = getColsChar($awal_col);
 				$sheet->setCellValue($Cols . $awal_row, $weight);
 				$sheet->getStyle($Cols . $awal_row)->applyFromArray($tableBodyRight);
@@ -2575,7 +2589,7 @@ class Product_price extends Admin_Controller
 		$detail_ukuran_jadi = $this->db->get_where('bom_detail', array('no_bom' => $no_bom, 'category' => 'ukuran jadi'))->result_array();
 		$detail_others 		= $this->db->get_where('bom_detail', array('no_bom' => $no_bom, 'category' => 'others'))->result_array();
 		$product    		= $this->product_price_model->get_data_where_array('new_inventory_4', array('deleted_date' => NULL, 'category' => 'product'));
-		
+
 
 		$detail_ipp_ukuranjadi = [];
 		if (!empty($header[0]->id_ipp)) {
@@ -2586,16 +2600,16 @@ class Product_price extends Admin_Controller
 			}
 		}
 
-		
+
 		// echo $this->db->last_query();
 		// print_r($detail_ipp_ukuranjadi);
 		// exit;
 
 		$ttl_accessories = 0;
-		foreach($detail_accessories as $item) {
+		foreach ($detail_accessories as $item) {
 			$get_accessories = $this->db->get_where('accessories', ['id' => $item['code_material']])->row();
 			// if(!empty($get_accessories)) {
-				$ttl_accessories += $get_accessories->price_ref_use_usd * $item['weight'];
+			$ttl_accessories += $get_accessories->price_ref_use_usd * $item['weight'];
 			// }
 		}
 

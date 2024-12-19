@@ -78,21 +78,12 @@ class Product_price_model extends BF_Model
 			}
 
 			$variant_product 	= (!empty($row['variant_product'])) ? '; Variant ' . $row['variant_product'] : '';
-			$color_product 		= (!empty($row['color_product'])) ? '; Color ' . $row['color_product'] : '';
-			$surface_product 	= (!empty($row['surface_product'])) ? '; Surface ' . $row['surface_product'] : '';
 
 			$nestedData 	= array();
 			$nestedData[]	= "<div align='center'>" . $nomor . "</div>";
 			$nestedData[]	= "<div align='left'>" . strtoupper(strtolower($row['nama_level1'])) . "</div>";
-			$nestedData[]	= "<div align='left'>" . strtoupper($row['nama_level4'] . $variant_product . $color_product . $surface_product) . "</div>";
-			// $nestedData[]	= "<div align='left'>".strtoupper(strtolower($row['variant_product']))."</div>";
-			// $nestedData[]	= "<div align='left'>".strtoupper(strtolower($row['color_product']))."</div>";
-			// $nestedData[]	= "<div align='left'>".strtoupper(strtolower($row['surface_product']))."</div>";
+			$nestedData[]	= "<div align='left'>" . strtoupper($row['nama_level4'] . $variant_product) . "</div>";
 			$nestedData[]	= "<div align='right'>" . number_format($row['berat_material'], 4) . " Kg</div>";
-			// $nestedData[]	= "<div align='right'>".number_format($row['price_material'],2)."</div>";
-			// $nestedData[]	= "<div align='right'>".number_format($row['price_man_power'],2)."</div>";
-			// $nestedData[]	= "<div align='right'>".number_format($row['price_total'],2)."</div>";
-			$nestedData[]	= "<div align='right'>" . number_format($row['price_list'], 2) . "</div>";
 			$nestedData[]	= "<div align='right'>" . number_format($row['price_list_idr'], 2) . "</div>";
 
 			$nestedData[]	= "<div align='right'>" . number_format($row['pengajuan_price_list'], 2) . "</div>";
@@ -124,7 +115,7 @@ class Product_price_model extends BF_Model
 			if ($row['category_bom'] == 'standard') {
 				$view		= "<a href='" . site_url($this->uri->segment(1)) . '/detail_costing_std/' . $row['no_bom'] . "' class='btn btn-sm btn-warning' title='Detail' data-role='qtip'><i class='fa fa-eye'></i></a>";
 				// $download	= "<a href='".site_url($this->uri->segment(1)).'/download/'.$row['no_bom']."' class='btn btn-sm btn-default' title='Download' data-role='qtip'><i class='fa fa-file-excel-o'></i></a>";
-				if ($row['status'] != 'WA' and $this->ENABLE_MANAGE) {
+				if ($row['status'] !== 'WA' and $this->ENABLE_MANAGE) {
 					$edit	= "<a href='" . site_url($this->uri->segment(1)) . '/pengajuan_costing_std/' . $row['no_bom'] . "' class='btn btn-sm btn-primary' title='Pengajuan Costing' data-role='qtip'><i class='fa fa-paper-plane'></i></a>";
 				}
 			} else {
@@ -173,8 +164,6 @@ class Product_price_model extends BF_Model
 					a.*,
 					b.nama AS nama_level4,
 					d.variant_product,
-					d.color AS color_product,
-					d.surface AS surface_product,
 					c.nama AS nama_level1,
 					d.category AS category_bom
 				FROM
@@ -188,8 +177,6 @@ class Product_price_model extends BF_Model
 						a.no_bom LIKE '%" . $this->db->escape_like_str($like_value) . "%'
 						OR b.nama LIKE '%" . $this->db->escape_like_str($like_value) . "%'
 						OR d.variant_product LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-						OR d.color LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-						OR d.surface LIKE '%" . $this->db->escape_like_str($like_value) . "%'
 					)
 		";
 		// echo $sql; exit;
