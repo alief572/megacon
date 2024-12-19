@@ -2,9 +2,7 @@
 $id_rate_borongan = (isset($id)) ? $id : '';
 
 $edit = 0;
-if ($id_rate_borongan !== '') {
-    $edit = 1;
-}
+
 ?>
 <input type="hidden" name="id_rate_borongan" value="<?= $id_rate_borongan ?>">
 <table class="table table-striped">
@@ -12,34 +10,25 @@ if ($id_rate_borongan !== '') {
         <tr>
             <th class="text-center">Nama Produk</th>
             <th class="text-center">Rate Borongan / Produk</th>
-            <?php
-            if ($edit == 0) {
-            ?>
-                <th class="text-center"></th>
-            <?php
-            }
-            ?>
         </tr>
     </thead>
     <tbody id="list_barang_rate">
         <?php
-        if (isset($header)) {
+        // if (isset($header)) {
             $no_list = 1;
 
             echo '<tr class="row_barang_' . $no_list . '">';
 
             echo '
                     <td>
-                        <select name="barang_input" id="barang_input" class="form-control form-control-sm chosen_select">
-                            <option value="">- Select Product -</option>
+                        <select name="barang_input" id="barang_input" class="form-control form-control-sm" disabled>
                             ';
 
             foreach ($list_product as $item) {
-                $selected = '';
                 if ($item->code_lv4 == $header->id_product) {
                     $selected = 'selected';
+                    echo '<option value="' . $item->code_lv4 . '" ' . $selected . '>' . $item->nama . '</option>';
                 }
-                echo '<option value="' . $item->code_lv4 . '" ' . $selected . '>' . $item->nama . '</option>';
             }
 
             echo ';
@@ -47,43 +36,15 @@ if ($id_rate_borongan !== '') {
                         <input type="hidden" name="nm_barang_input" value="' . $header->nm_product . '">
                     </td>
                     <td>
-                        <input type="text" name="rate_produk" id="" class="form-control form-control-sm text-right auto_num" value="' . $header->rate_borongan . '">
+                        <input type="text" name="rate_produk" id="" class="form-control form-control-sm text-right auto_num" value="' . $header->rate_borongan . '" readonly>
                     </td>
                 ';
 
             echo '</tr>';
-        }
+        // }
         ?>
     </tbody>
-    <?php
-    if ($edit == 0) {
-    ?>
-        <tbody>
-            <tr>
-                <td>
-                    <select name="barang_input" id="barang_input" class="form-control form-control-sm chosen_select">
-                        <option value="">- Select Product -</option>
-                        <?php
-                        foreach ($list_product as $item) {
-                            echo '<option value="' . $item->code_lv4 . '">' . $item->nama . '</option>';
-                        }
-                        ?>
-                    </select>
-                    <input type="hidden" name="nm_barang_input">
-                </td>
-                <td>
-                    <input type="text" name="rate_produk" id="" class="form-control form-control-sm text-right auto_num">
-                </td>
-                <td class="text-center">
-                    <button type="button" class="btn btn-sm btn-primary add_barang">
-                        <i class="fa fa-plus"></i> Add
-                    </button>
-                </td>
-            </tr>
-        </tbody>
-    <?php
-    }
-    ?>
+   
 </table>
 <script>
     var no_list = 1;

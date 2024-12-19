@@ -5,7 +5,7 @@ $ENABLE_VIEW    = has_permission('Rate_Borongan.View');
 $ENABLE_DELETE  = has_permission('Rate_Borongan.Delete');
 ?>
 
-<link rel="stylesheet" href="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.css') ?>">
+<link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.css" integrity="sha512-0nkKORjFgcyxv3HbE4rzFUlENUMNqic/EzDIeYCgsKa/nwqr2B91Vu/tNAu4Q0cBuG4Xe/D1f/freEci/7GDRA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 <div class="box box-primary">
@@ -48,15 +48,14 @@ $ENABLE_DELETE  = has_permission('Rate_Borongan.Delete');
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-sm btn-success">Save</button>
+                    <button type="submit" class="btn btn-sm btn-success save">Save</button>
                 </div>
             </div>
         </div>
     </div>
 </form>
 <!-- Modal Bidus-->
-<script src="<?= base_url('assets/plugins/datatables/jquery.dataTables.min.js') ?>"></script>
-<script src="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.min.js') ?>"></script>
+<script src="https://cdn.datatables.net/2.1.8/js/dataTables.min.js"></script>
 <script src="<?= base_url('assets/js/autoNumeric.js') ?>"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js" integrity="sha512-rMGGF4wg1R73ehtnxXBt5mbUfN9JUJwbk21KMlnLZDJh7BkPmeovBuddZCENJddHYYMkCh9hPFnPmS9sspki8g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <!-- End Modal Bidus-->
@@ -70,17 +69,73 @@ $ENABLE_DELETE  = has_permission('Rate_Borongan.Delete');
     var no_list = 1;
 
     $(document).ready(function() {
+        DataTables();
         $('.auto_num').autoNumeric('init');
     });
 
     $(document).on('click', '.add', function() {
-        
         $.ajax({
             type: 'post',
             url: siteurl + active_controller + '/add',
             cache: false,
             success: function(result) {
+                $('.save').show();
+
                 $('#head_title').html('Add Rate Borongan');
+                $('#view').html(result);
+                $('#ModalView').modal('show');
+            },
+            error: function(result) {
+                swal({
+                    type: 'error',
+                    title: 'Error !',
+                    text: 'Please try again later !'
+                });
+            }
+        });
+    });
+
+    $(document).on('click', '.edit', function() {
+        var id = $(this).data('id');
+
+        $.ajax({
+            type: 'post',
+            url: siteurl + active_controller + '/add',
+            data: {
+                'id': id
+            },
+            cache: false,
+            success: function(result) {
+                $('.save').show();
+
+                $('#head_title').html('Add Rate Borongan');
+                $('#view').html(result);
+                $('#ModalView').modal('show');
+            },
+            error: function(result) {
+                swal({
+                    type: 'error',
+                    title: 'Error !',
+                    text: 'Please try again later !'
+                });
+            }
+        });
+    });
+
+    $(document).on('click', '.view', function() {
+        var id = $(this).data('id');
+
+        $.ajax({
+            type: 'post',
+            url: siteurl + active_controller + '/view',
+            data: {
+                'id': id
+            },
+            cache: false,
+            success: function(result) {
+                $('.save').hide();
+
+                $('#head_title').html('View Rate Borongan');
                 $('#view').html(result);
                 $('#ModalView').modal('show');
             },
@@ -121,7 +176,56 @@ $ENABLE_DELETE  = has_permission('Rate_Borongan.Delete');
                                 title: 'Success !',
                                 text: result.pesan
                             }, function(lanjut) {
-                                location.reload(true);
+                                $('#ModalView').modal('hide');
+                                DataTables();
+                            });
+                        } else {
+                            swal({
+                                type: 'warning',
+                                title: 'Warning !',
+                                text: result.pesan
+                            });
+                        }
+                    },
+                    error: function(result) {
+                        swal({
+                            type: 'error',
+                            title: 'Error !',
+                            text: 'Please try again later !'
+                        });
+                    }
+                });
+            }
+        });
+    });
+
+    $(document).on('click', '.delete', function() {
+        var id = $(this).data('id');
+
+        swal({
+            type: 'warning',
+            title: 'Warning !',
+            text: 'This data will be deleted !',
+            showCancelButton: true
+        }, function(next) {
+            if (next) {
+               
+                $.ajax({
+                    type: 'post',
+                    url: siteurl + active_controller + '/delete_rate_borongan',
+                    data: {
+                        'id': id
+                    },
+                    dataType: 'json',
+                    cache: false,
+                    success: function(result) {
+                        if (result.status == 1) {
+                            swal({
+                                type: 'success',
+                                title: 'Success !',
+                                text: result.pesan
+                            }, function(lanjut) {
+                                DataTables();
                             });
                         } else {
                             swal({
@@ -165,5 +269,43 @@ $ENABLE_DELETE  = has_permission('Rate_Borongan.Delete');
             s[1] += new Array(prec - s[1].length + 1).join('0');
         }
         return s.join(dec);
+    }
+
+    function DataTables() {
+        var DataTables = $('#tableset').dataTable({
+            ajax: {
+                url: siteurl + active_controller + 'get_data_rate_borongan',
+                type: "POST",
+                dataType: "JSON",
+                data: function(d) {
+
+                }
+            },
+            columns: [{
+                    data: 'no'
+                },
+                {
+                    data: 'product'
+                },
+                {
+                    data: 'rate_borongan'
+                },
+                {
+                    data: 'last_update_by'
+                },
+                {
+                    data: 'last_update'
+                },
+                {
+                    data: 'action'
+                }
+            ],
+            responsive: true,
+            processing: true,
+            serverSide: true,
+            stateSave: true,
+            destroy: true,
+            paging: true
+        });
     }
 </script>
