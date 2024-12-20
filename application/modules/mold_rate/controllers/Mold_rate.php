@@ -63,12 +63,12 @@ class Mold_rate extends Admin_Controller
 
       $id         = $post['id'];
       $kd_mesin   = $post['kd_mesin'];
-     
+
       $label      = (!empty($id)) ? 'Edit' : 'Add';
 
       $get_asset = $this->db->get_where('asset', ['kd_asset' => $kd_mesin])->row();
 
-      
+
 
       // print_r($dataProcess);
       // exit;
@@ -310,7 +310,7 @@ class Mold_rate extends Admin_Controller
     $hasil .= '</td>';
 
     $hasil .= '<td>';
-    $hasil .= '<input type="text" name="depresiasi_per_tahun" class="form-control input-md text-right" value="' . number_format($get_asset->value, 2) . '" readonly>';
+    $hasil .= '<input type="text" name="depresiasi_per_tahun" class="form-control input-md text-right" value="' . number_format(($get_asset->nilai_asset / $get_asset->depresiasi), 2) . '" readonly>';
     $hasil .= '</td>';
 
     $hasil .= '<td>';
