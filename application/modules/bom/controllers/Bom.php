@@ -104,12 +104,14 @@ class Bom extends Admin_Controller
 			}
 
 			$ArrDetail2	= array();
-			foreach($detail_material_lain as $val => $valx) {
+			foreach ($detail_material_lain as $val => $valx) {
 				$urut				= sprintf('%03s', $val);
 				$ArrDetail2[$val]['no_bom'] = $no_bom;
+				$ArrDetail2[$val]['id_material'] = $valx['id_material'];
 				$ArrDetail2[$val]['material_name'] = $valx['material_name'];
 				$ArrDetail2[$val]['kebutuhan'] = $valx['kebutuhan'];
-				$ArrDetail2[$val]['id_satuan'] = $valx['satuan'];
+				$ArrDetail2[$val]['id_satuan'] = $valx['id_satuan'];
+				$ArrDetail2[$val]['nm_satuan'] = $valx['satuan'];
 				$ArrDetail2[$val]['keterangan'] = $valx['keterangan'];
 				$ArrDetail2[$val]['created_by'] = $this->auth->user_id();
 				$ArrDetail2[$val]['created_date'] = date('Y-m-d H:i:s');
@@ -118,7 +120,7 @@ class Bom extends Admin_Controller
 			$this->db->trans_start();
 			if (empty($no_bomx)) {
 				$insert_header = $this->db->insert('bom_header', $ArrHeader);
-				if(!$insert_header) {
+				if (!$insert_header) {
 					$this->db->trans_complete();
 					$this->db->trans_rollback();
 
@@ -128,7 +130,7 @@ class Bom extends Admin_Controller
 			}
 			if (!empty($no_bomx)) {
 				$update_header = $this->db->update('bom_header', $ArrHeader, ['no_bom' => $no_bom]);
-				if(!$update_header) {
+				if (!$update_header) {
 					$this->db->trans_complete();
 					$this->db->trans_rollback();
 
@@ -140,7 +142,7 @@ class Bom extends Admin_Controller
 			if (!empty($ArrDetail)) {
 				$this->db->delete('bom_detail', array('no_bom' => $no_bom));
 				$insert_detail = $this->db->insert_batch('bom_detail', $ArrDetail);
-				if(!$insert_detail) {
+				if (!$insert_detail) {
 					$this->db->trans_complete();
 					$this->db->trans_rollback();
 
@@ -149,10 +151,10 @@ class Bom extends Admin_Controller
 				}
 			}
 
-			if(!empty($ArrDetail2)) {
+			if (!empty($ArrDetail2)) {
 				$this->db->delete('bom_material_lain', ['no_bom' => $no_bom]);
 				$insert_detail2 = $this->db->insert_batch('bom_material_lain', $ArrDetail2);
-				if(!$insert_detail2) {
+				if (!$insert_detail2) {
 					$this->db->trans_complete();
 					$this->db->trans_rollback();
 
@@ -216,6 +218,12 @@ class Bom extends Admin_Controller
 
 			$list_satuan = $this->db->get_where('ms_satuan', ['category' => 'unit', 'deleted_by' => null])->result();
 
+			$this->db->select('a.*');
+			$this->db->from('new_inventory_4 a');
+			$this->db->where('a.category', 'material');
+			$this->db->where('a.deleted_by', null);
+			$get_list_material = $this->db->get()->result();
+
 			$data = [
 				'header' => $header,
 				'detail' => $detail,
@@ -226,7 +234,8 @@ class Bom extends Admin_Controller
 				'material' => $material,
 				'jenis_beton' => $jenis_beton,
 				'list_satuan' => $list_satuan,
-				'detail_material_lain' => $detail_material_lain
+				'detail_material_lain' => $detail_material_lain,
+				'list_material' => $get_list_material
 			];
 			$this->template->set('results', $data);
 			$this->template->title('Add BOM Standard Lainnya');
@@ -751,7 +760,7 @@ class Bom extends Admin_Controller
 
 			$hasil .= '<td class="text-center">';
 			$hasil .= number_format(($post['volume_produk'] * $item->volume), 2);
-			$hasil .= '<input type="hidden" name="detail_material[' . $no . '][volume_material]" value="'.($post['volume_produk'] * $item->volume).'">';
+			$hasil .= '<input type="hidden" name="detail_material[' . $no . '][volume_material]" value="' . ($post['volume_produk'] * $item->volume) . '">';
 			$hasil .= '</td>';
 
 			$hasil .= '</tr>';
@@ -776,6 +785,27 @@ class Bom extends Admin_Controller
 
 		echo json_encode([
 			'hasil' => $hasil
+		]);
+	}
+
+	public function get_nm_material_lain()
+	{
+		$post = $this->input->post();
+
+		$this->db->select('a.nama, a.id_unit, b.code as satuan');
+		$this->db->from('new_inventory_4 a');
+		$this->db->join('ms_satuan b', 'b.id = a.id_unit', 'left');
+		$this->db->where('a.code_lv4', $post['id_material']);
+		$get_material = $this->db->get()->row();
+
+		$nm_material = (!empty($get_material)) ? $get_material->nama : '';
+		$satuan = (!empty($get_material)) ? $get_material->satuan : '';
+		$id_satuan = (!empty($get_material)) ? $get_material->id_unit : '';
+
+		echo json_encode([
+			'nm_material' => $nm_material,
+			'satuan' => ucfirst($satuan),
+			'id_satuan' => $id_satuan
 		]);
 	}
 }

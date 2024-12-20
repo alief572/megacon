@@ -10,7 +10,7 @@ $volume_m3 = (!empty($header)) ? $header[0]->volume_m3 : 0;
 
 // print_r($header);
 ?>
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css" integrity="sha512-yVvxUQV0QESBt1SyZbNJMAwyKvFTLMyXSyBHDO4BG5t7k/Lw34tyqlSDlKIrIENIzCl+RVUNjmCPG+V/GMesRw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <div class="box box-primary">
 	<div class="box-body">
 		<form id="data-form" method="post"><br>
@@ -20,7 +20,7 @@ $volume_m3 = (!empty($header)) ? $header[0]->volume_m3 : 0;
 				</div>
 				<div class="col-md-4">
 					<input type="hidden" name="no_bom" value="<?= $no_bom; ?>">
-					<select id="id_product" name="id_product" class="form-control input-md chosen-select" required>
+					<select id="id_product" name="id_product" class="form-control input-md chosen_select" required>
 						<option value="0">Select An Option</option>
 						<?php foreach ($results['product'] as $product) {
 							$sel = ($product->code_lv4 == $id_product) ? 'selected' : '';
@@ -33,7 +33,7 @@ $volume_m3 = (!empty($header)) ? $header[0]->volume_m3 : 0;
 					<label for="">Jenis Beton</label>
 				</div>
 				<div class="col-md-4">
-					<select name="jenis_beton" id="jenis_beton" class="form-control input-md chosen-select">
+					<select name="jenis_beton" id="jenis_beton" class="form-control input-md chosen_select">
 						<option value="">- Pilih Jenis Beton -</option>
 						<?php
 						foreach ($results['jenis_beton'] as $item) {
@@ -103,13 +103,13 @@ $volume_m3 = (!empty($header)) ? $header[0]->volume_m3 : 0;
 
 									echo '<td class="text-center">';
 									echo $no;
-									echo '<input type="hidden" name="detail_material['.$no.'][id_detail_material]" value="'.$item->code_material.'">';
-									echo'</td>';
+									echo '<input type="hidden" name="detail_material[' . $no . '][id_detail_material]" value="' . $item->code_material . '">';
+									echo '</td>';
 
 									echo '<td class="text-left">' . $item->nm_material . '</td>';
 									echo '<td class="text-center">';
 									echo number_format($item->volume_m3, 2);
-									echo '<input type="hidden" name="detail_material['.$no.'][volume_material]" value="'.$item->volume_m3.'">';
+									echo '<input type="hidden" name="detail_material[' . $no . '][volume_material]" value="' . $item->volume_m3 . '">';
 									echo '</td>';
 
 									echo '</tr>';
@@ -153,7 +153,18 @@ $volume_m3 = (!empty($header)) ? $header[0]->volume_m3 : 0;
 									echo '<td class="text-center">' . $no_material_lain . '</td>';
 
 									echo '<td class="text-left">';
-									echo '<input type="text" class="form-control input-md" name="detail_material_lain[' . $no_material_lain . '][material_name]" value="' . $item->material_name . '">';
+									echo '<select class="form-control form-control-sm chosen_select id_material" name="detail_material_lain[' . $no_material_lain . '][id_material]" data-no="' . $no_material_lain . '">';
+									echo '<option value="">- Select Material -</option>';
+
+									foreach ($list_material as $item_material) {
+										$selected = '';
+										if ($item_material->code_lv4 == $item->id_material) {
+											$selected = 'selected';
+										}
+										echo '<option value="' . $item_material->code_lv4 . '" ' . $selected . '>' . $item_material->nama . '</option>';
+									}
+									echo '</select>';
+									echo '<input type="hidden" class="form-control input-md" name="detail_material_lain[' . $no_material_lain . '][material_name]">';
 									echo '</td>';
 
 									echo '<td class="text-left">';
@@ -161,24 +172,16 @@ $volume_m3 = (!empty($header)) ? $header[0]->volume_m3 : 0;
 									echo '</td>';
 
 									echo '<td>';
-									echo '<select class="form-control input-md chosen-select" name="detail_material_lain[' . $no_material_lain . '][satuan]">';
-									echo '<option value="">- Pilih Satuan -</option>';
-									foreach ($results['list_satuan'] as $item_satuan) {
-										$selected = '';
-										if ($item_satuan->id == $item->id_satuan) {
-											$selected = 'selected';
-										}
-										echo '<option value="' . $item_satuan->id . '" ' . $selected . '>' . strtoupper($item_satuan->code) . '</option>';
-									}
-									echo '</select>';
+									echo '<input type="text" class="form-control form-control-sm" name="detail_material_lain[' . $no_material_lain . '][satuan]" value="' . ucfirst($item->nm_satuan) . '" readonly>';
+									echo '<input type="hidden" name="detail_material_lain[' . $no_material_lain . '][id_satuan]" value="' . $item->id_satuan . '">';
 									echo '</td>';
 
 									echo '<td>';
-									echo '<textarea name="detail_material_lain['.$no_material_lain.'][keterangan]">'.$item->keterangan.'</textarea>';
+									echo '<textarea class="form-control form-control-sm" name="detail_material_lain[' . $no_material_lain . '][keterangan]">' . $item->keterangan . '</textarea>';
 									echo '</td>';
 
 									echo '<td class="text-center">';
-									echo '<button type="button" class="btn btn-sm btn-danger del_material_lain" data-no="'.$no_material_lain.'" title="Delete"><i class="fa fa-trash"></i></button>';
+									echo '<button type="button" class="btn btn-sm btn-danger del_material_lain" data-no="' . $no_material_lain . '" title="Delete"><i class="fa fa-trash"></i></button>';
 									echo '</td>';
 
 									echo '</tr>';
@@ -205,7 +208,7 @@ $volume_m3 = (!empty($header)) ? $header[0]->volume_m3 : 0;
 		</form>
 	</div>
 </div>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js" integrity="sha512-rMGGF4wg1R73ehtnxXBt5mbUfN9JUJwbk21KMlnLZDJh7BkPmeovBuddZCENJddHYYMkCh9hPFnPmS9sspki8g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="<?= base_url('assets/js/autoNumeric.js') ?>"></script>
 <style media="screen">
 	.datepicker {
@@ -225,7 +228,7 @@ $volume_m3 = (!empty($header)) ? $header[0]->volume_m3 : 0;
 	var no_material_lain = <?= $no_material_lain ?>;
 
 	$(document).ready(function() {
-		$('.chosen-select').select2();
+		chosen_select();
 		$(".datepicker").datepicker();
 		$(".autoNumeric4").autoNumeric('init', {
 			mDec: '4',
@@ -530,7 +533,19 @@ $volume_m3 = (!empty($header)) ? $header[0]->volume_m3 : 0;
 			hasil += '</td>';
 
 			hasil += '<td class="text-left">';
-			hasil += '<input type="text" class="form-control input-md" name="detail_material_lain[' + no_material_lain + '][material_name]">'
+			hasil += '<select class="form-control form-control-sm chosen_select id_material" name="detail_material_lain[' + no_material_lain + '][id_material]" data-no="' + no_material_lain + '">';
+			hasil += '<option value="">- Select Material -</option>';
+			<?php
+			foreach ($list_material as $item_material) {
+			?>
+
+				hasil += '<option value="<?= $item_material->code_lv4 ?>"><?= $item_material->nama ?></option>';
+
+			<?php
+			}
+			?>
+			hasil += '</select>';
+			hasil += '<input type="hidden" class="form-control input-md" name="detail_material_lain[' + no_material_lain + '][material_name]">';
 			hasil += '</td>';
 
 			hasil += '<td class="text-left">';
@@ -538,18 +553,8 @@ $volume_m3 = (!empty($header)) ? $header[0]->volume_m3 : 0;
 			hasil += '</td>';
 
 			hasil += '<td>';
-			hasil += '<select class="form-control input-md chosen-select" name="detail_material_lain[' + no_material_lain + '][satuan]">';
-			hasil += '<option value="">- Pilih Satuan -</option>';
-			<?php
-			foreach ($results['list_satuan'] as $item) {
-			?>
-				hasil += '<option value="' + <?= $item->id ?> + '">';
-				hasil += '<?= strtoupper($item->code) ?>';
-				hasil += '</option>';
-			<?php
-			}
-			?>
-			hasil += '</select>';
+			hasil += '<input type="text" class="form-control form-control-sm" name="detail_material_lain[' + no_material_lain + '][satuan]" readonly>';
+			hasil += '<input type="hidden" name="detail_material_lain[' + no_material_lain + '][id_satuan]">';
 			hasil += '</td>';
 
 			hasil += '<td class="text-left">';
@@ -566,7 +571,30 @@ $volume_m3 = (!empty($header)) ? $header[0]->volume_m3 : 0;
 
 			$('#body_table_material_lain').append(hasil);
 
-			$('.chosen-select').chosen();
+			$('.chosen_select').chosen();
+		});
+
+		$(document).on('change', '.id_material', function() {
+			var id_material = $(this).val();
+			var no = $(this).data('no');
+
+			$.ajax({
+				type: 'post',
+				url: siteurl + active_controller + '/get_nm_material_lain',
+				data: {
+					'id_material': id_material
+				},
+				dataType: 'json',
+				cache: false,
+				success: function(result) {
+					$('input[name="detail_material_lain[' + no + '][material_name]"]').val(result.nm_material);
+					$('input[name="detail_material_lain[' + no + '][satuan]"]').val(result.satuan);
+					$('input[name="detail_material_lain[' + no + '][id_satuan]"]').val(result.id_satuan);
+				},
+				error: function(result) {
+
+				}
+			});
 		});
 
 		function sumMaterial() {
@@ -605,6 +633,12 @@ $volume_m3 = (!empty($header)) ? $header[0]->volume_m3 : 0;
 			}
 			return s.join(dec);
 		}
+
+		function chosen_select() {
+			$('.chosen_select').chosen({
+				width: '100%'
+			});
+		};
 
 	});
 </script>
