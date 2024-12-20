@@ -376,7 +376,7 @@ class Machine_rate extends Admin_Controller
     $hasil .= '</td>';
 
     $hasil .= '<td>';
-    $hasil .= '<input type="text" name="depresiasi_per_tahun" class="form-control input-md text-right" value="' . number_format($get_asset->value, 2) . '" readonly>';
+    $hasil .= '<input type="text" name="depresiasi_per_tahun" class="form-control input-md text-right" value="' . number_format(($get_asset->nilai_asset / $get_asset->depresiasi), 2) . '" readonly>';
     $hasil .= '</td>';
 
     $hasil .= '<td>';

@@ -46,39 +46,39 @@ $cost_m3 = (!empty($listData[0]->cost_m3)) ? $listData[0]->cost_m3 : 0;
 							</tr>
 						</thead>
 						<tbody id="list_mesin">
-						<?php 
-							if(isset($listData) && !empty($listData)) {
+							<?php
+							if (isset($listData) && !empty($listData)) {
 								echo '<tr>';
-								
-								echo '<td>'.$nm_mesin.'</td>';
+
+								echo '<td>' . $nm_mesin . '</td>';
 
 								echo '<td>';
-								echo '<input type="text" class="form-control input-md text-right" name="harga" value="'.number_format($harga_mesin).'" readonly>';
-								echo'</td>';
-
-								echo '<td>';
-								echo '<input type="text" name="depresiasi" class="form-control input-md text-right" value="'.number_format($depresiasi).'" readonly>';
+								echo '<input type="text" class="form-control input-md text-right" name="harga" value="' . number_format($harga_mesin) . '" readonly>';
 								echo '</td>';
 
 								echo '<td>';
-								echo '<input type="text" name="depresiasi_per_tahun" class="form-control input-md text-right" value="'.number_format($depresiasi_per_tahun).'" readonly>';
+								echo '<input type="text" name="depresiasi" class="form-control input-md text-right" value="' . number_format($depresiasi) . '" readonly>';
 								echo '</td>';
 
 								echo '<td>';
-								echo '<input type="number" class="form-control input-md text-right" name="utilisasi_hari" min="1" value="'.$utilisasi_hari.'" onkeyup="hitung_cost_m3();">';
+								echo '<input type="text" name="depresiasi_per_tahun" class="form-control input-md text-right" value="' . number_format($depresiasi_per_tahun) . '" readonly>';
 								echo '</td>';
 
 								echo '<td>';
-								echo '<input type="text" class="form-control input-md text-right maskM" name="utilisasi_m3_per_hari" value="'.$utilisasi_m3_per_hari.'" onkeyup="hitung_cost_m3();">';
+								echo '<input type="number" class="form-control input-md text-right" name="utilisasi_hari" min="1" value="' . $utilisasi_hari . '" onkeyup="hitung_cost_m3();">';
 								echo '</td>';
 
 								echo '<td>';
-								echo '<input type="text" class="form-control input-md text-right maskM" name="cost_m3" value="'.$cost_m3.'" readonly>';
+								echo '<input type="text" class="form-control input-md text-right maskM" name="utilisasi_m3_per_hari" value="' . $utilisasi_m3_per_hari . '" onkeyup="hitung_cost_m3();">';
+								echo '</td>';
+
+								echo '<td>';
+								echo '<input type="text" class="form-control input-md text-right maskM" name="cost_m3" value="' . $cost_m3 . '" readonly>';
 								echo '</td>';
 
 								echo '</tr>';
 							}
-						?>
+							?>
 						</tbody>
 					</table>
 
