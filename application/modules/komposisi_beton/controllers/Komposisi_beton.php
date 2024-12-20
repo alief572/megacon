@@ -42,8 +42,14 @@ class Komposisi_beton extends Admin_Controller
             $this->template->title('Add Komposisi Beton');
         }
 
+        $this->db->select('a.*');
+        $this->db->from('new_inventory_4 a');
+        $this->db->where('a.category', 'material');
+        $this->db->where('a.deleted_by', null);
+        $get_list_material = $this->db->get()->result();
 
         $this->template->set('id_komposisi_beton', $id_komposisi_beton);
+        $this->template->set('list_material', $get_list_material);
         $this->template->render('add');
     }
 
@@ -83,6 +89,7 @@ class Komposisi_beton extends Admin_Controller
 
                     $arr_detail[] = [
                         'id_komposisi_beton' => $id_komposisi_beton,
+                        'id_material' => $item['id_material'],
                         'nm_material' => $item['material_name'],
                         'volume' => $item['volume'],
                         'keterangan' => $item['keterangan'],
@@ -139,6 +146,7 @@ class Komposisi_beton extends Admin_Controller
                 foreach ($post['detail_material'] as $item) {
                     $arr_detail[] = [
                         'id_komposisi_beton' => $id_komposisi_beton,
+                        'id_material' => $item['id_material'],
                         'nm_material' => $item['material_name'],
                         'volume' => $item['volume'],
                         'keterangan' => $item['keterangan'],
@@ -210,6 +218,22 @@ class Komposisi_beton extends Admin_Controller
             'status' => $valid,
             'pesan' => $pesan
         ]);
+    }
+
+    public function get_nm_material() {
+        $post = $this->input->post();
+
+        $nm_material = '';
+        $get_nm_material = $this->db->get_where('new_inventory_4', ['code_lv4' => $post['id_material']])->row();
+
+        if(!empty($get_nm_material)) {
+            $nm_material = $get_nm_material->nama;
+        }
+
+        echo json_encode([
+            'nm_material' => $nm_material
+        ]);
+        
     }
 
     public function get_data_jenis_beton()
