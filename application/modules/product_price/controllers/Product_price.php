@@ -422,7 +422,7 @@ class Product_price extends Admin_Controller
 
 			$this->db->select('a.cost_m3');
 			$this->db->from('rate_machine a');
-			$this->db->join('cycletime_detail_detail b', 'b.machine = a.kd_mesin');
+			$this->db->join('cycletime_detail_machine b', 'b.id_machine = a.kd_mesin');
 			$this->db->join('cycletime_header c', 'c.id_time = b.id_time');
 			$this->db->where('c.id_product', $code_level4);
 			$get_rate_machine = $this->db->get()->result();

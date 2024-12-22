@@ -1,6 +1,7 @@
 <?php
 $q_header_test = $this->db->query("SELECT * FROM cycletime_detail_header WHERE id_time='" . $header[0]->id_time . "' ORDER BY id_costcenter ASC")->result_array();
 ?>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
 <div class="box box-primary">
   <div class="box-body"><br>
     <form id="data-form" method="post">
@@ -12,7 +13,7 @@ $q_header_test = $this->db->query("SELECT * FROM cycletime_detail_header WHERE i
         </div>
         <div class="col-md-10">
 
-          <select id="produk" name="produk" class="form-control input-md chosen-select" disabled>
+          <select id="produk" name="produk" class="form-control input-md" disabled>
             <?php foreach ($results['material'] as $material) {
               $selected = ($material->code_lv4 == $header[0]->id_product) ? 'selected' : '';
             ?>
@@ -26,7 +27,7 @@ $q_header_test = $this->db->query("SELECT * FROM cycletime_detail_header WHERE i
           <label for="customer">BOM <span class="text-red">*</span></label>
         </div>
         <div class="col-md-10">
-          <select id="no_bom" name="no_bom" class="form-control input-md chosen-select">
+          <select id="no_bom" name="no_bom" class="form-control input-md">
             <?php
             if (!empty($results['result_bom'])) {
               echo "<option value='0'>Select BOM</option>";
@@ -95,12 +96,13 @@ $q_header_test = $this->db->query("SELECT * FROM cycletime_detail_header WHERE i
               <?php
 
               $id = 0;
+              $no_machine = 1;
               foreach ($q_header_test as $val2 => $val2x) {
                 $id++;
                 echo "<tr class='header_" . $id . "'>";
                 echo "<td align='center'>" . $id . "</td>";
                 echo "<td align='left'>";
-                echo "<select name='Detail[" . $id . "][costcenter]' class='chosen-select form-control input-sm inline-blockd costcenter'>";
+                echo "<select name='Detail[" . $id . "][costcenter]' class='form-control input-sm inline-blockd costcenter'>";
                 foreach ($costcenter as $val => $valx) {
                   $sel = ($valx['id_costcenter'] == $val2x['costcenter']) ? 'selected' : '';
                   echo "<option value='" . $valx['id_costcenter'] . "' " . $sel . ">" . strtoupper($valx['nama_costcenter']) . "</option>";
@@ -138,13 +140,38 @@ $q_header_test = $this->db->query("SELECT * FROM cycletime_detail_header WHERE i
                   echo "<b>Process Name</b>";
                   echo "<input type='text' name='Detail[" . $id . "][detail][" . $no . "][process]' value='" . $val2Dx['nm_process'] . "' class='form-control input-md' placeholder='Process Name' style='margin-bottom:15px;'>";
                   echo "<b>Machine</b>";
-                  echo "<select name='Detail[" . $id . "][detail][" . $no . "][machine]' class='chosen-select form-control input-sm inline-blockd'>";
-                  echo "<option value='0'>NONE MACHINE</option>";
+                  // echo "<div class='input-group-btn'>";
+                  echo "<select name='Detail[" . $id . "][detail][" . $no . "][machine]' class='chosen-select form-control form-control-sm'>";
+                  echo "<option value='0'>Select Machine</option>";
                   foreach ($mesin as $val => $valx) {
                     $sel = ($valx['kd_asset'] == $val2Dx['machine']) ? 'selected' : '';
                     echo "<option value='" . $valx['kd_asset'] . "' " . $sel . ">" . strtoupper($valx['nm_asset']) . "</option>";
                   }
-                  echo     "</select>";
+                  echo "<option value=''>NONE MACHINE</option>";
+                  echo "</select>";
+                  echo "<button type='button' class='btn btn-sm btn-primary addMachine' data-id_sub='" . $id . "' data-no='" . $no . "'><i class='fa fa-plus'></i> Add Machine</button>";
+                  echo "<br><br>";
+                  echo "<div class='list_machine_" . $id . "_" . $no . "'>";
+                  foreach($list_cycletime_machine as $item_machine) {
+                    if($item_machine['id_costcenter'] == $val2x['id_costcenter']) {
+                      echo '
+                        <table style="width: 100% !important" class="data_sub_machine_' . $no_machine . '">
+                          <tr>
+                            <td>
+                              <input type="hidden" name="Detail[' . $id . '][detail][' . $no . '][machine][' . $no_machine . '][id_machine]" value="' . $item_machine['id_machine'] . '">
+                              <input type="text" name="Detail[' . $id . '][detail][' . $no . '][machine][' . $no_machine . '][nm_machine]" class="form-control form-control-sm" style="width: 100% !important" value="' . $item_machine['nm_machine'] . '" readonly>
+                            </td>
+                            <td>
+                              <button type="button" class="btn btn-sm btn-danger del_sub_machine" data-no_machine="' . $no_machine . '"><i class="fa fa-trash"></i> Delete</button>
+                            </td>
+                          </tr>
+                        </table>
+                      ';
+
+                      $no_machine++;
+                    }
+                  }
+                  echo "</div>";
                   echo "<b>Mould / Tools</b>";
                   echo "<select name='Detail[" . $id . "][detail][" . $no . "][mould]' class='chosen-select form-control input-sm'>";
                   echo "<option value='0'>NONE MOULD/TOOLS</option>";
@@ -202,19 +229,24 @@ $q_header_test = $this->db->query("SELECT * FROM cycletime_detail_header WHERE i
 </div>
 
 <script src="<?= base_url('assets/js/autoNumeric.js') ?>"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 <script type="text/javascript">
   //$('#input-kendaraan').hide();
   var base_url = '<?php echo base_url(); ?>';
   var active_controller = '<?php echo ($this->uri->segment(1)); ?>';
+
+  var no_machine = '<?= $no_machine ?>';
 
   $(document).on('click', '#back', function() {
     window.location.href = base_url + active_controller;
   });
 
   $(document).ready(function() {
-    $('.chosen-select').select2({
-      width: '100%'
+    $('.chosen-select, #produk, #no_bom').select2({
+      width: 'resolve'
+    });
+    $('.chosen-select2').select2({
+      width: 'resolve'
     });
     $('.maskM').autoNumeric();
   });
@@ -237,7 +269,10 @@ $q_header_test = $this->db->query("SELECT * FROM cycletime_detail_header WHERE i
         $("#add_" + id_bef).before(data.header);
         $("#add_" + id_bef).remove();
         $('.chosen-select').select2({
-          width: '100%'
+          width: 'resolve'
+        });
+        $('.chosen-select2').select2({
+          width: 'resolve'
         });
         $('.maskM').autoNumeric();
         swal.close();
@@ -275,7 +310,10 @@ $q_header_test = $this->db->query("SELECT * FROM cycletime_detail_header WHERE i
         $("#add_" + id + "_" + id_bef).before(data.header);
         $("#add_" + id + "_" + id_bef).remove();
         $('.chosen-select').select2({
-          width: '100%'
+          width: 'resolve'
+        });
+        $('.chosen-select2').select2({
+          width: 'resolve'
         });
         $('.maskM').autoNumeric();
         swal.close();
@@ -352,6 +390,52 @@ $q_header_test = $this->db->query("SELECT * FROM cycletime_detail_header WHERE i
 
     let moq = SumTotalSet * 9 / SumTotalPro
     $('#moq').val(Math.round(moq))
+  });
+
+  $(document).on('click', '.addMachine', function() {
+    var id_sub = $(this).data('id_sub');
+    var no = $(this).data('no');
+
+    var machine = $('select[name="Detail[' + id_sub + '][detail][' + no + '][machine]"]').val();
+
+    if (machine == '' || machine == null || machine == undefined) {
+      swal({
+        type: 'warning',
+        title: 'Warning !',
+        text: 'Please select the machine first !'
+      });
+    } else {
+      $.ajax({
+        type: 'post',
+        url: siteurl + active_controller + '/add_sub_machine',
+        data: {
+          'id_machine': machine,
+          'id_sub': id_sub,
+          'no': no,
+          'no_machine': no_machine
+        },
+        dataType: 'json',
+        cache: false,
+        success: function(result) {
+          $('.list_machine_' + id_sub + '_' + no).append(result.hasil);
+
+          no_machine++;
+        },
+        error: function(result) {
+          swal({
+            type: 'error',
+            title: 'Error !',
+            text: 'Please try again later !'
+          });
+        }
+      });
+    }
+  });
+
+  $(document).on('click', '.del_sub_machine', function() {
+    var no = $(this).data('no_machine');
+
+    $('.data_sub_machine_' + no).remove();
   });
 
 

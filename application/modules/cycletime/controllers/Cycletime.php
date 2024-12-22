@@ -108,6 +108,18 @@ class Cycletime extends Admin_Controller
 
     $result_bom  = $this->db->select('a.*,b.nama')->where_in('a.category', $ArrCategory)->join('new_inventory_4 b', 'a.id_product=b.code_lv4', 'left')->get_where('bom_header a', array('a.id_product' => $header[0]->id_product, 'a.deleted_date' => NULL))->result_array();
 
+    $get_cycletime_machine = $this->db->get_where('cycletime_detail_machine', ['id_time' => $id_time])->result();
+
+    $list_cycletime_machine = [];
+    foreach ($get_cycletime_machine as $item) {
+      $list_cycletime_machine[] = [
+        'id_time' => $item->id_time,
+        'id_costcenter' => $item->id_costcenter,
+        'id_machine' => $item->id_machine,
+        'nm_machine' => $item->nm_machine
+      ];
+    }
+
 
     $data = [
       'result_bom' => $result_bom,
@@ -118,7 +130,8 @@ class Cycletime extends Admin_Controller
       'mesin' => $machine,
       'mould' => $mould,
       'costcenter' => $costcenter,
-      'header' => $header
+      'header' => $header,
+      'list_cycletime_machine' => $list_cycletime_machine
     ];
     $this->template->set('results', $data);
     $this->template->page_icon('fa fa-edit');
@@ -153,7 +166,7 @@ class Cycletime extends Admin_Controller
     $d_Header .= "<tr class='header_" . $id . "'>";
     $d_Header .= "<td align='center'>" . $id . "</td>";
     $d_Header .= "<td align='left'>";
-    $d_Header .= "<select name='Detail[" . $id . "][costcenter]' class='chosen-select form-control input-sm inline-blockd costcenter'>";
+    $d_Header .= "<select name='Detail[" . $id . "][costcenter]' class='chosen-select2 form-control input-sm inline-blockd costcenter'>";
     $d_Header .= "<option value='0'>Select Area</option>";
     foreach ($costcenter as $val => $valx) {
       $d_Header .= "<option value='" . $valx['id_costcenter'] . "'>" . strtoupper($valx['nama_costcenter']) . "</option>";
@@ -198,8 +211,8 @@ class Cycletime extends Admin_Controller
     $id   = $this->uri->segment(3);
     $no   = $this->uri->segment(4);
 
-    $machine  = $this->db->query("SELECT * FROM asset WHERE category='4' AND deleted_date IS NULL GROUP BY SUBSTR(kd_asset, 1, 20) ORDER BY nm_asset ASC ")->result_array();
-    $mould  = $this->db->query("SELECT * FROM asset WHERE category='7' AND deleted_date IS NULL GROUP BY SUBSTR(kd_asset, 1, 20) ORDER BY nm_asset ASC ")->result_array();
+    $machine  = $this->db->query("SELECT * FROM asset WHERE category='1' AND deleted_date IS NULL GROUP BY SUBSTR(kd_asset, 1, 20) ORDER BY nm_asset ASC ")->result_array();
+    $mould  = $this->db->query("SELECT * FROM asset WHERE category='2' AND deleted_date IS NULL GROUP BY SUBSTR(kd_asset, 1, 20) ORDER BY nm_asset ASC ")->result_array();
 
 
     // $process	= $this->db->query("SELECT * FROM ms_process ORDER BY nm_process ASC ")->result_array();
@@ -223,15 +236,23 @@ class Cycletime extends Admin_Controller
     $d_Header .= "<b>Process Name</b>";
     $d_Header .= "<input type='text' name='Detail[" . $id . "][detail][" . $no . "][process]' class='form-control input-md process' placeholder='Process Name'>";
     $d_Header .= "<b>Machine</b>";
-    $d_Header .= "<select name='Detail[" . $id . "][detail][" . $no . "][machine]' class='chosen-select form-control input-sm inline-blockd'>";
+    // $d_Header .= "<div class='input-group-btn'>";
+    $d_Header .= "<select name='Detail[" . $id . "][detail][" . $no . "][machine]' class='chosen-select2 form-control form-control-sm'>";
     $d_Header .= "<option value='0'>Select Machine</option>";
     foreach ($machine as $val => $valx) {
       $d_Header .= "<option value='" . $valx['kd_asset'] . "'>" . strtoupper($valx['nm_asset']) . "</option>";
     }
-    $d_Header .= "<option value='0'>NONE MACHINE</option>";
-    $d_Header .=   "</select>";
+    $d_Header .= "<option value=''>NONE MACHINE</option>";
+    $d_Header .= "</select>";
+    $d_Header .= "<button type='button' class='btn btn-sm btn-primary addMachine' data-id_sub='" . $id . "' data-no='" . $no . "'><i class='fa fa-plus'></i> Add Machine</button>";
+    // $d_Header .= "</div>";
+    $d_Header .= "<br><br>";
+    $d_Header .= "<div class='list_machine_" . $id . "_" . $no . "'>";
+
+    $d_Header .= "</div>";
     $d_Header .= "<b>Mould / Tools</b>";
-    $d_Header .= "<select name='Detail[" . $id . "][detail][" . $no . "][mould]' class='chosen-select form-control input-sm inline-blockd'>";
+    $d_Header .= "<br>";
+    $d_Header .= "<select name='Detail[" . $id . "][detail][" . $no . "][mould]' class='chosen-select2 form-control input-sm inline-blockd'>";
     $d_Header .= "<option value='0'>Select Mould/Tools</option>";
     foreach ($mould as $val => $valx) {
       $d_Header .= "<option value='" . $valx['kd_asset'] . "'>" . strtoupper($valx['nm_asset']) . "</option>";
@@ -307,6 +328,7 @@ class Cycletime extends Admin_Controller
 
     $ArrDetail  = array();
     $ArrDetail2  = array();
+    $ArrDetailMachine = array();
     foreach ($Detail as $val => $valx) {
       $urut        = sprintf('%02s', $val);
       $ArrDetail[$val]['id_time']       = $id_material;
@@ -322,8 +344,21 @@ class Cycletime extends Admin_Controller
         $ArrDetail2[$val2 . $val]['cycletime']     = str_replace(',', '', $valx2['cycletime']);
         $ArrDetail2[$val2 . $val]['qty_mp']       = str_replace(',', '', $valx2['qty_mp']);
         $ArrDetail2[$val2 . $val]['note']         = $valx2['note'];
-        $ArrDetail2[$val2 . $val]['machine']       = $valx2['machine'];
+        $ArrDetail2[$val2 . $val]['machine']       = 0;
         $ArrDetail2[$val2 . $val]['mould']         = $valx2['mould'];
+
+        if (isset($valx2['machine']) && !empty($valx2['machine'])) {
+          foreach ($valx2['machine'] as $val_machine => $valx_machine) {
+            $ArrDetailMachine[] = [
+              'id_time' => $id_material,
+              'id_costcenter' => $id_material . "-" . $urut,
+              'id_machine' => $valx_machine['id_machine'],
+              'nm_machine' => $valx_machine['nm_machine'],
+              'created_by' => $this->auth->user_id(),
+              'created_date' => date('Y-m-d H:i:s')
+            ];
+          }
+        }
       }
     }
 
@@ -333,12 +368,44 @@ class Cycletime extends Admin_Controller
     // exit;
 
     $this->db->trans_start();
-    $this->db->insert('cycletime_header', $ArrHeader);
-    if (!empty($ArrDetail)) {
-      $this->db->insert_batch('cycletime_detail_header', $ArrDetail);
+    $insert_header = $this->db->insert('cycletime_header', $ArrHeader);
+    if (!$insert_header) {
+      $this->db->trans_complete();
+      $this->db->trans_rollback();
+
+      print_r('error cycletime_header' . $this->db->error($insert_header));
+      exit;
     }
     if (!empty($ArrDetail)) {
-      $this->db->insert_batch('cycletime_detail_detail', $ArrDetail2);
+      $insert_detail_header = $this->db->insert_batch('cycletime_detail_header', $ArrDetail);
+      if (!$insert_detail_header) {
+        $this->db->trans_complete();
+        $this->db->trans_rollback();
+
+        print_r('error cycletime_detail_header' . $this->db->error($insert_detail_header));
+        exit;
+      }
+    }
+    if (!empty($ArrDetail)) {
+      $insert_detail_detail = $this->db->insert_batch('cycletime_detail_detail', $ArrDetail2);
+
+      if (!$insert_detail_detail) {
+        $this->db->trans_complete();
+        $this->db->trans_rollback();
+
+        print_r('error cycletime_detail_detail' . $this->db->error($insert_detail_detail));
+        exit;
+      }
+    }
+    if (!empty($ArrDetailMachine)) {
+      $insert_detail_machine = $this->db->insert_batch('cycletime_detail_machine', $ArrDetailMachine);
+      if (!$insert_detail_machine) {
+        $this->db->trans_complete();
+        $this->db->trans_rollback();
+
+        print_r('error cycletime_detail_machine' . $this->db->error($insert_detail_machine));
+        exit;
+      }
     }
     $this->db->trans_complete();
 
@@ -400,6 +467,7 @@ class Cycletime extends Admin_Controller
 
     $ArrDetail  = array();
     $ArrDetail2  = array();
+    $ArrDetailMachine = array();
     foreach ($Detail as $val => $valx) {
       $urut        = sprintf('%02s', $val);
       $ArrDetail[$val]['id_time']       = $id_material;
@@ -415,8 +483,21 @@ class Cycletime extends Admin_Controller
         $ArrDetail2[$val2 . $val]['cycletime']     = str_replace(',', '', $valx2['cycletime']);
         $ArrDetail2[$val2 . $val]['qty_mp']       = str_replace(',', '', $valx2['qty_mp']);
         $ArrDetail2[$val2 . $val]['note']         = $valx2['note'];
-        $ArrDetail2[$val2 . $val]['machine']       = $valx2['machine'];
+        $ArrDetail2[$val2 . $val]['machine']       = 0;
         $ArrDetail2[$val2 . $val]['mould']         = $valx2['mould'];
+
+        if (isset($valx2['machine']) && !empty($valx2['machine'])) {
+          foreach ($valx2['machine'] as $val_machine => $valx_machine) {
+            $ArrDetailMachine[] = [
+              'id_time' => $id_material,
+              'id_costcenter' => $id_material . "-" . $urut,
+              'id_machine' => $valx_machine['id_machine'],
+              'nm_machine' => $valx_machine['nm_machine'],
+              'created_by' => $this->auth->user_id(),
+              'created_date' => date('Y-m-d H:i:s')
+            ];
+          }
+        }
       }
     }
 
@@ -426,17 +507,49 @@ class Cycletime extends Admin_Controller
     // exit;
 
     $this->db->trans_start();
-    $this->db->where('id_time', $id_material);
-    $this->db->update('cycletime_header', $ArrHeader);
+    $update_header = $this->db->update('cycletime_header', $ArrHeader, ['id_time' => $id_material]);
+    if (!$update_header) {
+      $this->db->trans_complete();
+      $this->db->trans_rollback();
+
+      print_r('error cycletime_header' . $this->db->error($update_header));
+      exit;
+    }
 
     $this->db->delete('cycletime_detail_header', array('id_time' => $id_material));
     $this->db->delete('cycletime_detail_detail', array('id_time' => $id_material));
+    $this->db->delete('cycletime_detail_machine', array('id_time' => $id_material));
 
     if (!empty($ArrDetail)) {
-      $this->db->insert_batch('cycletime_detail_header', $ArrDetail);
+      $insert_detail_header = $this->db->insert_batch('cycletime_detail_header', $ArrDetail);
+      if (!$insert_detail_header) {
+        $this->db->trans_complete();
+        $this->db->trans_rollback();
+
+        print_r('error cycletime_detail_header ' . $this->db->error($insert_detail_header));
+        exit;
+      }
     }
     if (!empty($ArrDetail)) {
-      $this->db->insert_batch('cycletime_detail_detail', $ArrDetail2);
+      $insert_detail_detail = $this->db->insert_batch('cycletime_detail_detail', $ArrDetail2);
+      if (!$insert_detail_detail) {
+        $this->db->trans_complete();
+        $this->db->trans_rollback();
+
+        print_r('error cycletime_detail_detail' . $this->db->error($insert_detail_detail));
+        print_r($this->db->last_query());
+        exit;
+      }
+    }
+    if (!empty($ArrDetailMachine)) {
+      $insert_detail_machine = $this->db->insert_batch('cycletime_detail_machine', $ArrDetailMachine);
+      if (!$insert_detail_machine) {
+        $this->db->trans_complete();
+        $this->db->trans_rollback();
+
+        print_r('error cycletime_detail_machine' . $this->db->error($insert_detail_machine));
+        exit;
+      }
     }
     $this->db->trans_complete();
 
@@ -483,6 +596,9 @@ class Cycletime extends Admin_Controller
 
     $this->db->where('id_time', $id_material);
     $this->db->delete('cycletime_detail_detail');
+
+    $this->db->where('id_time', $id_material);
+    $this->db->delete('cycletime_detail_machine');
     $this->db->trans_complete();
 
     if ($this->db->trans_status() === FALSE) {
@@ -951,7 +1067,7 @@ class Cycletime extends Admin_Controller
     header("Pragma: no-cache");
     header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     //ubah nama file saat diunduh
-    header('Content-Disposition: attachment;filename="cycletime-' . str_replace(' ', '-', strlower($cycletime[0]['nama_product'])) . '.xls"');
+    header('Content-Disposition: attachment;filename="cycletime-' . str_replace(' ', '-', strtolower($cycletime[0]['nama_product'])) . '.xls"');
     //unduh file
     $objWriter->save("php://output");
   }
@@ -1058,7 +1174,7 @@ class Cycletime extends Admin_Controller
 
     $ArrCategory = ['grid standard', 'standard', 'ftackel'];
 
-    $result  = $this->db->select('a.*,b.nama')->join('new_inventory_4 b', 'a.id_product=b.code_lv4', 'left')->get_where('bom_header a', array('a.id_product' => $id_product, 'a.deleted_date' => NULL))->result_array();
+    $result  = $this->db->select('a.*,b.nama')->join('new_inventory_4 b', 'a.id_product = b.code_lv4', 'left')->get_where('bom_header a', array('a.id_product' => $id_product, 'a.deleted_date' => NULL))->result_array();
     // print_r($result);
     // print_r($ArrProductCT);
     // exit;
@@ -1080,5 +1196,30 @@ class Cycletime extends Admin_Controller
     );
     // exit;
     echo json_encode($ArrJson);
+  }
+
+  public function add_sub_machine()
+  {
+    $post = $this->input->post();
+
+    $get_machine = $this->db->get_where('asset', ['kd_asset' => $post['id_machine']])->row();
+
+    $hasil = '
+      <table style="width: 100% !important" class="data_sub_machine_' . $post['no_machine'] . '">
+        <tr>
+          <td>
+            <input type="hidden" name="Detail[' . $post['id_sub'] . '][detail][' . $post['no'] . '][machine][' . $post['no_machine'] . '][id_machine]" value="' . $get_machine->kd_asset . '">
+            <input type="text" name="Detail[' . $post['id_sub'] . '][detail][' . $post['no'] . '][machine][' . $post['no_machine'] . '][nm_machine]" class="form-control form-control-sm" style="width: 100% !important" value="' . $get_machine->nm_asset . '" readonly>
+          </td>
+          <td>
+            <button type="button" class="btn btn-sm btn-danger del_sub_machine" data-no_machine="' . $post['no_machine'] . '"><i class="fa fa-trash"></i> Delete</button>
+          </td>
+        </tr>
+      </table>
+    ';
+
+    echo json_encode([
+      'hasil' => $hasil
+    ]);
   }
 }
