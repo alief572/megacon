@@ -60,7 +60,7 @@ $volume_m3 = (!empty($header[0]->volume_m3)) ? $header[0]->volume_m3 : 0;
 						
 						echo '<td class="text-center">'.$no.'</td>';
 						echo '<td class="text-left">'.$item->nm_material.'</td>';
-						echo '<td class="text-center">'.number_format($item->volume_m3, 2).'</td>';
+						echo '<td class="text-center">'.number_format($item->volume_m3, 4).'</td>';
 
 						echo '</tr>';
 
@@ -91,7 +91,7 @@ $volume_m3 = (!empty($header[0]->volume_m3)) ? $header[0]->volume_m3 : 0;
 						
 						echo '<td class="text-center">'.$no.'</td>';
 						echo '<td class="text-left">'.$item->material_name.'</td>';
-						echo '<td class="text-center">'.number_format($item->kebutuhan, 2).'</td>';
+						echo '<td class="text-center">'.number_format($item->kebutuhan, 4).'</td>';
 						echo '<td class="text-center">'.ucfirst($item->satuan).'</td>';
 						echo '<td class="text-left">'.$item->keterangan.'</td>';
 

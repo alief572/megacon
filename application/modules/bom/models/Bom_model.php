@@ -80,6 +80,7 @@ class Bom_model extends BF_Model
 			$nestedData[]	= "<div align='center'>" . $nomor . "</div>";
 			$nestedData[]	= "<div align='left'>" . strtoupper(strtolower($row['nama'])) . "</div>";
 			$nestedData[]   = "<div align='center'>".number_format($row['volume_m3'], 2)."</div>";
+			$nestedData[]	= "<div align='left'>" . $row['keterangan'] . "</div>";
 			$moq = (!empty($row['moq'])) ? number_format($row['moq'], 4) : '-';
 
 			$last_create = (!empty($row['updated_by'])) ? $row['updated_by'] : $row['created_by'];
