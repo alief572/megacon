@@ -76,7 +76,7 @@ $keterangan = (isset($header)) ? $header->keterangan : '';
                                 echo '</td>';
 
                                 echo '<td class="text-left">';
-                                echo '<input type="number" class="form-control form-control-sm" name="detail_material[' . $no . '][volume]" value="' . $item->volume . '" step="0.01">';
+                                echo '<input type="number" class="form-control form-control-sm" name="detail_material[' . $no . '][volume]" value="' . $item->volume . '" step="0.0001">';
                                 echo '</td>';
 
                                 echo '<td class="text-left">';
@@ -140,7 +140,7 @@ $keterangan = (isset($header)) ? $header->keterangan : '';
         hasil += '</td>';
 
         hasil += '<td class="text-left">';
-        hasil += '<input type="number" class="form-control form-control-sm" name="detail_material[' + no_detail_material + '][volume]" step="0.01">';
+        hasil += '<input type="number" class="form-control form-control-sm" name="detail_material[' + no_detail_material + '][volume]" step="0.0001">';
         hasil += '</td>';
 
         hasil += '<td class="text-left">';
