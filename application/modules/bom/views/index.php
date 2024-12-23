@@ -30,6 +30,7 @@ $ENABLE_DELETE  = has_permission('BOM.Delete');
 					<th>#</th>
 					<th class="text-center">Product Master</th>
 					<th class="text-center">Total Volume (m3)</th>
+					<th class="text-left">Keterangan</th>
 					<th>Last By</th>
 					<th class='text-center'>Last Date</th>
 					<th>Action</th>

@@ -759,7 +759,7 @@ class Bom extends Admin_Controller
 			$hasil .= '</td>';
 
 			$hasil .= '<td class="text-center">';
-			$hasil .= number_format(($post['volume_produk'] * $item->volume), 2);
+			$hasil .= number_format(($post['volume_produk'] * $item->volume), 4);
 			$hasil .= '<input type="hidden" name="detail_material[' . $no . '][volume_material]" value="' . ($post['volume_produk'] * $item->volume) . '">';
 			$hasil .= '</td>';
 

@@ -108,7 +108,7 @@ $volume_m3 = (!empty($header)) ? $header[0]->volume_m3 : 0;
 
 									echo '<td class="text-left">' . $item->nm_material . '</td>';
 									echo '<td class="text-center">';
-									echo number_format($item->volume_m3, 2);
+									echo number_format($item->volume_m3, 4);
 									echo '<input type="hidden" name="detail_material[' . $no . '][volume_material]" value="' . $item->volume_m3 . '">';
 									echo '</td>';
 
@@ -168,7 +168,7 @@ $volume_m3 = (!empty($header)) ? $header[0]->volume_m3 : 0;
 									echo '</td>';
 
 									echo '<td class="text-left">';
-									echo '<input type="number" class="form-control input-md" name="detail_material_lain[' . $no_material_lain . '][kebutuhan]" step="0.01" value="' . $item->kebutuhan . '">';
+									echo '<input type="number" class="form-control input-md" name="detail_material_lain[' . $no_material_lain . '][kebutuhan]" step="0.0001" value="' . $item->kebutuhan . '">';
 									echo '</td>';
 
 									echo '<td>';
@@ -549,7 +549,7 @@ $volume_m3 = (!empty($header)) ? $header[0]->volume_m3 : 0;
 			hasil += '</td>';
 
 			hasil += '<td class="text-left">';
-			hasil += '<input type="number" class="form-control input-md" name="detail_material_lain[' + no_material_lain + '][kebutuhan]" step="0.01">'
+			hasil += '<input type="number" class="form-control input-md" name="detail_material_lain[' + no_material_lain + '][kebutuhan]" step="0.0001">'
 			hasil += '</td>';
 
 			hasil += '<td>';
