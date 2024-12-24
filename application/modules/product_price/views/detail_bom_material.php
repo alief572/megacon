@@ -68,12 +68,57 @@ $TOTAL_PRICE_ALL = 0;
 					echo "<tr>";
 					echo "<td align='left'>" . $val . "</td>";
 					echo "<td>" . strtoupper($nm_material) . "</td>";
-					echo "<td align='right'>".number_format($valx['volume_m3'], 4)."</td>";
+					echo "<td align='right'>" . number_format($valx['volume_m3'], 4) . "</td>";
 					echo "<td align='right' class='text-green'>" . number_format($price_ref, 2) . "</td>";
 					echo "<td align='right' class='text-blue'>" . number_format($price_ref * $valx['volume_m3'], 2) . "</td>";
 					echo "</tr>";
 
 					$SUM_TOTAL_PRICE += ($price_ref * $valx['volume_m3']);
+				}
+				?>
+			</tbody>
+			<tfoot>
+				<tr>
+					<th colspan="2" class="text-right">Total</th>
+					<th class="text-right"><?= number_format($SUM_TOTAL_BERAT, 4) ?></th>
+					<th class="text-right"></th>
+					<th class="text-right"><?= number_format($SUM_TOTAL_PRICE, 2) ?></th>
+				</tr>
+			</tfoot>
+		</table>
+		
+		<br><br>
+
+		<table class='' width='100%' border="0">
+			<thead>
+				<tr>
+					<th class='text-left' style='width: 3%;'>#</th>
+					<th class='text-left'>Material Lain</th>
+					<th class='text-right' style='width: 8%;'>Volume (m3)</th>
+					<th class='text-right' style='width: 8%;'>Price Ref</th>
+					<th class='text-right' style='width: 8%;'>Total Price</th>
+				</tr>
+			</thead>
+			<tbody>
+				<?php
+				$SUM_TOTAL_BERAT = 0;
+				$SUM_TOTAL_PRICE = 0;
+
+				$no_material_lain = 1;
+				foreach ($list_material_lain as $val) {
+					$total_price = ($val->kebutuhan * $val->price_ref);
+					echo '<tr>';
+					echo '<td class="text-center">' . $no_material_lain . '</td>';
+					echo '<td>'.$val->nm_material.'</td>';
+					echo '<td class="text-right">'.number_format($val->kebutuhan, 4).'</td>';
+					echo '<td class="text-right">'.number_format($val->price_ref, 2).'</td>';
+					echo '<td class="text-right">'.number_format($total_price, 2).'</td>';
+					echo '</tr>';
+
+					$SUM_TOTAL_BERAT += $val->kebutuhan;
+					$SUM_TOTAL_PRICE += $total_price;
+
+					$no_material_lain++;
 				}
 				?>
 			</tbody>

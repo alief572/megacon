@@ -23,9 +23,11 @@
                                 foreach ($q_header_test as $val2 => $val2x) {
                                     $nox++;
 
+                                    $q_detail_test = $this->db->get_where('cycletime_detail_detail', ['id_costcenter' => $val2x['id_costcenter']])->row();
+
                                     echo "<tr>";
                                     echo "<td align='center'>" . $nox . "</td>";
-                                    echo "<td align='left'><b>" . strtoupper(get_name('ms_costcenter', 'nama_costcenter', 'id_costcenter', $val2x['costcenter'])) . "</b></td>";
+                                    echo "<td align='left'><b>" . strtoupper(get_name('ms_costcenter', 'nama_costcenter', 'id_costcenter', $val2x['costcenter'])) . " : (".$q_detail_test->nm_process.")</b></td>";
                                     echo "<td></td>";
                                     echo "</tr>";
 
@@ -35,6 +37,7 @@
                                         $this->db->from('cycletime_detail_machine a');
                                         $this->db->join('rate_machine b', 'b.kd_mesin = a.id_machine', 'left');
                                         $this->db->where('a.id_time', $item_header->id_time);
+                                        $this->db->where('b.deleted_by', null);
                                         $this->db->where('a.id_costcenter', $val2x['id_costcenter']);
                                         $this->db->group_by('a.id');
                                         $get_list_machine = $this->db->get()->result();
@@ -54,6 +57,7 @@
                                         $this->db->join('rate_mold b', 'b.kd_mesin = a.mould', 'left');
                                         $this->db->join('asset c', 'c.kd_asset = b.kd_mesin', 'left');
                                         $this->db->where('a.id_time', $item_header->id_time);
+                                        $this->db->where('b.deleted_by', null);
                                         $this->db->where('a.id_costcenter', $val2x['id_costcenter']);
                                         $this->db->group_by('a.id');
                                         $get_list_mold = $this->db->get()->result();
