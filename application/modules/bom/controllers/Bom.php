@@ -261,9 +261,10 @@ class Bom extends Admin_Controller
 		$this->db->where('a.no_bom', $no_bom);
 		$detail = $this->db->get()->result();
 
-		$this->db->select('a.*, b.code as satuan');
+		$this->db->select('a.*, b.code as satuan, c.nama as nm_material');
 		$this->db->from('bom_material_lain a');
 		$this->db->join('ms_satuan b', 'b.id = a.id_satuan', 'left');
+		$this->db->join('new_inventory_4 c', 'c.code_lv4 = a.id_material', 'left');
 		$this->db->where('a.no_bom', $no_bom);
 		$detail_material_lain = $this->db->get()->result();
 
