@@ -398,7 +398,7 @@ function get_price_ref()
 	$listGetCategory = $CI->db->get_where('new_inventory_4', array('deleted_date' => NULL))->result_array();
 	$ArrGetCategory = [];
 	foreach ($listGetCategory as $key => $value) {
-		$ArrGetCategory[$value['code_lv4']]['price_ref'] 	= $value['up_to_value'];
+		$ArrGetCategory[$value['code_lv4']]['up_to_value'] 	= $value['up_to_value'];
 	}
 	return $ArrGetCategory;
 }

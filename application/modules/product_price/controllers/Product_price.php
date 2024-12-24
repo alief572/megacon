@@ -422,20 +422,23 @@ class Product_price extends Admin_Controller
 
 			$this->db->select('a.cost_m3');
 			$this->db->from('rate_machine a');
-			$this->db->join('cycletime_detail_machine b', 'b.id_machine = a.kd_mesin');
+			$this->db->join('cycletime_detail_machine b', 'b.id_machine = kd_mesin');
 			$this->db->join('cycletime_header c', 'c.id_time = b.id_time');
 			$this->db->where('c.id_product', $code_level4);
+			$this->db->group_by('b.id_machine, b.id_costcenter');
 			$get_rate_machine = $this->db->get()->result();
-
 			foreach($get_rate_machine as $item_rate_machine) {
 				$rate_depresiasi += $item_rate_machine->cost_m3;
 			}
+
 
 			$this->db->select('a.cost_m3');
 			$this->db->from('rate_mold a');
 			$this->db->join('cycletime_detail_detail b', 'b.mould = a.kd_mesin');
 			$this->db->join('cycletime_header c', 'c.id_time = b.id_time');
 			$this->db->where('c.id_product', $code_level4);
+			$this->db->group_by('b.mould', 'b.id_costcenter');
+			
 			$get_rate_mold = $this->db->get()->result();
 
 			foreach($get_rate_mold as $item_rate_mold) {
@@ -472,7 +475,18 @@ class Product_price extends Admin_Controller
 			$persen_allowance 	= $GET_RATE_COSTING[18];
 
 			//1 material
-			$cost_material 	= $TOTAL_PRICE_ALL;
+			$cost_material = 0;
+			$this->db->select('b.volume_m3, d.up_to_value');
+			$this->db->from('tr_jenis_beton_detail a');
+			$this->db->join('bom_detail b', 'b.code_material = a.id_detail_material');
+			$this->db->join('bom_header c', 'c.no_bom = b.no_bom');
+			$this->db->join('new_inventory_4 d', 'd.code_lv4 = a.id_material');
+			$this->db->where('c.id_product', $code_level4);
+			$get_bom_detail = $this->db->get()->result();
+
+			foreach($get_bom_detail as $item_bom_detail) {
+				$cost_material += ($item_bom_detail->up_to_value * $item_bom_detail->volume_m3);
+			}
 			//# khusus purtution
 			// $biaya_setting_mp 		= ($rate_mp / 60) * $rate_manpower;
 			// $biaya_setting_mesin 	= ($rate_mp / 60) * $rate_depresiasi;
@@ -1325,7 +1339,7 @@ class Product_price extends Admin_Controller
 		$tanda 		= $this->input->post('tanda');
 		$cost 		= $this->input->post('cost');
 		$no_bom 		= $this->input->post('no_bom');
-		$header = $this->db->get_where('cycletime_header', array('id_product' => $id_product, 'no_bom' => $no_bom, 'deleted_date' => NULL))->result();
+		$header = $this->db->get_where('cycletime_header', array('id_product' => $id_product, 'deleted_date' => NULL))->result();
 		// print_r($header);
 		$title = ($tanda == 'machine') ? 'Machine' : 'Mold';
 		$data = [
@@ -1335,7 +1349,9 @@ class Product_price extends Admin_Controller
 			'title' => $title,
 			'cost' => $cost,
 		];
-		$this->template->render('detail_machine_mold', $data);
+
+		$this->template->set($data);
+		$this->template->render('detail_machine_mold');
 	}
 
 	public function detail_machine_mold_ass()
@@ -2423,7 +2439,7 @@ class Product_price extends Admin_Controller
 			'GET_ACC' => get_accessories(),
 			'GET_PRICE_REF' => get_price_ref()
 		];
-		$this->template->title('Pengajuan Price List Costing Pultrution');
+		$this->template->title('Pengajuan Price List Costing');
 		$this->template->render('pengajuan_costing_std', $data);
 	}
 
@@ -2502,7 +2518,19 @@ class Product_price extends Admin_Controller
 			$persen_profit 		= $GET_RATE_COSTING[14];
 			$persen_allowance 	= $GET_RATE_COSTING[18];
 
-			$cost_material	= $value['price_material'];
+			$cost_material = 0;
+			$this->db->select('a.volume, d.up_to_value');
+			$this->db->from('tr_jenis_beton_detail a');
+			$this->db->join('bom_detail b', 'b.code_material = a.id_detail_material');
+			$this->db->join('bom_header c', 'c.no_bom = b.no_bom');
+			$this->db->join('new_inventory_4 d', 'd.code_lv4 = a.id_material');
+			$this->db->where('c.id_product', $value['code_lv4']);
+			$get_bom_detail = $this->db->get()->result();
+
+			foreach($get_bom_detail as $item_bom_detail) {
+				$cost_material += ($item_bom_detail->up_to_value * $item_bom_detail->volume);
+			}
+			
 			$cost_man_power	= $value['price_man_power'];
 			$cost_mesin		= $value['price_machine'];
 
