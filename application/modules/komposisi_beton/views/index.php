@@ -24,6 +24,7 @@ $ENABLE_DELETE  = has_permission('Komposisi_Beton.Delete');
 				<th class="text-center">#</th>
 				<th class="text-center">Jenis Beton</th>
 				<th class="text-center">Total Volume (m3)</th>
+				<th class="text-center">Keterangan</th>
 				<th class="text-center">Action</th>
 			</thead>
 			<tbody>
@@ -64,6 +65,9 @@ $ENABLE_DELETE  = has_permission('Komposisi_Beton.Delete');
 				},
 				{
 					data: 'volume'
+				},
+				{
+					data: 'keterangan'
 				},
 				{
 					data: 'option'

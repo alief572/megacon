@@ -69,6 +69,7 @@ class Komposisi_beton_model extends BF_Model
                 'no' => $no,
                 'jenis_beton' => $item->nm_jenis_beton,
                 'volume' => $item->ttl_volume,
+                'keterangan' => $item->keterangan,
                 'option' => $option
             ];
         }
