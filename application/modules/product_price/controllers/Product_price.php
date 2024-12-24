@@ -101,6 +101,12 @@ class Product_price extends Admin_Controller
 		$detail_mat_joint   = $this->db->get_where('bom_detail', array('no_bom' => $no_bom, 'category' => 'mat joint'))->result_array();
 		$product    		= $this->product_price_model->get_data_where_array('new_inventory_4', array('deleted_date' => NULL, 'category' => 'product'));
 
+		$this->db->select('a.*, b.nama as nm_material, b.up_to_value as price_ref');
+		$this->db->from('bom_material_lain a');
+		$this->db->join('new_inventory_4 b', 'b.code_lv4 = a.id_material');
+		$this->db->where('a.no_bom', $no_bom);
+		$get_material_lain = $this->db->get()->result();
+
 		$data = [
 			'header' => $header,
 			'detail' => $detail,
@@ -113,6 +119,7 @@ class Product_price extends Admin_Controller
 			'detail_end_plate' => $detail_end_plate,
 			'detail_ukuran_jadi' => $detail_ukuran_jadi,
 			'product' => $product,
+			'list_material_lain' => $get_material_lain,
 			'GET_LEVEL4' => get_inventory_lv4(),
 			'GET_ACC' => get_accessories(),
 			'GET_PRICE_REF' => get_price_ref()
@@ -425,6 +432,7 @@ class Product_price extends Admin_Controller
 			$this->db->join('cycletime_detail_machine b', 'b.id_machine = kd_mesin');
 			$this->db->join('cycletime_header c', 'c.id_time = b.id_time');
 			$this->db->where('c.id_product', $code_level4);
+			$this->db->where('a.deleted_by', null);
 			$this->db->group_by('b.id_machine, b.id_costcenter');
 			$get_rate_machine = $this->db->get()->result();
 			foreach($get_rate_machine as $item_rate_machine) {
@@ -437,6 +445,7 @@ class Product_price extends Admin_Controller
 			$this->db->join('cycletime_detail_detail b', 'b.mould = a.kd_mesin');
 			$this->db->join('cycletime_header c', 'c.id_time = b.id_time');
 			$this->db->where('c.id_product', $code_level4);
+			$this->db->where('a.deleted_by', null);
 			$this->db->group_by('b.mould', 'b.id_costcenter');
 			
 			$get_rate_mold = $this->db->get()->result();
@@ -487,6 +496,22 @@ class Product_price extends Admin_Controller
 			foreach($get_bom_detail as $item_bom_detail) {
 				$cost_material += ($item_bom_detail->up_to_value * $item_bom_detail->volume_m3);
 			}
+
+			$this->db->select('b.up_to_value, a.kebutuhan as volume_m3');
+			$this->db->from('bom_material_lain a');	
+			$this->db->join('new_inventory_4 b', 'b.code_lv4 = a.id_material');
+			$this->db->join('bom_header c', 'c.no_bom = a.no_bom');
+			$this->db->where('c.id_product', $code_level4);
+			$this->db->group_by('a.id');
+			$get_bom_material_lain = $this->db->get()->result();
+
+			// print_r($this->db->last_query());
+			// exit;
+			
+			foreach($get_bom_material_lain as $item_material_lain) {
+				$cost_material += ($item_material_lain->up_to_value * $item_material_lain->volume_m3);
+			}
+
 			//# khusus purtution
 			// $biaya_setting_mp 		= ($rate_mp / 60) * $rate_manpower;
 			// $biaya_setting_mesin 	= ($rate_mp / 60) * $rate_depresiasi;
