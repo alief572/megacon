@@ -34,52 +34,12 @@ $TOTAL_PRICE_ALL = 0;
 			</tr>
 		</table>
 		<hr>
-		<table class='' width='100%'>
-			<?php if (!empty($detail_assembly)) { ?>
-				<thead>
-					<tr>
-						<th colspan='5'>Product</th>
-					</tr>
-					<tr>
-						<th class='text-left'>#</th>
-						<th class='text-left' colspan='4'>Product Name</th>
-						<th class='text-left' colspan='2'>Variant</th>
-						<th class='text-center'>Qty</th>
-						<th class='text-right'>Price Unit</th>
-						<th class='text-right'>Total Price</th>
-					</tr>
-				</thead>
-				<tbody>
-					<?php
-					foreach ($detail_assembly as $val => $valx) {
-						$val++;
-
-						$variant_product 	= strtolower(get_name('bom_header', 'variant_product', 'no_bom', $valx['code_material']));
-						$id_product 		= strtolower(get_name('bom_header', 'id_product', 'no_bom', $valx['code_material']));
-						$nm_product 	= strtolower(get_name('new_inventory_4', 'nama', 'code_lv4', $id_product));
-						$TOTAL_PRICE_ALL += $valx['total_price'];
-						echo "<tr>";
-						echo "<td align='left'>" . $val . "</td>";
-						echo "<td colspan='4'>" . strtoupper($nm_product) . "</td>";
-						echo "<td colspan='2'>" . strtoupper($variant_product) . "</td>";
-						echo "<td align='center'>" . number_format($valx['qty']) . "</td>";
-						echo "<td align='right' class='text-green'>" . number_format($valx['price_ref'], 2) . "</td>";
-						echo "<td align='right' class='text-blue'>" . number_format($valx['total_price'], 2) . "</td>";
-						echo "</tr>";
-					}
-					?>
-				</tbody>
-			<?php } ?>
+		<table class='' width='100%' border="0">
 			<thead>
-				<tr>
-					<th colspan='5'>A. Mixing & Proses</th>
-				</tr>
 				<tr>
 					<th class='text-left' style='width: 3%;'>#</th>
 					<th class='text-left'>Material Name</th>
-					<th class='text-right' style='width: 8%;'>Berat</th>
-					<th class='text-right' style='width: 1%;'></th>
-					<th class='text-right' style='width: 8%;'>Berat Bersih</th>
+					<th class='text-right' style='width: 8%;'>Volume (m3)</th>
 					<th class='text-right' style='width: 8%;'>Price Ref</th>
 					<th class='text-right' style='width: 8%;'>Total Price</th>
 				</tr>
@@ -87,244 +47,44 @@ $TOTAL_PRICE_ALL = 0;
 			<tbody>
 				<?php
 				$SUM_TOTAL_BERAT = 0;
+				$SUM_TOTAL_PRICE = 0;
 				foreach ($detail as $val => $valx) {
 					$val++;
 					$nm_material		= '';
+					$id_material = '';
 
 					$get_nm_material = $this->db->get_where('tr_jenis_beton_detail', ['id_detail_material' => $valx['code_material']])->row();
 					if (!empty($get_nm_material)) {
 						$nm_material = $get_nm_material->nm_material;
+						$id_material = $get_nm_material->id_material;
 					}
 					$code_lv1		= (!empty($GET_LEVEL4[$valx['code_material']]['code_lv1'])) ? $GET_LEVEL4[$valx['code_material']]['code_lv1'] : '-';
 					$code_lv2		= (!empty($GET_LEVEL4[$valx['code_material']]['code_lv2'])) ? $GET_LEVEL4[$valx['code_material']]['code_lv2'] : '-';
 					$code_lv3		= (!empty($GET_LEVEL4[$valx['code_material']]['code_lv3'])) ? $GET_LEVEL4[$valx['code_material']]['code_lv3'] : '-';
 
-					$price_ref      = (!empty($GET_PRICE_REF[$valx['code_material']]['price_ref'])) ? $GET_PRICE_REF[$valx['code_material']]['price_ref'] : 0;
+					$price_ref      = (!empty($GET_PRICE_REF[$id_material]['up_to_value'])) ? $GET_PRICE_REF[$id_material]['up_to_value'] : 0;
 					$SUM_TOTAL_BERAT += $valx['volume_m3'];
 					$nm_category = strtolower(get_name('new_inventory_2', 'nama', 'code_lv2', $code_lv2));
 					echo "<tr>";
 					echo "<td align='left'>" . $val . "</td>";
 					echo "<td>" . strtoupper($nm_material) . "</td>";
-					echo "<td align='right'>" . number_format(0, 4) . " Kg</td>";
-					$berat_pengurang_additive = ($nm_category == 'resin') ? $BERAT_MINUS : 0;
-					// if($nm_category == 'resin'){
-					// 	echo "<td align='right' class='text-red'>".number_format($berat_pengurang_additive,4)." Kg</td>";
-					// }
-					// else{
-					echo "<td align='right' class='text-red'></td>";
-					// }
-					$berat_bersih = $valx['volume_m3'] - $berat_pengurang_additive;
-					$total_price = $berat_bersih * $price_ref;
-					$TOTAL_PRICE_ALL += $total_price;
-					echo "<td align='right'>" . number_format($berat_bersih, 4) . " Kg</td>";
+					echo "<td align='right'>".number_format($valx['volume_m3'], 4)."</td>";
 					echo "<td align='right' class='text-green'>" . number_format($price_ref, 2) . "</td>";
-					echo "<td align='right' class='text-blue'>" . number_format($total_price, 2) . "</td>";
+					echo "<td align='right' class='text-blue'>" . number_format($price_ref * $valx['volume_m3'], 2) . "</td>";
 					echo "</tr>";
+
+					$SUM_TOTAL_PRICE += ($price_ref * $valx['volume_m3']);
 				}
 				?>
 			</tbody>
-			<thead hidden>
+			<tfoot>
 				<tr>
-					<th colspan='5'>B. Additive</th>
+					<th colspan="2" class="text-right">Total</th>
+					<th class="text-right"><?= number_format($SUM_TOTAL_BERAT, 4) ?></th>
+					<th class="text-right"></th>
+					<th class="text-right"><?= number_format($SUM_TOTAL_PRICE, 2) ?></th>
 				</tr>
-				<tr>
-					<th class='text-left'>#</th>
-					<th class='text-left' colspan='3'>Fungsi Additive</th>
-					<th class='text-left' colspan='4'></th>
-				</tr>
-			</thead>
-			<tbody hidden>
-				<?php
-				$val = 0;
-				if (!empty($detail_additive)) {
-					$BERAT_MINUS = 0;
-					foreach ($detail_additive as $val => $valx) {
-						$val++;
-						echo "<tr>";
-						echo "<td align='left'>" . $val . "</td>";
-						echo "<td align='left' colspan='3'>";
-						echo strtoupper(get_name('bom_header', 'additive_name', 'no_bom', $valx['code_material']));
-						echo "</td>";
-						echo "<td align='left' colspan='6'>";
-						echo "<table width='100%'>";
-						echo "<tr>";
-						echo "<th>Material Name</th>";
-						echo "<th width='11%' class='text-right'>Berat Bersih</th>";
-						echo "<th width='11%' class='text-right'>% Pengurangan</th>";
-						echo "<th width='11%' class='text-right'>Berat Pengurangan</th>";
-						echo "<th width='11%'></th>";
-						echo "<th width='11%'></th>";
-						echo "</tr>";
-						$detail_custom    = $this->db->get_where('bom_detail_custom', array('no_bom_detail' => $valx['no_bom_detail'], 'category' => 'additive'))->result();
-						$nomor = 0;
-						$PENGURANGAN_BERAT = 0;
-						foreach ($detail_custom as $valx2) {
-							$nomor++;
-							$nm_material = (!empty($GET_LEVEL4[$valx2->code_material]['nama'])) ? $GET_LEVEL4[$valx2->code_material]['nama'] : '';
-							$PENGURANGAN_BERAT += $valx2->weight * $valx2->persen / 100;
-
-							$price_ref      = (!empty($GET_PRICE_REF[$valx2->code_material]['price_ref'])) ? $GET_PRICE_REF[$valx2->code_material]['price_ref'] : 0;
-							$total_price    = $valx2->weight * $price_ref;
-							$TOTAL_PRICE_ALL += $total_price;
-							echo "<tr>";
-							echo "<td>" . $nm_material . "</td>";
-							echo "<td align='right'>" . number_format($valx2->weight, 4) . " Kg</td>";
-							echo "<td align='right'>" . number_format($valx2->persen, 2) . " %</td>";
-							echo "<td align='right'>" . number_format($valx2->weight * $valx2->persen / 100, 4) . " Kg</td>";
-							echo "<td align='right' class='text-green'>" . number_format($price_ref, 2) . "</td>";
-							echo "<td align='right' class='text-blue'>" . number_format($total_price, 2) . "</td>";
-							echo "</tr>";
-						}
-						$BERAT_MINUS += $PENGURANGAN_BERAT;
-						echo "<tr>";
-						echo "<td></td>";
-						echo "<td align='right'></td>";
-						echo "<td align='right'></td>";
-						echo "<td class='text-red' align='right'>" . number_format($PENGURANGAN_BERAT, 4) . " Kg</td>";
-						echo "<td align='right'></td>";
-						echo "<td align='right'></td>";
-						echo "</tr>";
-						echo "</table>";
-						echo "</td>";
-						echo "</tr>";
-					}
-					echo "<tr>";
-					echo "<td align='left'></td>";
-					echo "<td align='left' colspan='3'></td>";
-					echo "<td align='left' colspan='6'>";
-					echo "<table width='100%'>";
-					echo "<tr>";
-					echo "<th></th>";
-					echo "<th width='11%' class='text-right'></th>";
-					echo "<th width='11%' class='text-right'></th>";
-					echo "<th width='11%' class='text-right text-red'>" . number_format($BERAT_MINUS, 4) . " Kg</th>";
-					echo "<th width='11%' class='text-right'></th>";
-					echo "<th width='11%' class='text-right'></th>";
-					echo "</tr>";
-					echo "</table>";
-					echo "</td>";
-					echo "</tr>";
-				}
-				?>
-			</tbody>
-			<?php if (!empty($detail_topping)) { ?>
-				<thead>
-					<tr>
-						<th colspan='5'>B. Topping</th>
-					</tr>
-					<tr>
-						<th class='text-left'>#</th>
-						<th class='text-left' colspan='3'>Topping</th>
-						<th class='text-center' colspan='6'></th>
-					</tr>
-				</thead>
-				<tbody>
-					<?php
-					$val = 0;
-					if (!empty($detail_topping)) {
-						foreach ($detail_topping as $val => $valx) {
-							$val++;
-							echo "<tr>";
-							echo "<td align='left'>" . $val . "</td>";
-							echo "<td align='left' colspan='3'>";
-							echo strtoupper(get_name('new_inventory_3', 'nama', 'code_lv3', get_name('bom_header', 'id_product', 'no_bom', $valx['code_material'])) . ' | ' . get_name('bom_header', 'variant_product', 'no_bom', $valx['code_material']));
-							echo "</td>";
-							echo "<td align='left' colspan='6'>";
-							echo "<table  width='100%'>";
-							echo "<tr>";
-							echo "<th>Material Name</th>";
-							echo "<th width='11%' class='text-right'>Berat Bersih</th>";
-							echo "<th width='11%' class='text-right'></th>";
-							echo "<th width='11%' class='text-right'></th>";
-							echo "</tr>";
-							$detail_custom    = $this->db->get_where('bom_detail_custom', array('no_bom_detail' => $valx['no_bom_detail'], 'category' => 'topping'))->result();
-							$nomor = 0;
-							foreach ($detail_custom as $valx2) {
-								$nomor++;
-								$nm_material 	= (!empty($GET_LEVEL4[$valx2->code_material]['nama'])) ? $GET_LEVEL4[$valx2->code_material]['nama'] : '';
-								$price_ref      = (!empty($GET_PRICE_REF[$valx2->code_material]['price_ref'])) ? $GET_PRICE_REF[$valx2->code_material]['price_ref'] : 0;
-								$berat 			= $valx2->weight * $valx['qty'];
-								$total_price    = $berat * $price_ref;
-								$TOTAL_PRICE_ALL += $total_price;
-								echo "<tr>";
-								echo "<td>" . $nm_material . "</td>";
-								echo "<td align='right'>" . number_format($berat, 4) . " Kg</td>";
-								echo "<td align='right' class='text-green'>" . number_format($price_ref, 2) . "</td>";
-								echo "<td align='right' class='text-blue'>" . number_format($total_price, 2) . "</td>";
-								echo "</tr>";
-							}
-							echo "</table>";
-							echo "</td>";
-							echo "</tr>";
-						}
-					}
-					?>
-
-				</tbody>
-			<?php } ?>
-			<?php if (!empty($detail_mat_joint)) { ?>
-				<thead>
-					<tr>
-						<th colspan='5'>Material Joint</th>
-					</tr>
-					<tr>
-						<th class='text-left' style='width: 3%;'>#</th>
-						<th class='text-left'>Material Name</th>
-						<th class='text-right' style='width: 8%;'>Berat</th>
-						<th class='text-right' style='width: 1%;'></th>
-						<th class='text-right' style='width: 8%;'>Berat Bersih</th>
-						<th class='text-right' style='width: 8%;'>Price Ref</th>
-						<th class='text-right' style='width: 8%;'>Total Price</th>
-					</tr>
-				</thead>
-				<tbody>
-					<?php
-					foreach ($detail_mat_joint as $val => $valx) {
-						$val++;
-						$nm_material		= '';
-
-						$get_nm_material = $this->db->get_where('tr_jenis_beton_detail', ['id_detail_material' => $valx['code_material']])->row();
-						if (!empty($get_nm_material)) {
-							$nm_material = $get_nm_material->nm_material;
-						}
-
-						$code_lv1		= (!empty($GET_LEVEL4[$valx['code_material']]['code_lv1'])) ? $GET_LEVEL4[$valx['code_material']]['code_lv1'] : '-';
-						$code_lv2		= (!empty($GET_LEVEL4[$valx['code_material']]['code_lv2'])) ? $GET_LEVEL4[$valx['code_material']]['code_lv2'] : '-';
-						$code_lv3		= (!empty($GET_LEVEL4[$valx['code_material']]['code_lv3'])) ? $GET_LEVEL4[$valx['code_material']]['code_lv3'] : '-';
-
-						$price_ref      = (!empty($GET_PRICE_REF[$valx['code_material']]['price_ref'])) ? $GET_PRICE_REF[$valx['code_material']]['price_ref'] : 0;
-
-						$nm_category = strtolower(get_name('new_inventory_2', 'nama', 'code_lv2', $code_lv2));
-						echo "<tr>";
-						echo "<td align='left'>" . $val . "</td>";
-						echo "<td>" . strtoupper($nm_material) . "</td>";
-						echo "<td align='right'>" . number_format($valx['volume_m3'], 4) . " Kg</td>";
-						echo "<td align='right' class='text-red'></td>";
-						$berat_bersih = $valx['volume_m3'];
-						$total_price = $berat_bersih * $price_ref;
-						$TOTAL_PRICE_ALL += $total_price;
-						echo "<td align='right'>" . number_format($berat_bersih, 4) . " Kg</td>";
-						echo "<td align='right' class='text-green'>" . number_format($price_ref, 2) . "</td>";
-						echo "<td align='right' class='text-blue'>" . number_format($total_price, 2) . "</td>";
-						echo "</tr>";
-					}
-					?>
-				<?php } ?>
-				</tbody>
-				<?php
-				if ($header[0]->category == 'standard') {
-					$harga_per_kilo = ($SUM_TOTAL_BERAT > 0 and $TOTAL_PRICE_ALL > 0) ? $TOTAL_PRICE_ALL / $SUM_TOTAL_BERAT : 0;
-				?>
-
-				<?php
-				} else {
-				?>
-					<tr>
-						<th class='text-left' colspan='4'></th>
-						<th class='text-left' colspan='5'>TOTAL PRICE</th>
-						<th class='text-right text-red'><?= number_format($TOTAL_PRICE_ALL, 2); ?></th>
-					</tr>
-				<?php } ?>
+			</tfoot>
 		</table>
 	</div>
 </div>
