@@ -83,6 +83,8 @@ foreach ($detail_topping as $val => $valx) {
                             echo "<td>" . $value['keterangan'] . "</td>";
                             echo "<td class='text-center'><span class='text-primary btncursor' id='btnShowMaterial' data-bom='" . $no_bom . "' >Detail</span></td>";
                             echo "</tr>";
+
+                            $harga_modal += $product_price[0]['price_material'];
                         }
                     }
                     //===============NEW=====================
@@ -141,7 +143,6 @@ foreach ($detail_topping as $val => $valx) {
                             $harga_modal += $cost_machine;
                         }
                     }
-
 
                     $nomor = 3;
                     foreach ($dataList as $key => $value) {
@@ -221,9 +222,11 @@ foreach ($detail_topping as $val => $valx) {
                         }
                     }
 
+
+
                     $cost_pengajuan = ($product_price[0]['pengajuan_price_list'] > 0) ? $product_price[0]['pengajuan_price_list'] : $cost;
-                    $kurs = ($product_price[0]['kurs'] > 0) ? $product_price[0]['kurs'] : 0;
-                    $price_idr = ($product_price[0]['price_idr'] > 0) ? $product_price[0]['price_idr'] : 0;
+                    $kurs = ($product_price[0]['kurs'] > 0) ? $product_price[0]['kurs'] : '';
+                    $price_idr = ($product_price[0]['price_idr'] > 0) ? $product_price[0]['price_idr'] : '';
                     ?>
                     <tr>
                         <td></td>
