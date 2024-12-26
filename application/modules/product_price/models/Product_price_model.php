@@ -83,7 +83,7 @@ class Product_price_model extends BF_Model
 			$nestedData[]	= "<div align='center'>" . $nomor . "</div>";
 			$nestedData[]	= "<div align='left'>" . strtoupper(strtolower($row['nama_level1'])) . "</div>";
 			$nestedData[]	= "<div align='left'>" . strtoupper($row['nama_level4'] . $variant_product) . "</div>";
-			$nestedData[]	= "<div align='right'>" . number_format($row['berat_material'], 4) . "</div>";
+			$nestedData[]	= "<div align='right'>" . number_format($row['berat_material'], 4) . " m3</div>";
 			$nestedData[]	= "<div align='right'>" . number_format($row['price_list_idr'], 2) . "</div>";
 
 			$nestedData[]	= "<div align='right'>" . number_format($row['pengajuan_price_list'], 2) . "</div>";
