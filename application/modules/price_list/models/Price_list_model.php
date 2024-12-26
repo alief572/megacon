@@ -87,7 +87,7 @@ class Price_list_model extends BF_Model
 			// $nestedData[]	= "<div align='left'>".strtoupper(strtolower($row['variant_product']))."</div>";
 			// $nestedData[]	= "<div align='left'>".strtoupper(strtolower($row['color_product']))."</div>";
 			// $nestedData[]	= "<div align='left'>".strtoupper(strtolower($row['surface_product']))."</div>";
-			$nestedData[]	= "<div align='right'>" . number_format($row['berat_material'], 4) . " Kg</div>";
+			$nestedData[]	= "<div align='right'>" . number_format($row['berat_material'], 4) . "</div>";
 			// $nestedData[]	= "<div align='right'>".number_format($row['price_material'],2)."</div>";
 			// $nestedData[]	= "<div align='right'>".number_format($row['price_man_power'],2)."</div>";
 			// $nestedData[]	= "<div align='right'>".number_format($row['price_total'],2)."</div>";

@@ -556,7 +556,7 @@ class Product_price extends Admin_Controller
 			$cost_marketing = $GET_RATE_COSTING[12];
 			$cost_interest = $GET_RATE_COSTING[13];
 
-			$harga_modal = ($TOTAL_PRICE_ALL + $cost_man_power + $cost_mesin + $cost_enginnering + $cost_foh + $cost_sdm_ho + $cost_marketing + $cost_interest);
+			$harga_modal = ($cost_material + $cost_man_power + $cost_mesin + $cost_enginnering + $cost_foh + $cost_sdm_ho + $cost_marketing + $cost_interest);
 
 			$cost_profit 		= ($harga_modal * $persen_profit / 100);
 			$bottom_price 		= ($harga_modal + $cost_profit);
