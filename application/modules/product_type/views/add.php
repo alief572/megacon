@@ -17,7 +17,7 @@
 		<form id="data_form" autocomplete="off">
 			<div class="form-group row">
 				<div class="col-md-3">
-				<label for="">Product Type <span class='text-danger'>*</span></label>
+				<label for="">Kategori Produk <span class='text-danger'>*</span></label>
 				</div>
 				<div class="col-md-9">
 				<input type="hidden" class="form-control" id="id" name="id" value='<?=$id;?>'>
