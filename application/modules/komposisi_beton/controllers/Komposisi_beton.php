@@ -92,6 +92,8 @@ class Komposisi_beton extends Admin_Controller
                         'id_material' => $item['id_material'],
                         'nm_material' => $item['material_name'],
                         'volume' => $item['volume'],
+                        'satuan_lainnya' => $item['satuan_lainnya'],
+                        'satuan' => $item['satuan'],
                         'keterangan' => $item['keterangan'],
                         'created_by' => $this->auth->user_id(),
                         'created_date' => date('Y-m-d H:i:s')
@@ -234,6 +236,29 @@ class Komposisi_beton extends Admin_Controller
             'nm_material' => $nm_material
         ]);
         
+    }
+
+    public function hitung_volume_lain() {
+        $post = $this->input->post();
+
+        $satuan_lainnya = 0;
+        $satuan = '';
+
+        $this->db->select('a.*, b.code as satuan');
+        $this->db->from('new_inventory_4 a');
+        $this->db->join('ms_satuan b', 'b.id = a.id_unit', 'left');
+        $this->db->where('a.code_lv4', $post['id_material']);
+        $get_material = $this->db->get()->row();
+
+        if(!empty($get_material)) {
+            $satuan_lainnya = ($post['input_volume'] * $get_material->konversi);
+            $satuan = $get_material->satuan;
+        }
+
+        echo json_encode([
+            'satuan_lainnya' => ucfirst($satuan_lainnya),
+            'satuan' => $satuan
+        ]);
     }
 
     public function get_data_jenis_beton()

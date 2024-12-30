@@ -44,6 +44,8 @@ $keterangan = (isset($header)) ? $header->keterangan : '';
                             <th class="text-center">#</th>
                             <th class="text-center">Material Name</th>
                             <th class="text-center">Volume (m3)</th>
+                            <th class="text-center">Satuan Lainnya</th>
+                            <th class="text-center">Satuan</th>
                             <th class="text-center">Keterangan</th>
                             <th class="text-center">#</th>
                         </tr>
@@ -76,7 +78,15 @@ $keterangan = (isset($header)) ? $header->keterangan : '';
                                 echo '</td>';
 
                                 echo '<td class="text-left">';
-                                echo '<input type="number" class="form-control form-control-sm" name="detail_material[' . $no . '][volume]" value="' . $item->volume . '" step="0.0001">';
+                                echo '<input type="number" class="form-control form-control-sm input_volume" name="detail_material[' . $no . '][volume]" value="' . $item->volume . '" step="0.0001" data-no="' . $no . '">';
+                                echo '</td>';
+
+                                echo '<td class="text-left">';
+                                echo '<input type="number" class="form-control form-control-sm" name="detail_material[' . $no . '][satuan_lainnya]" value="' . $item->satuan_lainnya . '" step="0.0001" readonly>';
+                                echo '</td>';
+
+                                echo '<td class="text-left">';
+                                echo '<input type="text" class="form-control form-control-sm" name="detail_material[' . $no . '][satuan]" value="' . $item->satuan . '" readonly>';
                                 echo '</td>';
 
                                 echo '<td class="text-left">';
@@ -88,6 +98,8 @@ $keterangan = (isset($header)) ? $header->keterangan : '';
                                 echo '</td>';
 
                                 echo '</tr>';
+
+                                $no++;
                             }
                         }
                         ?>
@@ -140,7 +152,15 @@ $keterangan = (isset($header)) ? $header->keterangan : '';
         hasil += '</td>';
 
         hasil += '<td class="text-left">';
-        hasil += '<input type="number" class="form-control form-control-sm" name="detail_material[' + no_detail_material + '][volume]" step="0.0001">';
+        hasil += '<input type="number" class="form-control form-control-sm input_volume" name="detail_material[' + no_detail_material + '][volume]" step="0.0001" data-no="' + no_detail_material + '">';
+        hasil += '</td>';
+
+        hasil += '<td class="text-left">';
+        hasil += '<input type="number" class="form-control form-control-sm" name="detail_material[' + no_detail_material + '][satuan_lainnya]" step="0.0001" readonly>';
+        hasil += '</td>';
+
+        hasil += '<td class="text-left">';
+        hasil += '<input type="text" class="form-control form-control-sm" name="detail_material[' + no_detail_material + '][satuan]" readonly>';
         hasil += '</td>';
 
         hasil += '<td class="text-left">';
@@ -190,6 +210,34 @@ $keterangan = (isset($header)) ? $header->keterangan : '';
             }
         });
     })
+
+    $(document).on('change', '.input_volume', function() {
+        var no = $(this).data('no');
+        var input_volume = $(this).val();
+        var id_material = $('select[name="detail_material[' + no + '][id_material]"]').val();
+
+        $.ajax({
+            type: 'post',
+            url: siteurl + active_controller + 'hitung_volume_lain',
+            data: {
+                'id_material': id_material,
+                'input_volume': input_volume
+            },
+            dataType: 'json',
+            cache: false,
+            success: function(result) {
+                $('input[name="detail_material[' + no + '][satuan_lainnya]"]').val(result.satuan_lainnya);
+                $('input[name="detail_material[' + no + '][satuan]"]').val(result.satuan);
+            },
+            error: function(result) {
+                swal({
+                    type: 'error',
+                    title: 'Error !',
+                    text: 'Please try again later !'
+                });
+            }
+        })
+    });
 
     $(document).on('submit', '#frm-data', function(e) {
         e.preventDefault();
