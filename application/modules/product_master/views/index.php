@@ -23,7 +23,7 @@ $ENABLE_DELETE  = has_permission('Product_Master.Delete');
 		<div class="form-group row">
 			<div class="col-md-2">
 				<select name="level1" id="level1" class='form-control select2'>
-					<option value="0">ALL PRODUCT TYPE</option>
+					<option value="0">ALL KATEGORI PRODUK</option>
 					<?php
 					foreach ($get_level_1 as $key => $value) {
 						echo "<option value='" . $value['code_lv1'] . "'>" . strtoupper($value['nama']) . "</option>";
@@ -33,7 +33,7 @@ $ENABLE_DELETE  = has_permission('Product_Master.Delete');
 			</div>
 			<div class="col-md-2">
 				<select name="level2" id="level2" class='form-control select2'>
-					<option value="0">ALL PRODUCT CATEGORY</option>
+					<option value="0">ALL TIPE UKURAN</option>
 					<?php
 					foreach ($get_level_2 as $key => $value) {
 						echo "<option value='" . $value['code_lv2'] . "'>" . strtoupper($value['nama']) . "</option>";
@@ -43,7 +43,7 @@ $ENABLE_DELETE  = has_permission('Product_Master.Delete');
 			</div>
 			<div class="col-md-4">
 				<select name="level3" id="level3" class='form-control select2'>
-					<option value="0">ALL PRODUCT JENIS</option>
+					<option value="0">ALL VARIAN</option>
 					<?php
 					foreach ($get_level_3 as $key => $value) {
 						echo "<option value='" . $value['code_lv3'] . "'>" . strtoupper($value['nama']) . "</option>";
