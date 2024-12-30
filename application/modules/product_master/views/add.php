@@ -35,7 +35,7 @@
 		<form id="data_form_master_product" method="post"  autocomplete="off" enctype='multiple/form-data'>
 			<div class="form-group row">
 				<div class="col-md-2">
-				<label for="">Product Type <span class='text-danger'>*</span></label>
+				<label for="">Kategori Produk <span class='text-danger'>*</span></label>
 				</div>
 				<div class="col-md-10">
 				<select name="code_lv1" id="code_lv1" class='chosen-select'>
@@ -51,7 +51,7 @@
 			</div>
 			<div class="form-group row">
 				<div class="col-md-2">
-				<label for="">Product Category <span class='text-danger'>*</span></label>
+				<label for="">Tipe Ukuran <span class='text-danger'>*</span></label>
 				</div>
 				<div class="col-md-10">
 				<select name="code_lv2" id="code_lv2" class='chosen-select'>
@@ -72,7 +72,7 @@
 			</div>
 			<div class="form-group row">
 				<div class="col-md-2">
-				<label for="">Product Jenis <span class='text-danger'>*</span></label>
+				<label for="">Varian <span class='text-danger'>*</span></label>
 				</div>
 				<div class="col-md-10">
 				<select name="code_lv3" id="code_lv3" class='chosen-select'>
@@ -93,7 +93,7 @@
 			</div>
 			<div class="form-group row">
 				<div class="col-md-2">
-				<label for="">Product Master <span class='text-danger'>*</span></label>
+				<label for="">Nama Produk <span class='text-danger'>*</span></label>
 				</div>
 				<div class="col-md-10">
 				<input type="hidden" class="form-control" id="id" name="id" value='<?=$id;?>'>

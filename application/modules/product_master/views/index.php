@@ -67,7 +67,7 @@ $ENABLE_DELETE  = has_permission('Product_Master.Delete');
 					<th>Product Category</th>
 					<th>Product Jenis</th>
 					<th>Product Master</th>
-					<th>Code Master</th>
+					<th>Kode Produk</th>
 					<th>Status</th>
 					<th width='7%'>Action</th>
 				</tr>
