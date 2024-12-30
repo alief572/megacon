@@ -107,7 +107,7 @@ $ENABLE_DELETE  = has_permission('Komposisi_Beton.Delete');
 								title: 'Success !',
 								text: result.pesan
 							}, function(lanjut) {
-								window.location.href = siteurl + active_controller;
+								DataTables();
 							});
 						} else {
 							swal({

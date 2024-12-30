@@ -92,6 +92,8 @@ $volume_m3 = (!empty($header)) ? $header[0]->volume_m3 : 0;
 								<th class='text-center' style='width: 4%;'>#</th>
 								<th class='text-center' style='width: 40%;'>Material Name</th>
 								<th class="text-center">Volume (m3)</th>
+								<th class="text-center">Satuan Lainnya</th>
+								<th class="text-center">Satuan</th>
 							</tr>
 						</thead>
 						<tbody id='body_table'>
@@ -110,6 +112,14 @@ $volume_m3 = (!empty($header)) ? $header[0]->volume_m3 : 0;
 									echo '<td class="text-center">';
 									echo number_format($item->volume_m3, 4);
 									echo '<input type="hidden" name="detail_material[' . $no . '][volume_material]" value="' . $item->volume_m3 . '">';
+									echo '</td>';
+									echo '<td class="text-center">';
+									echo number_format($item->satuan_lainnya, 4);
+									echo '<input type="hidden" name="detail_material[' . $no . '][satuan_lainnya]" value="' . $item->satuan_lainnya . '">';
+									echo '</td>';
+									echo '<td class="text-center">';
+									echo ucfirst($item->satuan);
+									echo '<input type="hidden" name="detail_material[' . $no . '][satuan]" value="' . $item->satuan . '">';
 									echo '</td>';
 
 									echo '</tr>';
