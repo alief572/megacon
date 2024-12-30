@@ -151,6 +151,8 @@ class Komposisi_beton extends Admin_Controller
                         'id_material' => $item['id_material'],
                         'nm_material' => $item['material_name'],
                         'volume' => $item['volume'],
+                        'satuan_lainnya' => $item['satuan_lainnya'],
+                        'satuan' => $item['satuan'],
                         'keterangan' => $item['keterangan'],
                         'created_by' => $this->auth->user_id(),
                         'created_date' => date('Y-m-d H:i:s')

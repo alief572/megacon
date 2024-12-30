@@ -99,6 +99,8 @@ class Bom extends Admin_Controller
 				$ArrDetail[$val]['no_bom_detail'] 	= $no_bom . "-" . $urut;
 				$ArrDetail[$val]['code_material'] 	= $valx['id_detail_material'];
 				$ArrDetail[$val]['volume_m3'] = $valx['volume_material'];
+				$ArrDetail[$val]['satuan_lainnya'] = $valx['satuan_lainnya'];
+				$ArrDetail[$val]['satuan'] = $valx['satuan'];
 				$ArrDetail[$val]['created_by'] = $this->auth->user_id();
 				$ArrDetail[$val]['created_date'] = date('Y-m-d H:i:s');
 			}
@@ -748,6 +750,20 @@ class Bom extends Admin_Controller
 
 		$no = 1;
 		foreach ($get_jenis_beton_detail as $item) {
+
+			$volume_m3 = ($post['volume_produk'] * $item->volume);
+
+			$this->db->select('a.*, b.code as satuan');
+			$this->db->from('new_inventory_4 a');
+			$this->db->join('ms_satuan b', 'b.id = a.id_unit', 'left');
+			$this->db->where('a.code_lv4', $item->id_material);
+			$get_material = $this->db->get()->row();
+
+			$satuan_lainnya = (!empty($get_material)) ? ($volume_m3 * $get_material->konversi) : 0;
+			$satuan = (!empty($get_material)) ? $get_material->satuan : '';
+
+			
+
 			$hasil .= '<tr>';
 
 			$hasil .= '<td class="text-center">';
@@ -760,8 +776,18 @@ class Bom extends Admin_Controller
 			$hasil .= '</td>';
 
 			$hasil .= '<td class="text-center">';
-			$hasil .= number_format(($post['volume_produk'] * $item->volume), 4);
-			$hasil .= '<input type="hidden" name="detail_material[' . $no . '][volume_material]" value="' . ($post['volume_produk'] * $item->volume) . '">';
+			$hasil .= number_format($volume_m3, 4);
+			$hasil .= '<input type="hidden" name="detail_material[' . $no . '][volume_material]" value="' . $volume_m3 . '">';
+			$hasil .= '</td>';
+
+			$hasil .= '<td class="text-center">';
+			$hasil .= number_format($satuan_lainnya, 4);
+			$hasil .= '<input type="hidden" name="detail_material[' . $no . '][satuan_lainnya]" value="' . $satuan_lainnya . '">';
+			$hasil .= '</td>';
+
+			$hasil .= '<td class="text-center">';
+			$hasil .= ucfirst($satuan);
+			$hasil .= '<input type="hidden" name="detail_material[' . $no . '][satuan]" value="' . $satuan . '">';
 			$hasil .= '</td>';
 
 			$hasil .= '</tr>';
