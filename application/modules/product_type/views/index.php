@@ -95,7 +95,7 @@ thead input {
 
 	$(document).on('click', '.edit', function(e){
 		var id = $(this).data('id');
-		$("#head_title").html("<b>Product Type</b>");
+		$("#head_title").html("<b>Kategori Produk</b>");
 		$.ajax({
 			type:'POST',
 			url:siteurl+active_controller+'/add/'+id,
@@ -108,7 +108,7 @@ thead input {
 	});
 
 	$(document).on('click', '.add', function(){
-		$("#head_title").html("<b>Product Type</b>");
+		$("#head_title").html("<b>Kategori Produk</b>");
 		$.ajax({
 			type:'POST',
 			url:siteurl+active_controller+'/add/',
