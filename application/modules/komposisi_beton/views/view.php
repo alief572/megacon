@@ -31,6 +31,8 @@ $keterangan = (isset($header)) ? $header->keterangan : '';
                         <th class="text-center">#</th>
                         <th class="text-center">Material Name</th>
                         <th class="text-center">Volume (m3)</th>
+                        <th class="text-center">Satuan Lainnya</th>
+                        <th class="text-center">Satuan</th>
                         <th class="text-center">Keterangan</th>
                     </tr>
                 </thead>
@@ -51,6 +53,14 @@ $keterangan = (isset($header)) ? $header->keterangan : '';
 
                             echo '<td class="text-left">';
                             echo '<input type="number" class="form-control form-control-sm" name="detail_material[' . $no . '][volume]" value="' . $item->volume . '" step="0.01" readonly>';
+                            echo '</td>';
+
+                            echo '<td class="text-left">';
+                            echo '<input type="number" class="form-control form-control-sm" name="detail_material[' . $no . '][satuan_lainnya]" value="' . $item->satuan_lainnya . '" step="0.0001" readonly>';
+                            echo '</td>';
+
+                            echo '<td class="text-left">';
+                            echo '<input type="text" class="form-control form-control-sm" name="detail_material[' . $no . '][satuan]" value="' . $item->satuan . '" readonly>';
                             echo '</td>';
 
                             echo '<td class="text-left">';
