@@ -104,7 +104,6 @@ class Master_customer extends Admin_Controller
 				'alamat' 			=> ucwords($data['alamat']),
 				'country_code' 		=> $data['country_code'],
 				'provinsi' 			=> $data['provinsi'],
-				'kota' 				=> $data['kota'],
 				'kode_pos' 			=> $data['kode_pos'],
 				'telpon' 			=> str_replace('-', '', $data['telpon']),
 				'fax' 				=> str_replace('-', '', $data['fax']),
@@ -260,7 +259,7 @@ class Master_customer extends Admin_Controller
 			$det_Province	= $this->db->order_by('id_prov')->get_where('provinsi', array('country_code' => 'IDN'))->result_array();
 			$det_Bidang		= $this->db->order_by('bidang_usaha')->get_where('bidang_usaha', array('deleted' => 'N'))->result_array();
 			$restContry		= $this->db->order_by('country_name', 'asc')->get('country')->result_array();
-			$restMkt		= $this->db->order_by('nm_karyawan')->get_where('employee', array('department' => 1))->result_array();
+			$restMkt		= $this->db->order_by('nm_karyawan')->get_where('employee', array('department' => 4))->result_array();
 			$restHeader		= $this->db->get_where('customer', array('id_customer' => $id))->result_array();
 			$restReff		= $this->db->order_by('id_reff', 'desc')->limit(1)->get_where('customer_referensi', array('id_customer' => $id))->result_array();
 
