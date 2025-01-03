@@ -104,7 +104,6 @@ class Master_customer extends Admin_Controller
 				'alamat' 			=> ucwords($data['alamat']),
 				'country_code' 		=> $data['country_code'],
 				'provinsi' 			=> $data['provinsi'],
-				'kota' 				=> $data['kota'],
 				'kode_pos' 			=> $data['kode_pos'],
 				'telpon' 			=> str_replace('-', '', $data['telpon']),
 				'fax' 				=> str_replace('-', '', $data['fax']),
