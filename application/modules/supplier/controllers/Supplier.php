@@ -68,6 +68,7 @@ class Supplier extends Admin_Controller
 			$address    = $data['address'];
 			$tax_address    = $data['tax_address'];
 			$note    = $data['note'];
+			$bank    = $data['bank'];
 			$bank_account    = $data['bank_account'];
 
 			$created_by   = 'updated_by';
@@ -109,6 +110,7 @@ class Supplier extends Admin_Controller
 				'address'			=> $address,
 				'tax_address'		=> $tax_address,
 				'note'			    => $note,
+				'bank'		=> $bank,
 				'bank_account'		=> $bank_account,
 				$created_by	    	=> $session['id_user'],
 				$created_date	  	=> date('Y-m-d H:i:s')
@@ -146,6 +148,7 @@ class Supplier extends Admin_Controller
 			$country    = $this->db->order_by('name', 'asc')->get_where('country_all', array('iso3 !=' => NULL))->result_array();
 			$provinsi   = $this->db->order_by('urut', 'asc')->get('provinsi')->result_array();
 			$currency   = $this->db->order_by('negara', 'asc')->get('master_currency')->result_array();
+			$bank       = $this->db->order_by('name', 'asc')->get('bank')->result_array();
 
 			// print_r($header);
 			// exit;
@@ -154,6 +157,7 @@ class Supplier extends Admin_Controller
 				'country' => $country,
 				'provinsi' => $provinsi,
 				'currency' => $currency,
+				'bank_list' => $bank
 			];
 			$this->template->title('Add Supplier');
 			$this->template->page_icon('fa fa-edit');
