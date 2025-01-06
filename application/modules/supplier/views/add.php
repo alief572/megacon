@@ -18,6 +18,7 @@ $tax_number   	= (!empty($header[0]->tax_number)) ? $header[0]->tax_number : '';
 $address   		= (!empty($header[0]->address)) ? $header[0]->address : '';
 $tax_address   	= (!empty($header[0]->tax_address)) ? $header[0]->tax_address : '';
 $note   		= (!empty($header[0]->note)) ? $header[0]->note : '';
+$bank   = (!empty($header[0]->bank)) ? $header[0]->bank : '';
 $bank_account   = (!empty($header[0]->bank_account)) ? $header[0]->bank_account : '';
 
 // print_r($header);
@@ -159,10 +160,21 @@ $bank_account   = (!empty($header[0]->bank_account)) ? $header[0]->bank_account 
 					</select>
 				</div>
 				<div class="col-md-2">
-					<label for="customer">Bank Account</label>
+					<label for="customer">Bank</label>
 				</div>
 				<div class="col-md-4">
-					<input type="text" name="bank_account" id="bank_account" class='form-control input-md' placeholder='Bank Account' value="<?= $bank_account; ?>">
+					<select class="form-control input-md chosen-select" name="bank">
+						<option value="">- Bank -</option>
+						<?php
+						foreach ($bank_list as $item_bank) {
+							$selected = '';
+							if ($item_bank['id'] == $bank) {
+								$selected = 'selected';
+							}
+							echo '<option value="' . $item_bank['id'] . '" ' . $selected . '>' . $item_bank['name'] . '</option>';
+						}
+						?>
+					</select>
 				</div>
 			</div>
 			<div class="form-group row">
@@ -171,6 +183,12 @@ $bank_account   = (!empty($header[0]->bank_account)) ? $header[0]->bank_account 
 				</div>
 				<div class="col-md-4">
 					<textarea name='note' id='note' class='form-control input-md' placeholder='Note' rows='2'><?= $note; ?></textarea>
+				</div>
+				<div class="col-md-2">
+					<label for="customer">Bank Account</label>
+				</div>
+				<div class="col-md-4">
+					<input type="text" name="bank_account" id="bank_account" class='form-control input-md' placeholder='Bank Account' value="<?= $bank_account; ?>">
 				</div>
 			</div>
 			<button type="button" class="btn btn-danger" style='float:right; margin-left:5px;' name="back" id="back"><i class="fa fa-reply"></i> Back</button>
