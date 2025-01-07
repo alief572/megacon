@@ -63,8 +63,6 @@ class Ms_diskon_model extends BF_Model
         parent::__construct();
     }
 
-
-
     public function get_data_diskon()
     {
         $this->db->select('a.*, b.nm_lengkap');
@@ -73,5 +71,17 @@ class Ms_diskon_model extends BF_Model
         $this->db->where('a.deleted', 0);
         $query = $this->db->get();
         return $query->result();
+    }
+
+    public function generate_id_diskon($no) {
+        $generate_id = $this->db->query("SELECT MAX(id) AS max_id FROM ms_diskon WHERE id LIKE '%MDISC-" . date('m-y') . "%'")->row();
+		$kodeBarang = $generate_id->max_id;
+		$urutan = (int) substr($kodeBarang, 11, 5);
+		$urutan += $no;
+		$tahun = date('m-y');
+		$huruf = "MDISC-";
+		$kodecollect = $huruf . $tahun . sprintf("%06s", $urutan);
+
+        return $kodecollect;
     }
 }

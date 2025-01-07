@@ -31,7 +31,6 @@ $ENABLE_DELETE  = has_permission('Master_Discount.Delete');
 					<th>Keterangan</th>
 					<th>Discount Awal</th>
 					<th>Discount Akhir</th>
-					<th>Approve By</th>
 					<th>Aksi</th>
 				</tr>
 			</thead>
@@ -47,7 +46,6 @@ $ENABLE_DELETE  = has_permission('Master_Discount.Delete');
 							<td><?= $record->keterangan ?></td>
 							<td><?= $record->diskon_awal ?></td>
 							<td><?= $record->diskon_akhir ?></td>
-							<td><?= $record->nm_lengkap ?></td>
 							<td style="padding-left:20px">
 
 								<?php if ($ENABLE_MANAGE) : ?>
