@@ -54,10 +54,12 @@ class Ms_diskon extends Admin_Controller
 
 		if ($id !== null) {
 			$get_data = $this->db->query("SELECT a.*, b.nm_lengkap FROM ms_diskon a LEFT JOIN users b ON b.id_user = a.created_by WHERE a.id = '" . $id . "'")->row();
+			$get_data_approve_by = $this->db->get_where('ms_diskon_approve_by', ['id_diskon' => $id])->result();
 			$get_user = $this->db->query('SELECT id_user, nm_lengkap FROM users')->result();
 
 			$this->template->set('results', [
 				'data_diskon' => $get_data,
+				'data_diskon_approve_by' => $get_data_approve_by,
 				'list_user' => $get_user
 			]);
 
@@ -72,30 +74,31 @@ class Ms_diskon extends Admin_Controller
 
 	function GetProduk()
 	{
-		$loop = $_GET['jumlah'] + 1;
+		$loop = $_GET['jumlah'];
 
 		$user = $this->db->query("SELECT a.* FROM users as a ")->result();
-
-
-
 
 		echo "
 		<tr id='tr_$loop'>
 			<td>$loop</td>";
-
-
 		echo	"
 			<td id='tingkatan_$loop'><input type='text' align='right' class='form-control input-sm' id='used_tingkatan_$loop' required name='dt[$loop][tingkatan]'></td>
             <td id='keterangan_$loop'><input type='text' align='right' class='form-control input-sm' id='used_keterangan_$loop' required name='dt[$loop][keterangan]'></td>
             <td id='diskon_awal_$loop'><input type='text' align='right' class='form-control input-sm' id='used_diskon_awal_$loop' required name='dt[$loop][diskon_awal]' value='0'></td>
             <td id='diskon_akhir_$loop'><input type='text' align='right' class='form-control input-sm' id='used_diskon_akhir_$loop' required name='dt[$loop][diskon_akhir]' value='0'></td>
             <td>
+				<table class='w-100 list_approve_by_".$loop."'>
+
+				</table>
 				<select id='used_user_$loop' name='dt[$loop][user]' data-no='$loop' class='form-control select' required>
 					<option value=''>-Pilih-</option>";
 		foreach ($user as $user) {
 			echo "<option value='$user->id_user'>$user->nm_lengkap</option>";
 		}
 		echo	"</select>
+			<button type='button' class='btn btn-sm btn-success add_approve_by' data-no='" . $loop . "'>
+				<i class='fa fa-plus'></i> Add Approve By
+			</button>
 			</td>
 			<td align='center'>
                 <button type='button' class='btn btn-sm btn-danger' title='Hapus Data' data-role='qtip' onClick='return HapusItem($loop);'><i class='fa fa-close'></i></button>
@@ -114,25 +117,54 @@ class Ms_diskon extends Admin_Controller
 
 		$this->db->trans_begin();
 
-		$numb1 = 0;
+		$numb1 = 1;
 		$dt = array();
+		$dt_approve_by = array();
 		if (isset($post['id_diskon'])) {
-			// print_r('masuk');
-			// exit;
+			$this->db->delete('ms_diskon_approve_by', ['id_diskon' => $post['id_diskon']]);
+			if(isset($post['dta_'.$numb1.'_id'])) {
+				foreach($post['dta_'.$numb1.'_id'] as $item_approve_by) {
+					$get_nm_karyawan = $this->db->get_where('users', ['id_user' => $item_approve_by])->row();
+					$nm_karyawan = (!empty($get_nm_karyawan)) ? $get_nm_karyawan->nm_lengkap : '';
+					$dt_approve_by[] = [
+						'id_diskon' => $post['id_diskon'],
+						'id_karyawan' => $item_approve_by,
+						'nm_karyawan' => $nm_karyawan,
+						'created_by' => $this->auth->user_id(),
+						'created_date' => date('Y-m-d H:i:s')
+					];
+					$numb1++;
+				}
+			}
+			$this->db->insert_batch('ms_diskon_approve_by', $dt_approve_by);
 			$this->db->update('ms_diskon', [
 				'tingkatan' => $post['tingkatan'],
 				'keterangan' => $post['keterangan'],
 				'diskon_awal' => $post['diskon_awal'],
 				'diskon_akhir' => $post['diskon_akhir'],
-				'approved_by' => $post['approved_by'],
 				'modified_on' => date('Y-m-d H:i:s'),
 				'modified_by' => $this->auth->user_id()
 			], ['id' => $post['id_diskon']]);
 		} else {
 			foreach ($_POST['dt'] as $used) {
 				if (!empty($used['tingkatan'])) {
-					$numb1++;
+					
+					$id_diskon = $this->Ms_diskon_model->generate_id_diskon($numb1);
+					if(isset($post['dta_'.$numb1.'_id'])) {
+						foreach($post['dta_'.$numb1.'_id'] as $item_approve_by) {
+							$get_nm_karyawan = $this->db->get_where('users', ['id_user' => $item_approve_by])->row();
+							$nm_karyawan = (!empty($get_nm_karyawan)) ? $get_nm_karyawan->nm_lengkap : '';
+							$dt_approve_by[] = [
+								'id_diskon' => $id_diskon,
+								'id_karyawan' => $item_approve_by,
+								'nm_karyawan' => $nm_karyawan,
+								'created_by' => $this->auth->user_id(),
+								'created_date' => date('Y-m-d H:i:s')
+							];
+						}
+					}
 					$dt[] =  array(
+						'id' => $id_diskon,
 						'tingkatan'		    => $used['tingkatan'],
 						'keterangan'		    => $used['keterangan'],
 						'diskon_awal'	    => $used['diskon_awal'],
@@ -141,15 +173,20 @@ class Ms_diskon extends Admin_Controller
 						'created_on'			=> date('Y-m-d H:i:s'),
 						'created_by'			=> $this->auth->user_id()
 					);
+
+					$numb1++;
 				}
 			}
 
+			// print_r($dt_approve_by);
+			// exit;
+
 			$this->db->insert_batch('ms_diskon', $dt);
+			$this->db->insert_batch('ms_diskon_approve_by', $dt_approve_by);
 		}
 
 
-		// print_r($dt);
-		// exit();
+		
 
 
 		if ($this->db->trans_status() === FALSE) {
@@ -232,7 +269,15 @@ class Ms_diskon extends Admin_Controller
 		];
 
 		$this->db->trans_begin();
-		$this->db->where('id', $id)->update("ms_diskon", $data);
+
+		$del_header = $this->db->where('id', $id)->update("ms_diskon", $data);
+
+		$data_approve_by = [
+			'deleted_by' => $this->auth->user_id(),
+			'deleted_date' => date('Y-m-d H:i:s')
+		];
+		$del_approve_by = $this->db->update('ms_diskon_approve_by', $data_approve_by, ['id_diskon' => $id]);
+		
 
 		if ($this->db->trans_status() === FALSE) {
 			$this->db->trans_rollback();
@@ -248,5 +293,17 @@ class Ms_diskon extends Admin_Controller
 			);
 		}
 		echo json_encode($status);
+	}
+
+	public function get_karyawan_name() {
+		$id_karyawan = $this->input->post('id_karyawan');
+
+		$get_karyawan = $this->db->get_where('users', ['id_user' => $id_karyawan])->row();
+
+		$nm_karyawan = (!empty($get_karyawan)) ? $get_karyawan->nm_lengkap : '';
+
+		echo json_encode([
+			'nm_karyawan' => $nm_karyawan
+		]);
 	}
 }

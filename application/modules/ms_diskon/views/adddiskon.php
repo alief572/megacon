@@ -54,8 +54,28 @@ $tanggal = date('Y-m-d');
 															<td>
 																<input type="text" class="form-control form-control-sm" name="diskon_akhir" value="' . $results['data_diskon']->diskon_akhir . '">
 															</td>
-															<td class="text-center" style="width: 150px;">
-																<select name="approved_by" id="" class="form-control form-control-sm select">
+															<td class="text-left" style="width: 150px;">
+																<table class="w-100 list_approve_by_1">
+																';
+
+												$no_approve_by = 1;
+												foreach ($results['data_diskon_approve_by'] as $item) {
+													echo '<tr class="tr_approve_by_' . $no_approve_by . '">';
+													echo '<td>';
+													echo '<input type="hidden" name="dta_1_id[]" class="id_karyawan_1" value="' . $item->id_karyawan . '">';
+													echo '<input type="text" class="form-control form-control-sm" name="dta_1_nm[]" class="nm_karyawan_1" value="' . $item->nm_karyawan . '" readonly>';
+													echo '</td>';
+													echo '<td class="text-center">';
+													echo '<button type="button" class="btn btn-sm btn-danger del_approve_by" title="Delete" data-no_approve_by="' . $no_approve_by . '"><i class="fa fa-trash"></i></button>';
+													echo ' </td>';
+													echo '</tr>';
+
+													$no_approve_by++;
+												}
+
+												echo '
+																</table>
+																<select name="approved_by" id="used_user_1" class="form-control form-control-sm select">
 																	<option value="">- Approve By -</option>
 																';
 
@@ -69,6 +89,9 @@ $tanggal = date('Y-m-d');
 
 												echo '
 																</select>
+																<button type="button" class="btn btn-sm btn-success add_approve_by" data-no="1">
+																	<i class="fa fa-plus"></i> Add Approve By
+																</button>
 															</td>
 															<td></td>
 														</tr>
@@ -96,6 +119,9 @@ $tanggal = date('Y-m-d');
 	//$('#input-kendaraan').hide();
 	var base_url = '<?php echo base_url(); ?>';
 	var active_controller = '<?php echo ($this->uri->segment(1)); ?>';
+
+	var no_approval = 1;
+	var no_approve_by = 1;
 	$(document).ready(function() {
 		var max_fields2 = 10; //maximum input boxes allowed
 		var wrapper2 = $(".input_fields_wrap2"); //Fields wrapper
@@ -194,6 +220,50 @@ $tanggal = date('Y-m-d');
 
 	});
 
+	$(document).on('click', '.add_approve_by', function() {
+		var no = $(this).data('no');
+
+		var id_karyawan = $('#used_user_' + no).val();
+		let nm_karyawan = null;
+
+		$.ajax({
+			type: 'post',
+			url: siteurl + active_controller + '/get_karyawan_name',
+			data: {
+				'id_karyawan': id_karyawan
+			},
+			dataType: 'json',
+			success: function(result) {
+				nm_karyawan = result.nm_karyawan;
+
+				var hasil = '<tr class="tr_approve_by_' + no_approve_by + '">';
+
+				hasil += '<td>';
+				hasil += '<input type="hidden" name="dta_' + no + '_id[]" class="id_karyawan_' + no + '" value="' + id_karyawan + '">';
+				hasil += '<input type="text" class="form-control form-control-sm" name="dta_' + no + '_nm[]" class="nm_karyawan_' + no + '" value="' + nm_karyawan + '" readonly>';
+				hasil += '</td>';
+				hasil += '<td class="text-center">';
+				hasil += '<button type="button" class="btn btn-sm btn-danger del_approve_by" title="Delete" data-no_approve_by="' + no_approve_by + '"><i class="fa fa-trash"></i></button>'
+				hasil += ' </td>';
+
+				hasil += '</tr>';
+
+				$('.list_approve_by_' + no).append(hasil);
+
+				no_approve_by++;
+			},
+			error: function(result) {
+				nm_karyawan = '';
+			}
+		});
+	});
+
+	$(document).on('click', '.del_approve_by', function() {
+		var no_approve_by = $(this).data('no_approve_by');
+
+		$('.tr_approve_by_' + no_approve_by).remove();
+	})
+
 	function get_customer() {
 		var id_customer = $("#id_customer").val();
 		$.ajax({
@@ -229,16 +299,18 @@ $tanggal = date('Y-m-d');
 
 
 	function GetProduk() {
-		var jumlah = $('#list_spk').find('tr').length;
+		var jumlah = no_approval;
 		$.ajax({
 			type: "GET",
-			url: siteurl + 'ms_diskon/GetProduk',
+			url: siteurl + active_controller + '/GetProduk',
 			data: "jumlah=" + jumlah,
 			success: function(html) {
 				$("#list_spk").append(html);
 				$('.select').select2({
 					width: '100%'
 				});
+
+				no_approval++;
 			}
 		});
 	}
