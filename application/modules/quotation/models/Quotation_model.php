@@ -851,10 +851,10 @@ class Quotation_model extends BF_Model
 
 			$nestedData 	= array();
 			$nestedData[]	= "<td align='center'>" . $nomor . "</td>";
-			$nestedData[]	= "<td align='left'>" . strtoupper(strtolower($row['product_code'])) . "</td>";
+			$nestedData[]	= "<td align='left'>" . strtoupper(strtolower($row['nama_level1'])) . "</td>";
 			$nestedData[]	= "<td align='left'>" . strtoupper(strtolower($row['nama_level4'])) . "</td>";
 			// $nestedData[]	= "<td align='left' style='min-width: 15% !important;'>" . number_format($row['width'], 2) . " x ".number_format($row['length'], 2)."</td>";
-			$nestedData[]	= "<td align='left'>" . strtoupper(strtolower($row['variant_product'])) . "</td>";
+			$nestedData[]	= "<td align='left'>" . number_format($row['berat_material'], 4) . " m3</td>";
 			// $nestedData[]	= "<td align='left'>" . strtoupper(strtolower($row['surface'])) . "</td>";
 			// $nestedData[]	= "<td align='right'>".number_format($row['price_man_power'],2)."</td>";
 			// $nestedData[]	= "<td align='right'>" . number_format($row['price_total'], 2) . "</td>";

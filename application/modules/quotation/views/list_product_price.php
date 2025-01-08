@@ -19,9 +19,9 @@ $ENABLE_DELETE  = has_permission('Quotation.Delete');
         <thead>
             <tr>
                 <th>#</th>
-                <th>Product Code</th>
-                <th>Product Master</th>
-                <th>Variant</th>
+                <th>Product Type</th>
+                <th>Product Name</th>
+                <th>Total Weight</th>
                 <th>Price List (IDR)</th>
                 <?php if ($ENABLE_MANAGE) : ?>
                     <th>Action</th>
