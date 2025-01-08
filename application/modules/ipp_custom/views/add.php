@@ -131,26 +131,11 @@ $instalasi2 = (!empty($header[0]->instalasi_option) AND $header[0]->instalasi_op
 			</div>
 			<div class="form-group row">
 				<div class="col-md-2">
-					<label>Packing</label>
-				</div>
-				<div class="col-md-4">
-					<select id="packing" name="packing" class="form-control input-md chosen-select">
-						<option value="0">Select An Packing</option>
-						<?php foreach ($packing_list as $val => $value){
-						$sel = ($value['value'] == $packing)?'selected':'';
-						?>
-						<option value="<?= $value['value'];?>" <?=$sel;?>><?= strtoupper($value['view'])?></option>
-						<?php } ?>
-					</select>
-				</div>
-				<div class="col-md-2">
 					<label>Guarantee</label>
 				</div>
 				<div class="col-md-4">
 					<input type="text" name="guarantee" id="guarantee" class='form-control input-md' placeholder='Guarantee' value="<?=$guarantee;?>">
 				</div>
-			</div>
-			<div class="form-group row">
 				<div class="col-md-2">
 					<label>Installation</label>
 				</div>
@@ -160,14 +145,14 @@ $instalasi2 = (!empty($header[0]->instalasi_option) AND $header[0]->instalasi_op
 						<option value="Y" <?=$instalasi2;?>>YES</option>
 					</select>
 				</div>
+			</div>
+			<div class="form-group row">
 				<div class="col-md-2">
 					<label>Delivery Date</label>
 				</div>
 				<div class="col-md-4">
 					<input type="text" name="delivery_date" id="delivery_date" class='form-control input-md datepicker' readonly placeholder='Delivery Date' value="<?=$delivery_date;?>">
 				</div>
-			</div>
-			<div class="form-group row">
 				<div class="col-md-2">
 					<label>Delivery Address</label>
 				</div>
