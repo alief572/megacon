@@ -37,8 +37,6 @@
 					<th>Product Type</th>
 					<th>Product Master</th>
 					<th>Variant</th>
-					<th>Color</th>
-					<th>Ukuran Jadi</th>
 					<th class='text-right'>Total Weight</th>
 					<th class='text-right'>Price Material</th>
 					<!-- <th class='text-right'>Price MP</th> -->

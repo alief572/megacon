@@ -68,26 +68,26 @@ class Price_list_sales_model extends BF_Model{
 				$nomor = ($total_data - $start_dari) - $urut2;
 			}
 
-			$detail_ipp_ukuranjadi  = $this->db->get_where('product_price_ukuran_jadi',array('kode' => $row['kode'], 'deleted_date'=> null))->result_array();
+			// $detail_ipp_ukuranjadi  = $this->db->get_where('product_price_ukuran_jadi',array('kode' => $row['kode'], 'deleted_date'=> null))->result_array();
 			$HTML = "";
-			if(!empty($detail_ipp_ukuranjadi)){
-				$HTML .= "<table class='table table-bordered'>";
-					$HTML .= "<tr>";
-						$HTML .= "<td align='right'>Length</td>";
-						$HTML .= "<td align='right'>Width</td>";
-						$HTML .= "<td align='right'>Qty</td>";
-						$HTML .= "<td align='right'>Price Total</td>";
-					$HTML .= "</tr>";
-					foreach ($detail_ipp_ukuranjadi as $key => $value) {
-						$HTML .= "<tr>";
-							$HTML .= "<td align='right'>".number_format($value['length'])."</td>";
-							$HTML .= "<td align='right'>".number_format($value['width'])."</td>";
-							$HTML .= "<td align='right'>".number_format($value['qty'])."</td>";
-							$HTML .= "<td align='right'>".number_format($value['app_price'])."</td>";
-						$HTML .= "</tr>";
-					}
-				$HTML .= "</table>";
-			}
+			// if(!empty($detail_ipp_ukuranjadi)){
+			// 	$HTML .= "<table class='table table-bordered'>";
+			// 		$HTML .= "<tr>";
+			// 			$HTML .= "<td align='right'>Length</td>";
+			// 			$HTML .= "<td align='right'>Width</td>";
+			// 			$HTML .= "<td align='right'>Qty</td>";
+			// 			$HTML .= "<td align='right'>Price Total</td>";
+			// 		$HTML .= "</tr>";
+			// 		foreach ($detail_ipp_ukuranjadi as $key => $value) {
+			// 			$HTML .= "<tr>";
+			// 				$HTML .= "<td align='right'>".number_format($value['length'])."</td>";
+			// 				$HTML .= "<td align='right'>".number_format($value['width'])."</td>";
+			// 				$HTML .= "<td align='right'>".number_format($value['qty'])."</td>";
+			// 				$HTML .= "<td align='right'>".number_format($value['app_price'])."</td>";
+			// 			$HTML .= "</tr>";
+			// 		}
+			// 	$HTML .= "</table>";
+			// }
 
 
 			$nestedData 	= array();
@@ -95,8 +95,8 @@ class Price_list_sales_model extends BF_Model{
 			$nestedData[]	= "<div align='left'>".strtoupper(strtolower($row['nama_level1']))."</div>";
 			$nestedData[]	= "<div align='left'>".strtoupper(strtolower($row['nama_level4']))."</div>";
 			$nestedData[]	= "<div align='left'>".strtoupper(strtolower($row['variant_product']))."</div>";
-			$nestedData[]	= "<div align='left'>".strtoupper($row['nm_color'])."</div>";
-			$nestedData[]	= "<div align='left'>".$HTML."</div>";
+			// $nestedData[]	= "<div align='left'>".strtoupper($row['nm_color'])."</div>";
+			// $nestedData[]	= "<div align='left'>".$HTML."</div>";
 			$nestedData[]	= "<div align='right'>".number_format($row['berat_material'],4)." Kg</div>";
 			$nestedData[]	= "<div align='right'>".number_format($row['price_material'],2)."</div>";
 			// $nestedData[]	= "<div align='right'>".number_format($row['price_man_power'],2)."</div>";
@@ -160,14 +160,12 @@ class Price_list_sales_model extends BF_Model{
 					a.*,
 					b.nama AS nama_level4,
 					d.variant_product,
-					d.color as nm_color,
 					c.nama AS nama_level1
 				FROM
 					product_price a 
 					LEFT JOIN new_inventory_4 b ON a.code_lv4=b.code_lv4
 					LEFT JOIN new_inventory_1 c ON b.code_lv1=c.code_lv1
-					LEFT JOIN bom_header d ON a.no_bom=d.no_bom,
-					(SELECT @row:=0) r
+					LEFT JOIN bom_header d ON a.no_bom=d.no_bom
 				WHERE 1=1 AND a.deleted_date IS NULL ".$WHERE." AND
 					(
 						a.no_bom LIKE '%".$this->db->escape_like_str($like_value)."%'
