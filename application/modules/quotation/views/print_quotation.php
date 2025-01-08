@@ -39,21 +39,21 @@ $ENABLE_DELETE  = has_permission('Quotation.Delete');
     <table class="table w-100">
         <tr>
             <td rowspan="2" style="width: 100px;">
-                <?= $results['logo'] ?>
+               
             </td>
             <td style="vertical-align: middle; border-bottom: 1px solid #ccc;">
-                <h3 style="font-style: italic;font-weight: bold;">Outstanding Reliant Innovative</h3>
+                <h3 style="font-style: italic;font-weight: bold;">PT. MEGACON BANGUN PERKASA</h3>
             </td>
-            <td class="text-center" style="width:200px; border-bottom: 1px solid #ccc;">
-                <img src="<?= base_url('assets/images/ISO.png'); ?>" width="100" alt="">
-            </td>
+            <!-- <td class="text-center" style="width:200px; border-bottom: 1px solid #ccc;"> -->
+                <!-- <img src="<?= base_url('assets/images/ISO.png'); ?>" width="100" alt=""> -->
+            <!-- </td> -->
             <!-- <td class="text-right" style="vertical-align: top;">
                 Jl. Pembangunan 2 No. 34 <br>
                 Kec. Batuceper, Kota Tanggerang, Banten 15121 <br>
                 <span style="font-weight:bold;">Hotline Service :</span> (+62) 21 557 66 153 <span style="font-weight:bold;">WhatsApp :</span> (+62) 858 9138 3212
             </td> -->
         </tr>
-        <tr>
+        <!-- <tr>
             <td style="height: 60px;">
                 <?= strtoupper($results['pt_name']) ?>
             </td>
@@ -65,7 +65,7 @@ $ENABLE_DELETE  = has_permission('Quotation.Delete');
                 Code 15122
                 Indonesia
             </td>
-        </tr>
+        </tr> -->
     </table>
 
 
@@ -131,8 +131,6 @@ $ENABLE_DELETE  = has_permission('Quotation.Delete');
                     <th class="text-center" style="width:250px;">ITEM DESCRIPTION</th>
                     <th class="text-center">CODE</th>
                     <th class="text-center">VARIANT</th>
-                    <th class="text-center">COLOR</th>
-                    <th class="text-center">SURFACE</th>
                     <th class="text-center">QTY</th>
                     <th class="text-center">UNIT</th>
                     <th class="text-center">PRICE</th>
@@ -162,10 +160,8 @@ $ENABLE_DELETE  = has_permission('Quotation.Delete');
                         $br_total = (strlen((($penawaran_detail->harga_satuan - ($penawaran_detail->harga_satuan * $penawaran_detail->diskon_persen / 100)) * $penawaran_detail->qty)) >= 8) ? '<br>' : '';
 
                         echo '</td>
-                                <td class="text-center">' . $penawaran_detail->code . '</td>
+                                <td class="text-center">' . $penawaran_detail->code_product . '</td>
                                 <td class="text-center">' . $penawaran_detail->variant_product . '</td>
-                                <td class="text-center">' . $penawaran_detail->color . '</td>
-                                <td class="text-center">' . $penawaran_detail->surface . '</td>
                                 <td class="text-center">' . number_format($penawaran_detail->qty) . '</td>
                                 <td class="text-center">' . ucfirst($penawaran_detail->unit_packing) . '</td>
                                 <td class="text-right">' . $results['data_penawaran']->currency . ' ' . $br_harga . number_format((($penawaran_detail->harga_satuan + $penawaran_detail->cutting_fee + $penawaran_detail->delivery_fee))) . '</td>
@@ -279,25 +275,25 @@ $ENABLE_DELETE  = has_permission('Quotation.Delete');
             </tbody>
             <tbody>
                 <tr>
-                    <th class="text-right" colspan="9">TOTAL NETT</th>
+                    <th class="text-right" colspan="7">TOTAL NETT</th>
                     <th class="text-right"><?= $results['data_penawaran']->currency ?> <?= number_format($harga_seb_diskon) ?></th>
                 </tr>
                 <?php 
                     if($results['show_disc'] !== '' && $results['show_disc'] !== null) {
                         echo '
                             <tr>
-                                <th class="text-right" colspan="9">DISCOUNT</th>
+                                <th class="text-right" colspan="7">DISCOUNT</th>
                                 <th class="text-right">'.$results['data_penawaran']->currency.' '. number_format($ttl_diskon) .'</th>
                             </tr>
                         ';
                     }
                 ?>
                 <tr>
-                    <th class="text-right" colspan="9">VAT <?= number_format($results['data_penawaran']->ppn) ?>%</th>
+                    <th class="text-right" colspan="7">VAT <?= number_format($results['data_penawaran']->ppn) ?>%</th>
                     <th class="text-right"><?= $results['data_penawaran']->currency ?> <?= number_format(($harga_ses_diskon * $results['data_penawaran']->ppn / 100)) ?></th>
                 </tr>
                 <tr>
-                    <th class="text-right" colspan="9">GRAND TOTAL NETT</th>
+                    <th class="text-right" colspan="7">GRAND TOTAL NETT</th>
                     <th class="text-right"><?= $results['data_penawaran']->currency ?> <?= number_format($harga_ses_diskon + ($harga_ses_diskon * $results['data_penawaran']->ppn / 100)) ?></th>
                 </tr>
             </tbody>
@@ -309,21 +305,21 @@ $ENABLE_DELETE  = has_permission('Quotation.Delete');
     <table class="table w-100">
         <tr>
             <td rowspan="2" style="width: 100px;">
-                <?= $results['logo'] ?>
+               
             </td>
             <td style="vertical-align: middle; border-bottom: 1px solid #ccc;">
-                <h3 style="font-style: italic;font-weight: bold;">Outstanding Reliant Innovative</h3>
+                <h3 style="font-style: italic;font-weight: bold;">PT. MEGACON BANGUN PERKASA</h3>
             </td>
-            <td class="text-center" style="width:200px; border-bottom: 1px solid #ccc;">
-                <img src="<?= base_url('assets/images/ISO.png'); ?>" width="100" alt="">
-            </td>
+            <!-- <td class="text-center" style="width:200px; border-bottom: 1px solid #ccc;"> -->
+                <!-- <img src="<?= base_url('assets/images/ISO.png'); ?>" width="100" alt=""> -->
+            <!-- </td> -->
             <!-- <td class="text-right" style="vertical-align: top;">
                 Jl. Pembangunan 2 No. 34 <br>
                 Kec. Batuceper, Kota Tanggerang, Banten 15121 <br>
                 <span style="font-weight:bold;">Hotline Service :</span> (+62) 21 557 66 153 <span style="font-weight:bold;">WhatsApp :</span> (+62) 858 9138 3212
             </td> -->
         </tr>
-        <tr>
+        <!-- <tr>
             <td style="height: 60px;">
                 <?= strtoupper($results['pt_name']) ?>
             </td>
@@ -335,7 +331,7 @@ $ENABLE_DELETE  = has_permission('Quotation.Delete');
                 Code 15122
                 Indonesia
             </td>
-        </tr>
+        </tr> -->
     </table>
 
     <!-- <div class="col-md-2"> -->
@@ -408,7 +404,9 @@ $ENABLE_DELETE  = has_permission('Quotation.Delete');
     ?>
 
     <div style="padding-top: 60px;">
-        <b style="text-decoration: underline;">Yours Faithfully</b> <br><br><br><br>
+        <b style="text-decoration: underline;">Yours Faithfully</b> <br>
+        <img src="<?= base_url($tanda_tangan) ?>" alt="" width="100" height="100">
+        <br><br><br>
         <b style="text-decoration: underline;"><?= $results['data_penawaran']->nama_sales ?></b>
     </div>
     <!-- </div> -->

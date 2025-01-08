@@ -40,13 +40,11 @@ class Quotation extends Admin_Controller
 		$get_penawaran = $this->db->query('SELECT a.*, b.nm_customer, b.alamat, b.telpon, c.name as nama_top FROM tr_penawaran a LEFT JOIN customer b ON b.id_customer = a.id_customer LEFT JOIN list_help c ON c.id = a.top WHERE a.no_penawaran = "' . $no_penawaran . '"')->row();
 		$get_penawaran_detail = $this->db->query('
 			SELECT 
-				a.*, 
-				e.kode as code, 
+				a.*,
+				b.code as code_product,
 				c.code as unit_packing, 
 				d.code as unit_measure, 
-				e.variant_product, 
-				e.color, 
-				e.surface 
+				e.variant_product
 			FROM 
 				tr_penawaran_detail a 
 				LEFT JOIN new_inventory_4 b ON b.code_lv4 = a.id_category3 
@@ -71,6 +69,14 @@ class Quotation extends Admin_Controller
 
 		$get_other_item = $this->db->get_where('tr_penawaran_other_item', ['id_penawaran' => $no_penawaran])->result();
 
+		$this->db->select('b.tanda_tangan');
+		$this->db->from('users a');
+		$this->db->join('employee b', 'b.id = a.employee_id', 'left');
+		$this->db->where('a.id_user', $this->auth->user_id());
+		$get_tanda_tangan = $this->db->get()->row();
+
+		$tanda_tangan = (!empty($get_tanda_tangan)) ? $get_tanda_tangan->tanda_tangan : '';
+
 		if ($show_disc !== null) {
 			$data = [
 				'data_penawaran' => $get_penawaran,
@@ -79,7 +85,8 @@ class Quotation extends Admin_Controller
 				'list_other_cost' => $get_other_cost,
 				'show_disc' => $show_disc,
 				'pt_name' => $pt_name,
-				'list_other_item' => $get_other_item
+				'list_other_item' => $get_other_item,
+				'tanda_tangan' => $tanda_tangan
 			];
 		} else {
 			$data = [
@@ -116,6 +123,14 @@ class Quotation extends Admin_Controller
 
 		$get_other_item = $this->db->get_where('tr_penawaran_other_item', ['id_penawaran' => $no_penawaran])->result();
 
+		$this->db->select('b.tanda_tangan');
+		$this->db->from('users a');
+		$this->db->join('employee b', 'b.id = a.employee_id', 'left');
+		$this->db->where('a.id_user', $this->auth->user_id());
+		$get_tanda_tangan = $this->db->get()->row();
+
+		$tanda_tangan = (!empty($get_tanda_tangan)) ? $get_tanda_tangan->tanda_tangan : '';
+
 		if ($show_disc !== null) {
 			$data = [
 				'data_penawaran' => $get_penawaran,
@@ -124,7 +139,8 @@ class Quotation extends Admin_Controller
 				'list_other_cost' => $get_other_cost,
 				'show_disc' => $show_disc,
 				'pt_name' => $pt_name,
-				'list_other_item' => $get_other_item
+				'list_other_item' => $get_other_item,
+				'tanda_tangan' => $tanda_tangam
 			];
 		} else {
 			$data = [
