@@ -396,7 +396,9 @@ $ENABLE_DELETE  = has_permission('Quotation.Delete');
     ?>
 
     <div style="padding-top: 60px;">
-        <b style="text-decoration: underline;">Yours Faithfully</b> <br><br><br><br>
+        <b style="text-decoration: underline;">Yours Faithfully</b> <br>
+        <img src="<?= base_url($tanda_tangan) ?>" alt="" width="100" height="100">
+        <br><br><br>
         <b style="text-decoration: underline;"><?= $results['data_penawaran']->nama_sales ?></b>
     </div>
     <!-- </div> -->
