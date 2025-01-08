@@ -684,14 +684,7 @@
                                         <tbody>
                                             <tr>
                                                 <td>
-                                                    <select name="" id="" class="form-control form-control-sm item_new select2">
-                                                        <option value="">- Other Item -</option>
-                                                        <?php
-                                                        foreach ($results['list_other_item'] as $other_item) {
-                                                            echo '<option value="' . $other_item->id_product . '">' . $other_item->product_code . ' - ' . $other_item->nm_product . '</option>';
-                                                        }
-                                                        ?>
-                                                    </select>
+                                                    <input type="text" name="other_item_name" id="" class="form-control form-control-sm" placeholder="- Other Item -">
                                                 </td>
                                                 <td>
                                                     <input type="text" name="price_other_new" id="" class="form-control form-control-sm price_other_new text-right auto_num" onchange="hitung_new_total_other_item()">
@@ -709,7 +702,7 @@
                                         </tbody>
                                         <tbody>
                                             <tr>
-                                                <td colspan="3" class="text-right">Grand Total</td>
+                                                <td colspan="3" class="text-right">Total Other Cost</td>
                                                 <td class="text-right col_grand_total_other_item"><?= number_format($grand_total_other_item, 2) ?></td>
                                             </tr>
                                         </tbody>
@@ -1514,13 +1507,16 @@
                     diskon_nilai = diskon_nilai.split(',').join('');
                     diskon_nilai = parseFloat(diskon_nilai);
 
-                    var cutting_fee = $('.cutting_fee_' + id).val();
-                    cutting_fee = cutting_fee.split(',').join('');
-                    cutting_fee = parseFloat(cutting_fee);
+                    // var cutting_fee = $('.cutting_fee_' + id).val();
+                    // cutting_fee = cutting_fee.split(',').join('');
+                    // cutting_fee = parseFloat(cutting_fee);
 
                     var delivery_fee = $('.delivery_fee_' + id).val();
                     delivery_fee = delivery_fee.split(',').join('');
                     delivery_fee = parseFloat(delivery_fee);
+
+                    var cutting_fee = 0;
+                    var delivery_fee = 0;
 
                     $.ajax({
                         type: 'post',
@@ -2290,7 +2286,7 @@
                 });
 
                 $(document).on('click', '.add_other_item', function() {
-                    var id_product = $('.item_new').val();
+                    var nm_other_item = $('input[name="other_item_name"]').val();
                     var qty = $('.qty_other_new').val();
                     if (qty !== '') {
                         qty = qty.split(',').join('');
@@ -2311,7 +2307,7 @@
                         type: 'post',
                         url: siteurl + active_controller + 'add_other_item',
                         data: {
-                            'id_product': id_product,
+                            'nm_other_item': nm_other_item,
                             'qty': qty,
                             'price': price,
                             'no_surat': no_surat
@@ -2319,20 +2315,6 @@
                         cache: false,
                         dataType: 'json',
                         success: function(result) {
-                            if (result.status == 1) {
-                                swal({
-                                    title: 'Success !',
-                                    text: 'Success, the other item has been inputed !',
-                                    type: 'success'
-                                });
-                            } else {
-                                swal({
-                                    title: 'Failed !',
-                                    text: 'Sorry, the other item has not been inputed!',
-                                    type: 'warning'
-                                });
-                            }
-
                             refresh_list_other_item();
                             hitung_total();
                         },
@@ -2358,22 +2340,8 @@
                         cache: false,
                         dataType: 'json',
                         success: function(result) {
-                            if (result.status == '1') {
-                                swal({
-                                    title: 'Success !',
-                                    text: 'Success, the other item has been deleted !',
-                                    type: 'success'
-                                }, function(after) {
-                                    refresh_list_other_item();
-                                    hitung_total();
-                                });
-                            } else {
-                                swal({
-                                    title: 'Failed !',
-                                    text: 'Sorry, the other item has not been deleted !',
-                                    type: 'success'
-                                });
-                            }
+                            refresh_list_other_item();
+                            hitung_total();
                         },
                         error: function(result) {
                             swal({

@@ -14,17 +14,6 @@
                                         <div class="col-sm-6">
                                             <div class="form-group row">
                                                 <div class="col-md-4">
-                                                    <label for="customer">Quotation By :</label>
-                                                </div>
-                                                <div class="col-md-8">
-                                                    <select name="quote_by" id="" class="form-control" disabled>
-                                                        <option value="ORINDO" <?= (isset($results['data_penawaran']) && $results['data_penawaran']->quote_by == 'ORINDO') ? 'selected' : null ?>>ORINDO</option>
-                                                        <option value="ORIGA" <?= (isset($results['data_penawaran']) && $results['data_penawaran']->quote_by == 'ORIGA') ? 'selected' : null ?>>ORIGA</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="form-group row">
-                                                <div class="col-md-4">
                                                     <label for="customer">Quotation No :</label>
                                                 </div>
                                                 <div class="col-md-8">
@@ -165,33 +154,10 @@
                                         <div class='col-sm-6'>
                                             <div class='form-group row'>
                                                 <div class='col-md-4'>
-                                                    <label for='email_customer'>Subject</label>
-                                                </div>
-                                                <div class='col-md-8'>
-                                                    <input type="text" name="subject" id="" class="form-control" value="<?= (isset($results['data_penawaran'])) ? $results['data_penawaran']->subject : null ?>" readonly>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class='col-sm-6'>
-                                            <div class='form-group row'>
-                                                <div class='col-md-4'>
                                                     <label for='email_customer'>Time of Delivery</label>
                                                 </div>
                                                 <div class='col-md-8' id="">
                                                     <input type="text" name="time_delivery" id="" class="form-control" value="<?= (isset($results['data_penawaran'])) ? $results['data_penawaran']->time_delivery : null ?>" readonly>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-12">
-                                        <div class='col-sm-6'>
-                                            <div class='form-group row'>
-                                                <div class='col-md-4'>
-                                                    <label for='email_customer'>Offer Period</label>
-                                                </div>
-                                                <div class='col-md-8'>
-                                                    <input type="text" name="offer_period" id="" class="form-control" value="<?= (isset($results['data_penawaran'])) ? $results['data_penawaran']->offer_period : null ?>" readonly>
                                                 </div>
                                             </div>
                                         </div>
@@ -372,15 +338,6 @@
                                             <tr>
                                                 <td>
                                                     <span>' . $penawaran_detail->nama_produk . '</span> <br><br>
-                                                    <table class="table">
-                                                        <tr>
-                                                            <td>Cut Size</td>
-                                                            <td width="2" class="text-center">:</td>
-                                                            <td>
-                                                                <input type="text" name="ukuran_potong_' . $penawaran_detail->id_penawaran_detail . '" id="" class="form-control form-control-sm ukuran_potong_' . $penawaran_detail->id_penawaran_detail . '" value="' . $penawaran_detail->ukuran_potongan . '" placeholder="- Cut Size -" readonly>
-                                                            </td>
-                                                        </tr>
-                                                    </table>
                                                 </td>
                                                 <td>
                                                     <input type="number" name="qty_' . $penawaran_detail->id_penawaran_detail . '" value="' . $penawaran_detail->qty . '" class="form-control text-right qty qty_' . $penawaran_detail->id_penawaran_detail . '" onchange="hitung_all(' . $penawaran_detail->id_penawaran_detail . ')" readonly>
@@ -388,13 +345,6 @@
                                                 <td class="text-right">
                                                     (' . $results['curr'] . ') ' . number_format($penawaran_detail->harga_satuan, 2) . '
                                                     <table class="w-100" border="0">
-                                                        <tr>
-                                                            <td class="text-center" style="vertical-align: top;">Cutting Fee</td>
-                                                            <td class="text-center" style="vertical-align: top;">:</td>
-                                                            <td class="text-center" style="vertical-align: top;">
-                                                                <input type="text" name="cutting_fee_' . $penawaran_detail->id_penawaran_detail . '" id="" class="form-control cutting_fee_' . $penawaran_detail->id_penawaran_detail . ' input_cutting_fee auto_num" value="' . number_format($penawaran_detail->cutting_fee, 2) . '" style="margin-top: 0.5vh; text-align: right" data-id="' . $penawaran_detail->id_penawaran_detail . '" readonly>
-                                                            </td>
-                                                        </tr>
                                                         <tr>
                                                             <td class="text-center" style="vertical-align: top;">Delivery Fee</td>
                                                             <td class="text-center" style="vertical-align: top;">:</td>
