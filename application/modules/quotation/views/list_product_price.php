@@ -21,12 +21,8 @@ $ENABLE_DELETE  = has_permission('Quotation.Delete');
                 <th>#</th>
                 <th>Product Code</th>
                 <th>Product Master</th>
-                <th>Width x Height</th>
                 <th>Variant</th>
-                <th>Color</th>
-                <th>Surface</th>
                 <th>Price List (IDR)</th>
-                <th>Price List (USD)</th>
                 <?php if ($ENABLE_MANAGE) : ?>
                     <th>Action</th>
                 <?php endif; ?>

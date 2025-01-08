@@ -226,7 +226,6 @@ class Quotation extends Admin_Controller
 
 			$this->db->insert('tr_penawaran', [
 				'no_penawaran' => $no_penawaran,
-				'quote_by' => $post['quote_by'],
 				'tgl_penawaran' => $post['tanggal'],
 				'id_customer' => $post['id_customer'],
 				'pic_customer' => $post['pic_customer'],
@@ -296,7 +295,6 @@ class Quotation extends Admin_Controller
 					$sts = ($get_penawaran->status + 1);
 				}
 				$this->db->update('tr_penawaran', [
-					'quote_by' => $post['quote_by'],
 					'tgl_penawaran' => $post['tanggal'],
 					'id_customer' => $post['id_customer'],
 					'pic_customer' => $post['pic_customer'],
@@ -348,7 +346,6 @@ class Quotation extends Admin_Controller
 					$no_revisi = ($get_penawaran->no_revisi + 1);
 					if ($get_penawaran->status == '2') {
 						$update_quote = $this->db->update('tr_penawaran', [
-							'quote_by' => $post['quote_by'],
 							'tgl_penawaran' => $post['tanggal'],
 							'id_customer' => $post['id_customer'],
 							'pic_customer' => $post['pic_customer'],
@@ -392,7 +389,6 @@ class Quotation extends Admin_Controller
 						// }
 					} else {
 						$update_quote = $this->db->update('tr_penawaran', [
-							'quote_by' => $post['quote_by'],
 							'tgl_penawaran' => $post['tanggal'],
 							'id_customer' => $post['id_customer'],
 							'pic_customer' => $post['pic_customer'],
@@ -428,7 +424,6 @@ class Quotation extends Admin_Controller
 					$insert_history = $this->db->insert('tr_history_penawaran', [
 						'id_history_penawaran' => $id_history_penawaran,
 						'no_penawaran' => $post['no_surat'],
-						'quote_by' => $post['quote_by'],
 						'tgl_penawaran' => $post['tanggal'],
 						'id_customer' => $post['id_customer'],
 						'pic_customer' => $post['pic_customer'],
@@ -564,7 +559,6 @@ class Quotation extends Admin_Controller
 					$nilai_ppn = (($get_ttl_detail->ttl_harga_after_disc + $get_ttl_other_cost->ttl_other_cost + $get_ttl_other_item->ttl_other_item) * $persen_ppn / 100);
 
 					$update_penawaran = $this->db->update('tr_penawaran', [
-						'quote_by' => $post['quote_by'],
 						'tgl_penawaran' => $post['tanggal'],
 						'id_customer' => $post['id_customer'],
 						'pic_customer' => $post['pic_customer'],
@@ -1664,15 +1658,7 @@ class Quotation extends Admin_Controller
 				<tr>
 					<td>
 						<span>' . $penawaran_detail->nama_produk . '</span> <br><br>
-						<table class="table">
-							<tr>
-								<td>Cut Size</td>
-								<td width="2" class="text-center">:</td>
-								<td>
-									<input type="text" name="ukuran_potong_' . $penawaran_detail->id_penawaran_detail . '" id="" class="form-control form-control-sm ukuran_potong ukuran_potong_' . $penawaran_detail->id_penawaran_detail . '" value="' . $penawaran_detail->ukuran_potongan . '" placeholder="- Cut Size -" data-id="' . $penawaran_detail->id_penawaran_detail . '">
-								</td>
-							</tr>
-						</table>
+
 					</td>
 					<td>
 						<input type="number" name="qty_' . $penawaran_detail->id_penawaran_detail . '" value="' . $penawaran_detail->qty . '" class="form-control text-right qty qty_' . $penawaran_detail->id_penawaran_detail . '" onchange="hitung_all(' . $penawaran_detail->id_penawaran_detail . ')">
@@ -1690,13 +1676,6 @@ class Quotation extends Admin_Controller
 							</tr>
 						</table>
 						<table class="w-100" border="0">
-							<tr>
-								<td class="text-center" style="vertical-align: top;">Cutting Fee</td>
-								<td class="text-center" style="vertical-align: top;">:</td>
-								<td class="text-center" style="vertical-align: top;">
-									<input type="text" name="cutting_fee_' . $penawaran_detail->id_penawaran_detail . '" id="" class="form-control cutting_fee_' . $penawaran_detail->id_penawaran_detail . ' input_cutting_fee auto_num" value="' . $penawaran_detail->cutting_fee . '" style="margin-top: 0.5vh; text-align: right" data-id="' . $penawaran_detail->id_penawaran_detail . '">
-								</td>
-							</tr>
 							<tr>
 								<td class="text-center" style="vertical-align: top;">Delivery Fee</td>
 								<td class="text-center" style="vertical-align: top;">:</td>
