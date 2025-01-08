@@ -88,18 +88,30 @@ class Price_list_sales extends Admin_Controller
 		$no_bom 			= $this->input->post('no_bom');
 
 		$header 			= $this->db->get_where('bom_header', array('no_bom' => $no_bom))->result();
-		$detail   			= $this->db->get_where('bom_detail', array('no_bom' => $no_bom, 'category' => 'default'))->result_array();
+		$detail1   			= $this->db->select('code_material, volume_m3')->get_where('bom_detail', array('no_bom' => $no_bom, 'category' => 'default'))->result_array();
+		$detail2   			= $this->db->select('a.code_material, (a.qty * b.volume_m3) AS volume_m3')->join('bom_detail b', 'a.no_bom_detail=b.no_bom_detail AND a.category=b.category', 'inner')->get_where('bom_detail_custom a', array('a.no_bom' => $no_bom, 'a.category' => 'hi grid std'))->result_array();
+		$detail_assembly   	= $this->db->select('a.*, b.code_lv4')->join('product_price b', 'a.kode=b.kode', 'inner')->get_where('product_price_bom_detail a', array('a.no_bom' => $no_bom, 'a.category' => 'hi grid std', 'b.deleted_date' => NULL))->result_array();
+		$detail   			= $detail1;
 		$detail_additive   	= $this->db->get_where('bom_detail', array('no_bom' => $no_bom, 'category' => 'additive'))->result_array();
 		$detail_topping   	= $this->db->get_where('bom_detail', array('no_bom' => $no_bom, 'category' => 'topping'))->result_array();
 		$detail_accessories = $this->db->get_where('bom_detail', array('no_bom' => $no_bom, 'category' => 'accessories'))->result_array();
 		$detail_flat_sheet 	= $this->db->get_where('bom_detail', array('no_bom' => $no_bom, 'category' => 'flat sheet'))->result_array();
 		$detail_end_plate 	= $this->db->get_where('bom_detail', array('no_bom' => $no_bom, 'category' => 'end plate'))->result_array();
 		$detail_ukuran_jadi = $this->db->get_where('bom_detail', array('no_bom' => $no_bom, 'category' => 'ukuran jadi'))->result_array();
+		$detail_mat_joint   = $this->db->get_where('bom_detail', array('no_bom' => $no_bom, 'category' => 'mat joint'))->result_array();
 		$product    		= $this->price_list_sales_model->get_data_where_array('new_inventory_4', array('deleted_date' => NULL, 'category' => 'product'));
+
+		$this->db->select('a.*, b.nama as nm_material, b.up_to_value as price_ref');
+		$this->db->from('bom_material_lain a');
+		$this->db->join('new_inventory_4 b', 'b.code_lv4 = a.id_material');
+		$this->db->where('a.no_bom', $no_bom);
+		$get_material_lain = $this->db->get()->result();
 
 		$data = [
 			'header' => $header,
 			'detail' => $detail,
+			'detail_mat_joint' => $detail_mat_joint,
+			'detail_assembly' => $detail_assembly,
 			'detail_additive' => $detail_additive,
 			'detail_topping' => $detail_topping,
 			'detail_accessories' => $detail_accessories,
@@ -107,6 +119,7 @@ class Price_list_sales extends Admin_Controller
 			'detail_end_plate' => $detail_end_plate,
 			'detail_ukuran_jadi' => $detail_ukuran_jadi,
 			'product' => $product,
+			'list_material_lain' => $get_material_lain,
 			'GET_LEVEL4' => get_inventory_lv4(),
 			'GET_ACC' => get_accessories(),
 			'GET_PRICE_REF' => get_price_ref()
