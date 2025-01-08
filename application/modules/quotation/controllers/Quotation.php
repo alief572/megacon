@@ -240,9 +240,7 @@ class Quotation extends Admin_Controller
 				'nilai_penawaran' => $get_ttl_detail->ttl_harga,
 				'created_by' => $session['id_user'],
 				'created_on' => date('Y-m-d H:i:s'),
-				'subject' => $post['subject'],
 				'time_delivery' => $post['time_delivery'],
-				'offer_period' => $post['offer_period'],
 				'delivery_term' => $post['delivery_term'],
 				'warranty' => $post['warranty'],
 				'currency' => $post['curr']
@@ -311,9 +309,7 @@ class Quotation extends Admin_Controller
 					'no_revisi' => ($get_penawaran->no_revisi + 1),
 					'approved_by' => $session['id_user'],
 					'approved_on' => date('Y-m-d H:i:s'),
-					'subject' => $post['subject'],
 					'time_delivery' => $post['time_delivery'],
-					'offer_period' => $post['offer_period'],
 					'delivery_term' => $post['delivery_term'],
 					'warranty' => $post['warranty']
 				], [
@@ -371,9 +367,7 @@ class Quotation extends Admin_Controller
 							'keterangan_app1' => null,
 							'keterangan_app2' => null,
 							'keterangan_app3' => null,
-							'subject' => $post['subject'],
 							'time_delivery' => $post['time_delivery'],
-							'offer_period' => $post['offer_period'],
 							'delivery_term' => $post['delivery_term'],
 							'warranty' => $post['warranty']
 						], [
@@ -404,9 +398,7 @@ class Quotation extends Admin_Controller
 							'modified_by' => $session['id_user'],
 							'modified_on' => date('Y-m-d H:i:s'),
 							'no_revisi' => $no_revisi,
-							'subject' => $post['subject'],
 							'time_delivery' => $post['time_delivery'],
-							'offer_period' => $post['offer_period'],
 							'delivery_term' => $post['delivery_term'],
 							'warranty' => $post['warranty']
 						], [
@@ -452,9 +444,7 @@ class Quotation extends Admin_Controller
 						'keterangan_app1' => $get_penawaran->keterangan_app1,
 						'keterangan_app2' => $get_penawaran->keterangan_app2,
 						'keterangan_app3' => $get_penawaran->keterangan_app3,
-						'subject' => $post['subject'],
 						'time_delivery' => $post['time_delivery'],
-						'offer_period' => $post['offer_period'],
 						'delivery_term' => $post['delivery_term'],
 						'warranty' => $post['warranty'],
 						'curr' => $post['curr'],
@@ -573,9 +563,7 @@ class Quotation extends Admin_Controller
 						'nilai_penawaran' => $get_ttl_detail->ttl_harga,
 						'modified_by' => $session['id_user'],
 						'modified_on' => date('Y-m-d H:i:s'),
-						'subject' => $post['subject'],
 						'time_delivery' => $post['time_delivery'],
-						'offer_period' => $post['offer_period'],
 						'delivery_term' => $post['delivery_term'],
 						'warranty' => $post['warranty']
 					], [
@@ -3408,33 +3396,12 @@ class Quotation extends Admin_Controller
 	{
 		$post = $this->input->post();
 
-		$nm_other = '';
-		$get_nm_other = $this->db->query("
-			SELECT
-				a.nama as nm_other
-			FROM
-				new_inventory_4 a
-			WHERE
-				a.code_lv4 = '" . $post['id_product'] . "'
-
-			UNION ALL
-
-			SELECT
-				a.stock_name as nm_other
-			FROM
-				accessories a
-			WHERE
-				a.id = '" . $post['id_product'] . "'
-		")->row();
-		if (!empty($get_nm_other)) {
-			$nm_other = $get_nm_other->nm_other;
-		}
+		$nm_other = $post['nm_other_item'];
 
 		$this->db->trans_start();
 
 		$data_insert = [
 			'id_penawaran' => $post['no_surat'],
-			'id_other' => $post['id_product'],
 			'nm_other' => $nm_other,
 			'harga' => $post['price'],
 			'qty' => $post['qty'],
@@ -3474,30 +3441,6 @@ class Quotation extends Admin_Controller
 
 		$grand_total = 0;
 		foreach ($get_other_item as $other_item) {
-
-			$get_list_other_item = $this->db->query("
-				SELECT
-					a.code_lv4 as id_product,
-					a.nama as nm_product,
-					a.code as product_code
-				FROM
-					new_inventory_4 a
-				WHERE
-					a.category = 'material' AND
-					a.deleted_by IS NULL
-				
-				UNION ALL
-
-				SELECT
-					a.id as id_product,
-					a.stock_name as nm_product,
-					a.id_stock as product_code
-				FROM
-					accessories a 
-				WHERE
-					a.deleted_by IS NULL
-			")->result();
-
 			$hasil .= '<tr>';
 
 			$hasil .= '<td>';

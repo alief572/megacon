@@ -168,33 +168,10 @@
                                         <div class='col-sm-6'>
                                             <div class='form-group row'>
                                                 <div class='col-md-4'>
-                                                    <label for='email_customer'>Subject</label>
-                                                </div>
-                                                <div class='col-md-8'>
-                                                    <input type="text" name="subject" id="" class="form-control" value="<?= (isset($results['data_penawaran'])) ? $results['data_penawaran']->subject : null ?>">
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class='col-sm-6'>
-                                            <div class='form-group row'>
-                                                <div class='col-md-4'>
                                                     <label for='email_customer'>Time of Delivery</label>
                                                 </div>
                                                 <div class='col-md-8' id="">
                                                     <input type="text" name="time_delivery" id="" class="form-control" value="<?= (isset($results['data_penawaran'])) ? $results['data_penawaran']->time_delivery : null ?>">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-12">
-                                        <div class='col-sm-6'>
-                                            <div class='form-group row'>
-                                                <div class='col-md-4'>
-                                                    <label for='email_customer'>Offer Period</label>
-                                                </div>
-                                                <div class='col-md-8'>
-                                                    <input type="text" name="offer_period" id="" class="form-control" value="<?= (isset($results['data_penawaran'])) ? $results['data_penawaran']->offer_period : null ?>">
                                                 </div>
                                             </div>
                                         </div>
@@ -322,7 +299,7 @@
                         <div class="box active ">
                             <ul class="nav nav-tabs">
                                 <li class=""><a href="javascript:void(0);" class="add_item_modal">Add Item</a></li>
-                                <li><a href="javascript:void(0);" class="createunlocated">Request New Product</a></li>
+                                <!-- <li><a href="javascript:void(0);" class="createunlocated">Request New Product</a></li> -->
                                 <!--<li class="lebihbayar"><a href="#" data-toggle="tab" id="lebihbayar">Add Lebih Bayar</a></li>-->
                             </ul>
                         </div>
@@ -507,15 +484,6 @@
                                             <tr>
                                                 <td>
                                                     <span>' . $penawaran_detail->nama_produk . '</span> <br><br>
-                                                    <table class="table">
-                                                        <tr>
-                                                            <td>Cut Size</td>
-                                                            <td width="2" class="text-center">:</td>
-                                                            <td>
-                                                                <input type="text" name="ukuran_potong_' . $penawaran_detail->id_penawaran_detail . '" id="" class="form-control form-control-sm ukuran_potong ukuran_potong_' . $penawaran_detail->id_penawaran_detail . '" value="' . $penawaran_detail->ukuran_potongan . '" placeholder="- Cut Size -" data-id="' . $penawaran_detail->id_penawaran_detail . '">
-                                                            </td>
-                                                        </tr>
-                                                    </table>
                                                 </td>
                                                 <td>
                                                     <input type="number" name="qty_' . $penawaran_detail->id_penawaran_detail . '" value="' . $penawaran_detail->qty . '" class="form-control text-right qty qty_' . $penawaran_detail->id_penawaran_detail . '" onchange="hitung_all(' . $penawaran_detail->id_penawaran_detail . ')">
@@ -535,13 +503,6 @@
 
                                                     <table class="w-100" border="0">
                                                         <tr>
-                                                            <td class="text-center" style="vertical-align: top;">Cutting Fee</td>
-                                                            <td class="text-center" style="vertical-align: top;">:</td>
-                                                            <td class="text-center" style="vertical-align: top;">
-                                                                <input type="text" name="cutting_fee_' . $penawaran_detail->id_penawaran_detail . '" id="" class="form-control cutting_fee_' . $penawaran_detail->id_penawaran_detail . ' input_cutting_fee auto_num" value="' . $penawaran_detail->cutting_fee . '" style="margin-top: 0.5vh; text-align: right" data-id="' . $penawaran_detail->id_penawaran_detail . '">
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
                                                             <td class="text-center" style="vertical-align: top;">Delivery Fee</td>
                                                             <td class="text-center" style="vertical-align: top;">:</td>
                                                             <td class="text-center" style="vertical-align: top;">
@@ -550,7 +511,6 @@
                                                         </tr>
                                                     </table>
                                                 </td>
-                                                <td class="text-right">' . number_format($penawaran_detail->stok_tersedia, 2) . '</td>
                                                 <td>
                                                     <table class="w-100">
                                                         <tr>
@@ -839,14 +799,7 @@
                                         <tbody>
                                             <tr>
                                                 <td>
-                                                    <select name="" id="" class="form-control form-control-sm item_new select2">
-                                                        <option value="">- Other Item -</option>
-                                                        <?php
-                                                        foreach ($results['list_other_item'] as $other_item) {
-                                                            echo '<option value="' . $other_item->id_product . '">' . $other_item->product_code . ' - ' . $other_item->nm_product . '</option>';
-                                                        }
-                                                        ?>
-                                                    </select>
+                                                    <input type="text" name="other_item_name" id="" class="form-control form-control-sm" placeholder="- Other Item -">
                                                 </td>
                                                 <td>
                                                     <input type="text" name="price_other_new" id="" class="form-control form-control-sm price_other_new text-right auto_num" onchange="hitung_new_total_other_item()">
@@ -864,7 +817,7 @@
                                         </tbody>
                                         <tbody>
                                             <tr>
-                                                <td colspan="3" class="text-right">Grand Total</td>
+                                                <td colspan="3" class="text-right">Total Other Item</td>
                                                 <td class="text-right col_grand_total_other_item"><?= number_format($grand_total_other_item, 2) ?></td>
                                             </tr>
                                         </tbody>
@@ -909,12 +862,12 @@
                             <div class="col-lg-5">
                                 <div class="form-group " style="padding-top:15px;">
                                     <?php
-                                    $grand_total = ($total_all + $total_other_cost + $grand_total_other_item);
-                                    if (isset($results['data_penawaran'])) {
-                                        $grand_total = (($total_all + $total_other_cost + $grand_total_other_item) + ($results['data_penawaran']->nilai_ppn));
-                                    } else {
-                                        $grand_total = (($total_all + $total_other_cost + $grand_total_other_item) + (($total_all + $total_other_cost + $grand_total_other_item) * 11 / 100));
-                                    }
+                                    $grand_total = (($total_all + $total_other_cost + $grand_total_other_item) + (($total_all + $total_other_cost + $grand_total_other_item) * $results['data_penawaran']->ppn / 100));
+                                    // if (isset($results['data_penawaran'])) {
+                                    //     $grand_total = (($total_all + $total_other_cost + $grand_total_other_item) + ($results['data_penawaran']->nilai_ppn));
+                                    // } else {
+                                    //     $grand_total = (($total_all + $total_other_cost + $grand_total_other_item) + (($total_all + $total_other_cost + $grand_total_other_item) * 11 / 100));
+                                    // }
                                     ?>
                                     <label class="col-sm-4 control-label">PPN (11%)(<?= $results['curr']; ?>)</label>
                                     <div class="col-sm-6 text-center">
@@ -1545,13 +1498,6 @@
                 }
 
                 function hitung_total() {
-                    // var persen_ppn = $('.persen_ppn').val();
-                    // persen_ppn = persen_ppn.split(',').join('');
-                    // persen_ppn = persen_ppn.split('%').join('');
-
-                    // var nilai_ppn = $('.nilai_ppn').val();
-                    // nilai_ppn = nilai_ppn.split(',').join('');
-
                     var ppn = $('.ppn_check:checked').val();
 
                     $.ajax({
@@ -1668,9 +1614,9 @@
                     diskon_nilai = diskon_nilai.split(',').join('');
                     diskon_nilai = parseFloat(diskon_nilai);
 
-                    var cutting_fee = $('.cutting_fee_' + id).val();
-                    cutting_fee = cutting_fee.split(',').join('');
-                    cutting_fee = parseFloat(cutting_fee);
+                    // var cutting_fee = $('.cutting_fee_' + id).val();
+                    // cutting_fee = cutting_fee.split(',').join('');
+                    // cutting_fee = parseFloat(cutting_fee);
 
                     var delivery_fee = $('.delivery_fee_' + id).val();
                     delivery_fee = delivery_fee.split(',').join('');
@@ -2444,7 +2390,7 @@
                 });
 
                 $(document).on('click', '.add_other_item', function() {
-                    var id_product = $('.item_new').val();
+                    var nm_other_item = $('input[name="other_item_name"]').val();
                     var qty = $('.qty_other_new').val();
                     if (qty !== '') {
                         qty = qty.split(',').join('');
@@ -2465,7 +2411,7 @@
                         type: 'post',
                         url: siteurl + active_controller + 'add_other_item',
                         data: {
-                            'id_product': id_product,
+                            'nm_other_item': nm_other_item,
                             'qty': qty,
                             'price': price,
                             'no_surat': no_surat
@@ -2473,20 +2419,6 @@
                         cache: false,
                         dataType: 'json',
                         success: function(result) {
-                            if (result.status == 1) {
-                                swal({
-                                    title: 'Success !',
-                                    text: 'Success, the other item has been inputed !',
-                                    type: 'success'
-                                });
-                            } else {
-                                swal({
-                                    title: 'Failed !',
-                                    text: 'Sorry, the other item has not been inputed!',
-                                    type: 'warning'
-                                });
-                            }
-
                             refresh_list_other_item();
                             hitung_total();
                         },
