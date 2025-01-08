@@ -58,11 +58,9 @@ class Ipp_custom extends Admin_Controller
 			$keterangan    		= $data['keterangan'];
 			$delivery_type    	= $data['delivery_type'];
 			$id_country    		= $data['id_country'];
-			$delivery_category	= $data['delivery_category'];
 			$area_destinasi    	= $data['area_destinasi'];
 			$delivery_address   = $data['delivery_address'];
 			$shipping_method    = $data['shipping_method'];
-			$packing    		= $data['packing'];
 			$guarantee    		= $data['guarantee'];
 			$delivery_date    	= (!empty($data['delivery_date'])) ? date('Y-m-d', strtotime($data['delivery_date'])) : NULL;
 			$instalasi_option   = $data['instalasi_option'];
@@ -104,11 +102,9 @@ class Ipp_custom extends Admin_Controller
 				'keterangan'		=> $keterangan,
 				'delivery_type'		=> $delivery_type,
 				'id_country'		=> $id_country,
-				'delivery_category'	=> $delivery_category,
 				'area_destinasi'	=> $area_destinasi,
 				'delivery_address'	=> $delivery_address,
 				'shipping_method'	=> $shipping_method,
-				'packing'			=> $packing,
 				'guarantee'			=> $guarantee,
 				'delivery_date'		=> $delivery_date,
 				'instalasi_option'	=> $instalasi_option,

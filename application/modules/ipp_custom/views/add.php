@@ -10,7 +10,6 @@ $keterangan   	= (!empty($header[0]->keterangan))?$header[0]->keterangan:'';
 //delivery
 $delivery_type   	= (!empty($header[0]->delivery_type))?$header[0]->delivery_type:'';
 $id_country   		= (!empty($header[0]->id_country))?$header[0]->id_country:'IDN';
-$delivery_category  = (!empty($header[0]->delivery_category))?$header[0]->delivery_category:'';
 $area_destinasi   	= (!empty($header[0]->area_destinasi))?$header[0]->area_destinasi:'';
 $delivery_address   = (!empty($header[0]->delivery_address))?$header[0]->delivery_address:'';
 $shipping_method   	= (!empty($header[0]->shipping_method))?$header[0]->shipping_method:'';
@@ -111,26 +110,11 @@ $instalasi2 = (!empty($header[0]->instalasi_option) AND $header[0]->instalasi_op
 			</div>
 			<div class="form-group row">
 				<div class="col-md-2">
-					<label>Delivery Category</label>
-				</div>
-				<div class="col-md-4">
-					<select id="delivery_category" name="delivery_category" class="form-control input-md chosen-select">
-						<option value="0">Select An Delivery Category</option>
-						<?php foreach ($deliv_category as $val => $value){
-						$sel = ($value['value'] == $delivery_category)?'selected':'';
-						?>
-						<option value="<?= $value['value'];?>" <?=$sel;?>><?= strtoupper($value['view'])?></option>
-						<?php } ?>
-					</select>
-				</div>
-				<div class="col-md-2">
 					<label>Area Destination</label>
 				</div>
 				<div class="col-md-4">
 				<input type="text" name="area_destinasi" id="area_destinasi" class='form-control input-md' placeholder='Area Destination' value="<?=$area_destinasi;?>">
 				</div>
-			</div>
-			<div class="form-group row">
 				<div class="col-md-2">
 					<label>Shipping Method</label>
 				</div>
@@ -139,19 +123,6 @@ $instalasi2 = (!empty($header[0]->instalasi_option) AND $header[0]->instalasi_op
 						<option value="0">Select An Shipping Method</option>
 						<?php foreach ($shipping as $val => $value){
 						$sel = ($value['value'] == $shipping_method)?'selected':'';
-						?>
-						<option value="<?= $value['value'];?>" <?=$sel;?>><?= strtoupper($value['view'])?></option>
-						<?php } ?>
-					</select>
-				</div>
-				<div class="col-md-2">
-					<label>Packing</label>
-				</div>
-				<div class="col-md-4">
-					<select id="packing" name="packing" class="form-control input-md chosen-select">
-						<option value="0">Select An Packing</option>
-						<?php foreach ($packing_list as $val => $value){
-						$sel = ($value['value'] == $packing)?'selected':'';
 						?>
 						<option value="<?= $value['value'];?>" <?=$sel;?>><?= strtoupper($value['view'])?></option>
 						<?php } ?>
