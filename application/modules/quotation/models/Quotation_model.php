@@ -704,63 +704,87 @@ class Quotation_model extends BF_Model
 		// if ($status != '0') {
 		// 	$WHERE = "AND a.status = '" . $status . "'";
 		// }
-		$sql = "SELECT
-					a.*,
-					a.product_master AS nama_level4,
-					b.code as product_code,
-					d.variant_product,
-					d.color as color,
-					d.surface as surface,
-					c.nama AS nama_level1,
-					0 as price_list,
-					0 as price_list_idr,
-					e.price_unit,
-					e.id as id_ukuran_jadi,
-					f.width as width,
-					f.length as length
-				FROM
-					product_price a 
-					JOIN product_price_ukuran_jadi e ON e.kode = a.kode 
-					LEFT JOIN new_inventory_4 b ON a.code_lv4=b.code_lv4
-					LEFT JOIN new_inventory_1 c ON b.code_lv1=c.code_lv1
-					LEFT JOIN bom_header d ON a.no_bom = d.no_bom
-					LEFT JOIN custom_ipp_detail_lainnya f ON f.id = e.id_ukuran
-				WHERE 1=1 AND e.deleted_by IS NULL " . $WHERE . " AND
-					(
-						b.code LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-						OR a.no_bom LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-						OR b.nama LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-						OR d.variant_product LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-					)
+		// $sql = "SELECT
+		// 			a.*,
+		// 			a.product_master AS nama_level4,
+		// 			b.code as product_code,
+		// 			d.variant_product,
+		// 			d.color as color,
+		// 			d.surface as surface,
+		// 			c.nama AS nama_level1,
+		// 			0 as price_list,
+		// 			0 as price_list_idr,
+		// 			e.price_unit,
+		// 			e.id as id_ukuran_jadi,
+		// 			f.width as width,
+		// 			f.length as length
+		// 		FROM
+		// 			product_price a 
+		// 			JOIN product_price_ukuran_jadi e ON e.kode = a.kode 
+		// 			LEFT JOIN new_inventory_4 b ON a.code_lv4=b.code_lv4
+		// 			LEFT JOIN new_inventory_1 c ON b.code_lv1=c.code_lv1
+		// 			LEFT JOIN bom_header d ON a.no_bom = d.no_bom
+		// 			LEFT JOIN custom_ipp_detail_lainnya f ON f.id = e.id_ukuran
+		// 		WHERE 1=1 AND e.deleted_by IS NULL " . $WHERE . " AND
+		// 			(
+		// 				b.code LIKE '%" . $this->db->escape_like_str($like_value) . "%'
+		// 				OR a.no_bom LIKE '%" . $this->db->escape_like_str($like_value) . "%'
+		// 				OR b.nama LIKE '%" . $this->db->escape_like_str($like_value) . "%'
+		// 				OR d.variant_product LIKE '%" . $this->db->escape_like_str($like_value) . "%'
+		// 			)
 				
-				UNION ALL
+		// 		UNION ALL
 
-				SELECT
-					a.*,
-					a.product_master AS nama_level4,
-					b.code as product_code,
-					d.variant_product,
-					d.color as color,
-					d.surface as surface,
-					c.nama AS nama_level1,
-					a.price_list as price_list,
-					a.price_list_idr as price_list_idr,
-					0 as price_unit,
-					'' as id_ukuran_jadi,
-					0 as width,
-					0 as length
-				FROM
-					product_price a 
-					LEFT JOIN new_inventory_4 b ON a.code_lv4=b.code_lv4
-					LEFT JOIN new_inventory_1 c ON b.code_lv1=c.code_lv1
-					LEFT JOIN bom_header d ON a.no_bom = d.no_bom
-				WHERE 1=1 AND a.deleted_by IS NULL " . $WHERE . " AND
-					(
-						b.code LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-						OR a.no_bom LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-						OR b.nama LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-						OR d.variant_product LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-					)
+		// 		SELECT
+		// 			a.*,
+		// 			a.product_master AS nama_level4,
+		// 			b.code as product_code,
+		// 			d.variant_product,
+		// 			d.color as color,
+		// 			d.surface as surface,
+		// 			c.nama AS nama_level1,
+		// 			a.price_list as price_list,
+		// 			a.price_list_idr as price_list_idr,
+		// 			0 as price_unit,
+		// 			'' as id_ukuran_jadi,
+		// 			0 as width,
+		// 			0 as length
+		// 		FROM
+		// 			product_price a 
+		// 			LEFT JOIN new_inventory_4 b ON a.code_lv4=b.code_lv4
+		// 			LEFT JOIN new_inventory_1 c ON b.code_lv1=c.code_lv1
+		// 			LEFT JOIN bom_header d ON a.no_bom = d.no_bom
+		// 		WHERE 1=1 AND a.deleted_by IS NULL " . $WHERE . " AND
+		// 			(
+		// 				b.code LIKE '%" . $this->db->escape_like_str($like_value) . "%'
+		// 				OR a.no_bom LIKE '%" . $this->db->escape_like_str($like_value) . "%'
+		// 				OR b.nama LIKE '%" . $this->db->escape_like_str($like_value) . "%'
+		// 				OR d.variant_product LIKE '%" . $this->db->escape_like_str($like_value) . "%'
+		// 			)
+		// ";
+
+		$sql = "
+			SELECT
+				a.*,
+				b.nama AS nama_level4,
+				b.code as product_code,
+				d.variant_product,
+				c.nama AS nama_level1,
+				a.price_list as price_list,
+				a.price_list_idr as price_list_idr
+			FROM
+				product_price a
+				LEFT JOIN new_inventory_4 b ON a.code_lv4 = b.code_lv4
+				LEFT JOIN new_inventory_1 c ON b.code_lv1 = c.code_lv1
+				LEFT JOIN bom_header d ON a.no_bom = d.no_bom
+			WHERE
+				1=1 AND a.deleted_by IS NULL " . $WHERE . " AND
+				(
+					b.code LIKE '%" . $this->db->escape_like_str($like_value) . "%'
+					OR a.no_bom LIKE '%" . $this->db->escape_like_str($like_value) . "%'
+					OR b.nama LIKE '%" . $this->db->escape_like_str($like_value) . "%'
+					OR d.variant_product LIKE '%" . $this->db->escape_like_str($like_value) . "%'
+				)
 		";
 
 		
@@ -829,14 +853,13 @@ class Quotation_model extends BF_Model
 			$nestedData[]	= "<td align='center'>" . $nomor . "</td>";
 			$nestedData[]	= "<td align='left'>" . strtoupper(strtolower($row['product_code'])) . "</td>";
 			$nestedData[]	= "<td align='left'>" . strtoupper(strtolower($row['nama_level4'])) . "</td>";
-			$nestedData[]	= "<td align='left' style='min-width: 15% !important;'>" . number_format($row['width'], 2) . " x ".number_format($row['length'], 2)."</td>";
+			// $nestedData[]	= "<td align='left' style='min-width: 15% !important;'>" . number_format($row['width'], 2) . " x ".number_format($row['length'], 2)."</td>";
 			$nestedData[]	= "<td align='left'>" . strtoupper(strtolower($row['variant_product'])) . "</td>";
-			$nestedData[]	= "<td align='left'>" . strtoupper(strtolower($row['color'])) . "</td>";
-			$nestedData[]	= "<td align='left'>" . strtoupper(strtolower($row['surface'])) . "</td>";
+			// $nestedData[]	= "<td align='left'>" . strtoupper(strtolower($row['surface'])) . "</td>";
 			// $nestedData[]	= "<td align='right'>".number_format($row['price_man_power'],2)."</td>";
 			// $nestedData[]	= "<td align='right'>" . number_format($row['price_total'], 2) . "</td>";
 			$nestedData[]	= "<td align='right'>" . number_format($idr_price, 2) . "</td>";
-			$nestedData[]	= "<td align='right'>" . number_format($usd_price, 2) . "</td>";
+			// $nestedData[]	= "<td align='right'>" . number_format($usd_price, 2) . "</td>";
 
 			$status = 'Waiting Submission';
 			$warna = 'blue';

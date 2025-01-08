@@ -13,18 +13,7 @@
                                 <div class="row">
                                     <div class="col-sm-12">
                                         <div class="col-sm-6">
-                                            <div class="form-group row">
-                                                <div class="col-md-4">
-                                                    <label for="customer">Quotation By :</label>
-                                                </div>
-                                                <div class="col-md-8">
-                                                    <select name="quote_by" id="" class="form-control">
-                                                        <option value="ORINDO" <?= (isset($results['data_penawaran']) && $results['data_penawaran']->quote_by == 'ORINDO') ? 'selected' : null ?>>ORINDO</option>
-                                                        <option value="ORIGA" <?= (isset($results['data_penawaran']) && $results['data_penawaran']->quote_by == 'ORIGA') ? 'selected' : null ?>>ORIGA</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="form-group row">
+                                        <div class="form-group row">
                                                 <div class="col-md-4">
                                                     <label for="customer">Quotation No :</label>
                                                 </div>
@@ -166,36 +155,12 @@
 
                                     <div class="col-md-12">
                                         <div class='col-sm-6'>
-
-                                            <div class='form-group row'>
-                                                <div class='col-md-4'>
-                                                    <label for='email_customer'>Subject</label>
-                                                </div>
-                                                <div class='col-md-8'>
-                                                    <input type="text" name="subject" id="" class="form-control" value="<?= (isset($results['data_penawaran'])) ? $results['data_penawaran']->subject : null ?>">
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class='col-sm-6'>
                                             <div class='form-group row'>
                                                 <div class='col-md-4'>
                                                     <label for='email_customer'>Time of Delivery</label>
                                                 </div>
                                                 <div class='col-md-8' id="">
                                                     <input type="text" name="time_delivery" id="" class="form-control" value="<?= (isset($results['data_penawaran'])) ? $results['data_penawaran']->time_delivery : null ?>">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-12">
-                                        <div class='col-sm-6'>
-                                            <div class='form-group row'>
-                                                <div class='col-md-4'>
-                                                    <label for='email_customer'>Offer Period</label>
-                                                </div>
-                                                <div class='col-md-8'>
-                                                    <input type="text" name="offer_period" id="" class="form-control" value="<?= (isset($results['data_penawaran'])) ? $results['data_penawaran']->offer_period : null ?>">
                                                 </div>
                                             </div>
                                         </div>
@@ -323,7 +288,7 @@
                         <div class="box active ">
                             <ul class="nav nav-tabs">
                                 <li class=""><a href="javascript:void(0);" class="add_item_modal">Add Item</a></li>
-                                <li><a href="javascript:void(0);" class="createunlocated">Request New Product</a></li>
+                                <!-- <li><a href="javascript:void(0);" class="createunlocated">Request New Product</a></li> -->
                                 <!--<li class="lebihbayar"><a href="#" data-toggle="tab" id="lebihbayar">Add Lebih Bayar</a></li>-->
                             </ul>
                         </div>
