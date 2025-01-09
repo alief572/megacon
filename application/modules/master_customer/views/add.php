@@ -231,12 +231,19 @@ $email_pic = (!empty($restPIC[0]['email_pic'])) ? $restPIC[0]['email_pic'] : '';
                         </div>
 
                         <div class="form-group row">
-                            <label class='label-control col-sm-2'><b>Discount Customer (%)</b></label>
+                            <!-- <label class='label-control col-sm-2'><b>Discount Customer (%)</b></label>
                             <div class='col-sm-4'>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-dollar"></i></span>
+                                   
+                                </div>
+                            </div> -->
+                            <label class='label-control col-sm-2'><b>Reference Name </b></label>
+                            <div class='col-sm-4'>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-user"></i></span>
                                     <?php
-                                    echo form_input(array('id' => 'diskon_toko', 'name' => 'diskon_toko', 'class' => 'form-control input-md', 'placeholder' => 'Discount Customer'), $diskon_toko);
+                                    echo form_input(array('id' => 'reference_name', 'name' => 'reference_name', 'class' => 'form-control input-md', 'placeholder' => 'Reference Name'), $reference_name);
                                     ?>
                                 </div>
                             </div>
@@ -262,15 +269,6 @@ $email_pic = (!empty($restPIC[0]['email_pic'])) ? $restPIC[0]['email_pic'] : '';
 
                         </div>
                         <div class="form-group row" id="detail_reff">
-                            <label class='label-control col-sm-2'><b>Reference Name </b></label>
-                            <div class='col-sm-4'>
-                                <div class="input-group">
-                                    <span class="input-group-addon"><i class="fa fa-user"></i></span>
-                                    <?php
-                                    echo form_input(array('id' => 'reference_name', 'name' => 'reference_name', 'class' => 'form-control input-md', 'placeholder' => 'Reference Name'), $reference_name);
-                                    ?>
-                                </div>
-                            </div>
                             <label class='label-control col-sm-2'><b>Reference Phone</b></label>
                             <div class='col-sm-4'>
                                 <div class="input-group">

@@ -117,7 +117,6 @@ class Master_customer extends Admin_Controller
 				'referensi' 		=> ucwords(strtolower($data['reference_by'])),
 				'website' 			=> $data['website'],
 				'foto' 				=> "",
-				'diskon_toko' 		=> $data['diskon_toko'],
 				'created_on' 		=> $this->datetime,
 				'created_by' 		=> $this->id_user
 			);
