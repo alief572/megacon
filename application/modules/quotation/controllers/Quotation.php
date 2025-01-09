@@ -140,7 +140,7 @@ class Quotation extends Admin_Controller
 				'show_disc' => $show_disc,
 				'pt_name' => $pt_name,
 				'list_other_item' => $get_other_item,
-				'tanda_tangan' => $tanda_tangam
+				'tanda_tangan' => $tanda_tangan
 			];
 		} else {
 			$data = [
