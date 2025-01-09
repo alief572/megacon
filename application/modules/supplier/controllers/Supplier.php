@@ -55,7 +55,6 @@ class Supplier extends Admin_Controller
 			$nama    = $data['nama'];
 			$id_country    = $data['id_country'];
 			$id_provinsi    = $data['id_provinsi'];
-			$id_currency    = $data['id_currency'];
 			$telp    = $data['telp'];
 			$telp2    = $data['telp2'];
 			$fax    = $data['fax'];
@@ -97,7 +96,6 @@ class Supplier extends Admin_Controller
 				'nama'			    => $nama,
 				'id_country'		=> $id_country,
 				'id_provinsi'		=> $id_provinsi,
-				'id_currency'		=> $id_currency,
 				'telp'			    => $telp,
 				'telp2'			    => $telp2,
 				'fax'			    => $fax,
