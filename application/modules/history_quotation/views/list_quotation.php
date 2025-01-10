@@ -48,7 +48,9 @@ $ENABLE_DELETE  = has_permission('History_Quotation.Delete');
 					foreach ($results as $record) {
 						$numb++;
 
-						$get_nilai_penawaran = $this->db->query("SELECT SUM(a.harga_satuan * a.qty) AS nilai_penawaran FROM tr_history_penawaran_detail a WHERE a.no_penawaran = '" . $record->no_penawaran . "' AND a.revisi = '" . $record->revisi . "'")->row();
+						
+
+
 
 
 						if ($record->status_real == 0) {
@@ -82,7 +84,7 @@ $ENABLE_DELETE  = has_permission('History_Quotation.Delete');
 							<td class="text-center"><?= $record->no_penawaran ?></td>
 							<td class="text-center"><?= $record->nm_customer ?></td>
 							<td class="text-center"><?= $record->nama_sales ?></td>
-							<td class="text-center"> <?= $record->curr.'. '.number_format($get_nilai_penawaran->nilai_penawaran) ?></td>
+							<td class="text-center"> <?= $record->currency.'. '.number_format($results_ttl[$record->id_history_penawaran], 2) ?></td>
 							<td class="text-center"><?= date('d F Y', strtotime($record->tgl_penawaran)) ?></td>
 							<td class="text-center"><?= $record->revisi ?></td>
 							<td class="text-center"><?= $Status ?></td>

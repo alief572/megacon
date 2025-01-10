@@ -181,8 +181,21 @@ class Ms_diskon extends Admin_Controller
 			// print_r($dt_approve_by);
 			// exit;
 
-			$this->db->insert_batch('ms_diskon', $dt);
-			$this->db->insert_batch('ms_diskon_approve_by', $dt_approve_by);
+			$insert_header = $this->db->insert_batch('ms_diskon', $dt);
+			if(!$insert_header) {
+				$this->db->trans_rollback();
+
+				print_r($this->db->last_query());
+				exit;
+			}
+
+			$insert_detail = $this->db->insert_batch('ms_diskon_approve_by', $dt_approve_by);
+			if(!$insert_detail) {
+				$this->db->trans_rollback();
+
+				print_r($this->db->last_query());
+				exit;
+			}
 		}
 
 

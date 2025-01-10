@@ -355,15 +355,7 @@
                                             <tr>
                                                 <td>
                                                     <span>' . $penawaran_detail->nama_produk . '</span> <br><br>
-                                                    <table class="table">
-                                                        <tr>
-                                                            <td>Cut Size</td>
-                                                            <td width="2" class="text-center">:</td>
-                                                            <td>
-                                                                <input type="text" name="ukuran_potong_' . $penawaran_detail->id_penawaran_detail . '" id="" class="form-control form-control-sm ukuran_potong ukuran_potong_' . $penawaran_detail->id_penawaran_detail . '" value="' . $penawaran_detail->ukuran_potongan . '" placeholder="- Cut Size -" data-id="' . $penawaran_detail->id_penawaran_detail . '">
-                                                            </td>
-                                                        </tr>
-                                                    </table>
+                                                    
                                                 </td>
                                                 <td>
                                                     <input type="number" name="qty_' . $penawaran_detail->id_penawaran_detail . '" value="' . $penawaran_detail->qty . '" class="form-control text-right qty qty_' . $penawaran_detail->id_penawaran_detail . '" onchange="hitung_all(' . $penawaran_detail->id_penawaran_detail . ')">
@@ -382,13 +374,6 @@
                                                     </table>
 
                                                     <table class="w-100" border="0">
-                                                        <tr>
-                                                            <td class="text-center" style="vertical-align: top;">Cutting Fee</td>
-                                                            <td class="text-center" style="vertical-align: top;">:</td>
-                                                            <td class="text-center" style="vertical-align: top;">
-                                                                <input type="text" name="cutting_fee_' . $penawaran_detail->id_penawaran_detail . '" id="" class="form-control cutting_fee_' . $penawaran_detail->id_penawaran_detail . ' input_cutting_fee auto_num" value="' . $penawaran_detail->cutting_fee . '" style="margin-top: 0.5vh; text-align: right" data-id="' . $penawaran_detail->id_penawaran_detail . '">
-                                                            </td>
-                                                        </tr>
                                                         <tr>
                                                             <td class="text-center" style="vertical-align: top;">Delivery Fee</td>
                                                             <td class="text-center" style="vertical-align: top;">:</td>
@@ -454,15 +439,7 @@
                                     <tr>
                                         <td>
                                             <span>' . $penawaran_detail->nama_produk . '</span> <br><br>
-                                            <table class="table">
-                                                <tr>
-                                                    <td>Cut Size</td>
-                                                    <td width="2" class="text-center">:</td>
-                                                    <td>
-                                                        <input type="text" name="ukuran_potong_' . $penawaran_detail->id_penawaran_detail . '" id="" class="form-control form-control-sm ukuran_potong ukuran_potong_' . $penawaran_detail->id_penawaran_detail . '" value="' . $penawaran_detail->ukuran_potongan . '" placeholder="- Cut Size -" data-id="' . $penawaran_detail->id_penawaran_detail . '">
-                                                    </td>
-                                                </tr>
-                                            </table>
+                                            
                                         </td>
                                         <td>
                                             <input type="number" name="qty_' . $penawaran_detail->id_penawaran_detail . '" value="' . $penawaran_detail->qty . '" class="form-control text-right qty qty_' . $penawaran_detail->id_penawaran_detail . '" onchange="hitung_all(' . $penawaran_detail->id_penawaran_detail . ')">
@@ -481,13 +458,6 @@
                                             </table>
 
                                             <table class="w-100" border="0">
-                                                <tr>
-                                                    <td class="text-center" style="vertical-align: top;">Cutting Fee</td>
-                                                    <td class="text-center" style="vertical-align: top;">:</td>
-                                                    <td class="text-center" style="vertical-align: top;">
-                                                        <input type="text" name="cutting_fee_' . $penawaran_detail->id_penawaran_detail . '" id="" class="form-control cutting_fee_' . $penawaran_detail->id_penawaran_detail . ' input_cutting_fee auto_num" value="' . $penawaran_detail->cutting_fee . '" style="margin-top: 0.5vh; text-align: right" data-id="' . $penawaran_detail->id_penawaran_detail . '">
-                                                    </td>
-                                                </tr>
                                                 <tr>
                                                     <td class="text-center" style="vertical-align: top;">Delivery Fee</td>
                                                     <td class="text-center" style="vertical-align: top;">:</td>
@@ -1497,15 +1467,28 @@
                     var qty_penawaran = $('.qty_' + id).val();
                     qty_penawaran = qty_penawaran.split(',').join('');
                     qty_penawaran = parseFloat(qty_penawaran);
+                    if(isNaN(qty_penawaran)) {
+                        qty_penawaran = 0;
+                    } else {
+                        qty_penawaran = parseFloat(qty_penawaran);
+                    }
 
                     var diskon_persen = $('.diskon_persen_' + id).val();
                     diskon_persen = diskon_persen.split(',').join('');
                     diskon_persen = diskon_persen.split('%').join('');
-                    diskon_persen = parseFloat(diskon_persen);
-
+                    if(isNaN(diskon_persen)) {
+                        diskon_persen = 0;
+                    } else {
+                        diskon_persen = parseFloat(diskon_persen);
+                    }
+                    
                     var diskon_nilai = $('.diskon_nilai_' + id).val();
                     diskon_nilai = diskon_nilai.split(',').join('');
-                    diskon_nilai = parseFloat(diskon_nilai);
+                    if(isNaN(diskon_nilai)) {
+                        diskon_nilai = 0;
+                    } else {
+                        diskon_nilai = parseFloat(diskon_nilai);
+                    }
 
                     // var cutting_fee = $('.cutting_fee_' + id).val();
                     // cutting_fee = cutting_fee.split(',').join('');
@@ -1513,8 +1496,12 @@
 
                     var delivery_fee = $('.delivery_fee_' + id).val();
                     delivery_fee = delivery_fee.split(',').join('');
-                    delivery_fee = parseFloat(delivery_fee);
-
+                    if(isNaN(delivery_fee)) {
+                        delivery_fee = 0;
+                    } else {
+                        delivery_fee = parseFloat(delivery_fee);
+                    }
+                    
                     var cutting_fee = 0;
                     var delivery_fee = 0;
 
@@ -1873,7 +1860,7 @@
                         var total_nilai = 0;
                     }
 
-                    var inc_exc_pph = $('.inc_exc_pph').val();
+                    var inc_exc_pph = $('.inc_exc_pph_new').val();
 
 
                     if (keterangan == '' || nilai <= 0) {

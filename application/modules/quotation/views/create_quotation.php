@@ -1977,7 +1977,7 @@
                         var total_nilai = 0;
                     }
 
-                    var inc_exc_pph = $('.inc_exc_pph').val();
+                    var inc_exc_pph = $('.inc_exc_pph_new').val();
 
 
                     if (keterangan == '' || nilai <= 0) {
