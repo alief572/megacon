@@ -490,7 +490,7 @@ class Product_price extends Admin_Controller
 			$this->db->join('bom_detail b', 'b.code_material = a.id_detail_material');
 			$this->db->join('bom_header c', 'c.no_bom = b.no_bom');
 			$this->db->join('new_inventory_4 d', 'd.code_lv4 = a.id_material');
-			$this->db->where('c.id_product', $code_level4);
+			$this->db->where('c.no_bom', $value['no_bom']);
 			$get_bom_detail = $this->db->get()->result();
 
 			foreach($get_bom_detail as $item_bom_detail) {
@@ -501,7 +501,7 @@ class Product_price extends Admin_Controller
 			$this->db->from('bom_material_lain a');	
 			$this->db->join('new_inventory_4 b', 'b.code_lv4 = a.id_material');
 			$this->db->join('bom_header c', 'c.no_bom = a.no_bom');
-			$this->db->where('c.id_product', $code_level4);
+			$this->db->where('c.no_bom', $value['no_bom']);
 			$this->db->group_by('a.id');
 			$get_bom_material_lain = $this->db->get()->result();
 
