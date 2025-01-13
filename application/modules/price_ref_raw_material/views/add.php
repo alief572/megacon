@@ -268,6 +268,13 @@ $expired12 = (!empty($listData[0]->price_ref_new_expired) and $listData[0]->pric
 				<div class="col-md-3">
 					<input type="text" class="form-control text-center autoNumeric" id="kurs" required name="kurs" value='<?= $kurs; ?>' readonly>
 				</div>
+				<div class="col-md-12"></div>
+				<div class="col-md-2" style="margin-top: 1rem;">
+					<label>Satuan Beli</label>
+				</div>
+				<div class="col-md-5" style="margin-top: 1rem;">
+					<input type="text" name="" id="" class="form-control text-center" value="<?= ucfirst($satuan_beli) ?>" readonly>
+				</div>
 			</div>
 			<hr>
 			<div class="form-group row">
