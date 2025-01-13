@@ -109,6 +109,13 @@ class Price_list extends Admin_Controller
 		$detail_ukuran_jadi = $this->db->get_where('bom_detail', array('no_bom' => $no_bom, 'category' => 'ukuran jadi'))->result_array();
 		$product    		= $this->price_list_model->get_data_where_array('new_inventory_4', array('deleted_date' => NULL, 'category' => 'product'));
 
+		$this->db->select('a.*, b.nama as nm_material, b.up_to_value as price_ref, c.code as satuan');
+		$this->db->from('bom_material_lain a');
+		$this->db->join('new_inventory_4 b', 'b.code_lv4 = a.id_material');
+		$this->db->join('ms_satuan c', 'c.id = a.id_satuan', 'left');
+		$this->db->where('a.no_bom', $no_bom);
+		$get_material_lain = $this->db->get()->result();
+
 		$data = [
 			'header' => $header,
 			'detail' => $detail,
@@ -121,7 +128,8 @@ class Price_list extends Admin_Controller
 			'product' => $product,
 			'GET_LEVEL4' => get_inventory_lv4(),
 			'GET_ACC' => get_accessories(),
-			'GET_PRICE_REF' => get_price_ref()
+			'GET_PRICE_REF' => get_price_ref(),
+			'list_material_lain' => $get_material_lain
 		];
 		$this->template->render('detail_bom_material', $data);
 	}

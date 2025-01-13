@@ -94,7 +94,8 @@ $TOTAL_PRICE_ALL = 0;
 				<tr>
 					<th class='text-left' style='width: 3%;'>#</th>
 					<th class='text-left'>Material Lain</th>
-					<th class='text-right' style='width: 8%;'>Volume (m3)</th>
+					<th class='text-right' style='width: 8%;'>Satuan</th>
+					<th class='text-right' style='width: 8%;'>Kebutuhan</th>
 					<th class='text-right' style='width: 8%;'>Price Ref</th>
 					<th class='text-right' style='width: 8%;'>Total Price</th>
 				</tr>
@@ -110,6 +111,7 @@ $TOTAL_PRICE_ALL = 0;
 					echo '<tr>';
 					echo '<td class="text-center">' . $no_material_lain . '</td>';
 					echo '<td>'.$val->nm_material.'</td>';
+					echo '<td class="text-right">'.strtoupper($val->satuan).'</td>';
 					echo '<td class="text-right">'.number_format($val->kebutuhan, 4).'</td>';
 					echo '<td class="text-right">'.number_format($val->price_ref, 2).'</td>';
 					echo '<td class="text-right">'.number_format($total_price, 2).'</td>';
@@ -124,7 +126,7 @@ $TOTAL_PRICE_ALL = 0;
 			</tbody>
 			<tfoot>
 				<tr>
-					<th colspan="2" class="text-right">Total</th>
+					<th colspan="3" class="text-right">Total</th>
 					<th class="text-right"><?= number_format($SUM_TOTAL_BERAT, 4) ?></th>
 					<th class="text-right"></th>
 					<th class="text-right"><?= number_format($SUM_TOTAL_PRICE, 2) ?></th>

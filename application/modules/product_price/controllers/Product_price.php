@@ -101,9 +101,10 @@ class Product_price extends Admin_Controller
 		$detail_mat_joint   = $this->db->get_where('bom_detail', array('no_bom' => $no_bom, 'category' => 'mat joint'))->result_array();
 		$product    		= $this->product_price_model->get_data_where_array('new_inventory_4', array('deleted_date' => NULL, 'category' => 'product'));
 
-		$this->db->select('a.*, b.nama as nm_material, b.up_to_value as price_ref');
+		$this->db->select('a.*, b.nama as nm_material, b.up_to_value as price_ref, c.code as satuan');
 		$this->db->from('bom_material_lain a');
 		$this->db->join('new_inventory_4 b', 'b.code_lv4 = a.id_material');
+		$this->db->join('ms_satuan c', 'c.id = a.id_satuan', 'left');
 		$this->db->where('a.no_bom', $no_bom);
 		$get_material_lain = $this->db->get()->result();
 
