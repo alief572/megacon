@@ -472,16 +472,16 @@ class Product_price extends Admin_Controller
 
 			// $persen_indirect 	= $GET_RATE_COSTING[3];
 			$persen_indirect = 0;
-			$persen_consumable 	= $GET_RATE_COSTING[6];
+			$persen_consumable 	= $GET_RATE_COSTING[5];
 			// $persen_packing 	= $GET_RATE_COSTING[7];
 			$persen_packing = 0;
-			$persen_enginnering = $GET_RATE_COSTING[9];
-			$persen_foh 		= $GET_RATE_COSTING[10];
-			$persen_fin_adm 	= $GET_RATE_COSTING[11];
-			$persen_mkt_sales 	= $GET_RATE_COSTING[12];
-			$persen_interest 	= $GET_RATE_COSTING[13];
-			$persen_profit 		= $GET_RATE_COSTING[15];
-			$persen_allowance 	= $GET_RATE_COSTING[18];
+			$persen_enginnering = $GET_RATE_COSTING[6];
+			$persen_foh 		= $GET_RATE_COSTING[7];
+			$persen_fin_adm 	= $GET_RATE_COSTING[8];
+			$persen_mkt_sales 	= $GET_RATE_COSTING[9];
+			$persen_interest 	= $GET_RATE_COSTING[10];
+			$persen_profit 		= $GET_RATE_COSTING[13];
+			$persen_allowance 	= $GET_RATE_COSTING[16];
 
 			//1 material
 			$cost_material = 0;
@@ -550,22 +550,22 @@ class Product_price extends Admin_Controller
 			// }
 			$cost_logistik 	= 0;
 
-			$cost_enginnering 	= $GET_RATE_COSTING[9];
-			$cost_foh 			= $GET_RATE_COSTING[10];
-			$cost_sdm_ho = $GET_RATE_COSTING[11];
-			$cost_marketing = $GET_RATE_COSTING[12];
-			$cost_interest = $GET_RATE_COSTING[13];
+			$cost_enginnering 	= $GET_RATE_COSTING[6];
+			$cost_foh 			= $GET_RATE_COSTING[7];
+			$cost_sdm_ho = $GET_RATE_COSTING[8];
+			$cost_marketing = $GET_RATE_COSTING[9];
+			$cost_interest = $GET_RATE_COSTING[10];
 
 			$harga_modal = ($cost_material + $cost_man_power + $cost_mesin + $cost_enginnering + $cost_foh + $cost_sdm_ho + $cost_marketing + $cost_interest);
 
 			$cost_profit 		= ($harga_modal * $persen_profit / 100);
 			$bottom_price 		= ($harga_modal + $cost_profit);
-			$factor_kompetitif	= $GET_RATE_COSTING[17];
+			$factor_kompetitif	= $GET_RATE_COSTING[15];
 			$bottom_selling		= $bottom_price * $factor_kompetitif;
 
-			$ppn = ($GET_RATE_COSTING[19]);
+			$ppn = ($GET_RATE_COSTING[11]);
 			// $nego_allowance		= $bottom_selling * ($persen_allowance / 100);
-			$price_final		= ($bottom_selling + ($bottom_selling * $GET_RATE_COSTING[19] / 100));
+			$price_final		= ($bottom_selling + ($bottom_selling * $GET_RATE_COSTING[11] / 100));
 
 			$ArrHeader[$key]['ct_setting'] 				= $ct_setting;
 			$ArrHeader[$key]['ct_produksi'] 			= $ct_produksi;
