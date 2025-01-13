@@ -180,31 +180,31 @@ class Product_price extends Admin_Controller
 			}
 
 			$TOTAL_PRICE_ALL = 0;
-			$TOTAL_BERAT_BERSIH = 0;
+			$TOTAL_BERAT_BERSIH = $result[0]['volume_m3'];
 
-			$sql_ttl_volume = '
-				SELECT
-					a.volume_m3 as bom_detail_weight,
-					0 as material_lain_weight
-				FROM
-					bom_detail a
-				WHERE
-					a.no_bom = "'.$no_bom.'"
+			// $sql_ttl_volume = '
+			// 	SELECT
+			// 		a.volume_m3 as bom_detail_weight,
+			// 		0 as material_lain_weight
+			// 	FROM
+			// 		bom_detail a
+			// 	WHERE
+			// 		a.no_bom = "'.$no_bom.'"
 
-				UNION ALL
+			// 	UNION ALL
 
-				SELECT
-					0 as bom_detail_weight,
-					a.kebutuhan as material_lain_weight
-				FROM
-					bom_material_lain a
-				WHERE
-					a.no_bom = "'.$no_bom.'"
-			';
-			$get_ttl_volume = $this->db->query($sql_ttl_volume)->result();
-			foreach($get_ttl_volume as $item_ttl_volume) {
-				$TOTAL_BERAT_BERSIH += ($item_ttl_volume->bom_detail_weight + $item_ttl_volume->material_lain_weight);
-			}
+			// 	SELECT
+			// 		0 as bom_detail_weight,
+			// 		a.kebutuhan as material_lain_weight
+			// 	FROM
+			// 		bom_material_lain a
+			// 	WHERE
+			// 		a.no_bom = "'.$no_bom.'"
+			// ';
+			// $get_ttl_volume = $this->db->query($sql_ttl_volume)->result();
+			// foreach($get_ttl_volume as $item_ttl_volume) {
+			// 	$TOTAL_BERAT_BERSIH += ($item_ttl_volume->bom_detail_weight + $item_ttl_volume->material_lain_weight);
+			// }
 
 			$PULTRUSION_PRICE = 0;
 			$PULTRUSION_BERAT = 0;
