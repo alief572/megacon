@@ -1049,4 +1049,183 @@ class Quotation_model extends BF_Model
 		$data['query'] = $this->db->query($sql);
 		return $data;
 	}
+
+	public function generate_quotation_hist($id_penawaran){
+		$id_history = $this->generate_id_history();
+
+		$get_data_header = $this->db->get_where('tr_penawaran', ['no_penawaran' => $id_penawaran])->row_array();
+
+		$get_no_revisi = $this->db->query('SELECT a.revisi FROM tr_history_penawaran a ORDER BY a.revisi DESC LIMIT 1')->row_array();
+
+		if(count($get_no_revisi) < 1) {
+			$no_revisi = 0;
+		} else {
+			$no_revisi = ($get_no_revisi['revisi'] + 1);
+		}
+
+		$data_array_header = [
+			'id_history_penawaran' => $id_history,
+			'no_penawaran' => $get_data_header['no_penawaran'],
+			'quote_by' => $get_data_header['quote_by'],
+			'no_surat' => $get_data_header['no_surat'],
+			'tgl_penawaran' => $get_data_header['tgl_penawaran'],
+			'id_customer' => $get_data_header['id_customer'],
+			'pic_customer' => $get_data_header['pic_customer'],
+			'mata_uang' => $get_data_header['mata_uang'],
+			'email_customer' => $get_data_header['email_customer'],
+			'valid_until' => $get_data_header['valid_until'],
+			'top' => $get_data_header['top'],
+			'top_custom' => $get_data_header['top_custom'],
+			'nilai_penawaran' => $get_data_header['nilai_penawaran'],
+			'order_status' => $get_data_header['order_status'],
+			'id_sales' => $get_data_header['id_sales'],
+			'nama_sales' => $get_data_header['nama_sales'],
+			'pengiriman' => $get_data_header['pengiriman'],
+			'status' => $get_data_header['status'],
+			'revisi' => $no_revisi,
+			'keterangan' => $get_data_header['keterangan'],
+			'created_by' => $this->auth->user_id(),
+			'created_on' => date('Y-m-d H:i:s'),
+			'printed_by' => $get_data_header['printed_by'],
+			'printed_on' => $get_data_header['printed_on'],
+			'delivered_by' => $get_data_header['delivered_by'],
+			'delivered_on' => $get_data_header['delivered_on'],
+			'approved_by' => $get_data_header['approved_by'],
+			'approved_on' => $get_data_header['approved_on'],
+			'revisi_by' => $get_data_header['revisi_by'],
+			'revisi_on' => $get_data_header['revisi_on'],
+			'ppn' => $get_data_header['ppn'],
+			'nilai_ppn' => $get_data_header['nilai_ppn'],
+			'grand_total' => $get_data_header['grand_total'],
+			'keterangan_loss' => $get_data_header['keterangan_loss'],
+			'keterangan_approve' => $get_data_header['keterangan_approve'],
+			'status_so' => $get_data_header['status_so'],
+			'pilihppn' => $get_data_header['pilihppn'],
+			'skb' => $get_data_header['skb'],
+			'no_revisi' => $get_data_header['no_revisi'],
+			'keterangan_nomor' => $get_data_header['keterangan_nomor'],
+			'project' => $get_data_header['project'],
+			'req_app1' => $get_data_header['req_app1'],
+			'req_app2' => $get_data_header['req_app2'],
+			'req_app3' => $get_data_header['req_app3'],
+			'app_1' => $get_data_header['app_1'],
+			'app_2' => $get_data_header['app_2'],
+			'app_3' => $get_data_header['app_3'],
+			'keterangan_app1' => $get_data_header['keterangan_app1'],
+			'keterangan_app2' => $get_data_header['keterangan_app2'],
+			'keterangan_app3' => $get_data_header['keterangan_app3'],
+			'subject' => $get_data_header['subject'],
+			'time_delivery' => $get_data_header['time_delivery'],
+			'offer_period' => $get_data_header['offer_period'],
+			'delivery_term' => $get_data_header['delivery_term'],
+			'warranty' => $get_data_header['warranty'],
+			'currency' => $get_data_header['currency'],
+			'notes' => $get_data_header['notes'],
+		];
+
+		$get_data_detail = $this->db->get_where('tr_penawaran_detail', ['no_penawaran' => $id_penawaran])->result_array();
+		
+		$data_array_detail = [];
+		foreach($get_data_detail as $item) {
+			$data_array_detail[] = [
+				'id_history_penawaran' => $id_history,
+				'id_penawaran_detail' => $item['id_penawaran_detail'],
+				'no_penawaran' => $item['no_penawaran'],
+				'id_category3' => $item['id_category3'],
+				'nama_produk' => $item['nama_produk'],
+				'id_bentuk' => $item['id_bentuk'],
+				'qty' => $item['qty'],
+				'harga_satuan' => $item['harga_satuan'],
+				'stok_tersedia' => $item['stok_tersedia'],
+				'potensial_loss' => $item['potensial_loss'],
+				'diskon_persen' => $item['diskon_persen'],
+				'diskon_nilai' => $item['diskon_nilai'],
+				'diskon_nilai' => $item['diskon_nilai'],
+				'freight_cost' => $item['freight_cost'],
+				'total_harga' => $item['total_harga'],
+				'keterangan' => $item['keterangan'],
+				'revisi' => $item['revisi'],
+				'created_by' => $item['created_by'],
+				'created_on' => $item['created_on'],
+				'nilai_diskon' => $item['nilai_diskon'],
+				'diskon_compare' => $item['diskon_compare'],
+				'free_stock' => $item['free_stock'],
+				'curr' => $item['curr'],
+				'ukuran_potongan' => $item['ukuran_potongan'],
+				'cutting_fee' => $item['cutting_fee'],
+				'delivery_fee' => $item['delivery_fee']
+			];
+		}
+
+		$data_array_other_cost = [];
+
+		$get_other_cost = $this->db->get_where('tr_penawaran_other_cost', ['id_penawaran' => $id_penawaran])->result_array();
+		foreach($get_other_cost as $item) {
+			$data_array_other_cost[] = [
+				'id_history_penawaran' => $id_history,
+				'id_other_cost' => $item['id_other_cost'],
+				'id_penawaran' => $item['id_penawaran'],
+				'curr' => $item['curr'],
+				'keterangan' => $item['keterangan'],
+				'inc_exc_pph' => $item['inc_exc_pph'],
+				'nilai' => $item['nilai'],
+				'nilai_pph' => $item['nilai_pph'],
+				'total_nilai' => $item['total_nilai'],
+				'used_inv' => $item['used_inv'],
+				'dibuat_oleh' => $this->auth->user_id(),
+				'dibuat_tgl' => date('Y-m-d H:i:s'),
+			];
+		}
+
+		$data_array_other_item = [];
+
+		$get_other_item = $this->db->get_where('tr_penawaran_other_item', ['id_penawaran' => $id_penawaran])->result_array();
+
+		foreach($get_other_item as $item) {
+			$data_array_other_item[] = [
+				'id_history_penawaran' => $id_history,
+				'id_penawaran' => $item['id_penawaran'],
+				'id_other' => $item['id_other'],
+				'nm_other' => $item['nm_other'],
+				'harga' => $item['harga'],
+				'qty' => $item['qty'],
+				'total' => $item['total'],
+				'created_by' => $this->auth->user_id(),
+				'created_on' => date('Y-m-d H:i:s')
+			];
+		}
+
+		$this->db->trans_begin();
+
+		$insert_header = $this->db->insert('tr_history_penawaran', $data_array_header);
+		if(!$insert_header) {
+			$this->db->trans_rollback();
+			print_r($this->db->last_query());
+			exit;
+		}
+		$insert_detail = $this->db->insert_batch('tr_history_penawaran_detail', $data_array_detail);
+		if(!$insert_detail) {
+			$this->db->trans_rollback();
+			print_r($this->db->last_query());
+			exit;
+		}
+		$insert_other_cost = $this->db->insert_batch('tr_history_penawaran_other_cost', $data_array_other_cost);
+		if(!$insert_other_cost) {
+			$this->db->trans_rollback();
+			print_r($this->db->last_query());
+			exit;
+		}
+		$insert_other_item = $this->db->insert_batch('tr_history_penawaran_other_item', $data_array_other_item);
+		if(!$insert_other_item) {
+			$this->db->trans_rollback();
+			print_r($this->db->last_query());
+			exit;
+		}
+
+		if($this->db->trans_status() === false) {
+			$this->db->trans_rollback();
+		} else {
+			$this->db->trans_commit();
+		}
+	}
 }
