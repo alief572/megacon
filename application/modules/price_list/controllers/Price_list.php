@@ -62,6 +62,16 @@ class Price_list extends Admin_Controller
 		$detail_ukuran_jadi = $this->db->get_where('bom_detail', array('no_bom' => $no_bom, 'category' => 'ukuran jadi'))->result_array();
 		$product    		= $this->price_list_model->get_data_where_array('new_inventory_4', array('deleted_date' => NULL, 'category' => 'product'));
 
+		$ttl_volume = $product_price[0]['berat_material'];
+		// foreach($detail as $item) {
+		// 	$ttl_volume += $item['volume_m3'];
+		// }
+
+		// $get_material_lain = $this->db->get_where('bom_material_lain', ['no_bom' => $no_bom])->result_array();
+		// foreach($get_material_lain as $item) {
+		// 	$ttl_volume += $item['kebutuhan'];
+		// }
+
 		$data = [
 			'no_bom' => $no_bom,
 			'dataList' => $costing_rate,
@@ -77,7 +87,8 @@ class Price_list extends Admin_Controller
 			'product' => $product,
 			'GET_LEVEL4' => get_inventory_lv4(),
 			'GET_ACC' => get_accessories(),
-			'GET_PRICE_REF' => get_price_ref()
+			'GET_PRICE_REF' => get_price_ref(),
+			'ttl_volume' => $ttl_volume
 		];
 		$this->template->title('Costing Rate');
 		$this->template->render('detail_costing', $data);
@@ -499,6 +510,16 @@ class Price_list extends Admin_Controller
 			$detail_ipp_ukuranjadi  = $this->db->get_where('product_price_ukuran_jadi', array('kode' => $kode, 'deleted_date' => null))->result_array();
 		}
 
+		$ttl_volume = $product_price[0]['berat_material'];
+		// foreach($detail as $item) {
+		// 	$ttl_volume += $item['volume_m3'];
+		// }
+
+		// $get_material_lain = $this->db->get_where('bom_material_lain', ['no_bom' => $no_bom])->result_array();
+		// foreach($get_material_lain as $item) {
+		// 	$ttl_volume += $item['kebutuhan'];
+		// }
+
 		// print_r($detail_ipp_ukuranjadi);
 		// exit;
 
@@ -518,7 +539,8 @@ class Price_list extends Admin_Controller
 			'detail_ipp_ukuranjadi' => $detail_ipp_ukuranjadi,
 			'GET_LEVEL4' => get_inventory_lv4(),
 			'GET_ACC' => get_accessories(),
-			'GET_PRICE_REF' => get_price_ref()
+			'GET_PRICE_REF' => get_price_ref(),
+			'ttl_volume' => $ttl_volume
 		];
 		$this->template->title('Approval Price List');
 		$this->template->render('pengajuan_costing', $data);
@@ -610,6 +632,16 @@ class Price_list extends Admin_Controller
 		$detail_ukuran_jadi = $this->db->get_where('bom_detail', array('no_bom' => $no_bom, 'category' => 'ukuran jadi'))->result_array();
 		$product    		= $this->price_list_model->get_data_where_array('new_inventory_4', array('deleted_date' => NULL, 'category' => 'product'));
 
+		$ttl_volume = $product_price[0]['berat_material'];
+		// foreach($detail as $item) {
+		// 	$ttl_volume += $item['volume_m3'];
+		// }
+
+		// $get_material_lain = $this->db->get_where('bom_material_lain', ['no_bom' => $no_bom])->result_array();
+		// foreach($get_material_lain as $item) {
+		// 	$ttl_volume += $item['kebutuhan'];
+		// }
+
 		$data = [
 			'no_bom' => $no_bom,
 			'dataList' => $costing_rate,
@@ -625,7 +657,8 @@ class Price_list extends Admin_Controller
 			'product' => $product,
 			'GET_LEVEL4' => get_inventory_lv4(),
 			'GET_ACC' => get_accessories(),
-			'GET_PRICE_REF' => get_price_ref()
+			'GET_PRICE_REF' => get_price_ref(),
+			'ttl_volume' => $ttl_volume
 		];
 		$this->template->title('Costing Rate');
 		$this->template->render('detail_costing_std', $data);

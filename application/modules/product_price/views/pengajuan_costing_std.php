@@ -88,7 +88,7 @@ foreach ($detail_topping as $val => $valx) {
                         }
                     }
                     //===============NEW=====================
-                    
+
 
                     //===============END NEW=================
                     foreach ($dataList as $key => $value) {
@@ -119,13 +119,13 @@ foreach ($detail_topping as $val => $valx) {
                         if ($value['judul'] == 'Depresiasi / Penyusutan') {
                             echo "<tr>";
                             if ($value['code'] == '3') {
-                                $rate         = number_format($product_price[0]['rate_depresiasi'], 2);
-                                $cost_machine    = $product_price[0]['cost_machine'];
+                                $rate         = number_format($product_price[0]['rate_depresiasi'] * $ttl_volume, 2);
+                                $cost_machine    = ($product_price[0]['cost_machine'] * $ttl_volume);
                                 $detRate = "<span class='text-primary btncursor detailRate' id='btnShowMachine' data-tanda='machine' data-cost='" . $product_price[0]['rate_depresiasi'] . "' data-id_product='" . $header[0]->id_product . "' >Detail</span>";
                             }
                             if ($value['code'] == '4') {
-                                $rate         = number_format($product_price[0]['rate_mould'], 2);
-                                $cost_machine     = $product_price[0]['cost_mould'];
+                                $rate         = number_format($product_price[0]['rate_mould'] * $ttl_volume, 2);
+                                $cost_machine     = ($product_price[0]['cost_mould'] * $ttl_volume);
                                 $detRate = "<span class='text-primary btncursor detailRate' id='btnShowMold' data-tanda='mold' data-cost='" . $product_price[0]['rate_mould'] . "' data-id_product='" . $header[0]->id_product . "' >Detail</span>";
                             }
                             echo "<td>" . $value['element_costing'] . "</td>";
@@ -138,52 +138,55 @@ foreach ($detail_topping as $val => $valx) {
                             $harga_modal += $cost_machine;
                         }
                     }
-                   
+
                     $nomor = 3;
                     foreach ($dataList as $key => $value) {
                         if ($value['judul'] == 'Lainnya') {
                             $nomor++;
 
-                            if($value['code'] == '5') {
-                                $rate         = number_format($product_price[0]['cost_persen_consumable'], 2) . " %";
-                                $cost     = $product_price[0]['cost_consumable'];
+                            if ($value['code'] == '5') {
+                                $rate         = number_format($product_price[0]['cost_persen_consumable'] * $ttl_volume, 2) . "";
+                                $cost     = ($product_price[0]['cost_consumable'] * $ttl_volume);
 
                                 $harga_modal += $cost;
                             }
 
                             if ($value['code'] == '6') {
-                                $rate         = number_format($product_price[0]['cost_persen_enginnering'], 2);
-                                $cost       = $product_price[0]['cost_enginnering'];
+                                $rate         = number_format($product_price[0]['cost_persen_enginnering'] * $ttl_volume, 2);
+                                $cost       = ($product_price[0]['cost_enginnering'] * $ttl_volume);
 
                                 $harga_modal += $cost;
                             }
 
-                            if($value['code'] == '7') {
+                            if ($value['code'] == '7') {
+                                $rate = number_format($product_price[0]['cost_foh'] * $ttl_volume, 2);
+                                $cost = ($product_price[0]['cost_foh'] * $ttl_volume);
+
                                 $harga_modal += $cost;
                             }
-                            
+
                             if ($value['code'] == '8') {
-                                $rate         = number_format($product_price[0]['cost_persen_fin_adm'], 2);
-                                $cost       = $product_price[0]['cost_fin_adm'];
+                                $rate         = number_format($product_price[0]['cost_persen_fin_adm'] * $ttl_volume, 2);
+                                $cost       = ($product_price[0]['cost_fin_adm'] * $ttl_volume);
 
                                 $harga_modal += $cost;
                             }
                             if ($value['code'] == '9') {
-                                $rate         = number_format($product_price[0]['cost_persen_mkt_sales'], 2);
-                                $cost        = $product_price[0]['cost_mkt_sales'];
+                                $rate         = number_format($product_price[0]['cost_persen_mkt_sales'] * $ttl_volume, 2);
+                                $cost        = ($product_price[0]['cost_mkt_sales'] * $ttl_volume);
 
                                 $harga_modal += $cost;
                             }
                             if ($value['code'] == '10') {
-                                $rate         = number_format($product_price[0]['cost_persen_interest'], 2);
-                                $cost       = $product_price[0]['cost_interest'];
+                                $rate         = number_format($product_price[0]['cost_persen_interest'] * $ttl_volume, 2);
+                                $cost       = ($product_price[0]['cost_interest'] * $ttl_volume);
 
                                 $harga_modal += $cost;
                             }
                             if ($value['code'] == '11') {
                                 $rate         = number_format($product_price[0]['ppn'], 2);
                                 $cost        = ($product_price[0]['ppn'] * $harga_modal / 100);
-                                
+
                                 $harga_modal += $cost;
                             }
                             if ($value['code'] == '12') {
@@ -221,7 +224,7 @@ foreach ($detail_topping as $val => $valx) {
                         }
                     }
 
-                   
+
 
                     $cost_pengajuan = ($product_price[0]['pengajuan_price_list'] > 0) ? $product_price[0]['pengajuan_price_list'] : $cost;
                     $kurs = ($product_price[0]['kurs'] > 0) ? $product_price[0]['kurs'] : '';
@@ -424,7 +427,7 @@ foreach ($detail_topping as $val => $valx) {
                         if (result.status == '1') {
                             swal({
                                     title: "Sukses",
-                                    text: "Data berhasil diajuakan",
+                                    text: "Data berhasil diajukan",
                                     type: "success"
                                 },
                                 function() {
@@ -433,7 +436,7 @@ foreach ($detail_topping as $val => $valx) {
                         } else {
                             swal({
                                 title: "Error",
-                                text: "Data error. Gagal diajuakan",
+                                text: "Data error. Gagal diajukan",
                                 type: "error"
                             })
                         }

@@ -182,6 +182,30 @@ class Product_price extends Admin_Controller
 			$TOTAL_PRICE_ALL = 0;
 			$TOTAL_BERAT_BERSIH = 0;
 
+			$sql_ttl_volume = '
+				SELECT
+					a.volume_m3 as bom_detail_weight,
+					0 as material_lain_weight
+				FROM
+					bom_detail a
+				WHERE
+					a.no_bom = "'.$no_bom.'"
+
+				UNION ALL
+
+				SELECT
+					0 as bom_detail_weight,
+					a.kebutuhan as material_lain_weight
+				FROM
+					bom_material_lain a
+				WHERE
+					a.no_bom = "'.$no_bom.'"
+			';
+			$get_ttl_volume = $this->db->query($sql_ttl_volume)->result();
+			foreach($get_ttl_volume as $item_ttl_volume) {
+				$TOTAL_BERAT_BERSIH += ($item_ttl_volume->bom_detail_weight + $item_ttl_volume->material_lain_weight);
+			}
+
 			$PULTRUSION_PRICE = 0;
 			$PULTRUSION_BERAT = 0;
 			//default
@@ -196,7 +220,7 @@ class Product_price extends Admin_Controller
 					$berat_bersih = $valx['volume_m3'] - $berat_pengurang_additive;
 					$total_price = $berat_bersih * $price_ref;
 					$TOTAL_PRICE_ALL += $total_price;
-					$TOTAL_BERAT_BERSIH += $berat_bersih;
+					// $TOTAL_BERAT_BERSIH += $berat_bersih;
 
 					$PULTRUSION_PRICE += $total_price;
 					$PULTRUSION_BERAT += $berat_bersih;
@@ -233,7 +257,7 @@ class Product_price extends Admin_Controller
 					$berat_bersih = $valx['volume_m3'];
 					$total_price = $berat_bersih * $price_ref;
 					$TOTAL_PRICE_ALL += $total_price;
-					$TOTAL_BERAT_BERSIH += $berat_bersih;
+					// $TOTAL_BERAT_BERSIH += $berat_bersih;
 					$UNIQ = $val . '-8888' . $key;
 					$ArrDetailDefault[$UNIQ]['kode'] 			=  $kode;
 					$ArrDetailDefault[$UNIQ]['category'] 		=  $valx['category'];
@@ -271,7 +295,7 @@ class Product_price extends Admin_Controller
 						$berat_bersih = $valx2['volume_m3'];
 						$total_price    = $berat_bersih * $price_ref;
 						$TOTAL_PRICE_ALL += $total_price;
-						$TOTAL_BERAT_BERSIH += $berat_bersih;
+						// $TOTAL_BERAT_BERSIH += $berat_bersih;
 						$UNIQ = $val . '-' . $val2 . '-' . $key;
 						$ArrDetailAdditiveCustom[$UNIQ]['kode'] 				=  $kode;
 						$ArrDetailAdditiveCustom[$UNIQ]['category'] 			=  $valx2['category'];
@@ -309,7 +333,7 @@ class Product_price extends Admin_Controller
 						$berat_bersih    = $valx2['volume_m3'] * $valx['qty'];
 						$total_price    = $berat_bersih * $price_ref;
 						$TOTAL_PRICE_ALL += $total_price;
-						$TOTAL_BERAT_BERSIH += $berat_bersih;
+						// $TOTAL_BERAT_BERSIH += $berat_bersih;
 						$UNIQ = $val . '-' . $val2 . '-' . $key;
 						$ArrDetailToppingCustom[$UNIQ]['kode'] 			=  $kode;
 						$ArrDetailToppingCustom[$UNIQ]['category'] 		=  $valx2['category'];
@@ -533,7 +557,7 @@ class Product_price extends Admin_Controller
 			//3 machine mould consumable
 			$machine 	= $rate_depresiasi;
 			$mould 		= $rate_mould;
-			$consumable = $cost_material * ($persen_consumable / 100);
+			$consumable = $persen_consumable;
 			$cost_mesin	= $machine + $mould + $consumable;
 			//4 logistik
 			//getUpdate Shipping
@@ -2447,6 +2471,16 @@ class Product_price extends Admin_Controller
 		$detail_ukuran_jadi = $this->db->get_where('bom_detail', array('no_bom' => $no_bom, 'category' => 'ukuran jadi'))->result_array();
 		$product    		= $this->product_price_model->get_data_where_array('new_inventory_4', array('deleted_date' => NULL, 'category' => 'product'));
 
+		$ttl_volume = $product_price[0]['berat_material'];
+		// foreach($detail as $item) {
+		// 	$ttl_volume += $item['volume_m3'];
+		// }
+
+		// $get_material_lain = $this->db->get_where('bom_material_lain', ['no_bom' => $no_bom])->result_array();
+		// foreach($get_material_lain as $item) {
+		// 	$ttl_volume += $item['kebutuhan'];
+		// }
+
 		$data = [
 			'no_bom' => $no_bom,
 			'dataList' => $costing_rate,
@@ -2462,7 +2496,8 @@ class Product_price extends Admin_Controller
 			'product' => $product,
 			'GET_LEVEL4' => get_inventory_lv4(),
 			'GET_ACC' => get_accessories(),
-			'GET_PRICE_REF' => get_price_ref()
+			'GET_PRICE_REF' => get_price_ref(),
+			'ttl_volume' => round($ttl_volume, 4)
 		];
 		$this->template->title('Pengajuan Price List Costing');
 		$this->template->render('pengajuan_costing_std', $data);
@@ -2486,6 +2521,16 @@ class Product_price extends Admin_Controller
 		$detail_ukuran_jadi = $this->db->get_where('bom_detail', array('no_bom' => $no_bom, 'category' => 'ukuran jadi'))->result_array();
 		$product    		= $this->product_price_model->get_data_where_array('new_inventory_4', array('deleted_date' => NULL, 'category' => 'product'));
 
+		$ttl_volume = $product_price[0]['berat_material'];
+		// foreach($detail as $item) {
+		// 	$ttl_volume += $item['volume_m3'];
+		// }
+
+		// $get_material_lain = $this->db->get_where('bom_material_lain', ['no_bom' => $no_bom])->result_array();
+		// foreach($get_material_lain as $item) {
+		// 	$ttl_volume += $item['kebutuhan'];
+		// }
+
 		$data = [
 			'no_bom' => $no_bom,
 			'dataList' => $costing_rate,
@@ -2501,7 +2546,8 @@ class Product_price extends Admin_Controller
 			'product' => $product,
 			'GET_LEVEL4' => get_inventory_lv4(),
 			'GET_ACC' => get_accessories(),
-			'GET_PRICE_REF' => get_price_ref()
+			'GET_PRICE_REF' => get_price_ref(),
+			'ttl_volume' => $ttl_volume
 		];
 		$this->template->title('Costing Rate');
 		$this->template->render('detail_costing_std', $data);
