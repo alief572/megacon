@@ -111,27 +111,22 @@ foreach ($detail_topping as $val => $valx) {
                         }
                     }
                     echo "<tr>";
-                    echo "<td class='text-center' rowspan='4'>3</td>";
+                    echo "<td class='text-center' rowspan='3'>3</td>";
                     // echo "<td class='text-center'></td>";
-                    echo "<td class='text-left text-bold' colspan='4'>Mesin, cetakan, consumable</td>";
+                    echo "<td class='text-left text-bold' colspan='4'>Depresiasi / Penyusutan</td>";
                     echo "</tr>";
                     foreach ($dataList as $key => $value) {
-                        if ($value['judul'] == 'Mesin, cetakan, consumable') {
+                        if ($value['judul'] == 'Depresiasi / Penyusutan') {
                             echo "<tr>";
-                            if ($value['code'] == '4') {
+                            if ($value['code'] == '3') {
                                 $rate         = number_format($product_price[0]['rate_depresiasi'], 2);
                                 $cost_machine    = $product_price[0]['cost_machine'];
                                 $detRate = "<span class='text-primary btncursor detailRate' id='btnShowMachine' data-tanda='machine' data-cost='" . $product_price[0]['rate_depresiasi'] . "' data-id_product='" . $header[0]->id_product . "' >Detail</span>";
                             }
-                            if ($value['code'] == '5') {
+                            if ($value['code'] == '4') {
                                 $rate         = number_format($product_price[0]['rate_mould'], 2);
                                 $cost_machine     = $product_price[0]['cost_mould'];
                                 $detRate = "<span class='text-primary btncursor detailRate' id='btnShowMold' data-tanda='mold' data-cost='" . $product_price[0]['rate_mould'] . "' data-id_product='" . $header[0]->id_product . "' >Detail</span>";
-                            }
-                            if ($value['code'] == '6') {
-                                $rate         = number_format($product_price[0]['cost_persen_consumable'], 2) . " %";
-                                $cost_machine     = $product_price[0]['cost_consumable'];
-                                $detRate = "";
                             }
                             echo "<td>" . $value['element_costing'] . "</td>";
                             echo "<td class='text-center'>" . $rate . "</td>";
@@ -149,69 +144,73 @@ foreach ($detail_topping as $val => $valx) {
                         if ($value['judul'] == 'Lainnya') {
                             $nomor++;
 
-                            if ($value['code'] == '9') {
+                            if($value['code'] == '5') {
+                                $rate         = number_format($product_price[0]['cost_persen_consumable'], 2) . " %";
+                                $cost     = $product_price[0]['cost_consumable'];
+
+                                $harga_modal += $cost;
+                            }
+
+                            if ($value['code'] == '6') {
                                 $rate         = number_format($product_price[0]['cost_persen_enginnering'], 2);
                                 $cost       = $product_price[0]['cost_enginnering'];
 
                                 $harga_modal += $cost;
                             }
-                            if ($value['code'] == '10') {
-                                $rate         = number_format($product_price[0]['cost_persen_foh'], 2);
-                                $cost        = $product_price[0]['cost_foh'];
-                                
+
+                            if($value['code'] == '7') {
                                 $harga_modal += $cost;
                             }
-                            if ($value['code'] == '11') {
+                            
+                            if ($value['code'] == '8') {
                                 $rate         = number_format($product_price[0]['cost_persen_fin_adm'], 2);
                                 $cost       = $product_price[0]['cost_fin_adm'];
 
                                 $harga_modal += $cost;
                             }
-                            if ($value['code'] == '12') {
+                            if ($value['code'] == '9') {
                                 $rate         = number_format($product_price[0]['cost_persen_mkt_sales'], 2);
                                 $cost        = $product_price[0]['cost_mkt_sales'];
 
                                 $harga_modal += $cost;
                             }
-                            if ($value['code'] == '13') {
+                            if ($value['code'] == '10') {
                                 $rate         = number_format($product_price[0]['cost_persen_interest'], 2);
                                 $cost       = $product_price[0]['cost_interest'];
 
                                 $harga_modal += $cost;
                             }
-                            if ($value['code'] == '14') {
+                            if ($value['code'] == '11') {
+                                $rate         = number_format($product_price[0]['ppn'], 2);
+                                $cost        = ($product_price[0]['ppn'] * $harga_modal / 100);
+                                
+                                $harga_modal += $cost;
+                            }
+                            if ($value['code'] == '12') {
                                 $rate         = '';
                                 $cost        = $harga_modal;
                             }
-                            if ($value['code'] == '15') {
+                            if ($value['code'] == '13') {
                                 $rate         = number_format($product_price[0]['cost_persen_profit'], 2);
                                 $cost       = ($harga_modal * $product_price[0]['cost_persen_profit'] / 100);
                             }
-                            if ($value['code'] == '16') {
+                            if ($value['code'] == '14') {
                                 $rate         = '';
                                 $cost        = ($harga_modal + ($harga_modal * $product_price[0]['cost_persen_profit'] / 100));
                             }
-                            if ($value['code'] == '17') {
+                            if ($value['code'] == '15') {
                                 $rate         = number_format($product_price[0]['cost_factor_kompetitif'], 2);
                                 $cost       = '';
                             }
-                            if ($value['code'] == '18') {
-                                $rate         = '';
-                                $cost        = (($harga_modal + ($harga_modal * $product_price[0]['cost_persen_profit'] / 100)) * $product_price[0]['cost_factor_kompetitif']);
-                            }
-                            if ($value['code'] == '19') {
-                                $rate         = number_format($product_price[0]['ppn'], 2);
-                                $cost        = ($product_price[0]['ppn'] * (($harga_modal + ($harga_modal * $product_price[0]['cost_persen_profit'] / 100)) * $product_price[0]['cost_factor_kompetitif']) / 100);
-                            }
-                            if($value['code'] == '20') {
+                            if ($value['code'] == '16') {
                                 $rate = '';
-                                $cost = ((($harga_modal + ($harga_modal * $product_price[0]['cost_persen_profit'] / 100)) * $product_price[0]['cost_factor_kompetitif']) + ($product_price[0]['ppn'] * (($harga_modal + ($harga_modal * $product_price[0]['cost_persen_profit'] / 100)) * $product_price[0]['cost_factor_kompetitif']) / 100));
+                                $cost = ((($harga_modal + ($harga_modal * $product_price[0]['cost_persen_profit'] / 100)) * $product_price[0]['cost_factor_kompetitif']));
                             }
                             echo "<tr>";
                             echo "<td class='text-center'>" . $nomor . "</td>";
-                            echo "<td>" . $value['element_costing'] . "</td>";
+                            echo "<td>" . nl2br($value['element_costing']) . "</td>";
                             echo "<td class='text-center'>" . $rate . "</td>";
-                            if ($value['code'] == '17') {
+                            if ($value['code'] == '15') {
                                 echo "<td class='text-right'></td>";
                             } else {
                                 echo "<td class='text-right'>" . number_format($cost, 2) . "</td>";
