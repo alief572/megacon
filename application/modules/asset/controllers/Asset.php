@@ -413,71 +413,6 @@ class Asset extends Admin_Controller
 	}
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	public function edit()
 	{
 		$Arr_Kembali	= array();
@@ -544,6 +479,8 @@ class Asset extends Admin_Controller
 			$cost_center	= $data['cost_center'];
 
 			$Data_Update	= array(
+				'depresiasi' 	=> $data['depresiasi'],
+				'value' 		=> str_replace(',', '', $data['value']),
 				'lokasi_asset' 	=> $lokasi_asset,
 				'cost_center' 	=> $cost_center,
 				'modified_by' 	=> $this->session->userdata['app_session']['username'],
