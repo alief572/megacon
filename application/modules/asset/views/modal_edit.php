@@ -71,7 +71,7 @@ $costcenter	= $this->db->query($QUERY)->result_array();
 			<label class='label-control col-sm-2'><b>Nilai Asset <span class='text-red'>*</span></b></label>
 			<div class='col-sm-4'>
 				<?php
-				echo form_input(array('id' => 'nilai_asset', 'name' => 'nilai_asset', 'class' => 'form-control input-md', 'autocomplete' => 'off', 'placeholder' => 'Nilai Asset', 'data-decimal' => '.', 'data-thousand' => '', 'data-precision' => '0', 'data-allow-zero' => false, 'readonly' => 'readonly'), $dataD[0]['nilai_asset']);
+				echo form_input(array('id' => 'nilai_asset', 'name' => 'nilai_asset', 'class' => 'form-control input-md', 'autocomplete' => 'off', 'placeholder' => 'Nilai Asset', 'data-decimal' => '.', 'data-thousand' => '', 'data-precision' => '0', 'data-allow-zero' => false), $dataD[0]['nilai_asset']);
 				?>
 			</div>
 			<label class='label-control col-sm-2'><b>Jangka Waktu <span class='text-red'>*</span></b></label>
