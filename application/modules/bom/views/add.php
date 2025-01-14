@@ -607,6 +607,12 @@ $volume_m3 = (!empty($header)) ? $header[0]->volume_m3 : 0;
 			});
 		});
 
+		$(document).on('click', '.del_material_lain', function() {
+			var no = $(this).data('no');
+
+			$('.row_material_lain_' + no).remove();
+		});
+
 		function sumMaterial() {
 			let SumTotal = 0
 			let qty

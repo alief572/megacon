@@ -136,8 +136,12 @@ class Price_ref_raw_material extends Admin_Controller
     } else {
       $listData = $this->db->get_where('new_inventory_4', array('id' => $id))->result();
 
+      $get_satuan_beli = $this->db->get_where('ms_satuan', ['id' => $listData[0]->satuan_beli])->row();
+      $satuan_beli = (!empty($get_satuan_beli)) ? $get_satuan_beli->code : '';
+
       $data = [
         'listData' => $listData,
+        'satuan_beli' => $satuan_beli
       ];
       $this->template->set($data);
       $this->template->render('add');

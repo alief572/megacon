@@ -71,7 +71,7 @@ $ENABLE_DELETE  = has_permission('Price_Ref_Raw_Material.Delete');
 				?>
 						<tr>
 							<td><?= $numb; ?></td>
-							<td><?= strtoupper($record->code) ?></td>
+							<td><?= strtoupper($record->code_lv4) ?></td>
 							<td><?= strtoupper($record->nama) ?></td>
 							<td align='right'><?= number_format($record->price_ref_use) ?></td>
 							<td align='right'><?= number_format($record->price_ref_use_usd, 2) ?></td>

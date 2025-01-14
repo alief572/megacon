@@ -118,12 +118,12 @@ foreach ($detail_topping as $val => $valx) {
                             echo "<tr>";
                             if ($value['code'] == '3') {
                                 $rate         = number_format($product_price[0]['rate_depresiasi'], 2);
-                                $cost_machine    = $product_price[0]['cost_machine'];
+                                $cost_machine    = ($product_price[0]['cost_machine'] * $ttl_volume);
                                 $detRate = "<span class='text-primary btncursor detailRate' id='btnShowMachine' data-tanda='machine' data-cost='" . $product_price[0]['rate_depresiasi'] . "' data-id_product='" . $header[0]->id_product . "' >Detail</span>";
                             }
                             if ($value['code'] == '4') {
                                 $rate         = number_format($product_price[0]['rate_mould'], 2);
-                                $cost_machine     = $product_price[0]['cost_mould'];
+                                $cost_machine     = ($product_price[0]['cost_mould'] * $ttl_volume);
                                 $detRate = "<span class='text-primary btncursor detailRate' id='btnShowMold' data-tanda='mold' data-cost='" . $product_price[0]['rate_mould'] . "' data-id_product='" . $header[0]->id_product . "' >Detail</span>";
                             }
                             echo "<td>" . $value['element_costing'] . "</td>";
@@ -143,38 +143,41 @@ foreach ($detail_topping as $val => $valx) {
                             $nomor++;
 
                             if ($value['code'] == '5') {
-                                $rate         = number_format($product_price[0]['cost_persen_consumable'], 2) . " %";
-                                $cost     = $product_price[0]['cost_consumable'];
+                                $rate         = number_format($product_price[0]['cost_persen_consumable'], 2) . "";
+                                $cost     = ($product_price[0]['cost_consumable'] * $ttl_volume);
 
                                 $harga_modal += $cost;
                             }
 
                             if ($value['code'] == '6') {
                                 $rate         = number_format($product_price[0]['cost_persen_enginnering'], 2);
-                                $cost       = $product_price[0]['cost_enginnering'];
+                                $cost       = ($product_price[0]['cost_enginnering'] * $ttl_volume);
 
                                 $harga_modal += $cost;
                             }
 
                             if ($value['code'] == '7') {
+                                $rate = number_format($product_price[0]['cost_foh'], 2);
+                                $cost = ($product_price[0]['cost_foh'] * $ttl_volume);
+
                                 $harga_modal += $cost;
                             }
 
                             if ($value['code'] == '8') {
                                 $rate         = number_format($product_price[0]['cost_persen_fin_adm'], 2);
-                                $cost       = $product_price[0]['cost_fin_adm'];
+                                $cost       = ($product_price[0]['cost_fin_adm'] * $ttl_volume);
 
                                 $harga_modal += $cost;
                             }
                             if ($value['code'] == '9') {
                                 $rate         = number_format($product_price[0]['cost_persen_mkt_sales'], 2);
-                                $cost        = $product_price[0]['cost_mkt_sales'];
+                                $cost        = ($product_price[0]['cost_mkt_sales'] * $ttl_volume);
 
                                 $harga_modal += $cost;
                             }
                             if ($value['code'] == '10') {
                                 $rate         = number_format($product_price[0]['cost_persen_interest'], 2);
-                                $cost       = $product_price[0]['cost_interest'];
+                                $cost       = ($product_price[0]['cost_interest'] * $ttl_volume);
 
                                 $harga_modal += $cost;
                             }
@@ -227,11 +230,11 @@ foreach ($detail_topping as $val => $valx) {
                     <td class='text-bold'>Product Master</td>
                     <td colspan='6'><?= $product_price[0]['product_master']; ?></td>
                 </tr>
-                <tr>
+                <!-- <tr>
                     <td class='text-bold'>Product Costing</td>
                     <td class='text-bold text-right' colspan='2'><?= number_format($product_price[0]['cost_price_final'], 2); ?></td>
                     <td colspan="4"></td>
-                </tr>
+                </tr> -->
                 <tr>
                     <td class='text-bold'>Approval Price List IDR</td>
                     <td class='text-bold text-success text-right' colspan='2'><input type="text" name='price_list_idr' id='price_list_idr' class='form-control text-right input-md autoNumeric2 text-bold' autocomplate='off' value='<?= $product_price[0]['price_idr']; ?>'></td>
