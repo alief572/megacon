@@ -24,7 +24,7 @@ $costcenter	= $this->db->query($QUERY)->result_array();
 			<label class='label-control col-sm-2'><b>Nama Asset <span class='text-red'>*</span></b></label>
 			<div class='col-sm-4'>
 				<?php
-				echo form_input(array('id' => 'nm_asset', 'name' => 'nm_asset', 'class' => 'form-control input-md', 'autocomplete' => 'off', 'placeholder' => 'Nama Asset', 'readonly' => 'readonly'), $dataD[0]['nm_asset']);
+				echo form_input(array('id' => 'nm_asset', 'name' => 'nm_asset', 'class' => 'form-control input-md', 'autocomplete' => 'off', 'placeholder' => 'Nama Asset'), $dataD[0]['nm_asset']);
 				echo form_input(array('type' => 'hidden', 'id' => 'id', 'name' => 'id'), $dataD[0]['id']);
 				echo form_input(array('type' => 'hidden', 'id' => 'kd_asset', 'name' => 'kd_asset'), $dataD[0]['kd_asset']);
 				echo form_input(array('type' => 'hidden', 'id' => 'helpa', 'name' => 'helpa', 'value' => 'N'));
@@ -32,7 +32,7 @@ $costcenter	= $this->db->query($QUERY)->result_array();
 			</div>
 			<label class='label-control col-sm-2'><b>Kategori <span class='text-red'>*</span></b></label>
 			<div class='col-sm-4'>
-				<select name='category' id='category' class='form-control input-md' disabled>
+				<select name='category' id='category' class='form-control input-md'>
 					<?php
 					foreach ($list_catg as $val => $valx) {
 						$selx = ($dataD[0]['category'] == $valx['id']) ? 'selected' : '';
@@ -76,7 +76,7 @@ $costcenter	= $this->db->query($QUERY)->result_array();
 			</div>
 			<label class='label-control col-sm-2'><b>Jangka Waktu <span class='text-red'>*</span></b></label>
 			<div class='col-sm-4'>
-				<select name='depresiasi' id='depresiasi' class='form-control input-md' disabled>
+				<select name='depresiasi' id='depresiasi' class='form-control input-md'>
 					<?php
 					for ($a = 1; $a <= 8; $a++) {
 						$selx = ($dataD[0]['depresiasi'] == $a) ? 'selected' : '';
@@ -90,7 +90,7 @@ $costcenter	= $this->db->query($QUERY)->result_array();
 			<label class='label-control col-sm-2'><b>Qty <span class='text-red'>*</span></b></label>
 			<div class='col-sm-4'>
 				<?php
-				echo form_input(array('id' => 'qty', 'name' => 'qty', 'class' => 'form-control input-md', 'autocomplete' => 'off', 'placeholder' => 'Qty Assets', 'data-decimal' => '.', 'data-thousand' => '', 'data-precision' => '0', 'data-allow-zero' => false, 'readonly' => 'readonly'), $dataD[0]['qty']);
+				echo form_input(array('id' => 'qty', 'name' => 'qty', 'class' => 'form-control input-md', 'autocomplete' => 'off', 'placeholder' => 'Qty Assets', 'data-decimal' => '.', 'data-thousand' => '', 'data-precision' => '0', 'data-allow-zero' => false), $dataD[0]['qty']);
 				?>
 			</div>
 			<label class='label-control col-sm-2'><b>Dipresiasi Perbulan</b></label>
