@@ -348,16 +348,18 @@ class Cycletime extends Admin_Controller
         $ArrDetail2[$val2 . $val]['mould']         = $valx2['mould'];
 
         if (isset($valx2['machine']) && !empty($valx2['machine'])) {
-          foreach ($valx2['machine'] as $val_machine => $valx_machine) {
-            $ArrDetailMachine[] = [
-              'id_time' => $id_material,
-              'id_costcenter' => $id_material . "-" . $urut,
-              'id_machine' => $valx_machine['id_machine'],
-              'nm_machine' => $valx_machine['nm_machine'],
-              'created_by' => $this->auth->user_id(),
-              'created_date' => date('Y-m-d H:i:s')
-            ];
-          }
+          if (is_array($valx2['machine']) || is_object($valx2['machine'])) {//start added by aji
+            foreach ($valx2['machine'] as $val_machine => $valx_machine) {
+              $ArrDetailMachine[] = [
+                'id_time' => $id_material,
+                'id_costcenter' => $id_material . "-" . $urut,
+                'id_machine' => $valx_machine['id_machine'],
+                'nm_machine' => $valx_machine['nm_machine'],
+                'created_by' => $this->auth->user_id(),
+                'created_date' => date('Y-m-d H:i:s')
+              ];
+            }
+          }//end added by aji
         }
       }
     }
