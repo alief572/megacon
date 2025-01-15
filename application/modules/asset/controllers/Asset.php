@@ -413,71 +413,6 @@ class Asset extends Admin_Controller
 	}
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	public function edit()
 	{
 		$Arr_Kembali	= array();
@@ -543,9 +478,17 @@ class Asset extends Admin_Controller
 			$lokasi_asset	= $data['lokasi_asset'];
 			$cost_center	= $data['cost_center'];
 
+			$nmCategory		= $this->Asset_model->getWhere('asset_category', 'id', $data['category']);
+
 			$Data_Update	= array(
+				'depresiasi' 	=> $data['depresiasi'],
+				'value' 		=> str_replace(',', '', $data['value']),
+				'nilai_asset' 	=> str_replace(',', '', $data['nilai_asset']),
+				'qty' 			=> $data['qty'],
 				'lokasi_asset' 	=> $lokasi_asset,
 				'cost_center' 	=> $cost_center,
+				'category' 		=> $data['category'],
+				'nm_category' 	=> strtoupper($nmCategory[0]['nm_category']),
 				'modified_by' 	=> $this->session->userdata['app_session']['username'],
 				'modified_date' => date('Y-m-d h:i:s')
 			);

@@ -336,4 +336,49 @@ class Mold_rate extends Admin_Controller
   {
     $this->Mold_rate_model->get_data_rate_mold();
   }
+
+  public function update_rate()
+  {
+    $data_header = [];
+    $get_rate = $this->db->get_where('rate_mold', ['deleted_by' => null])->result_array();
+
+    foreach ($get_rate as $item) {
+      $get_asset = $this->db->get_where('asset', ['kd_asset' => $item['kd_mesin']])->row();
+
+      $harga_mesin = (!empty($get_asset)) ? $get_asset->nilai_asset : 0;
+      $depresiasi = (!empty($get_asset)) ? $get_asset->depresiasi : 0;
+      $depresiasi_per_tahun = ($harga_mesin / $depresiasi);
+
+      $utilisasi_hari = $item['utilisasi_hari'];
+      $utilisasi_m3_per_hari = $item['utilisasi_m3_per_hari'];
+
+      $cost_m3 = ($depresiasi_per_tahun / ($utilisasi_hari * $utilisasi_m3_per_hari));
+
+      $data_header[] = [
+        'id' => $item['id'],
+        'harga_mesin' => $harga_mesin,
+        'depresiasi' => $depresiasi,
+        'depresiasi_per_tahun' => $depresiasi_per_tahun,
+        'cost_m3' => $cost_m3
+      ];
+    }
+
+    $this->db->update_batch('rate_mold', $data_header, 'id');
+    if ($this->db->trans_status() === false) {
+      $this->db->trans_rollback();
+
+      $valid = 0;
+      $msg = 'Please try again later !';
+    } else {
+      $this->db->trans_commit();
+
+      $valid = 1;
+      $msg = 'Update rate success !';
+    }
+
+    echo json_encode([
+      'status' => $valid,
+      'msg' => $msg
+    ]);
+  }
 }
