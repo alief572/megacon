@@ -181,7 +181,7 @@ class Product_price extends Admin_Controller
 			}
 
 			$TOTAL_PRICE_ALL = 0;
-			$TOTAL_BERAT_BERSIH = $result[0]['volume_m3'];
+			$TOTAL_BERAT_BERSIH = $value['volume_m3'];
 
 			// $sql_ttl_volume = '
 			// 	SELECT
