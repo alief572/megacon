@@ -125,7 +125,7 @@ foreach ($detail_topping as $val => $valx) {
                             }
                             if ($value['code'] == '4') {
                                 $rate         = number_format($product_price[0]['rate_mould'], 2);
-                                $cost_machine     = ($product_price[0]['cost_mould'] * $ttl_volume);
+                                $cost_machine     = ($product_price[0]['cost_mould']);
                                 $detRate = "<span class='text-primary btncursor detailRate' id='btnShowMold' data-tanda='mold' data-cost='" . $product_price[0]['rate_mould'] . "' data-id_product='" . $header[0]->id_product . "' >Detail</span>";
                             }
                             echo "<td>" . $value['element_costing'] . "</td>";
