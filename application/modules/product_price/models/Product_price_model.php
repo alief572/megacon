@@ -112,25 +112,31 @@ class Product_price_model extends BF_Model
 			$edit	= "";
 			$download	= "";
 
-			if ($row['category_bom'] == 'standard') {
+			if ($row['category_bom'] == 'standard' || $row['category_bom'] == 'grid custom') {
 				$view		= "<a href='" . site_url($this->uri->segment(1)) . '/detail_costing_std/' . $row['no_bom'] . "' class='btn btn-sm btn-warning' title='Detail' data-role='qtip'><i class='fa fa-eye'></i></a>";
 				// $download	= "<a href='".site_url($this->uri->segment(1)).'/download/'.$row['no_bom']."' class='btn btn-sm btn-default' title='Download' data-role='qtip'><i class='fa fa-file-excel-o'></i></a>";
 				if ($row['status'] !== 'WA' and $this->ENABLE_MANAGE) {
 					$edit	= "<a href='" . site_url($this->uri->segment(1)) . '/pengajuan_costing_std/' . $row['no_bom'] . "' class='btn btn-sm btn-primary' title='Pengajuan Costing' data-role='qtip'><i class='fa fa-paper-plane'></i></a>";
 				}
 			} else {
-				if ($row['category_bom'] == 'grid custom') {
-					$view		= "<a href='" . site_url($this->uri->segment(1)) . '/detail_costing_ass/' . $row['no_bom'] . "' class='btn btn-sm btn-warning' title='Detail' data-role='qtip'><i class='fa fa-eye'></i></a>";
-					// $download	= "<a href='".site_url($this->uri->segment(1)).'/download/'.$row['no_bom']."' class='btn btn-sm btn-default' title='Download' data-role='qtip'><i class='fa fa-file-excel-o'></i></a>";
-					if ($row['status'] != 'WA' and $this->ENABLE_MANAGE) {
-						$edit	= "<a href='" . site_url($this->uri->segment(1)) . '/pengajuan_costing_ass/' . $row['no_bom'] . "' class='btn btn-sm btn-primary' title='Pengajuan Costing' data-role='qtip'><i class='fa fa-paper-plane'></i></a>";
-					}
-				} else {
-					$view		= "<a href='" . site_url($this->uri->segment(1)) . '/detail_costing/' . $row['no_bom'] . "' class='btn btn-sm btn-warning' title='Detail' data-role='qtip'><i class='fa fa-eye'></i></a>";
-					$download	= "<a href='" . site_url($this->uri->segment(1)) . '/download/' . $row['no_bom'] . "' class='btn btn-sm btn-default' title='Download' data-role='qtip'><i class='fa fa-file-excel-o'></i></a>";
-					if ($row['status'] != 'WA' and $this->ENABLE_MANAGE) {
-						$edit	= "<a href='" . site_url($this->uri->segment(1)) . '/pengajuan_costing/' . $row['no_bom'] . "' class='btn btn-sm btn-primary' title='Pengajuan Costing' data-role='qtip'><i class='fa fa-paper-plane'></i></a>";
-					}
+				// if ($row['category_bom'] == 'grid custom') {
+				// 	$view		= "<a href='" . site_url($this->uri->segment(1)) . '/detail_costing_ass/' . $row['no_bom'] . "' class='btn btn-sm btn-warning' title='Detail' data-role='qtip'><i class='fa fa-eye'></i></a>";
+				// 	// $download	= "<a href='".site_url($this->uri->segment(1)).'/download/'.$row['no_bom']."' class='btn btn-sm btn-default' title='Download' data-role='qtip'><i class='fa fa-file-excel-o'></i></a>";
+				// 	if ($row['status'] != 'WA' and $this->ENABLE_MANAGE) {
+				// 		$edit	= "<a href='" . site_url($this->uri->segment(1)) . '/pengajuan_costing_ass/' . $row['no_bom'] . "' class='btn btn-sm btn-primary' title='Pengajuan Costing' data-role='qtip'><i class='fa fa-paper-plane'></i></a>";
+				// 	}
+				// } else {
+				// 	$view		= "<a href='" . site_url($this->uri->segment(1)) . '/detail_costing/' . $row['no_bom'] . "' class='btn btn-sm btn-warning' title='Detail' data-role='qtip'><i class='fa fa-eye'></i></a>";
+				// 	$download	= "<a href='" . site_url($this->uri->segment(1)) . '/download/' . $row['no_bom'] . "' class='btn btn-sm btn-default' title='Download' data-role='qtip'><i class='fa fa-file-excel-o'></i></a>";
+				// 	if ($row['status'] != 'WA' and $this->ENABLE_MANAGE) {
+				// 		$edit	= "<a href='" . site_url($this->uri->segment(1)) . '/pengajuan_costing/' . $row['no_bom'] . "' class='btn btn-sm btn-primary' title='Pengajuan Costing' data-role='qtip'><i class='fa fa-paper-plane'></i></a>";
+				// 	}
+				// }
+
+				$view		= "<a href='" . site_url($this->uri->segment(1)) . '/detail_costing/' . $row['no_bom'] . "' class='btn btn-sm btn-warning' title='Detail' data-role='qtip'><i class='fa fa-eye'></i></a>";
+				$download	= "<a href='" . site_url($this->uri->segment(1)) . '/download/' . $row['no_bom'] . "' class='btn btn-sm btn-default' title='Download' data-role='qtip'><i class='fa fa-file-excel-o'></i></a>";
+				if ($row['status'] != 'WA' and $this->ENABLE_MANAGE) {
+					$edit	= "<a href='" . site_url($this->uri->segment(1)) . '/pengajuan_costing/' . $row['no_bom'] . "' class='btn btn-sm btn-primary' title='Pengajuan Costing' data-role='qtip'><i class='fa fa-paper-plane'></i></a>";
 				}
 			}
 			$nestedData[]	= "	<div align='left'>

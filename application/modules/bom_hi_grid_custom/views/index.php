@@ -16,7 +16,7 @@ $ENABLE_DELETE  = has_permission('BOM_HI-Grid_Custom.Delete');
 	<div class="box-header">
 		<span class="pull-right">
 			<?php if ($ENABLE_ADD) : ?>
-				<a class="btn btn-success btn-sm" href="<?= base_url('bom_hi_grid_custom/add') ?>" title="Add"> <i class="fa fa-plus">&nbsp;</i>Add</a>
+				<!-- <a class="btn btn-success btn-sm" href="<?= base_url('bom_hi_grid_custom/add') ?>" title="Add"> <i class="fa fa-plus">&nbsp;</i>Add</a> -->
 			<?php endif; ?>
 			<!-- <a class="btn btn-success btn-md" href="<?= base_url('bom_hi_grid_custom/excel_report_all_bom') ?>" target='_blank' title="Download Excel"> <i class="fa fa-file-excel-o">&nbsp;</i>&nbsp;Download Excel</a> -->
 

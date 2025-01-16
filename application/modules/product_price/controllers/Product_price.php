@@ -134,7 +134,7 @@ class Product_price extends Admin_Controller
 		$dateTime 	= date('Y-m-d H:i:s');
 		$id_user	= $session['id_user'];
 
-		$SQL 	= "SELECT a.* FROM bom_header a WHERE a.deleted_date IS NULL AND a.category = 'standard' AND a.id_product LIKE 'P%'";
+		$SQL 	= "SELECT a.* FROM bom_header a WHERE a.deleted_date IS NULL AND (a.category = 'standard' OR a.category = 'grid custom') AND a.id_product LIKE 'P%' GROUP BY a.no_bom";
 		$result = $this->db->query($SQL)->result_array();
 
 		$dateTime 	= date('Y-m-d H:i:s');
@@ -163,6 +163,7 @@ class Product_price extends Admin_Controller
 			$kode 	= $date . '-' . $no_bom;
 
 			$detail   			= $this->db->get_where('bom_detail', array('no_bom' => $no_bom, 'category' => 'default'))->result_array();
+			$detail_customs   	= $this->db->get_where('bom_detail', array('no_bom' => $no_bom, 'category' => 'grid custom'))->result_array();
 			$detail_additive   	= $this->db->get_where('bom_detail', array('no_bom' => $no_bom, 'category' => 'additive'))->result_array();
 			$detail_topping   	= $this->db->get_where('bom_detail', array('no_bom' => $no_bom, 'category' => 'topping'))->result_array();
 			$detail_hi_grid_std = $this->db->get_where('bom_detail', array('no_bom' => $no_bom, 'category' => 'hi grid std'))->result_array();
@@ -460,7 +461,7 @@ class Product_price extends Admin_Controller
 			$this->db->where('a.deleted_by', null);
 			$this->db->group_by('b.id_machine, b.id_costcenter');
 			$get_rate_machine = $this->db->get()->result();
-			foreach($get_rate_machine as $item_rate_machine) {
+			foreach ($get_rate_machine as $item_rate_machine) {
 				$rate_depresiasi += $item_rate_machine->cost_m3;
 			}
 
@@ -472,10 +473,10 @@ class Product_price extends Admin_Controller
 			$this->db->where('c.id_product', $code_level4);
 			$this->db->where('a.deleted_by', null);
 			$this->db->group_by('b.mould', 'b.id_costcenter');
-			
+
 			$get_rate_mold = $this->db->get()->result();
 
-			foreach($get_rate_mold as $item_rate_mold) {
+			foreach ($get_rate_mold as $item_rate_mold) {
 				$rate_mould += $item_rate_mold->cost_m3;
 			}
 
@@ -518,12 +519,12 @@ class Product_price extends Admin_Controller
 			$this->db->where('c.no_bom', $value['no_bom']);
 			$get_bom_detail = $this->db->get()->result();
 
-			foreach($get_bom_detail as $item_bom_detail) {
+			foreach ($get_bom_detail as $item_bom_detail) {
 				$cost_material += ($item_bom_detail->up_to_value * $item_bom_detail->volume_m3);
 			}
 
 			$this->db->select('b.up_to_value, a.kebutuhan as volume_m3');
-			$this->db->from('bom_material_lain a');	
+			$this->db->from('bom_material_lain a');
 			$this->db->join('new_inventory_4 b', 'b.code_lv4 = a.id_material');
 			$this->db->join('bom_header c', 'c.no_bom = a.no_bom');
 			$this->db->where('c.no_bom', $value['no_bom']);
@@ -532,8 +533,8 @@ class Product_price extends Admin_Controller
 
 			// print_r($this->db->last_query());
 			// exit;
-			
-			foreach($get_bom_material_lain as $item_material_lain) {
+
+			foreach ($get_bom_material_lain as $item_material_lain) {
 				$cost_material += ($item_material_lain->up_to_value * $item_material_lain->volume_m3);
 			}
 
@@ -688,7 +689,6 @@ class Product_price extends Admin_Controller
 		$this->db->trans_start();
 		if (!empty($ArrHeader)) {
 			$this->db->where('deleted_date', NULL);
-			$this->db->not_like('no_bom', 'BOC');
 			$this->db->update('product_price', $ArrUpdate);
 
 			$this->db->where('deleted_date', NULL);
@@ -722,7 +722,11 @@ class Product_price extends Admin_Controller
 			echo json_encode($status);
 		} else {
 			$this->db->trans_commit();
-			$this->update_product_price_assembly();
+			$status	= array(
+				'pesan'		=> 'Success process data!',
+				'status'	=> 1
+			);
+			echo json_encode($status);
 		}
 	}
 
@@ -1091,7 +1095,8 @@ class Product_price extends Admin_Controller
 			$persen_mkt_sales 	= $GET_RATE_COSTING[12];
 			$persen_interest 	= $GET_RATE_COSTING[13];
 			$persen_profit 		= $GET_RATE_COSTING[14];
-			$persen_allowance 	= $GET_RATE_COSTING[18];
+			// $persen_allowance 	= $GET_RATE_COSTING[18];
+			$persen_allowance 	= 100;
 
 			$ArrUnPrice['addJoint'] 			= $FINAL_PRICE_MAT_JOINT;
 			$ArrUnPrice['addFlatSheet'] 		= $FINAL_PRICE_FLAT_SHEET;
@@ -2599,10 +2604,10 @@ class Product_price extends Admin_Controller
 			$this->db->where('c.id_product', $value['code_lv4']);
 			$get_bom_detail = $this->db->get()->result();
 
-			foreach($get_bom_detail as $item_bom_detail) {
+			foreach ($get_bom_detail as $item_bom_detail) {
 				$cost_material += ($item_bom_detail->up_to_value * $item_bom_detail->volume);
 			}
-			
+
 			$cost_man_power	= $value['price_man_power'];
 			$cost_mesin		= $value['price_machine'];
 
