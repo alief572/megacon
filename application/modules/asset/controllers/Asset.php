@@ -481,6 +481,8 @@ class Asset extends Admin_Controller
 			$nmCategory		= $this->Asset_model->getWhere('asset_category', 'id', $data['category']);
 
 			$Data_Update	= array(
+				'nm_asset' => $data['nm_asset'],
+				'category' => $data['category'],
 				'depresiasi' 	=> $data['depresiasi'],
 				'value' 		=> str_replace(',', '', $data['value']),
 				'nilai_asset' 	=> str_replace(',', '', $data['nilai_asset']),
