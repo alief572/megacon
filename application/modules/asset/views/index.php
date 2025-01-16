@@ -55,6 +55,7 @@ $ENABLE_DELETE = has_permission('Assets.Delete');
 						<th class="text-center" width='140px'>Kode Asset</th>
 						<th class="text-center">Nama Asset</th>
 						<th class="text-center">Category</th>
+						<th class="text-center">Qty</th>
 						<th class="text-center">Depresiasi</th>
 						<th class="text-center">Nilai&nbsp;Perolehan</th>
 						<th class="text-center">Penyusutan</th>

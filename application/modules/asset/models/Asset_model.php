@@ -91,6 +91,7 @@ class Asset_model extends BF_Model
 			$nestedData[]	= "<div align='left'>" . strtoupper(strtolower($row['kd_asset'])) . "</div>";
 			$nestedData[]	= "<div align='left'>" . strtoupper(strtolower($row['nm_asset'])) . "</div>";
 			$nestedData[]	= "<div align='left'>" . strtoupper(strtolower($row['nm_category'])) . "</div>";
+			$nestedData[]	= "<div align='center'>" . number_format($row['qty']) . "</div>";
 			$nestedData[]	= "<div align='center'>" . $row['depresiasi'] . " Tahun</div>";
 			$nestedData[]	= number_format($row['nilai_asset']);
 			$nestedData[]	= number_format($row['value']);
@@ -163,7 +164,8 @@ class Asset_model extends BF_Model
 				a.`value`,
 				b.sisa_nilai,
 				a.lokasi_asset,
-				a.kdcab
+				a.kdcab,
+				a.qty
 			FROM
 				asset a LEFT JOIN asset_nilai b ON a.kd_asset = b.kd_asset
 			WHERE 1=1
