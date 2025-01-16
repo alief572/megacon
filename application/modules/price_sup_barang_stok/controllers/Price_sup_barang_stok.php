@@ -39,8 +39,17 @@ class Price_sup_barang_stok extends Admin_Controller
     ];
     $listData = $this->Price_sup_barang_stok_model->get_data($where);
 
+    $get_satuan = $this->db->get_where('ms_satuan', array('deleted' => 'N'))->result();
+
+    $list_satuan = array();
+
+    foreach($get_satuan as $item_satuan) {
+      $list_satuan[$item_satuan->id] = $item_satuan->code;
+    }
+
     $data = [
-      'result' =>  $listData
+      'result' =>  $listData,
+      'list_satuan' => $list_satuan
     ];
 
     history("View index price from supplier barang stok");
