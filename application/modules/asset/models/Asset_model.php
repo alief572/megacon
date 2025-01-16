@@ -103,6 +103,10 @@ class Asset_model extends BF_Model
 				$update = "<button type='button' id='edit' class='btn btn-sm btn-success' title='Edit' data-id='" . $row['id'] . "' data-role='qtip'><i class='fa fa-edit'></i></button>";
 			}
 
+			if($this->ENABLE_DELETE) {
+				$delete = '<button type="button" class="btn btn-sm btn-danger del_asset" data-id="'.$row['id'].'"><i class="fa fa-trash"></i></button>';
+			}
+
 			$nestedData[]	= "<div align='center'>
 									<button type='button' id='detail' class='btn btn-sm btn-primary' title='Detail' data-id='" . $row['id'] . "' data-role='qtip'><i class='fa fa-eye'></i></button>
 

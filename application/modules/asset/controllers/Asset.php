@@ -644,4 +644,29 @@ class Asset extends Admin_Controller
 		}
 		echo json_encode($Arr_Data);
 	}
+
+	public function del_asset() {
+		$id = $this->input->post('id');
+
+		$this->db->trans_begin();
+
+		$this->db->update('asset', array('deleted' => 'Y', 'deleted_by' => $this->auth->user_id(), 'deleted_date' => date('Y-m-d H:i:s')), array('id' => $id));
+
+		if($this->db->trans_status() === false) {
+			$this->db->trans_rollback();
+
+			$valid = 0;
+			$msg = 'Please try again later !';
+		} else {
+			$this->db->trans_commit();
+
+			$valid = 1;
+			$msg = 'Asset has been deleted !';
+		}
+
+		echo json_encode([
+			'status' => $valid,
+			'msg' => $msg
+		]);
+	}
 }
