@@ -1016,4 +1016,254 @@ class Confirm_ipp_custom extends Admin_Controller
 			'id_satuan' => $id_satuan
 		]);
 	}
+
+	public function add_product_master($id = null)
+	{
+		$listData = $this->db->get_where('new_inventory_4', array('id' => $id))->result();
+		$code_lv1 = (!empty($listData[0]->code_lv1)) ? $listData[0]->code_lv1 : 0;
+		$code_lv2 = (!empty($listData[0]->code_lv2)) ? $listData[0]->code_lv2 : 0;
+
+		$satuan     = $this->db->get_where('ms_satuan', array('deleted_date' => NULL, 'category' => 'unit'))->result();
+		$satuan_packing = $this->db->get_where('ms_satuan', array('deleted_date' => NULL, 'category' => 'packing'))->result();
+
+		$data = [
+			'listData' => $listData,
+			'listLevel1' => get_list_inventory_lv1('product'),
+			'listLevel2' => (!empty(get_list_inventory_lv2('product')[$code_lv1])) ? get_list_inventory_lv2('product')[$code_lv1] : array(),
+			'listLevel3' => (!empty(get_list_inventory_lv3('product')[$code_lv1][$code_lv2])) ? get_list_inventory_lv3('product')[$code_lv1][$code_lv2] : array(),
+			'satuan' => $satuan,
+			'satuan_packing' => $satuan_packing,
+		];
+		$this->template->set($data);
+		$this->template->render('add_product_master');
+	}
+
+	public function get_list_product_category()
+	{
+		$id_product_type = $this->input->post('id_product_type');
+
+		$get_list_product_category = $this->db->get_where('new_inventory_2', array('code_lv1' => $id_product_type, 'deleted_by' => null))->result();
+
+		$list_product_category = array();
+		foreach ($get_list_product_category as $item) {
+			$list_product_category[] = [
+				'code_lv2' => $item->code_lv2,
+				'nama' => $item->nama
+			];
+		}
+
+		echo json_encode([
+			'list_product_category' => $list_product_category
+		]);
+	}
+
+	public function save_new_product_master()
+	{
+		$post = $this->input->post();
+
+		$data_new_kategori_produk = [];
+		$code_lv1 = (isset($post['code_lv1'])) ? $post['code_lv1'] : '';
+		if ($code_lv1 == '') {
+			$kategori_produk_nm_1 = (isset($post['kategori_produk_nm_1'])) ? $post['kategori_produk_nm_1'] : '';
+			$kategori_produk_type_code_1 = (isset($post['kategori_produk_type_code_1'])) ? $post['kategori_produk_type_code_1'] : '';
+
+			if ($kategori_produk_nm_1 !== '' || $kategori_produk_type_code_1 !== '') {
+				$kode             = 'P1' . date('y');
+				$Query            = "SELECT MAX(" . $this->code . ") as maxP FROM new_inventory_1 WHERE code_lv1 LIKE '" . $kode . "%' ";
+				$resultIPP        = $this->db->query($Query)->result_array();
+				$angkaUrut2        = $resultIPP[0]['maxP'];
+				$urutan2        = (int)substr($angkaUrut2, 4, 6);
+				$urutan2++;
+				$urut2            = sprintf('%06s', $urutan2);
+				$kode_id        = $kode . $urut2;
+
+				$code_lv1 = $kode_id;
+
+				$data_new_kategori_produk = [
+					'category_produk' => 'produk',
+					'code_lv1' => $code_lv1,
+					'nama' => $kategori_produk_nm_1,
+					'code' => $kategori_produk_type_code_1,
+					'status' => 1,
+					'created_by' => $this->auth->user_id(),
+					'created_date' => date('Y-m-d H:i:s')
+				];
+			}
+		}
+
+		$data_new_tipe_ukuran = [];
+		$code_lv2 = (isset($post['code_lv2'])) ? $post['code_lv2'] : '';
+		if ($code_lv2 == '') {
+			$kategori_produk2 = (isset($post['kategori_produk2'])) ? $post['kategori_produk2'] : '';
+			$tipe_ukuran_nm_2 = (isset($post['tipe_ukuran_nm_2'])) ? $post['tipe_ukuran_nm_2'] : '';
+			$tipe_ukuran_category_code_2 = (isset($post['tipe_ukuran_category_code_2'])) ? $post['tipe_ukuran_category_code_2'] : '';
+
+			if (
+				$kategori_produk2 !== '' &&
+				($tipe_ukuran_nm_2 !== '' || $tipe_ukuran_category_code_2 !== '')
+			) {
+				$kode             = 'P2' . date('y');
+				$Query            = "SELECT MAX(" . $this->code . ") as maxP FROM new_inventory_2 WHERE code_lv2 LIKE '" . $kode . "%' ";
+				$resultIPP        = $this->db->query($Query)->result_array();
+				$angkaUrut2        = $resultIPP[0]['maxP'];
+				$urutan2        = (int)substr($angkaUrut2, 4, 6);
+				$urutan2++;
+				$urut2            = sprintf('%06s', $urutan2);
+				$kode_id        = $kode . $urut2;
+
+				$code_lv2 = $kode_id;
+
+				$data_new_tipe_ukuran = [
+					'category' => 'product',
+					'code_lv1' => $kategori_produk2,
+					'code_lv2' => $code_lv2,
+					'nama' => $tipe_ukuran_nm_2,
+					'code' => $tipe_ukuran_category_code_2,
+					'status' => '1',
+					'created_by' => $this->auth->user_id(),
+					'created_date' => date('Y-m-d H:i:s')
+				];
+			}
+		}
+
+		$data_new_varian = [];
+		$code_lv3 = (isset($post['code_lv3'])) ? $post['code_lv3'] : '';
+		if ($code_lv3 == '') {
+			$varian_kategori_produk_3 = $post['varian_kategori_produk_3'];
+			$tipe_ukuran3 = $post['tipe_ukuran3'];
+			$varian_nm_3 = $post['varian_nm_3'];
+			$varian_type_code_3 = $post['varian_type_code_3'];
+
+			if (
+				$varian_kategori_produk_3 !== '' &&
+				(
+					$varian_kategori_produk_3 !== '' ||
+					$tipe_ukuran3 !== '' ||
+					$varian_nm_3 !== '' ||
+					$varian_type_code_3 !== ''
+				)
+			) {
+				$kode             = 'P3' . date('y');
+				$Query            = "SELECT MAX(" . $this->code . ") as maxP FROM " . $this->table_name . " WHERE " . $this->code . " LIKE '" . $kode . "%' ";
+				$resultIPP        = $this->db->query($Query)->result_array();
+				$angkaUrut2        = $resultIPP[0]['maxP'];
+				$urutan2        = (int)substr($angkaUrut2, 4, 6);
+				$urutan2++;
+				$urut2            = sprintf('%06s', $urutan2);
+				$kode_id        = $kode . $urut2;
+
+				$code_lv3 = $kode_id;
+
+				$data_new_varian = [
+					'category' => 'product',
+					'code_lv1' => $varian_kategori_produk_3,
+					'code_lv2' => $tipe_ukuran3,
+					'code_lv3' => $code_lv3,
+					'nama' => $varian_nm_3,
+					'code' => $varian_type_code_3,
+					'status' => '1',
+					'created_by' => $this->auth->user_id(),
+					'created_date' => date('Y-m-d H:i:s')
+				];
+			}
+		}
+
+		$code_lv4 = $this->confirm_ipp_custom_model->generate_id_code_lv4();
+
+		$this->db->trans_begin();
+
+		$data_product_master = [
+			'category' => 'product',
+			'code_lv1' => $code_lv1,
+			'code_lv2' => $code_lv2,
+			'code_lv3' => $code_lv3,
+			'code_lv4' => $code_lv4,
+			'code' => $post['code'],
+			'trade_name' => $post['trade_name'],
+			'id_unit' => $post['id_unit'],
+			'id_unit_packing' => $post['id_unit_packing'],
+			'konversi' => $post['konversi'],
+			'max_stok' => $post['max_stok'],
+			'min_stok' => $post['min_stok'],
+			'status' => 1,
+			'created_by' => $this->auth->user_id(),
+			'created_date' => date('Y-m-d H:i:s')
+		];
+
+		$dataProcess2 = [];
+		if (!empty($_FILES['photo']["tmp_name"])) {
+			$target_dir     = "assets/files/";
+			$target_dir_u   = get_root3() . "/assets/files/";
+			$name_file      = 'msds-' . $code_lv4 . "-" . date('Ymdhis');
+			$target_file    = $target_dir . basename($_FILES['photo']["name"]);
+			$name_file_ori  = basename($_FILES['photo']["name"]);
+			$imageFileType  = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+			$nama_upload    = $target_dir_u . $name_file . "." . $imageFileType;
+
+			$terupload = move_uploaded_file($_FILES['photo']["tmp_name"], $nama_upload);
+			$link_url      = $target_dir . $name_file . "." . $imageFileType;
+
+			$dataProcess2  = array('file_msds' => $link_url);
+		}
+
+		$data_product_master = array_merge($data_product_master, $dataProcess2);
+
+		if (!empty($data_new_kategori_produk)) {
+			$insert_kategori_produk = $this->db->insert('new_inventory_1', $data_new_kategori_produk);
+
+			if (!$insert_kategori_produk) {
+				$this->db->trans_rollback();
+
+				print_r($this->db->last_query());
+				exit;
+			}
+		}
+
+		if (!empty($data_new_tipe_ukuran)) {
+			$insert_tipe_ukuran = $this->db->insert('new_inventory_2', $data_new_tipe_ukuran);
+
+			if (!$insert_tipe_ukuran) {
+				$this->db->trans_rollback();
+
+				print_r($this->db->last_query());
+				exit;
+			}
+		}
+
+		if (!empty($data_new_varian)) {
+			$insert_new_varian = $this->db->insert('new_inventory_3', $data_new_varian);
+
+			if (!$insert_new_varian) {
+				$this->db->trans_rollback();
+
+				print_r($this->db->last_query());
+				exit;
+			}
+		}
+
+		$insert_product_master = $this->db->insert('new_inventory_4', $data_product_master);
+		if (!$insert_product_master) {
+			$this->db->trans_rollback();
+
+			print_r($this->db->last_query());
+			exit;
+		}
+
+		if ($this->db->trans_status() === false) {
+			$this->db->trans_rollback();
+
+			$valid = 0;
+			$msg = 'Please try again later !';
+		} else {
+			$this->db->trans_commit();
+
+			$valid = 1;
+			$msg = 'New Product Master has been inserted';
+		}
+
+		echo json_encode([
+			'status' => $valid,
+			'msg' => $msg
+		]);
+	}
 }

@@ -1029,7 +1029,10 @@ $volume_m3   	= (!empty($header_bom)) ? $header_bom[0]->volume_m3 : 0;
 				$("#head_title").html("<b>Product Master</b>");
 				$.ajax({
 					type: 'POST',
-					url: siteurl + 'product_master/add/',
+					url: siteurl + active_controller + '/add_product_master',
+					data: {
+						'custom_ipp': 1
+					},
 					success: function(data) {
 						$("#dialog-popup").modal();
 						$("#ModalView").html(data);
@@ -1336,6 +1339,51 @@ $volume_m3   	= (!empty($header_bom)) ? $header_bom[0]->volume_m3 : 0;
 			var no = $(this).data('no');
 
 			$('.row_material_lain_' + no).remove();
+		});
+
+		$(document).on('submit', '#data_form_master_product', function() {
+			swal({
+				type: 'warning',
+				title: 'Are you sure ?',
+				text: 'This data will be saved !',
+				showCancelButton: true,
+			}, function(next) {
+				if (next) {
+					var dataForm = $('#data_form_master_product').serialize();
+
+					$.ajax({
+						type: 'post',
+						url: base_url + active_controller + '/save_new_product_master',
+						data: dataForm,
+						dataType: 'json',
+						cache: false,
+						success: function(result) {
+							if (result.status == '1') {
+								swal({
+									type: 'success',
+									title: 'Success !',
+									text: result.msg
+								}, function(lanjut) {
+
+								});
+							} else {
+								swal({
+									type: 'warning',
+									title: 'Warning !',
+									text: result.msg
+								});
+							}
+						},
+						error: function(result) {
+							swal({
+								type: 'error',
+								title: 'Error !',
+								text: 'Please try again later !'
+							});
+						}
+					});
+				}
+			});
 		});
 
 		function sumMaterial() {

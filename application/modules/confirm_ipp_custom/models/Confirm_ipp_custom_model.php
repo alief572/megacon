@@ -199,4 +199,17 @@ class Confirm_ipp_custom_model extends BF_Model
 
 		return $no_bom;
 	}
+
+	public function generate_id_code_lv4() {
+		$kode             = 'P4' . date('y');
+        $Query            = "SELECT MAX(" . $this->code . ") as maxP FROM " . $this->table_name . " WHERE " . $this->code . " LIKE '" . $kode . "%' ";
+        $resultIPP        = $this->db->query($Query)->result_array();
+        $angkaUrut2        = $resultIPP[0]['maxP'];
+        $urutan2        = (int)substr($angkaUrut2, 4, 6);
+        $urutan2++;
+        $urut2            = sprintf('%06s', $urutan2);
+        $kode_id        = $kode . $urut2;
+
+		return $kode_id;
+	}
 }
