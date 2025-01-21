@@ -480,6 +480,7 @@
                                         <tbody class="list_other_cost">
                                             <?php
                                             $total_other_cost = 0;
+                                            $total_other_cost_pph = 0;
                                             foreach ($results['list_other_cost'] as $other_cost) {
                                                 $inc_exc_pph = ($other_cost->inc_exc_pph == '1') ? 'Include' : 'Exclude';
                                                 echo '
@@ -504,9 +505,21 @@
                                             ';
 
                                                 $total_other_cost += $other_cost->total_nilai;
+                                                $total_other_cost_pph += $other_cost->nilai_pph;
                                                 // $total_all += $other_cost->total_nilai;
                                             }
                                             ?>
+                                        </tbody>
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="3" class="text-right">Total Other Cost</td>
+                                                <td class="text-right">
+                                                    <?= '(' . $results['curr'] . ') ' . number_format($total_other_cost_pph, 2) ?>
+                                                </td>
+                                                <td class="text-right">
+                                                    <?= '(' . $results['curr'] . ') ' . number_format($total_other_cost, 2) ?>
+                                                </td>
+                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -647,6 +660,15 @@
                                     <label class="col-sm-4 control-label">Total Other Cost (<?= $results['curr']; ?>)</label>
                                     <div class="col-sm-6">
                                         <input type="text" name="total_other_cost" class="form-control input-sm text-right total_other_cost" id="" value="<?= number_format($total_other_cost, 2) ?>" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-7"></div>
+                            <div class="col-lg-5">
+                                <div class="form-group " style="padding-top:15px;">
+                                    <label class="col-sm-4 control-label">Total Other Item (<?= $results['curr']; ?>)</label>
+                                    <div class="col-sm-6">
+                                        <input type="text" name="total_other_item" class="form-control input-sm text-right total_other_item" id="" value="<?= number_format($grand_total_other_item, 2) ?>" readonly>
                                     </div>
                                 </div>
                             </div>

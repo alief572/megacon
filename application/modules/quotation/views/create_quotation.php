@@ -666,6 +666,7 @@
                                         <tbody class="list_other_cost">
                                             <?php
                                             $total_other_cost = 0;
+                                            $total_other_cost_pph = 0;
                                             foreach ($results['list_other_cost'] as $other_cost) {
                                                 $inc_exc_pph = ($other_cost->inc_exc_pph == '1') ? 'Include' : 'Exclude';
                                                 echo '
@@ -695,6 +696,7 @@
                                             ';
 
                                                 $total_other_cost += $other_cost->total_nilai;
+                                                $total_other_cost_pph += $other_cost->nilai_pph;
                                                 // $total_all += $other_cost->total_nilai;
                                             }
                                             ?>
@@ -724,6 +726,18 @@
                                                         <i class="fa fa-plus"></i> Add
                                                     </button>
                                                 </td>
+                                            </tr>
+                                        </tbody>
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="3" class="text-right">Total Other Cost</td>
+                                                <td class="text-right ttl_other_cost_pph">
+                                                    <?= '(' . $results['curr'] . ') ' . number_format($total_other_cost_pph, 2) ?>
+                                                </td>
+                                                <td class="text-right ttl_other_cost">
+                                                    <?= '(' . $results['curr'] . ') ' . number_format($total_other_cost, 2) ?>
+                                                </td>
+                                                <td></td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -888,6 +902,15 @@
                                     <label class="col-sm-4 control-label">Total Other Cost (<?= $results['curr']; ?>)</label>
                                     <div class="col-sm-6">
                                         <input type="text" name="total_other_cost" class="form-control input-sm text-right total_other_cost" id="" value="<?= number_format($total_other_cost, 2) ?>" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-7"></div>
+                            <div class="col-lg-5">
+                                <div class="form-group " style="padding-top:15px;">
+                                    <label class="col-sm-4 control-label">Total Other Item (<?= $results['curr']; ?>)</label>
+                                    <div class="col-sm-6">
+                                        <input type="text" name="total_other_item" class="form-control input-sm text-right total_other_item" id="" value="<?= number_format($grand_total_other_item, 2) ?>" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -1509,6 +1532,7 @@
                         },
                         cache: false,
                         success: function(result) {
+                            cek_detail_penawaran(no_surat);
                             $('.grand_total').val(number_format(result, 2));
                         }
                     });
@@ -1550,6 +1574,7 @@
                             $('#total').val(number_format(result.total, 2));
                             $('.nilai_ppn').val(number_format(result.nilai_ppn, 2));
                             $('.total_other_cost').val(number_format(result.total_other_cost, 2));
+                            $('.total_other_item').val(number_format(result.grand_total_other_item, 2));
                             $('.grand_total').val(number_format(result.grand_total, 2));
                             $('.col_grand_total_other_item').html(number_format(result.grand_total_other_item, 2));
 

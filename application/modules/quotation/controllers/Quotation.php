@@ -3525,4 +3525,20 @@ class Quotation extends Admin_Controller
 			'status' => $valid
 		]);
 	}
+
+	public function hitung_new_total_other_cost() {
+		$no_surat = $this->input->post('no_surat');
+
+		
+
+		$get_other_cost = $this->db->select('SUM(nilai_pph) as ttl_pph, SUM(total_nilai) as ttl_nilai')->get_where('tr_penawaran_other_cost', array('id_penawaran' => $no_surat))->row();
+
+		$ttl_nilai_pph = (!empty($get_other_cost)) ? $get_other_cost->ttl_pph : 0;
+		$ttl_nilai = (!empty($get_other_cost)) ? $get_other_cost->ttl_nilai : 0;
+
+		echo json_encode([
+			'ttl_pph' => $ttl_nilai_pph,
+			'ttl_nilai' => $ttl_nilai
+		]);
+	}
 }

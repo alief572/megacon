@@ -13,7 +13,7 @@
                                 <div class="row">
                                     <div class="col-sm-12">
                                         <div class="col-sm-6">
-                                        <div class="form-group row">
+                                            <div class="form-group row">
                                                 <div class="col-md-4">
                                                     <label for="customer">Quotation No :</label>
                                                 </div>
@@ -522,6 +522,7 @@
                                         <tbody class="list_other_cost">
                                             <?php
                                             $total_other_cost = 0;
+                                            $total_other_cost_pph = 0;
                                             foreach ($results['list_other_cost'] as $other_cost) {
                                                 $inc_exc_pph = ($other_cost->inc_exc_pph == '1') ? 'Include' : 'Exclude';
                                                 echo '
@@ -551,6 +552,7 @@
                                             ';
 
                                                 $total_other_cost += $other_cost->total_nilai;
+                                                $total_other_cost_pph += $other_cost->nilai_pph;
                                             }
                                             ?>
                                         </tbody>
@@ -579,6 +581,18 @@
                                                         <i class="fa fa-plus"></i> Add
                                                     </button>
                                                 </td>
+                                            </tr>
+                                        </tbody>
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="3" class="text-right">Total Other Cost</td>
+                                                <td class="text-right ttl_other_cost_pph">
+                                                    <?= '(' . $results['curr'] . ') ' . number_format($total_other_cost_pph, 2) ?>
+                                                </td>
+                                                <td class="text-right ttl_other_cost">
+                                                    <?= '(' . $results['curr'] . ') ' . number_format($total_other_cost, 2) ?>
+                                                </td>
+                                                <td></td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -744,6 +758,15 @@
                                     <label class="col-sm-4 control-label">Total Other Cost (<?= $results['curr']; ?>)</label>
                                     <div class="col-sm-6">
                                         <input type="text" name="total_other_cost" class="form-control input-sm text-right total_other_cost" id="" value="<?= number_format($total_other_cost, 2) ?>" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-7"></div>
+                            <div class="col-lg-5">
+                                <div class="form-group " style="padding-top:15px;">
+                                    <label class="col-sm-4 control-label">Total Other Item (<?= $results['curr']; ?>)</label>
+                                    <div class="col-sm-6">
+                                        <input type="text" name="total_other_item" class="form-control input-sm text-right total_other_item" id="" value="<?= number_format($grand_total_other_item, 2) ?>" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -1372,6 +1395,7 @@
                         },
                         cache: false,
                         success: function(result) {
+                            cek_detail_penawaran(no_surat);
                             $('.grand_total').val(number_format(result, 2));
                         }
                     });
@@ -1413,6 +1437,7 @@
                             $('#total').val(number_format(result.total, 2));
                             $('.nilai_ppn').val(number_format(result.nilai_ppn, 2));
                             $('.total_other_cost').val(number_format(result.total_other_cost, 2));
+                            $('.total_other_item').val(number_format(result.grand_total_other_item, 2));
                             $('.grand_total').val(number_format(result.grand_total, 2));
                             $('.col_grand_total_other_item').html(number_format(result.grand_total_other_item, 2));
 
@@ -1467,7 +1492,7 @@
                     var qty_penawaran = $('.qty_' + id).val();
                     qty_penawaran = qty_penawaran.split(',').join('');
                     qty_penawaran = parseFloat(qty_penawaran);
-                    if(isNaN(qty_penawaran)) {
+                    if (isNaN(qty_penawaran)) {
                         qty_penawaran = 0;
                     } else {
                         qty_penawaran = parseFloat(qty_penawaran);
@@ -1476,15 +1501,15 @@
                     var diskon_persen = $('.diskon_persen_' + id).val();
                     diskon_persen = diskon_persen.split(',').join('');
                     diskon_persen = diskon_persen.split('%').join('');
-                    if(isNaN(diskon_persen)) {
+                    if (isNaN(diskon_persen)) {
                         diskon_persen = 0;
                     } else {
                         diskon_persen = parseFloat(diskon_persen);
                     }
-                    
+
                     var diskon_nilai = $('.diskon_nilai_' + id).val();
                     diskon_nilai = diskon_nilai.split(',').join('');
-                    if(isNaN(diskon_nilai)) {
+                    if (isNaN(diskon_nilai)) {
                         diskon_nilai = 0;
                     } else {
                         diskon_nilai = parseFloat(diskon_nilai);
@@ -1496,12 +1521,12 @@
 
                     var delivery_fee = $('.delivery_fee_' + id).val();
                     delivery_fee = delivery_fee.split(',').join('');
-                    if(isNaN(delivery_fee)) {
+                    if (isNaN(delivery_fee)) {
                         delivery_fee = 0;
                     } else {
                         delivery_fee = parseFloat(delivery_fee);
                     }
-                    
+
                     var cutting_fee = 0;
                     var delivery_fee = 0;
 
@@ -1630,6 +1655,28 @@
                     });
                 }
 
+                function hitung_new_total_other_cost() {
+                    $.ajax({
+                        type: "post",
+                        url: siteurl + active_controller + 'hitung_new_total_other_cost',
+                        data: {
+                            'no_surat': no_surat
+                        },
+                        cache: false,
+                        dataType: 'json',
+                        success: function(result) {
+                            $('.ttl_other_cost_pph').html('(<?= $results['curr'] ?>) ' + number_format(result.ttl_pph, 2));
+                            $('.ttl_other_cost').html('(<?= $results['curr'] ?>) ' + number_format(result.ttl_nilai, 2));
+                        },
+                        error: function(result) {
+                            swal({
+                                type: 'error',
+                                title: 'Error !',
+                                text: 'Please try again later !'
+                            });
+                        }
+                    });
+                }
 
 
                 $(document).on('click', '.add', function() {
@@ -1870,87 +1917,63 @@
                             type: "warning"
                         });
                     } else {
-                        swal({
-                                title: "Peringatan !",
-                                text: "Pastikan data sudah lengkap dan benar",
-                                type: "warning",
-                                showCancelButton: true,
-                                confirmButtonColor: "#DD6B55",
-                                confirmButtonText: "Ya, simpan!",
-                                cancelButtonText: "Batal!",
-                                closeOnConfirm: false,
-                                closeOnCancel: true
+                        $.ajax({
+                            url: siteurl + active_controller + "save_other_cost",
+                            dataType: "json",
+                            type: 'POST',
+                            data: {
+                                'no_surat': no_surat,
+                                'curr': curr,
+                                'keterangan': keterangan,
+                                'inc_exc_pph': inc_exc_pph,
+                                'nilai': nilai,
+                                'nilai_pph': nilai_pph,
+                                'total_nilai': total_nilai
                             },
-                            function(isConfirm) {
-                                if (isConfirm) {
-                                    $.ajax({
-                                        url: siteurl + active_controller + "save_other_cost",
-                                        dataType: "json",
-                                        type: 'POST',
-                                        data: {
-                                            'no_surat': no_surat,
-                                            'curr': curr,
-                                            'keterangan': keterangan,
-                                            'inc_exc_pph': inc_exc_pph,
-                                            'nilai': nilai,
-                                            'nilai_pph': nilai_pph,
-                                            'total_nilai': total_nilai
-                                        },
-                                        success: function(data) {
-                                            if (data.status == 1) {
-                                                swal({
-                                                    title: "Save Success!",
-                                                    text: data.pesan,
-                                                    type: "success",
-                                                    timer: 5000,
-                                                    showCancelButton: false,
-                                                    showConfirmButton: false,
-                                                    allowOutsideClick: true
-                                                });
+                            success: function(data) {
+                                if (data.status == 1) {
+                                    hitung_new_total_other_cost();
+                                    refresh_other_cost(no_surat, curr);
+                                    cek_detail_penawaran(no_surat);
+                                    $('.keterangan_other_cost').val('');
+                                    $('.nilai_other_cost_new').val('');
+                                    $('.nilai_pph23_other_cost_new').val();
+                                    $('.total_other_cost_new').val();
+                                } else {
+                                    if (data.status == 2) {
+                                        swal({
+                                            title: "Save Failed!",
+                                            text: data.pesan,
+                                            type: "warning",
+                                            timer: 10000,
+                                            showCancelButton: false,
+                                            showConfirmButton: false,
+                                            allowOutsideClick: true
+                                        });
+                                    } else {
+                                        swal({
+                                            title: "Save Failed!",
+                                            text: data.pesan,
+                                            type: "warning",
+                                            timer: 10000,
+                                            showCancelButton: false,
+                                            showConfirmButton: false,
+                                            allowOutsideClick: true
+                                        });
+                                    }
 
-                                                refresh_other_cost(no_surat, curr);
-                                                cek_detail_penawaran(no_surat);
-                                                $('.keterangan_other_cost').val('');
-                                                $('.nilai_other_cost_new').val('');
-                                                $('.nilai_pph23_other_cost_new').val();
-                                                $('.total_other_cost_new').val();
-                                            } else {
-                                                if (data.status == 2) {
-                                                    swal({
-                                                        title: "Save Failed!",
-                                                        text: data.pesan,
-                                                        type: "warning",
-                                                        timer: 10000,
-                                                        showCancelButton: false,
-                                                        showConfirmButton: false,
-                                                        allowOutsideClick: true
-                                                    });
-                                                } else {
-                                                    swal({
-                                                        title: "Save Failed!",
-                                                        text: data.pesan,
-                                                        type: "warning",
-                                                        timer: 10000,
-                                                        showCancelButton: false,
-                                                        showConfirmButton: false,
-                                                        allowOutsideClick: true
-                                                    });
-                                                }
-
-                                            }
-                                        },
-                                        error: function() {
-                                            swal({
-                                                title: "Gagal!",
-                                                text: "Batal Proses, Data bisa diproses nanti",
-                                                type: "error",
-                                                timer: 1500,
-                                                showConfirmButton: false
-                                            });
-                                        }
-                                    });
                                 }
-                            });
+                            },
+                            error: function() {
+                                swal({
+                                    title: "Gagal!",
+                                    text: "Batal Proses, Data bisa diproses nanti",
+                                    type: "error",
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
+                            }
+                        });
                     }
                 });
 
@@ -1960,79 +1983,55 @@
 
                     var id = $(this).data('id');
 
-                    swal({
-                            title: "Peringatan !",
-                            text: "Other Cost akan di hapus !",
-                            type: "warning",
-                            showCancelButton: true,
-                            confirmButtonColor: "#d64161",
-                            confirmButtonText: "Ya, Hapus!",
-                            cancelButtonText: "Batal!",
-                            closeOnConfirm: false,
-                            closeOnCancel: true
+                    $.ajax({
+                        url: siteurl + active_controller + "del_other_cost",
+                        dataType: "json",
+                        type: 'POST',
+                        data: {
+                            no_surat: no_surat,
+                            curr: curr,
+                            id: id
                         },
-                        function(isConfirm) {
-                            if (isConfirm) {
-                                $.ajax({
-                                    url: siteurl + active_controller + "del_other_cost",
-                                    dataType: "json",
-                                    type: 'POST',
-                                    data: {
-                                        no_surat: no_surat,
-                                        curr: curr,
-                                        id: id
-                                    },
-                                    success: function(data) {
-                                        if (data.status == 1) {
-                                            swal({
-                                                title: "Delete Other Cost Success!",
-                                                text: data.pesan,
-                                                type: "success",
-                                                timer: 5000,
-                                                showCancelButton: false,
-                                                showConfirmButton: false,
-                                                allowOutsideClick: true
-                                            });
+                        success: function(data) {
+                            if (data.status == 1) {
+                                hitung_new_total_other_cost();
+                                refresh_other_cost(no_surat, curr);
+                                cek_detail_penawaran(no_surat);
+                            } else {
+                                if (data.status == 2) {
+                                    swal({
+                                        title: "Delete Other Cost Failed!",
+                                        text: data.pesan,
+                                        type: "warning",
+                                        timer: 10000,
+                                        showCancelButton: false,
+                                        showConfirmButton: false,
+                                        allowOutsideClick: true
+                                    });
+                                } else {
+                                    swal({
+                                        title: "Delete Other Cost Failed!",
+                                        text: data.pesan,
+                                        type: "warning",
+                                        timer: 10000,
+                                        showCancelButton: false,
+                                        showConfirmButton: false,
+                                        allowOutsideClick: true
+                                    });
+                                }
 
-                                            refresh_other_cost(no_surat, curr);
-                                            cek_detail_penawaran(no_surat);
-                                        } else {
-                                            if (data.status == 2) {
-                                                swal({
-                                                    title: "Delete Other Cost Failed!",
-                                                    text: data.pesan,
-                                                    type: "warning",
-                                                    timer: 10000,
-                                                    showCancelButton: false,
-                                                    showConfirmButton: false,
-                                                    allowOutsideClick: true
-                                                });
-                                            } else {
-                                                swal({
-                                                    title: "Delete Other Cost Failed!",
-                                                    text: data.pesan,
-                                                    type: "warning",
-                                                    timer: 10000,
-                                                    showCancelButton: false,
-                                                    showConfirmButton: false,
-                                                    allowOutsideClick: true
-                                                });
-                                            }
-
-                                        }
-                                    },
-                                    error: function() {
-                                        swal({
-                                            title: "Gagal!",
-                                            text: "Batal Proses, Data bisa diproses nanti",
-                                            type: "error",
-                                            timer: 1500,
-                                            showConfirmButton: false
-                                        });
-                                    }
-                                });
                             }
-                        });
+                        },
+                        error: function() {
+                            swal({
+                                title: "Gagal!",
+                                text: "Batal Proses, Data bisa diproses nanti",
+                                type: "error",
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
+                        }
+                    });
                 });
 
                 $(document).on('change', '.ukuran_potong', function() {

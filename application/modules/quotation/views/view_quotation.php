@@ -480,6 +480,7 @@
                                         <tbody class="list_other_cost">
                                             <?php
                                             $total_other_cost = 0;
+                                            $total_other_cost_pph = 0;
                                             foreach ($results['list_other_cost'] as $other_cost) {
                                                 $inc_exc_pph = ($other_cost->inc_exc_pph == '1') ? 'Include' : 'Exclude';
                                                 echo '
@@ -504,9 +505,22 @@
                                             ';
 
                                                 $total_other_cost += $other_cost->total_nilai;
+                                                $total_other_cost_pph += $other_cost->nilai_pph;
                                                 // $total_all += $other_cost->total_nilai;
                                             }
                                             ?>
+                                        </tbody>
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="3" class="text-right">Total Other Cost</td>
+                                                <td class="text-right">
+                                                    <?= '(' . $results['curr'] . ') ' . number_format($total_other_cost_pph, 2) ?>
+                                                </td>
+                                                <td class="text-right">
+                                                    <?= '(' . $results['curr'] . ') ' . number_format($total_other_cost, 2) ?>
+                                                </td>
+                                                <td></td>
+                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>
