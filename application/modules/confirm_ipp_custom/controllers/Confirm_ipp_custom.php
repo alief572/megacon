@@ -1186,6 +1186,7 @@ class Confirm_ipp_custom extends Admin_Controller
 			'max_stok' => $post['max_stok'],
 			'min_stok' => $post['min_stok'],
 			'status' => 1,
+			
 			'created_by' => $this->auth->user_id(),
 			'created_date' => date('Y-m-d H:i:s')
 		];

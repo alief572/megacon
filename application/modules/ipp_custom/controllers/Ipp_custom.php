@@ -114,14 +114,38 @@ class Ipp_custom extends Admin_Controller
 			);
 
 
+			$ArrApplikasi = array();
 			$ArrDetail	= array();
-			$ArrDetailProduct	= array();
+			$ArrDetailProduct = array();
 			$ArrDetailAcc	= array();
 			$ArrDetailJadi	= array();
 			$ArrDetailSheet	= array();
 			$ArrDetailEnd	= array();
+
+			if (!empty($data['aplikasi_kebutuhan'])) {
+				$no_permintaan = 1;
+
+				foreach ($data['aplikasi_kebutuhan'] as $item_aplikasi_kebutuhan) {
+
+					foreach ($item_aplikasi_kebutuhan as $item) {
+						$nm_aplikasi_kebutuhan = (isset($item['nm_aplikasi_kebutuhan'])) ? $item['nm_aplikasi_kebutuhan'] : '';
+						if ($nm_aplikasi_kebutuhan !== '') {
+							$ArrApplikasi[] = [
+								'no_ipp' => $no_ipp,
+								'no_permintaan' => $no_permintaan,
+								'nama' => $nm_aplikasi_kebutuhan,
+								'created_by' => $this->auth->user_id(),
+								'created_date' => date('Y-m-d H:i:s')
+							];
+						}
+					}
+					$no_permintaan++;
+				}
+			}
+
 			if (!empty($data['Detail'])) {
 				$nomor = 0;
+
 				foreach ($data['Detail'] as $val => $valx) {
 					$nomor++;
 					$ArrDetail[$val]['no_ipp'] 			= $no_ipp;
@@ -132,14 +156,14 @@ class Ipp_custom extends Admin_Controller
 					$ArrDetail[$val]['ceilling'] 		= (!empty($valx['ceilling'])) ? $valx['ceilling'] : 'N';
 					$ArrDetail[$val]['partition'] 		= (!empty($valx['partition'])) ? $valx['partition'] : 'N';
 					$ArrDetail[$val]['fence'] 			= (!empty($valx['fence'])) ? $valx['fence'] : 'N';
-					$ArrDetail[$val]['app_others'] 		= $valx['app_others'];
+					// $ArrDetail[$val]['app_others'] 		= $valx['app_others'];
 
 
 					$ArrDetail[$val]['color_dark_green'] 	= (!empty($valx['color_dark_green'])) ? $valx['color_dark_green'] : 'N';
 					$ArrDetail[$val]['color_dark_grey'] 	= (!empty($valx['color_dark_grey'])) ? $valx['color_dark_grey'] : 'N';
 					$ArrDetail[$val]['color_light_grey'] 	= (!empty($valx['color_light_grey'])) ? $valx['color_light_grey'] : 'N';
 					$ArrDetail[$val]['color_yellow'] 		= (!empty($valx['color_yellow'])) ? $valx['color_yellow'] : 'N';
-					$ArrDetail[$val]['color'] 				= $valx['color'];
+					// $ArrDetail[$val]['color'] 				= $valx['color'];
 
 					$ArrDetail[$val]['food_grade'] 			= (!empty($valx['food_grade'])) ? $valx['food_grade'] : 'N';
 					$ArrDetail[$val]['uv'] 					= (!empty($valx['uv'])) ? $valx['uv'] : 'N';
@@ -151,8 +175,8 @@ class Ipp_custom extends Admin_Controller
 					$ArrDetail[$val]['standard_astm'] 		= (!empty($valx['standard_astm'])) ? $valx['standard_astm'] : 'N';
 					$ArrDetail[$val]['standard_bs'] 		= (!empty($valx['standard_bs'])) ? $valx['standard_bs'] : 'N';
 					$ArrDetail[$val]['standard_dnv'] 		= (!empty($valx['standard_dnv'])) ? $valx['standard_dnv'] : 'N';
-					$ArrDetail[$val]['file_pendukung_1'] 	= $valx['file_pendukung_1'];
-					$ArrDetail[$val]['file_pendukung_2'] 	= $valx['file_pendukung_2'];
+					// $ArrDetail[$val]['file_pendukung_1'] 	= $valx['file_pendukung_1'];
+					// $ArrDetail[$val]['file_pendukung_2'] 	= $valx['file_pendukung_2'];
 
 					$ArrDetail[$val]['surface_concave'] 		= (!empty($valx['surface_concave'])) ? $valx['surface_concave'] : 'N';
 					$ArrDetail[$val]['surface_flat'] 			= (!empty($valx['surface_flat'])) ? $valx['surface_flat'] : 'N';
@@ -165,8 +189,13 @@ class Ipp_custom extends Admin_Controller
 
 					$ArrDetail[$val]['type_product'] 	= $valx['type_product'];
 					$ArrDetail[$val]['product_name'] 	= $valx['product_name'];
-					$ArrDetail[$val]['accessories'] 	= $valx['accessories'];
-					$ArrDetail[$val]['ket'] 	= $valx['ket'];
+					// $ArrDetail[$val]['accessories'] 	= $valx['accessories'];
+					$ArrDetail[$val]['ket'] = $valx['ket'];
+					$ArrDetail[$val]['standard_k200'] = (isset($valx['standard_k200'])) ? $valx['standard_k200'] : 'N';
+					$ArrDetail[$val]['standard_k250'] = (isset($valx['standard_k250'])) ? $valx['standard_k250'] : 'N';
+					$ArrDetail[$val]['standard_k300'] = (isset($valx['standard_k300'])) ? $valx['standard_k300'] : 'N';
+					$ArrDetail[$val]['standard_k350'] = (isset($valx['standard_k350'])) ? $valx['standard_k350'] : 'N';
+					$ArrDetail[$val]['standard_k400'] = (isset($valx['standard_k400'])) ? $valx['standard_k400'] : 'N';
 
 					if (!empty($_FILES['photo_' . $val]["tmp_name"])) {
 						$target_dir     = "assets/files/";
@@ -204,14 +233,26 @@ class Ipp_custom extends Admin_Controller
 			// print_r($ArrDetail);
 			// exit;
 
-			$this->db->trans_start();
+			$this->db->trans_begin();
 			if (empty($id)) {
-				$this->db->insert('custom_ipp', $ArrHeader);
+				$insert_custom_ipp = $this->db->insert('custom_ipp', $ArrHeader);
+				if(!$insert_custom_ipp) {
+					$this->db->trans_rollback();
+
+					print_r($this->db->last_query());
+					exit;
+				}
 			}
 			if (!empty($id)) {
-				$this->db->where('id', $id);
-				$this->db->update('custom_ipp', $ArrHeader);
+				$update_custom_ip = $this->db->update('custom_ipp', $ArrHeader, array('id' => $id));
+				if(!$update_custom_ip) {
+					$this->db->trans_rollback();
+
+					print_r($this->db->last_query());
+					exit;
+				}
 			}
+
 
 			$this->db->where('no_ipp', $no_ipp);
 			$this->db->delete('custom_ipp_detail');
@@ -219,14 +260,38 @@ class Ipp_custom extends Admin_Controller
 			$this->db->where('no_ipp', $no_ipp);
 			$this->db->delete('custom_ipp_detail_lainnya');
 
+			$this->db->where('no_ipp', $no_ipp);
+			$this->db->delete('custom_ipp_aplikasi_kebutuhan');
+
 			if (!empty($ArrDetail)) {
-				$this->db->insert_batch('custom_ipp_detail', $ArrDetail);
+				$insert_custom_ipp_detail = $this->db->insert_batch('custom_ipp_detail', $ArrDetail);
+				if(!$insert_custom_ipp_detail) {
+					$this->db->trans_rollback();
+
+					print_r($this->db->last_query());
+					exit;
+				}
 			}
 
 			if (!empty($ArrDetailJadi)) {
-				$this->db->insert_batch('custom_ipp_detail_lainnya', $ArrDetailJadi);
+				$insert_custom_ipp_detail_lainnya = $this->db->insert_batch('custom_ipp_detail_lainnya', $ArrDetailJadi);
+				if(!$insert_custom_ipp_detail_lainnya) {
+					$this->db->trans_rollback();
+
+					print_r($this->db->last_query());
+					exit;
+				}
 			}
-			$this->db->trans_complete();
+
+			if(!empty($ArrApplikasi)) {
+				$insert_custom_ip_aplikasi_kebutuhan = $this->db->insert_batch('custom_ipp_aplikasi_kebutuhan', $ArrApplikasi);
+				if(!$insert_custom_ip_aplikasi_kebutuhan) {
+					$this->db->trans_rollback();
+
+					print_r($this->db->last_query());
+					exit;
+				}
+			}
 
 			if ($this->db->trans_status() === FALSE) {
 				$this->db->trans_rollback();
@@ -249,9 +314,19 @@ class Ipp_custom extends Admin_Controller
 			$tanda 			= $this->uri->segment(4);
 			$header   		= $this->db->get_where('custom_ipp', array('id' => $id))->result();
 			$detail = [];
+			$detail_aplikasi_kebutuhan = [];
 			if (!empty($header)) {
 				$no_ipp 		= (!empty($header[0]->no_ipp)) ? $header[0]->no_ipp : 0;
 				$detail   		= $this->db->get_where('custom_ipp_detail', array('no_ipp' => $no_ipp))->result_array();
+				$get_aplikasi_kebutuhan = $this->db->get_where('custom_ipp_aplikasi_kebutuhan', array('no_ipp' => $no_ipp))->result_array();
+				foreach($get_aplikasi_kebutuhan as $item) {
+					$detail_aplikasi_kebutuhan[] = [
+						'id' => $item['id'],
+						'no_ipp' => $item['no_ipp'],
+						'no_permintaan' => $item['no_permintaan'],
+						'nama' => $item['nama']
+					];
+				}
 			}
 			$customer   	= $this->db->order_by('nm_customer', 'asc')->get_where('customer', array('deleted_date' => NULL))->result_array();
 			$deliv_category = $this->db->order_by('urut', 'asc')->get_where('list', array('menu' => 'delivery rate', 'category' => 'category'))->result_array();
@@ -280,11 +355,12 @@ class Ipp_custom extends Admin_Controller
 				'list_bom_topping' => $list_bom_topping,
 				'tanda' => $tanda,
 				'product_lv1' => get_list_inventory_lv1('product'),
+				'detail_aplikasi_kebutuhan' => $detail_aplikasi_kebutuhan
 			];
 
 			$explodeURL = explode('/', base_url());
 
-			$this->template->title('Add IPP Custom/Assembly');
+			$this->template->title('Add IPP Custom');
 			$this->template->page_icon('fa fa-edit');
 			$this->template->render('add', $data);
 		}
@@ -486,31 +562,29 @@ class Ipp_custom extends Admin_Controller
 		$d_Header .= "<div class='col-md-2'>";
 		$d_Header .= "<label>Aplikasi Kebutuhan</label>";
 		$d_Header .= "</div>";
-		$d_Header .= "<div class='col-md-2'>";
-		$d_Header .= "<div class='form-group'>";
-		$d_Header .= "<div class='checkbox'><label><input type='checkbox' name='Detail[" . $id . "][platform]' value='Y'>Platform</label></div>";
-		$d_Header .= "<div class='checkbox'><label><input type='checkbox' name='Detail[" . $id . "][cover_drainage]' value='Y'>Cover Drainage</label></div>";
-		$d_Header .= "<div class='checkbox'><label><input type='checkbox' name='Detail[" . $id . "][facade]' value='Y'>Facade</label></div>";
-		$d_Header .= "</div>";
-		$d_Header .= "</div>";
-		$d_Header .= "<div class='col-md-2'>";
-		$d_Header .= "<div class='form-group'>";
-		$d_Header .= "<div class='checkbox'><label><input type='checkbox' name='Detail[" . $id . "][ceilling]' value='Y'>Ceilling</label></div>";
-		$d_Header .= "<div class='checkbox'><label><input type='checkbox' name='Detail[" . $id . "][partition]' value='Y'>Partition</label></div>";
-		$d_Header .= "<div class='checkbox'><label><input type='checkbox' name='Detail[" . $id . "][fence]' value='Y'>Fence</label></div>";
-		$d_Header .= "</div>";
-		$d_Header .= "</div>";
-		$d_Header .= "<div class='col-md-2'>";
-		$d_Header .= "<div class='form-group'><label>Other</label>";
-		$d_Header .= "<input type='text' name='Detail[" . $id . "][app_others]' class='form-control input-md' placeholder='Other' value=''>";
-		$d_Header .= "</div>";
+
+		$d_Header .= "<div class='col-md-10'>";
+		$d_Header .= "<table class='table w-100'>";
+		$d_Header .= "<tbody class='list_aplikasi_kebutuhan_" . $id . "'>";
+		$d_Header .= "</tbody>";
+		$d_Header .= "<tbody>";
+		$d_Header .= "<tr>";
+		$d_Header .= "<td>";
+		$d_Header .= "<input type='text' class='form-control form-control-sm aplikasi_kebutuhan_new_" . $id . "'>";
+		$d_Header .= "</td>";
+		$d_Header .= "<td class='text-left'>";
+		$d_Header .= "<button type='button' class='btn btn-sm btn-success w-100 add_aplikasi_kebutuhan' data-id='" . $id . "'><i class='fa fa-plus'></i> Add</button>";
+		$d_Header .= "</td>";
+		$d_Header .= "</tr>";
+		$d_Header .= "</tbody>";
+		$d_Header .= "</table>";
 		$d_Header .= "</div>";
 		$d_Header .= "</div>";
 
 		$d_Header .= "<hr>";
 		$d_Header .= "<div class='form-group row'>";
 		$d_Header .= "	<div class='col-md-2'>";
-		$d_Header .= "		<label>Type Product</label>";
+		$d_Header .= "		<label>Kategori Produk</label>";
 		$d_Header .= "	</div>";
 		$d_Header .= "	<div class='col-md-3'>";
 		$d_Header .= "		<select name='Detail[" . $id . "][type_product]' class='form-control'>";
@@ -534,56 +608,22 @@ class Ipp_custom extends Admin_Controller
 		$d_Header .= "	<div class='col-md-2'>";
 		$d_Header .= "		<label>Additional Spesification</label>";
 		$d_Header .= "	</div>";
-		$d_Header .= "	<div class='col-md-2'>";
-		$d_Header .= "		<div class='form-group'><label>Additional</label>";
-		$d_Header .= "		<div class='checkbox'><label><input type='checkbox' name='Detail[" . $id . "][food_grade]' value='Y'>Food Grade</label></div>";
-		$d_Header .= "		<div class='checkbox'><label><input type='checkbox' name='Detail[" . $id . "][uv]' value='Y'>UV</label></div>";
-		$d_Header .= "		<div class='checkbox'><label><input type='checkbox' name='Detail[" . $id . "][fire_reterdant]' value='Y'>Fire Reterdant</label></div>";
-		$d_Header .= "		</div>";
-		$d_Header .= "	</div>";
-		$d_Header .= "	<div class='col-md-2'>";
-		$d_Header .= "		<div class='form-group'><label></label>";
-		$d_Header .= "		<div class='checkbox'><label><input type='checkbox' name='Detail[" . $id . "][industrial_type]' value='Y'>Industrial Type</label></div>";
-		$d_Header .= "		<div class='checkbox'><label><input type='checkbox' name='Detail[" . $id . "][commercial_type]' value='Y'>Commercial Type</label></div>";
-		$d_Header .= "		<div class='checkbox'><label><input type='checkbox' name='Detail[" . $id . "][superior_type]' value='Y'>Superior Type</label></div>";
-		$d_Header .= "		</div>";
-		$d_Header .= "	</div>";
+
 		$d_Header .= "	<div class='col-md-2'>";
 		$d_Header .= "		<div class='form-group'><label>Standard Spec</label>";
-		$d_Header .= "		<div class='checkbox'><label><input type='checkbox' name='Detail[" . $id . "][standard_astm]' value='Y'>ASTM</label></div>";
-		$d_Header .= "		<div class='checkbox'><label><input type='checkbox' name='Detail[" . $id . "][standard_bs]' value='Y'>BS</label></div>";
-		$d_Header .= "		<div class='checkbox'><label><input type='checkbox' name='Detail[" . $id . "][standard_dnv]' value='Y'>GNV-GL</label></div>";
-		$d_Header .= "		</div>";
-		$d_Header .= "	</div>";
-		$d_Header .= "	<div class='col-md-4'>";
-		$d_Header .= "		<div class='form-group'><label>Dokumen Pendukung</label>";
-		$d_Header .= "		<input type='text' class='form-control' name='Detail[" . $id . "][file_pendukung_1]' placeholder='Dokumen Pendukung 1' style='margin-bottom:5px;'>";
-		$d_Header .= "		<input type='text' class='form-control' name='Detail[" . $id . "][file_pendukung_2]' placeholder='Dokumen Pendukung 2' style='margin-bottom:5px;'>";
-		$d_Header .= "		</div>";
-		$d_Header .= "	</div>";
-		$d_Header .= "</div>";
-		$d_Header .= "<div class='form-group row'>";
-		$d_Header .= "	<div class='col-md-2'>";
-		$d_Header .= "		<label></label>";
-		$d_Header .= "	</div>";
-		$d_Header .= "	<div class='col-md-2'>";
-		$d_Header .= "		<div class='form-group'><label>Color</label>";
-		$d_Header .= "		<div class='checkbox'><label><input type='checkbox' name='Detail[" . $id . "][color_dark_green]' value='Y'>Dark Green</label></div>";
-		$d_Header .= "		<div class='checkbox'><label><input type='checkbox' name='Detail[" . $id . "][color_dark_grey]' value='Y'>Dark Grey</label></div>";
+		$d_Header .= "		<div class='checkbox'><label><input type='checkbox' name='Detail[" . $id . "][standard_k200]' value='Y'>K200</label></div>";
+		$d_Header .= "		<div class='checkbox'><label><input type='checkbox' name='Detail[" . $id . "][standard_k250]' value='Y'>K250</label></div>";
+		$d_Header .= "		<div class='checkbox'><label><input type='checkbox' name='Detail[" . $id . "][standard_k300]' value='Y'>K300</label></div>";
 		$d_Header .= "		</div>";
 		$d_Header .= "	</div>";
 		$d_Header .= "	<div class='col-md-2'>";
 		$d_Header .= "		<div class='form-group'><label></label>";
-		$d_Header .= "		<div class='checkbox'><label><input type='checkbox' name='Detail[" . $id . "][color_light_grey]' value='Y'>Light Grey</label></div>";
-		$d_Header .= "		<div class='checkbox'><label><input type='checkbox' name='Detail[" . $id . "][color_yellow]' value='Y'>Yellow</label></div>";
-		$d_Header .= "		</div>";
-		$d_Header .= "	</div>";
-		$d_Header .= "	<div class='col-md-2'>";
-		$d_Header .= "		<div class='form-group'><label>Color Other</label>";
-		$d_Header .= "		<input type='text' class='form-control' name='Detail[" . $id . "][color]' placeholder='Color Other'>";
+		$d_Header .= "		<div class='checkbox'><label><input type='checkbox' name='Detail[" . $id . "][standard_k350]' value='Y'>K350</label></div>";
+		$d_Header .= "		<div class='checkbox'><label><input type='checkbox' name='Detail[" . $id . "][standard_k400]' value='Y'>K400</label></div>";
 		$d_Header .= "		</div>";
 		$d_Header .= "	</div>";
 		$d_Header .= "</div>";
+
 
 		$d_Header .= "<div class='form-group row' hidden>";
 		$d_Header .= "	<div class='col-md-2'>";
@@ -610,26 +650,26 @@ class Ipp_custom extends Admin_Controller
 		$d_Header .= "	<div class='col-md-5'><input type='file' name='photo_" . $id . "' id='photo_" . $id . "' ></div>";
 		$d_Header .= "</div>";
 
-		$d_Header .= "<div class='form-group row'>";
-		$d_Header .= "	<div class='col-md-2'>";
-		$d_Header .= "		<label>Accessories</label>";
-		$d_Header .= "	</div>";
-		$d_Header .= "	<div class='col-md-6'>";
-		$d_Header .= "		<input type='text' name='Detail[" . $id . "][accessories]' class='form-control input-md' placeholder='Accessories' value=''>";
-		$d_Header .= "	</div>";
-		$d_Header .= "</div>";
+		// $d_Header .= "<div class='form-group row'>";
+		// $d_Header .= "	<div class='col-md-2'>";
+		// $d_Header .= "		<label>Accessories</label>";
+		// $d_Header .= "	</div>";
+		// $d_Header .= "	<div class='col-md-6'>";
+		// $d_Header .= "		<input type='text' name='Detail[" . $id . "][accessories]' class='form-control input-md' placeholder='Accessories' value=''>";
+		// $d_Header .= "	</div>";
+		// $d_Header .= "</div>";
 
-		$d_Header .= "<div class='form-group row' hidden>";
-		$d_Header .= "	<div class='col-md-2'>";
-		$d_Header .= "		<label>Mesh</label>";
-		$d_Header .= "	</div>";
-		$d_Header .= "	<div class='col-md-2'>";
-		$d_Header .= "		<div class='form-group'>";
-		$d_Header .= "		<div class='checkbox'><label><input type='checkbox' name='Detail[" . $id . "][mesh_open]' value='Y'>Open Mesh</label></div>";
-		$d_Header .= "		<div class='checkbox'><label><input type='checkbox' name='Detail[" . $id . "][mesh_closed]' value='Y'>Closed Mesh</label></div>";
-		$d_Header .= "		</div>";
-		$d_Header .= "	</div>";
-		$d_Header .= "</div>";
+		// $d_Header .= "<div class='form-group row' hidden>";
+		// $d_Header .= "	<div class='col-md-2'>";
+		// $d_Header .= "		<label>Mesh</label>";
+		// $d_Header .= "	</div>";
+		// $d_Header .= "	<div class='col-md-2'>";
+		// $d_Header .= "		<div class='form-group'>";
+		// $d_Header .= "		<div class='checkbox'><label><input type='checkbox' name='Detail[" . $id . "][mesh_open]' value='Y'>Open Mesh</label></div>";
+		// $d_Header .= "		<div class='checkbox'><label><input type='checkbox' name='Detail[" . $id . "][mesh_closed]' value='Y'>Closed Mesh</label></div>";
+		// $d_Header .= "		</div>";
+		// $d_Header .= "	</div>";
+		// $d_Header .= "</div>";
 
 		//ukuran jadi
 		$d_Header .= "<div class='form-group row'>";
@@ -641,12 +681,14 @@ class Ipp_custom extends Admin_Controller
 		$d_Header .= "		<tr class='bg-blue'>";
 		$d_Header .= "			<th class='text-center' width='30%'>Length</th>";
 		$d_Header .= "			<th class='text-center' width='30%'>Width</th>";
+		$d_Header .= "			<th class='text-center' width='30%'>Height</th>";
 		$d_Header .= "			<th class='text-center' width='30%'>Qty</th>";
 		$d_Header .= "			<th class='text-center' width='10%'>#</th>";
 		$d_Header .= "		</tr>";
 		$new_number = 0;
 		$d_Header .= "		<tr id='addjadi_" . $id . "_" . $new_number . "'>";
 		$d_Header .= "			<td><button type='button' class='btn btn-sm btn-warning addPartUkj' title='Add Ukuran Jadi'><i class='fa fa-plus'></i>&nbsp;&nbsp;Add Ukuran Jadi</button></td>";
+		$d_Header .= "			<td></td>";
 		$d_Header .= "			<td></td>";
 		$d_Header .= "			<td></td>";
 		$d_Header .= "			<td></td>";
@@ -774,6 +816,9 @@ class Ipp_custom extends Admin_Controller
 		$d_Header .= "</td>";
 		$d_Header .= "<td align='left'>";
 		$d_Header .= "<input type='text' name='Detail[" . $id_head . "][" . $NameSave . "][" . $id . "][width]' class='form-control input-md text-center autoNumeric4'>";
+		$d_Header .= "</td>";
+		$d_Header .= "<td align='left'>";
+		$d_Header .= "<input type='text' name='Detail[" . $id_head . "][" . $NameSave . "][" . $id . "][height]' class='form-control input-md text-center autoNumeric4'>";
 		$d_Header .= "</td>";
 		$d_Header .= "<td align='left'>";
 		$d_Header .= "<input type='text' name='Detail[" . $id_head . "][" . $NameSave . "][" . $id . "][order]' class='form-control input-md text-center autoNumeric0'>";
