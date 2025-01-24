@@ -83,35 +83,52 @@ class History_quotation_model extends BF_Model
 		$User = $this->db->query("SELECT a.* FROM users a")->result();
 		$pic_cust = $this->db->query("SELECT a.* FROM customer_pic a WHERE a.nm_pic <> ''")->result();
 
-		$get_penawaran_detail = $this->db->get_where('tr_history_penawaran_detail', ['id_history_penawaran' => $session['id_user']])->result();
+		$get_penawaran_detail = $this->db->get_where('tr_penawaran_detail', ['no_penawaran' => $session['id_user']])->result();
 		$get_top = $this->db->get_where('list_help', ['group_by' => 'top invoice'])->result();
 
-		if ($id_history_penawaran !== null) {
-			$get_penawaran = $this->db->query('SELECT a.*, b.nm_lengkap FROM tr_history_penawaran a LEFT JOIN users b ON b.id_user = a.created_by WHERE a.id_history_penawaran = "' . $id_history_penawaran . '"')->row();
-			$get_penawaran_detail = $this->db->get_where('tr_history_penawaran_detail', ['id_history_penawaran' => $id_history_penawaran])->result();
+		$get_penawaran = $this->db->query('SELECT a.*, b.nm_lengkap FROM tr_history_penawaran a LEFT JOIN users b ON b.id_user = a.created_by WHERE a.id_history_penawaran = "' . $id_history_penawaran . '"')->row();
+		$get_penawaran_detail = $this->db->get_where('tr_history_penawaran_detail', ['id_history_penawaran' => $id_history_penawaran])->result();
 
-			$get_other_cost = $this->db->get_where('tr_history_penawaran_other_cost', ['id_history_penawaran' => $id_history_penawaran])->result();
+		$get_other_cost = $this->db->get_where('tr_history_penawaran_other_cost', ['id_history_penawaran' => $id_history_penawaran])->result();
 
-			$this->template->set('results', [
-				'customers' => $Cust,
-				'user' => $User,
-				'pic_cust' => $pic_cust,
-				'nm_sales' => $session['nm_lengkap'],
-				'data_penawaran' => $get_penawaran,
-				'data_penawaran_detail' => $get_penawaran_detail,
-				'list_top' => $get_top,
-				'curr' => $get_penawaran->curr,
-				'list_other_cost' => $get_other_cost
-			]);
-		} else {
-			$this->template->set('results', [
-				'customers' => $Cust,
-				'user' => $User,
-				'pic_cust' => $pic_cust,
-				'list_penawaran_detail' => $get_penawaran_detail,
-				'nm_sales' => $session['nm_lengkap']
-			]);
-		}
+		$get_other_item = $this->db->query("
+			SELECT
+				a.code_lv4 as id_product,
+				a.nama as nm_product,
+				a.code as product_code
+			FROM
+				new_inventory_4 a
+			WHERE
+				a.category = 'material' AND
+				a.deleted_by IS NULL
+			
+			UNION ALL
+
+			SELECT
+				a.id as id_product,
+				a.stock_name as nm_product,
+				a.id_stock as product_code
+			FROM
+				accessories a 
+			WHERE
+				a.deleted_by IS NULL
+		")->result();
+
+		$get_list_item_others = $this->db->get_where('tr_history_penawaran_other_item', ['id_history_penawaran' => $id_history_penawaran])->result();
+
+		$this->template->set('results', [
+			'customers' => $Cust,
+			'user' => $User,
+			'pic_cust' => $pic_cust,
+			'nm_sales' => $session['nm_lengkap'],
+			'data_penawaran' => $get_penawaran,
+			'data_penawaran_detail' => $get_penawaran_detail,
+			'list_top' => $get_top,
+			'curr' => $get_penawaran->currency,
+			'list_other_cost' => $get_other_cost,
+			'list_other_item' => $get_other_item,
+			'list_another_item' => $get_list_item_others
+		]);
 		$this->template->render('view_quotation');
 	}
 
@@ -435,8 +452,18 @@ class History_quotation_model extends BF_Model
 	function generate_nopn($tgl)
 	{
 		$arr_tgl = array(
-			1 => 'A', 2 => 'B', 3 => 'C', 4 => 'D', 5 => 'E', 6 => 'F',
-			7 => 'G', 8 => 'H', 9 => 'I', 10 => 'J', 11 => 'K', 12 => 'L'
+			1 => 'A',
+			2 => 'B',
+			3 => 'C',
+			4 => 'D',
+			5 => 'E',
+			6 => 'F',
+			7 => 'G',
+			8 => 'H',
+			9 => 'I',
+			10 => 'J',
+			11 => 'K',
+			12 => 'L'
 		);
 		$bln_now = date('m', strtotime($tgl));
 		$kode_bln = '';
@@ -534,8 +561,18 @@ class History_quotation_model extends BF_Model
 	function generate_nopn_np($tgl)
 	{
 		$arr_tgl = array(
-			1 => 'A', 2 => 'B', 3 => 'C', 4 => 'D', 5 => 'E', 6 => 'F',
-			7 => 'G', 8 => 'H', 9 => 'I', 10 => 'J', 11 => 'K', 12 => 'L'
+			1 => 'A',
+			2 => 'B',
+			3 => 'C',
+			4 => 'D',
+			5 => 'E',
+			6 => 'F',
+			7 => 'G',
+			8 => 'H',
+			9 => 'I',
+			10 => 'J',
+			11 => 'K',
+			12 => 'L'
 		);
 		$bln_now = date('m', strtotime($tgl));
 		$kode_bln = '';

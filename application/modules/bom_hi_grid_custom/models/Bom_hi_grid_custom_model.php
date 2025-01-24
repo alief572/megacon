@@ -133,9 +133,9 @@ class Bom_hi_grid_custom_model extends BF_Model
 					d.nm_customer
 				FROM
 					bom_header a 
-					LEFT JOIN new_inventory_4 b ON a.id_product=b.code_lv4
-					LEFT JOIN custom_ipp c ON a.id_ipp=c.id
-					LEFT JOIN customer d ON c.id_customer=d.id_customer,
+					LEFT JOIN new_inventory_4 b ON a.id_product = b.code_lv4
+					LEFT JOIN custom_ipp c ON a.no_bom = c.no_bom
+					LEFT JOIN customer d ON c.id_customer = d.id_customer,
 					(SELECT @row:=0) r
 				WHERE 1=1 AND a.deleted_date IS NULL AND a.category = 'grid custom' AND 
 					(

@@ -75,9 +75,11 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => 'localhost',
+	// 'hostname' => 'localhost',
 	'username' => 'alief',
+	// 'username' => 'root',
 	'password' => 'alief@ssc',
+	'password' => '',
 	'database' => 'db_megacon',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',

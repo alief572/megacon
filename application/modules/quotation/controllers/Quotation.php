@@ -240,7 +240,7 @@ class Quotation extends Admin_Controller
 
 			$nilai_ppn = (($get_ttl_detail->ttl_harga_after_disc + $get_ttl_other_cost->ttl_other_cost + $get_ttl_other_item->ttl_other_item) * $persen_ppn / 100);
 
-			$this->db->insert('tr_penawaran', [
+			$data_header = [
 				'no_penawaran' => $no_penawaran,
 				'tgl_penawaran' => $post['tanggal'],
 				'id_customer' => $post['id_customer'],
@@ -260,7 +260,10 @@ class Quotation extends Admin_Controller
 				'delivery_term' => $post['delivery_term'],
 				'warranty' => $post['warranty'],
 				'currency' => $post['curr']
-			]);
+			];
+			$this->db->insert('tr_penawaran', $data_header);
+
+
 
 			$get_penawaran_detail = $this->db->get_where('tr_penawaran_detail', ['no_penawaran' => $session['id_user']])->result_array();
 			foreach ($get_penawaran_detail as $penawaran_detail) :
@@ -335,7 +338,7 @@ class Quotation extends Admin_Controller
 				if ($get_penawaran->req_app1 !== null || $get_penawaran->req_app2 !== null || $get_penawaran->req_app3 !== null) {
 
 					$get_ttl_detail = $this->db->query("SELECT SUM(a.harga_satuan * a.qty) AS ttl_harga, SUM(a.total_harga) AS ttl_harga_after_disc FROM tr_penawaran_detail a WHERE a.no_penawaran = '" . $no_surat . "'")->row();
-					
+
 					$get_ttl_other_cost = $this->db->select('SUM(a.total_nilai) AS ttl_other_cost')->get_where('tr_penawaran_other_cost a', ['a.id_penawaran' => $no_surat])->row();
 					$get_ttl_other_item = $this->db->select('SUM(a.total) AS ttl_other_item')->get_where('tr_penawaran_other_item a', ['a.id_penawaran' => $no_surat])->row();
 
@@ -545,7 +548,7 @@ class Quotation extends Admin_Controller
 				} else {
 
 					$get_ttl_detail = $this->db->query("SELECT SUM(a.harga_satuan * a.qty) AS ttl_harga, SUM(a.total_harga) AS ttl_harga_after_disc FROM tr_penawaran_detail a WHERE a.no_penawaran = '" . $no_surat . "'")->row();
-					
+
 					$get_ttl_other_cost = $this->db->select('SUM(a.total_nilai) AS ttl_other_cost')->get_where('tr_penawaran_other_cost a', ['a.id_penawaran' => $no_surat])->row();
 					$get_ttl_other_item = $this->db->select('SUM(a.total) AS ttl_other_item')->get_where('tr_penawaran_other_item a', ['a.id_penawaran' => $no_surat])->row();
 
@@ -593,6 +596,10 @@ class Quotation extends Admin_Controller
 			}
 		}
 
+		$id_penawaran = ($no_surat == '' || $no_surat == $this->auth->user_id()) ? $no_penawaran : $no_surat;
+
+
+
 
 		// print_r($post);
 
@@ -608,6 +615,8 @@ class Quotation extends Admin_Controller
 				'status'		=> 1,
 				'pesan'			=> 'Save Process Success. '
 			);
+
+			$this->quotation_model->generate_quotation_hist($id_penawaran);
 		}
 		echo json_encode($Arr_Return);
 	}
@@ -1570,9 +1579,9 @@ class Quotation extends Admin_Controller
 
 		$harga_produk = $get_ukuran_jadi->price_unit;
 		if ($curr == 'USD') {
-			if($get_ukuran_jadi->price_unit <= 0 || $get_data->kurs <= 0) {
+			if ($get_ukuran_jadi->price_unit <= 0 || $get_data->kurs <= 0) {
 				$harga_produk = 0;
-			}else{
+			} else {
 				$harga_produk = ($get_ukuran_jadi->price_unit / $get_data->kurs);
 			}
 		}
@@ -1926,25 +1935,24 @@ class Quotation extends Admin_Controller
 
 
 		$ttl_disc = (($harga_before_disc - $harga_after_disc) / $harga_before_disc * 100);
-		// print_r($ttl_disc);
-		// exit;
+		
 
 		$check_disc_penawaran = $this->db->query('SELECT MAX(diskon_persen) AS max_disc_persen FROM tr_penawaran_detail WHERE no_penawaran = "' . $id . '"')->row();
 
-		$get_disc = $this->db->query('SELECT * FROM ms_diskon ORDER BY diskon_awal DESC')->result();
+		$get_disc = $this->db->query('SELECT * FROM ms_diskon WHERE deleted_by IS NULL ORDER BY diskon_awal ASC')->result();
 
-		$tingkatan = '';
+		$tingkatan = 0;
+		$no_awd = 0;
 		foreach ($get_disc as $list_disc) {
-			if ($tingkatan == '') {
-				if ($check_disc_penawaran->max_disc_persen >= $list_disc->diskon_awal && $check_disc_penawaran->max_disc_persen <= $list_disc->diskon_akhir) {
-					$tingkatan = $list_disc->tingkatan;
-				} else {
-					if ($check_disc_penawaran->max_disc_persen >= $list_disc->diskon_awal) {
-						$tingkatan = $list_disc->tingkatan;
-					}
-				}
+			$no_awd++;
+			// print_r($list_disc->diskon_awal.' - '.$list_disc->diskon_akhir.'<br>');
+			if ($check_disc_penawaran->max_disc_persen >= $list_disc->diskon_awal && $check_disc_penawaran->max_disc_persen <= $list_disc->diskon_akhir) {
+				$tingkatan = $no_awd;
 			}
 		}
+
+		// print_r($tingkatan);
+		// exit;
 
 
 
@@ -1960,7 +1968,7 @@ class Quotation extends Admin_Controller
 		// 		'no_penawaran' => $id
 		// 	]);
 		// }
-		if ($tingkatan == 'Tingkat 2') {
+		if ($tingkatan == 1) {
 			// $this->db->update('tr_penawaran', [
 			// 	'status' => $updated_status,
 			// 	'req_app1' => 1,
@@ -1975,7 +1983,7 @@ class Quotation extends Admin_Controller
 				'no_penawaran' => $id
 			]);
 		}
-		if ($tingkatan == 'Tingkat 3') {
+		if ($tingkatan == 2) {
 			$this->db->update('tr_penawaran', [
 				'status' => $updated_status,
 				'req_app1' => 1,
@@ -1984,7 +1992,7 @@ class Quotation extends Admin_Controller
 				'no_penawaran' => $id
 			]);
 		}
-		if ($tingkatan == 'Tingkat 4') {
+		if ($tingkatan == 3) {
 			$this->db->update('tr_penawaran', [
 				'status' => $updated_status,
 				'req_app1' => 1,
@@ -3514,6 +3522,23 @@ class Quotation extends Admin_Controller
 
 		echo json_encode([
 			'status' => $valid
+		]);
+	}
+
+	public function hitung_new_total_other_cost()
+	{
+		$no_surat = $this->input->post('no_surat');
+
+
+
+		$get_other_cost = $this->db->select('SUM(nilai_pph) as ttl_pph, SUM(total_nilai) as ttl_nilai')->get_where('tr_penawaran_other_cost', array('id_penawaran' => $no_surat))->row();
+
+		$ttl_nilai_pph = (!empty($get_other_cost)) ? $get_other_cost->ttl_pph : 0;
+		$ttl_nilai = (!empty($get_other_cost)) ? $get_other_cost->ttl_nilai : 0;
+
+		echo json_encode([
+			'ttl_pph' => $ttl_nilai_pph,
+			'ttl_nilai' => $ttl_nilai
 		]);
 	}
 }

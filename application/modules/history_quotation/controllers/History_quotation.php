@@ -26,9 +26,39 @@ class History_quotation extends Admin_Controller
 	{
 		$this->template->page_icon('fa fa-list');
 		$data = $this->History_quotation_model->get_data_quotation();
-		// print_r($data);
+
+		$list_ttl = array();
+
+		foreach($data as $item) {
+			$this->db->select('SUM(a.total_harga) as ttl_detail');
+			$this->db->from('tr_history_penawaran_detail a');
+			$this->db->where('a.id_history_penawaran', $item->id_history_penawaran);
+			$get_ttl_detail = $this->db->get()->row();
+
+			$this->db->select('SUM(a.total_nilai) as ttl_other_cost');
+			$this->db->from('tr_history_penawaran_other_cost a');
+			$this->db->where('a.id_history_penawaran', $item->id_history_penawaran);
+			$get_ttl_other_cost = $this->db->get()->row();
+
+			$this->db->select('SUM(a.total) as ttl_other_item');
+			$this->db->from('tr_history_penawaran_other_item a');
+			$this->db->where('a.id_history_penawaran', $item->id_history_penawaran);
+			$get_ttl_other_item = $this->db->get()->row();
+
+			$ttl_detail = (!empty($get_ttl_detail)) ? $get_ttl_detail->ttl_detail : 0;
+			$ttl_other_cost = (!empty($get_ttl_other_cost)) ? $get_ttl_other_cost->ttl_other_cost : 0;
+			$ttl_other_item = (!empty($get_ttl_other_item)) ? $get_ttl_other_item->ttl_other_item : 0;
+
+			$nilai_penawaran = (($ttl_detail + $ttl_other_cost + $ttl_other_item) + $item->nilai_ppn);
+
+			$list_ttl[$item->id_history_penawaran] = $nilai_penawaran;
+		}
+
+		// print_r($list_ttl);
 		// exit;
+
 		$this->template->set('results', $data);
+		$this->template->set('results_ttl',$list_ttl);
 		$this->template->title('Quotation History');
 		$this->template->render('list_quotation');
 	}

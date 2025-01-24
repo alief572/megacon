@@ -26,6 +26,7 @@ $ENABLE_DELETE  = has_permission('Price_Supplier_Raw_Material.Delete');
 					<th>#</th>
 					<th>Material Code</th>
 					<th>Material Master</th>
+					<th>Satuan Beli</th>
 					<th>Lower Price<br>Before</th>
 					<th>Lower Price<br>After</th>
 					<th>Higher Price<br>Before</th>
@@ -55,6 +56,9 @@ $ENABLE_DELETE  = has_permission('Price_Supplier_Raw_Material.Delete');
 
 						$expired = '-';
 						$expired_new = '-';
+
+						$satuan_beli = (isset($list_satuan[$record->satuan_beli])) ? $list_satuan[$record->satuan_beli] : '';
+
 						if (!empty($record->price_ref_date)) {
 							$price_ref_date 	= date('Y-m-d', strtotime('+' . $record->price_ref_expired . ' month', strtotime($record->price_ref_date)));
 							$expired = date('d-M-Y', strtotime($price_ref_date));
@@ -66,6 +70,7 @@ $ENABLE_DELETE  = has_permission('Price_Supplier_Raw_Material.Delete');
 								$status_ = 'green';
 							}
 						}
+
 						if ($record->status_app == 'Y') {
 							$expired_new = date('d-M-Y', strtotime($tgl_expired));
 							$status2 = 'Waiting Approve';
@@ -74,8 +79,9 @@ $ENABLE_DELETE  = has_permission('Price_Supplier_Raw_Material.Delete');
 				?>
 						<tr>
 							<td><?= $numb; ?></td>
-							<td><?= strtoupper($record->code) ?></td>
+							<td><?= strtoupper($record->code_lv4) ?></td>
 							<td><?= strtoupper($record->nama) ?></td>
+							<td><?= strtoupper($satuan_beli) ?></td>
 							<td align='right'><?= number_format($record->price_ref, 2) ?></td>
 							<td align='right'><?= number_format($record->price_ref_new, 2) ?></td>
 							<td align='right'><?= number_format($record->price_ref_high, 2) ?></td>

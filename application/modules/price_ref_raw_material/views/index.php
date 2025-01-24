@@ -25,6 +25,7 @@ $ENABLE_DELETE  = has_permission('Price_Ref_Raw_Material.Delete');
 					<th>#</th>
 					<th>Material Code</th>
 					<th>Material Master</th>
+					<th>Satuan Beli</th>
 					<th>Price Ref IDR</th>
 					<th>Price Ref USD</th>
 					<th>Expired</th>
@@ -68,11 +69,14 @@ $ENABLE_DELETE  = has_permission('Price_Ref_Raw_Material.Delete');
 							$status2 = 'Waiting Approve';
 							$status2_ = 'purple';
 						}
+
+						$satuan_beli = (isset($list_satuan[$record->satuan_beli])) ? $list_satuan[$record->satuan_beli] : '';
 				?>
 						<tr>
 							<td><?= $numb; ?></td>
-							<td><?= strtoupper($record->code) ?></td>
+							<td><?= strtoupper($record->code_lv4) ?></td>
 							<td><?= strtoupper($record->nama) ?></td>
+							<td><?= strtoupper($satuan_beli) ?></td>
 							<td align='right'><?= number_format($record->price_ref_use) ?></td>
 							<td align='right'><?= number_format($record->price_ref_use_usd, 2) ?></td>
 							<td align='center'><?= $expired; ?></td>

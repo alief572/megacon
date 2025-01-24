@@ -65,12 +65,12 @@ $ENABLE_DELETE  = has_permission('Costing_rate.Delete');
                     }
                     
                     echo "<tr>";
-                    echo "<td class='text-center' rowspan='4'>3</td>";
+                    echo "<td class='text-center' rowspan='3'>3</td>";
                     // echo "<td class='text-center'></td>";
-                    echo "<td class='text-left text-bold' colspan='4'>Mesin, cetakan, consumable</td>";
+                    echo "<td class='text-left text-bold' colspan='4'>Depresiasi / Penyusutan</td>";
                     echo "</tr>";
                     foreach ($results['dataList'] as $key => $value) {
-                        if ($value['judul'] == 'Mesin, cetakan, consumable') {
+                        if ($value['judul'] == 'Depresiasi / Penyusutan') {
                             echo "<tr>";
                             // echo "<td class='text-center text-bold text-primary'>".$value['code']."</td>";
                             echo "<td>" . $value['element_costing'] . "</td>";
@@ -96,7 +96,7 @@ $ENABLE_DELETE  = has_permission('Costing_rate.Delete');
                             echo "<tr>";
                             echo "<td class='text-center'>" . $nomor . "</td>";
                             // echo "<td class='text-center text-bold text-primary'>".$value['code']."</td>";
-                            echo "<td>" . $value['element_costing'] . "</td>";
+                            echo "<td>" . nl2br($value['element_costing']) . "</td>";
                             echo "<td>";
                             echo "<input type='hidden' id='id_" . $value['code'] . "' name='detail[" . $value['code'] . "][code]' value='" . $value['code'] . "'>";
                             echo "<input type='hidden' name='detail[" . $value['code'] . "][judul]' value='" . $value['judul'] . "'>";
@@ -135,7 +135,7 @@ $ENABLE_DELETE  = has_permission('Costing_rate.Delete');
 <script type="text/javascript">
     $(document).ready(function() {
         $('.autoNumeric').autoNumeric()
-        $('#rate_1,#rate_2,#rate_4,#rate_5,#rate_8,#rate_16,#rate_18,#rate_19,#rate_20,#rate_14,#coa_14,#coa_16,#coa_18,#coa_19,#coa_14,#coa_20').prop('readonly', true);
+        $('#rate_1,#rate_2,#rate_3,#rate_4,#rate_11,#rate_16,#rate_18,#rate_19,#rate_20,#rate_14,#coa_11,#coa_14,#coa_16,#coa_18,#coa_19,#coa_14,#coa_20').prop('readonly', true);
     })
 
     $('#save').click(function(e) {

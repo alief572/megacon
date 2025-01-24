@@ -215,6 +215,7 @@ $volume_m3 = (!empty($header)) ? $header[0]->volume_m3 : 0;
 						<button type="submit" class="btn btn-primary" style='float:right;' name="save" id="save"><i class="fa fa-save"></i> Save</button>
 					</div>
 				</div>
+			</div>
 		</form>
 	</div>
 </div>
@@ -605,6 +606,12 @@ $volume_m3 = (!empty($header)) ? $header[0]->volume_m3 : 0;
 
 				}
 			});
+		});
+
+		$(document).on('click', '.del_material_lain', function() {
+			var no = $(this).data('no');
+
+			$('.row_material_lain_' + no).remove();
 		});
 
 		function sumMaterial() {

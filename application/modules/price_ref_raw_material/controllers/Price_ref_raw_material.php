@@ -40,8 +40,17 @@ class Price_ref_raw_material extends Admin_Controller
     ];
     $listData = $this->Price_ref_raw_material_model->get_data($where);
 
+    $get_satuan = $this->db->get_where('ms_satuan', array('deleted' => 'N'))->result();
+    
+    $list_satuan = array();
+
+    foreach($get_satuan as $item_satuan) {
+      $list_satuan[$item_satuan->id] = $item_satuan->code;
+    }
+
     $data = [
-      'result' =>  $listData
+      'result' =>  $listData,
+      'list_satuan' => $list_satuan
     ];
 
     history("View index price reference raw materials");
@@ -136,8 +145,12 @@ class Price_ref_raw_material extends Admin_Controller
     } else {
       $listData = $this->db->get_where('new_inventory_4', array('id' => $id))->result();
 
+      $get_satuan_beli = $this->db->get_where('ms_satuan', ['id' => $listData[0]->satuan_beli])->row();
+      $satuan_beli = (!empty($get_satuan_beli)) ? $get_satuan_beli->code : '';
+
       $data = [
         'listData' => $listData,
+        'satuan_beli' => $satuan_beli
       ];
       $this->template->set($data);
       $this->template->render('add');

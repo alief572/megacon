@@ -16,6 +16,7 @@ $ENABLE_DELETE  = has_permission('Machine_Rate.Delete');
 	<div class="box-header">
 		<?php if ($ENABLE_ADD) : ?>
 			<a class="btn btn-success btn-sm add" href="javascript:void(0)" title="Add"><i class="fa fa-plus">&nbsp;</i>Add</a>
+			<a class="btn btn-primary btn-sm update_rate" href="javascript:void(0)" title="Update Rate"><i class="fa fa-cogs">&nbsp;</i>Update Rate</a>
 		<?php endif; ?>
 		<!-- <button type='button' id='update_cost' class="btn btn-sm btn-primary btn-custom">Update Machine</button> -->
 		<span class="pull-right">
@@ -40,7 +41,7 @@ $ENABLE_DELETE  = has_permission('Machine_Rate.Delete');
 			</thead>
 
 			<tbody>
-				
+
 			</tbody>
 		</table>
 	</div>
@@ -391,6 +392,48 @@ $ENABLE_DELETE  = has_permission('Machine_Rate.Delete');
 				});
 		});
 
+		$(document).on('click', '.update_rate', function() {
+			swal({
+				type: 'warning',
+				title: 'Are you sure ?',
+				text: 'All machine rate will be updated !',
+				showCancelButton: true
+			}, function(next) {
+				if (next) {
+					$.ajax({
+						type: 'type',
+						url: base_url + active_controller + 'update_rate',
+						cache: false,
+						dataType: 'json',
+						success: function(result) {
+							if (result.status == 1) {
+								swal({
+									type: 'success',
+									title: 'Success !',
+									text: result.msg
+								}, function(lanjut) {
+									DataTables();
+								});
+							} else {
+								swal({
+									type: 'warning',
+									title: 'Warning !',
+									text: result.msg
+								});
+							}
+						},
+						error: function(result) {
+							swal({
+								type: 'error',
+								title: 'Error !',
+								text: 'Please try again later !'
+							});
+						}
+					});
+				}
+			});
+		});
+
 		function DataTables() {
 			var table = $('#example1').DataTable({
 				ajax: {
@@ -398,11 +441,10 @@ $ENABLE_DELETE  = has_permission('Machine_Rate.Delete');
 					type: "POST",
 					dataType: "JSON",
 					data: function(d) {
-	
+
 					}
 				},
-				columns: [
-					{
+				columns: [{
 						data: 'no'
 					},
 					{
@@ -478,8 +520,8 @@ $ENABLE_DELETE  = has_permission('Machine_Rate.Delete');
 		function hitung_cost_m3() {
 			var utilisasi_hari = $('input[name="utilisasi_hari"]').val();
 			var utilisasi_m3_per_hari = $('input[name="utilisasi_m3_per_hari"]').val();
-			
-			if(utilisasi_m3_per_hari !== '') {
+
+			if (utilisasi_m3_per_hari !== '') {
 				utilisasi_m3_per_hari = utilisasi_m3_per_hari.split(',').join('');
 				utilisasi_m3_per_hari = parseFloat(utilisasi_m3_per_hari);
 			} else {
@@ -487,7 +529,7 @@ $ENABLE_DELETE  = has_permission('Machine_Rate.Delete');
 			}
 
 			var depresiasi_per_tahun = $('input[name="depresiasi_per_tahun"]').val();
-			if(depresiasi_per_tahun !== '') {
+			if (depresiasi_per_tahun !== '') {
 				depresiasi_per_tahun = depresiasi_per_tahun.split(',').join('');
 				depresiasi_per_tahun = parseFloat(depresiasi_per_tahun);
 			} else {

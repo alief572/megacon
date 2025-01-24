@@ -77,7 +77,7 @@ class Stock_origa_model extends BF_Model
       $nestedData   = array();
       $nestedData[]  = "<div align='center'>" . $nomor . "</div>";
       $nestedData[]  = "<div align='left' title='" . $row['no_bom'] . "'>" . strtoupper($row['category_bom']) . "</div>";
-      $nestedData[]  = "<div align='left'>" . strtoupper($row['nama_level4'] . $variant_product . $color_product . $surface_product) . "</div>";
+      $nestedData[]  = "<div align='left'>" . strtoupper($row['nama_level4']) . "</div>";
       $nestedData[]  = "<div align='center'>" . number_format($row['stock_ng']) . "</div>";
       $nestedData[]  = "<div align='center'>" . number_format($row['stock_akhir']) . "</div>";
       $nestedData[]  = "<div align='center'>" . number_format($row['booking_akhir']) . "</div>";
@@ -138,25 +138,19 @@ class Stock_origa_model extends BF_Model
               (SELECT actual_stock FROM stock_product WHERE id = MAX(a.id)) AS stock_akhir,
               (SELECT booking_stock FROM stock_product WHERE id = MAX(a.id)) AS booking_akhir,
               b.nama AS nama_level4,
-              c.variant_product,
-              c.color AS color_product,
-              c.surface AS surface_product,
               b.min_stok,
               b.max_stok,
               c.category AS category_bom,
               c.no_bom
             FROM
               stock_product a
-              INNER JOIN bom_header c ON a.no_bom=c.no_bom
+              JOIN bom_header c ON a.no_bom=c.no_bom
               LEFT JOIN new_inventory_4 b ON a.code_lv4=b.code_lv4,
               (SELECT @row:=0) r
-            WHERE 1=1 AND c.category IN ('grid standard','standard','ftackel') " . $costcenter_where . " " . $product_where . " AND a.deleted_date IS NULL AND (
+            WHERE 1=1 AND c.category IN ('grid standard','standard','ftackel','custom') " . $costcenter_where . " " . $product_where . " AND a.deleted_date IS NULL AND (
               a.code_lv4 LIKE '%" . $this->db->escape_like_str($like_value) . "%'
               OR c.category LIKE '%" . $this->db->escape_like_str($like_value) . "%'
               OR b.nama LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-              OR c.variant_product LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-              OR c.color LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-              OR c.surface LIKE '%" . $this->db->escape_like_str($like_value) . "%'
             )
             GROUP BY a.no_bom, a.code_lv4
             ";

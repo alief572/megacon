@@ -26,6 +26,7 @@ thead input {
 			<th>Stok Code</th>
 			<th>Stok Master</th>
 			<th>Spec</th>
+			<th>Satuan Beli</th>
 			<th>Price Ref IDR</th>
 			<th>Price Ref USD</th>
 			<th>Expired</th>
@@ -69,12 +70,15 @@ thead input {
 					$status2 = 'Waiting Approve';
 					$status2_ = 'purple';
 				}
+
+				$satuan_beli = (isset($list_satuan[$record->satuan_beli])) ? $list_satuan[$record->satuan_beli] : '';
 			?>
 		<tr>
 		    <td><?= $numb; ?></td>
 			<td><?= strtoupper($record->id_stock) ?></td>
 			<td><?= strtoupper($record->stock_name) ?></td>
 			<td><?= strtoupper($record->spec) ?></td>
+			<td><?= strtoupper($satuan_beli) ?></td>
 			<td align='right'><?= number_format($record->price_ref_use) ?></td>
 			<td align='right'><?= number_format($record->price_ref_use_usd,2) ?></td>
 			<td align='center'><?=$expired;?></td>

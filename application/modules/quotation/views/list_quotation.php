@@ -61,12 +61,12 @@ $ENABLE_DELETE  = has_permission('Quotation.Delete');
 							$Status = "<span class='badge bg-yellow'>Draft</span>";
 						} elseif ($record->status == 1) {
 
-							$num_approval = 'Supervisor';
+							$num_approval = 'Staff Sales';
 							if ($record->req_app2 == '1' && $record->app_1 == '1') {
-								$num_approval = 'Manager';
+								$num_approval = 'Manager Sales';
 							}
 							if ($record->req_app3 == '1' && $record->app_2 == '1') {
-								$num_approval = 'Cost Control';
+								$num_approval = 'Direktur';
 							}
 
 							$Status = "<span class='badge bg-blue'>Waiting Approval " . $num_approval . "</span>";
@@ -96,7 +96,7 @@ $ENABLE_DELETE  = has_permission('Quotation.Delete');
 								<?php
 								$btn_edit = '<a href="quotation/modal_detail_invoice/' . $record->no_penawaran . '" class="btn btn-sm btn-success">Edit</a>';
 								$check_so = $this->db->get_where('tr_sales_order', ['no_penawaran' => $record->no_penawaran])->num_rows();
-								if($check_so > 0){
+								if ($check_so > 0) {
 									$btn_edit = '';
 								}
 
@@ -106,22 +106,29 @@ $ENABLE_DELETE  = has_permission('Quotation.Delete');
 
 								$check_disc_penawaran = $this->db->query('SELECT MAX(diskon_persen) AS max_disc_persen FROM tr_penawaran_detail WHERE no_penawaran = "' . $record->no_penawaran . '"')->row();
 
-								$get_disc = $this->db->get('ms_diskon')->result();
+								$get_disc = $this->db->query('SELECT * FROM ms_diskon WHERE deleted = 0 ORDER BY diskon_awal ASC')->result();
 
-								$tingkatan = '';
+								$tingkatan = 0;
+
+								$no_awd = 0;
 								foreach ($get_disc as $list_disc) {
-									if ($tingkatan == '') {
-										if ($check_disc_penawaran->max_disc_persen >= $list_disc->diskon_awal && $check_disc_penawaran->max_disc_persen <= $list_disc->diskon_akhir) {
-											$tingkatan = $list_disc->tingkatan;
-										} else {
-											if ($check_disc_penawaran->max_disc_persen >= $list_disc->diskon_awal && $list_disc->diskon_akhir == 0) {
-												$tingkatan = $list_disc->tingkatan;
-											}
-										}
+									$no_awd++;
+									// if ($tingkatan == '') {
+									// 	if ($check_disc_penawaran->max_disc_persen >= $list_disc->diskon_awal && $check_disc_penawaran->max_disc_persen <= $list_disc->diskon_akhir) {
+									// 		$tingkatan = $list_disc->tingkatan;
+									// 	} else {
+									// 		if ($check_disc_penawaran->max_disc_persen >= $list_disc->diskon_awal && $list_disc->diskon_akhir == 0) {
+									// 			$tingkatan = $list_disc->tingkatan;
+									// 		}
+									// 	}
+									// }
+
+									if($check_disc_penawaran->max_disc_persen >= $list_disc->diskon_awal && $check_disc_penawaran->max_disc_persen <= $list_disc->diskon_akhir) {
+										$tingkatan = $no_awd;
 									}
 								}
 
-								if ($tingkatan == 'Tingkat 1' || $tingkatan == '') {
+								if ($tingkatan == 0) {
 									$btn_ajukan = '';
 								}
 
@@ -650,14 +657,14 @@ $ENABLE_DELETE  = has_permission('Quotation.Delete');
 		if (show_hide_ppn > 0) {
 			if (show_hide_disc > 0) {
 				window.open(siteurl + active_controller + 'print_quotation/' + no_penawaran + '/' + '1');
-			}else{
+			} else {
 				window.open(siteurl + active_controller + 'print_quotation/' + no_penawaran);
 			}
 		} else {
 			if (show_hide_ppn !== null) {
 				if (show_hide_disc > 0) {
 					window.open(siteurl + active_controller + 'print_quotation_non_ppn/' + no_penawaran + '/' + '1');
-				}else{
+				} else {
 					window.open(siteurl + active_controller + 'print_quotation_non_ppn/' + no_penawaran);
 				}
 			} else {

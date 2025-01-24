@@ -113,14 +113,16 @@ class Price_list_model extends BF_Model
 
 			$view	= "";
 			$edit	= "";
-			if ($row['category_bom'] == 'standard') {
+			if ($row['category_bom'] == 'standard' || $row['category_bom'] == 'grid custom') {
 				$view	= "<a href='" . site_url($this->uri->segment(1)) . '/detail_costing_std/' . $row['no_bom'] . "' class='btn btn-sm btn-warning' title='Detail' data-role='qtip'><i class='fa fa-eye'></i></a>";
 			} else {
-				if ($row['category_bom'] == 'grid custom') {
-					$view	= "<a href='" . site_url($this->uri->segment(1)) . '/detail_costing_ass/' . $row['no_bom'] . "' class='btn btn-sm btn-warning' title='Detail' data-role='qtip'><i class='fa fa-eye'></i></a>";
-				} else {
-					$view	= "<a href='" . site_url($this->uri->segment(1)) . '/detail_costing/' . $row['no_bom'] . "' class='btn btn-sm btn-warning' title='Detail' data-role='qtip'><i class='fa fa-eye'></i></a>";
-				}
+				// if ($row['category_bom'] == 'grid custom') {
+				// 	$view	= "<a href='" . site_url($this->uri->segment(1)) . '/detail_costing_ass/' . $row['no_bom'] . "' class='btn btn-sm btn-warning' title='Detail' data-role='qtip'><i class='fa fa-eye'></i></a>";
+				// } else {
+				// 	$view	= "<a href='" . site_url($this->uri->segment(1)) . '/detail_costing/' . $row['no_bom'] . "' class='btn btn-sm btn-warning' title='Detail' data-role='qtip'><i class='fa fa-eye'></i></a>";
+				// }
+
+				$view	= "<a href='" . site_url($this->uri->segment(1)) . '/detail_costing/' . $row['no_bom'] . "' class='btn btn-sm btn-warning' title='Detail' data-role='qtip'><i class='fa fa-eye'></i></a>";
 			}
 
 

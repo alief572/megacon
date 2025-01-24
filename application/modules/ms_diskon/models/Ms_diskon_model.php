@@ -76,7 +76,7 @@ class Ms_diskon_model extends BF_Model
     public function generate_id_diskon($no) {
         $generate_id = $this->db->query("SELECT MAX(id) AS max_id FROM ms_diskon WHERE id LIKE '%MDISC-" . date('m-y') . "%'")->row();
 		$kodeBarang = $generate_id->max_id;
-		$urutan = (int) substr($kodeBarang, 11, 5);
+		$urutan = (int) substr($kodeBarang, 11, 6);
 		$urutan += $no;
 		$tahun = date('m-y');
 		$huruf = "MDISC-";

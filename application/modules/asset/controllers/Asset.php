@@ -413,71 +413,6 @@ class Asset extends Admin_Controller
 	}
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	public function edit()
 	{
 		$Arr_Kembali	= array();
@@ -543,9 +478,19 @@ class Asset extends Admin_Controller
 			$lokasi_asset	= $data['lokasi_asset'];
 			$cost_center	= $data['cost_center'];
 
+			$nmCategory		= $this->Asset_model->getWhere('asset_category', 'id', $data['category']);
+
 			$Data_Update	= array(
+				'nm_asset' => $data['nm_asset'],
+				'category' => $data['category'],
+				'depresiasi' 	=> $data['depresiasi'],
+				'value' 		=> str_replace(',', '', $data['value']),
+				'nilai_asset' 	=> str_replace(',', '', $data['nilai_asset']),
+				'qty' 			=> $data['qty'],
 				'lokasi_asset' 	=> $lokasi_asset,
 				'cost_center' 	=> $cost_center,
+				'category' 		=> $data['category'],
+				'nm_category' 	=> strtoupper($nmCategory[0]['nm_category']),
 				'modified_by' 	=> $this->session->userdata['app_session']['username'],
 				'modified_date' => date('Y-m-d h:i:s')
 			);
@@ -698,5 +643,30 @@ class Asset extends Admin_Controller
 			history('Delete Category Asset Data : ' . $id);
 		}
 		echo json_encode($Arr_Data);
+	}
+
+	public function del_asset() {
+		$id = $this->input->post('id');
+
+		$this->db->trans_begin();
+
+		$this->db->update('asset', array('deleted' => 'Y', 'deleted_by' => $this->auth->user_id(), 'deleted_date' => date('Y-m-d H:i:s')), array('id' => $id));
+
+		if($this->db->trans_status() === false) {
+			$this->db->trans_rollback();
+
+			$valid = 0;
+			$msg = 'Please try again later !';
+		} else {
+			$this->db->trans_commit();
+
+			$valid = 1;
+			$msg = 'Asset has been deleted !';
+		}
+
+		echo json_encode([
+			'status' => $valid,
+			'msg' => $msg
+		]);
 	}
 }

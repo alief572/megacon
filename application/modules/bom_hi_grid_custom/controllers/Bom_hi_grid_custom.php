@@ -50,465 +50,113 @@ class Bom_hi_grid_custom extends Admin_Controller
 			// exit;
 			$session 		 = $this->session->userdata('app_session');
 			$Ym					  = date('ym');
+			$id        = $data['id'];
 			$no_bom        = $data['no_bom'];
 			$no_bomx        = $data['no_bom'];
+			
+			$no_bomx        = $data['no_bom'];
 
-			if (!empty($data['Detail'])) {
-				$Detail	= $data['Detail'];
-			}
+			$get_ipp_custom = $this->db->get_where('custom_ipp', array('no_bom' => $no_bom))->row();
 
-			if (!empty($data['DetailAdt'])) {
-				$DetailAdt	= $data['DetailAdt'];
-			}
+			$id_ipp        = (!empty($get_ipp_custom)) ? $get_ipp_custom->id : '';
 
-			if (!empty($data['DetailTop'])) {
-				$DetailTop	= $data['DetailTop'];
-			}
+			$get_jenis_beton = $this->db->get_where('tr_jenis_beton_header', array('id_komposisi_beton' => $data['jenis_beton']))->row();
+			$nm_jenis_beton = (!empty($get_jenis_beton)) ? $get_jenis_beton->nm_jenis_beton : '';
 
-			if (!empty($data['DetailHiGrid'])) {
-				$DetailHiGrid	= $data['DetailHiGrid'];
-			}
+			$this->db->trans_begin();
 
-			if (!empty($data['DetailAcc'])) {
-				$DetailAcc	= $data['DetailAcc'];
-			}
+			$data_header = [
+				'category' => 'grid custom',
+				'id_product' => $data['id_product'],
+				'id_variant_product' => $data['id_variant_product'],
+				'variant_product' => $data['variant_product'],
+				'id_jenis_beton' => $data['jenis_beton'],
+				'nm_jenis_beton' => $nm_jenis_beton,
+				'keterangan' => $data['keterangan'],
+				'volume_m3' => $data['volume_produk'],
+				'updated_by' => $this->auth->user_id(),
+				'updated_date' => date('Y-m-d H:i:s')
+			];
 
-			if (!empty($data['DetailMatJoint'])) {
-				$DetailMatJoint	= $data['DetailMatJoint'];
-			}
+			$data_detail = [];
+			if (isset($data['detail_material'])) {
+				foreach ($data['detail_material'] as $item => $itemx) {
+					$urut = sprintf('%03s', $item);
 
-			if (!empty($data['DetailFlat'])) {
-				$DetailFlat	= $data['DetailFlat'];
-			}
+					$get_data_beton_detail = $this->db->get_where('tr_jenis_beton_detail', array('id_detail_material' => $itemx['id_detail_material']))->row();
 
-			if (!empty($data['DetailEnd'])) {
-				$DetailEnd	= $data['DetailEnd'];
-			}
+					$id_material = (!empty($get_data_beton_detail)) ? $get_data_beton_detail->id_material : '';
 
-			if (!empty($data['DetailJadi'])) {
-				$DetailJadi	= $data['DetailJadi'];
-			}
+					$volume_material = (isset($itemx['volume_material'])) ? $itemx['volume_material'] : 0;
 
-			if (!empty($data['DetailOthers'])) {
-				$DetailOthers	= $data['DetailOthers'];
-			}
-
-			$created_by   = 'updated_by';
-			$created_date = 'updated_date';
-			$tanda        = 'Insert ';
-			if (empty($no_bomx)) {
-				//pengurutan kode
-				$srcMtr			  = "SELECT MAX(no_bom) as maxP FROM bom_header WHERE no_bom LIKE 'BOC" . $Ym . "%' ";
-				$numrowMtr		= $this->db->query($srcMtr)->num_rows();
-				$resultMtr		= $this->db->query($srcMtr)->result_array();
-				$angkaUrut2		= $resultMtr[0]['maxP'];
-				$urutan2		  = (int)substr($angkaUrut2, 7, 3);
-				$urutan2++;
-				$urut2			  = sprintf('%03s', $urutan2);
-				$no_bom	      = "BOC" . $Ym . $urut2;
-
-				$created_by   = 'created_by';
-				$created_date = 'created_date';
-				$tanda        = 'Update ';
-			}
-
-			$ArrHeader2		= array(
-				'no_bom'			=> $no_bom,
-				'category' 			=> 'grid custom',
-				'id_product'	    => $data['id_product'],
-				'variant_product'	=> $data['variant_product'],
-				// 'fire_retardant'	=> $data['fire_retardant'],
-				// 'anti_uv'			=> $data['anti_uv'],
-				// 'tixotropic'		=> $data['tixotropic'],
-				// 'food_grade'		=> $data['food_grade'],
-				// 'wax'				=> $data['wax'],
-				// 'corrosion'			=> $data['corrosion'],
-				// 'waste_product'	    => str_replace(',','',$data['waste_product']),
-				// 'waste_setting'	    => str_replace(',','',$data['waste_setting']),
-				$created_by	    => $session['id_user'],
-				$created_date	  => date('Y-m-d H:i:s')
-			);
-
-			//UPLOAD DOCUMENT
-			$dataProcess2 = [];
-			if (!empty($_FILES['photo']["tmp_name"])) {
-				$target_dir     = "assets/files/";
-				$target_dir_u   = get_root3() . "/assets/files/";
-				$name_file      = 'bom-ukuran-jadi-' . $no_bom . "-" . date('Ymdhis');
-				$target_file    = $target_dir . basename($_FILES['photo']["name"]);
-				$name_file_ori  = basename($_FILES['photo']["name"]);
-				$imageFileType  = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
-				$nama_upload    = $target_dir_u . $name_file . "." . $imageFileType;
-
-				// if($imageFileType == 'pdf' OR $imageFileType == 'jpeg' OR $imageFileType == 'jpg'){
-
-				$terupload = move_uploaded_file($_FILES['photo']["tmp_name"], $nama_upload);
-				$link_url    	= $target_dir . $name_file . "." . $imageFileType;
-
-				$dataProcess2	= array('file_upload' => $link_url);
-				// }
-			}
-
-			$ArrHeader = array_merge($ArrHeader2, $dataProcess2);
-
-			$ArrDetail	= array();
-			$ArrDetail2	= array();
-			$ArrDetail21	= array();
-			$ArrDetail3	= array();
-			$ArrDetail31	= array();
-			$ArrDetail4	= array();
-			$ArrDetail4MatLayer	= array();
-			$ArrDetail5	= array();
-			$ArrDetail51	= array();
-			$ArrDetail6	= array();
-			$ArrDetail61	= array();
-			$ArrDetail7	= array();
-			$ArrDetail71	= array();
-			$ArrDetail8	= array();
-			$ArrDetail9	= array();
-			$ArrDetail91 = array();
-			$ArrDetail81	= array();
-			$ArrDetail82	= array();
-			$ArrDetail83	= array();
-			if (!empty($data['Detail'])) {
-				foreach ($Detail as $val => $valx) {
-					$urut = sprintf('%03s', $val);
-					$ArrDetail[$val]['no_bom'] 			= $no_bom;
-					$ArrDetail[$val]['no_bom_detail'] 	= $no_bom . "-" . $urut;
-					$ArrDetail[$val]['code_material'] 	= $valx['code_material'];
-					$ArrDetail[$val]['weight'] 	 		= str_replace(',', '', $valx['weight']);
+					$data_detail[] = [
+						'category' => 'default',
+						'no_bom' => $no_bom,
+						'no_bom_detail' => $no_bom . '-' . $urut,
+						'code_material' => $itemx['id_detail_material'],
+						'volume_m3' => $volume_material,
+						'satuan_lainnya' => $itemx['satuan_lainnya'],
+						'satuan' => $itemx['satuan'],
+						'created_by' => $this->auth->user_id(),
+						'created_date' => date('Y-m-d H:i:s')
+					];
 				}
 			}
 
-			if (!empty($data['DetailAdt'])) {
-				$GET_ADDITIVE = get_persen_additive();
-				foreach ($DetailAdt as $val => $valx) {
-					$urut = sprintf('%03s', $val);
-					$ArrDetail2[$val]['category'] 		= 'additive';
-					$ArrDetail2[$val]['no_bom'] 		= $no_bom;
-					$ArrDetail2[$val]['no_bom_detail'] 	= $no_bom . "-" . $urut;
-					$ArrDetail2[$val]['code_material'] 	= $valx['code_material'];
-
-					if (!empty($valx['detail'])) {
-						foreach ($valx['detail'] as $val2 => $valx2) {
-							$key = $val . '-' . $val2;
-							$key2 = $valx['code_material'] . '-' . $valx2['code_material'];
-							$persen = (!empty($GET_ADDITIVE[$key2]['persen'])) ? $GET_ADDITIVE[$key2]['persen'] : 0;
-
-							$ArrDetail21[$key]['category'] 		= 'additive';
-							$ArrDetail21[$key]['no_bom'] 		= $no_bom;
-							$ArrDetail21[$key]['no_bom_detail'] = $no_bom . "-" . $urut;
-							$ArrDetail21[$key]['code_material'] = $valx2['code_material'];
-							$ArrDetail21[$key]['nm_material'] 	= $valx2['nm_material'];
-							$ArrDetail21[$key]['weight'] 		= str_replace(',', '', $valx2['berat']);
-							$ArrDetail21[$key]['persen'] 		= $persen;
-						}
-					}
+			$data_detail_material_lain = [];
+			if (isset($data['detail_material_lain'])) {
+				foreach ($data['detail_material_lain'] as $item => $itemx) {
+					$data_detail_material_lain[] = [
+						'no_bom' => $no_bom,
+						'id_material' => $itemx['id_material'],
+						'material_name' => $itemx['material_name'],
+						'kebutuhan' => $itemx['kebutuhan'],
+						'id_satuan' => $itemx['id_satuan'],
+						'nm_satuan' => $itemx['satuan'],
+						'keterangan' => $itemx['keterangan'],
+						'created_by' => $this->auth->user_id(),
+						'created_date' => date('Y-m-d H:i:s')
+					];
 				}
 			}
 
-			if (!empty($data['DetailHiGrid'])) {
-				foreach ($DetailHiGrid as $val => $valx) {
-					$urut = sprintf('%03s', $val);
-					$ArrDetail8[$val]['category'] 		= 'hi grid std';
-					$ArrDetail8[$val]['no_bom'] 		= $no_bom;
-					$ArrDetail8[$val]['no_bom_detail'] 	= $no_bom . "-" . $urut;
-					$ArrDetail8[$val]['code_material'] 	= $valx['code_material'];
-					$ArrDetail8[$val]['ket'] 			= $valx['ket'];
-					$ArrDetail8[$val]['qty'] 			= str_replace(',', '', $valx['qty']);
-					$ArrDetail8[$val]['unit'] 			= $valx['unit'];
+			$update_bom = $this->db->update('bom_header', $data_header, array('no_bom' => $no_bom));
+			if (!$update_bom) {
+				$this->db->trans_rollback();
 
-					if (!empty($valx['detail'])) {
-						foreach ($valx['detail'] as $val2 => $valx2) {
-							$key = $val . '-' . $val2;
-							$ArrDetail81[$key]['category'] 		= 'hi grid std';
-							$ArrDetail81[$key]['no_bom'] 		= $no_bom;
-							$ArrDetail81[$key]['no_bom_detail'] = $no_bom . "-" . $urut;
-							$ArrDetail81[$key]['code_material'] = $valx2['code_material'];
-							$ArrDetail81[$key]['nm_material'] 	= $valx2['nm_material'];
-							$ArrDetail81[$key]['weight'] 		= str_replace(',', '', $valx2['berat']);
-						}
-					}
-					if (!empty($valx['ukuran_jadi'])) {
-						foreach ($valx['ukuran_jadi'] as $val2 => $valx2) {
-							$key = $val . '-' . $val2;
-							$ArrDetail82[$key]['category'] 		= 'ukuran jadi';
-							$ArrDetail82[$key]['no_bom'] 		= $no_bom;
-							$ArrDetail82[$key]['no_bom_detail'] = $no_bom . "-" . $urut;
-							$ArrDetail82[$key]['length'] 		= str_replace(',', '', $valx2['length']);
-							$ArrDetail82[$key]['width'] 		= str_replace(',', '', $valx2['width']);
-							$ArrDetail82[$key]['qty'] 			= str_replace(',', '', $valx2['qty']);
-							$ArrDetail82[$key]['lari'] 			= str_replace(',', '', $valx2['lari']);
-						}
-					}
-					if (!empty($valx['cutting'])) {
-						foreach ($valx['cutting'] as $val2 => $valx2) {
-							$key = $val . '-' . $val2 . '-9999';
-							$ArrDetail83[$key]['category'] 		= 'material cutting';
-							$ArrDetail83[$key]['no_bom'] 		= $no_bom;
-							$ArrDetail83[$key]['no_bom_detail'] = $no_bom . "-" . $urut;
-							$ArrDetail83[$key]['code_material']	= $valx2['id_material'];
-							$ArrDetail83[$key]['weight'] 		= str_replace(',', '', $valx2['weight']);
-						}
-					}
+				print_r($this->db->last_query());
+				exit;
+			}
+
+			if (!empty($data_detail)) {
+				$refresh_detail = $this->db->delete('bom_detail', array('no_bom' => $no_bom));
+				$insert_detail = $this->db->insert_batch('bom_detail', $data_detail);
+				if (!$insert_detail) {
+					$this->db->trans_rollback();
+
+					print_r($this->db->last_query());
+					exit;
 				}
 			}
 
-			if (!empty($data['DetailTop'])) {
-				foreach ($DetailTop as $val => $valx) {
-					$urut = sprintf('%03s', $val);
-					$ArrDetail3[$val]['category'] 		= 'topping';
-					$ArrDetail3[$val]['no_bom'] 		= $no_bom;
-					$ArrDetail3[$val]['no_bom_detail'] 	= $no_bom . "-" . $urut;
-					$ArrDetail3[$val]['code_material'] 	= $valx['code_material'];
-					$ArrDetail3[$val]['ket'] 			= $valx['ket'];
-					$ArrDetail3[$val]['qty'] 			= str_replace(',', '', $valx['qty']);
-					$ArrDetail3[$val]['unit'] 			= $valx['unit'];
+			if (!empty($data_detail_material_lain)) {
+				$refresh_detail_material_lain = $this->db->delete('bom_material_lain', array('no_bom' => $no_bom));
+				$insert_detail_material_lain = $this->db->insert_batch('bom_material_lain', $data_detail_material_lain);
+				if (!$insert_detail_material_lain) {
+					$this->db->trans_rollback();
 
-					if (!empty($valx['detail'])) {
-						foreach ($valx['detail'] as $val2 => $valx2) {
-							$key = $val . '-' . $val2;
-							$ArrDetail31[$key]['category'] 		= 'topping';
-							$ArrDetail31[$key]['no_bom'] 		= $no_bom;
-							$ArrDetail31[$key]['no_bom_detail'] 	= $no_bom . "-" . $urut;
-							$ArrDetail31[$key]['code_material'] 	= $valx2['code_material'];
-							$ArrDetail31[$key]['nm_material'] 	= $valx2['nm_material'];
-							$ArrDetail31[$key]['weight'] 		= str_replace(',', '', $valx2['berat']);
-						}
-					}
+					print_r($this->db->last_query());
+					exit;
 				}
 			}
 
-			if (!empty($data['DetailAcc'])) {
-				foreach ($DetailAcc as $val => $valx) {
-					$urut = sprintf('%03s', $val);
-					$ArrDetail4[$val]['category'] 		= 'accessories';
-					$ArrDetail4[$val]['no_bom'] 		= $no_bom;
-					$ArrDetail4[$val]['no_bom_detail'] 	= $no_bom . "-" . $urut;
-					$ArrDetail4[$val]['code_material'] 	= $valx['code_material'];
-					$ArrDetail4[$val]['ket'] 			= $valx['ket'];
-					$ArrDetail4[$val]['weight'] 	 	= str_replace(',', '', $valx['weight']);
-				}
+			$update_ipp_custom = $this->db->update('custom_ipp', array('no_bom' => $no_bom), array('id' => $id_ipp));
+			if (!$update_ipp_custom) {
+				$this->db->trans_rollback();
+
+				print_r($this->db->last_query());
+				exit;
 			}
-
-			if (!empty($data['DetailMatJoint'])) {
-				foreach ($DetailMatJoint as $val => $valx) {
-					$urut = sprintf('%03s', $val);
-					$ArrDetail4MatLayer[$val]['category'] 		= 'mat joint';
-					$ArrDetail4MatLayer[$val]['no_bom'] 		= $no_bom;
-					$ArrDetail4MatLayer[$val]['no_bom_detail'] 	= $no_bom . "-" . $urut;
-					$ArrDetail4MatLayer[$val]['code_material'] 	= $valx['code_material'];
-					$ArrDetail4MatLayer[$val]['ket'] 			= $valx['ket'];
-					$ArrDetail4MatLayer[$val]['layer'] 			= $valx['layer'];
-					$ArrDetail4MatLayer[$val]['weight'] 	 	= str_replace(',', '', $valx['weight']);
-				}
-			}
-
-			if (!empty($data['DetailFlat'])) {
-				foreach ($DetailFlat as $val => $valx) {
-					$urut = sprintf('%03s', $val);
-					$ArrDetail5[$val]['category'] 		= 'flat sheet';
-					$ArrDetail5[$val]['no_bom'] 		= $no_bom;
-					$ArrDetail5[$val]['no_bom_detail'] 	= $no_bom . "-" . $urut;
-					$ArrDetail5[$val]['length'] 	 	= str_replace(',', '', $valx['length']);
-					$ArrDetail5[$val]['width'] 	 		= str_replace(',', '', $valx['width']);
-					$ArrDetail5[$val]['qty'] 	 		= str_replace(',', '', $valx['qty']);
-					$ArrDetail5[$val]['m2'] 	 		= str_replace(',', '', $valx['m2']);
-
-					if (!empty($valx['material'])) {
-						foreach ($valx['material'] as $val2 => $valx2) {
-							$key = $val . '-' . $val2;
-							$ArrDetail51[$key]['category'] 		= 'material flat sheet';
-							$ArrDetail51[$key]['no_bom'] 		= $no_bom;
-							$ArrDetail51[$key]['no_bom_detail'] = $no_bom . "-" . $urut;
-							$ArrDetail51[$key]['code_material']	= $valx2['id_material'];
-							$ArrDetail51[$key]['weight'] 		= str_replace(',', '', $valx2['weight']);
-						}
-					}
-				}
-			}
-
-			if (!empty($data['DetailEnd'])) {
-				foreach ($DetailEnd as $val => $valx) {
-					$urut = sprintf('%03s', $val);
-					$ArrDetail6[$val]['category'] 		= 'end plate';
-					$ArrDetail6[$val]['no_bom'] 		= $no_bom;
-					$ArrDetail6[$val]['no_bom_detail'] 	= $no_bom . "-" . $urut;
-					$ArrDetail6[$val]['length'] 	 	= str_replace(',', '', $valx['length']);
-					$ArrDetail6[$val]['width'] 	 		= str_replace(',', '', $valx['width']);
-					$ArrDetail6[$val]['qty'] 	 		= str_replace(',', '', $valx['qty']);
-					$ArrDetail6[$val]['m2'] 	 		= str_replace(',', '', $valx['m2']);
-
-					if (!empty($valx['material'])) {
-						foreach ($valx['material'] as $val2 => $valx2) {
-							$key = $val . '-' . $val2;
-							$ArrDetail61[$key]['category'] 		= 'material end plate';
-							$ArrDetail61[$key]['no_bom'] 		= $no_bom;
-							$ArrDetail61[$key]['no_bom_detail'] = $no_bom . "-" . $urut;
-							$ArrDetail61[$key]['code_material']	= $valx2['id_material'];
-							$ArrDetail61[$key]['weight'] 		= str_replace(',', '', $valx2['weight']);
-						}
-					}
-				}
-			}
-
-			if (!empty($data['DetailJadi'])) {
-				foreach ($DetailJadi as $val => $valx) {
-					$urut = sprintf('%03s', $val);
-					$ArrDetail7[$val]['category'] 		= 'ukuran jadi';
-					$ArrDetail7[$val]['no_bom'] 		= $no_bom;
-					$ArrDetail7[$val]['no_bom_detail'] 	= $no_bom . "-" . $urut;
-					$ArrDetail7[$val]['length'] 	 	= str_replace(',', '', $valx['length']);
-					$ArrDetail7[$val]['width'] 	 		= str_replace(',', '', $valx['width']);
-					$ArrDetail7[$val]['qty'] 	 		= str_replace(',', '', $valx['qty']);
-					$ArrDetail7[$val]['m2'] 	 		= str_replace(',', '', $valx['m2']);
-
-					if (!empty($valx['material'])) {
-						foreach ($valx['material'] as $val2 => $valx2) {
-							$key = $val . '-' . $val2;
-							$ArrDetail71[$key]['category'] 		= 'material ukuran jadi';
-							$ArrDetail71[$key]['no_bom'] 		= $no_bom;
-							$ArrDetail71[$key]['no_bom_detail'] = $no_bom . "-" . $urut;
-							$ArrDetail71[$key]['code_material']	= $valx2['id_material'];
-							$ArrDetail71[$key]['weight'] 		= str_replace(',', '', $valx2['weight']);
-						}
-					}
-				}
-			}
-
-			if (!empty($data['DetailOthers'])) {
-				foreach ($DetailOthers as $val => $valx) {
-					$urut = sprintf('%03s', $val);
-					$ArrDetail9[$val]['category'] 		= 'others';
-					$ArrDetail9[$val]['no_bom'] 		= $no_bom;
-					$ArrDetail9[$val]['no_bom_detail'] 	= $no_bom . "-" . $urut;
-					$ArrDetail9[$val]['length'] 	 	= str_replace(',', '', $valx['length']);
-					$ArrDetail9[$val]['width'] 	 		= str_replace(',', '', $valx['width']);
-					$ArrDetail9[$val]['qty'] 	 		= str_replace(',', '', $valx['qty']);
-					$ArrDetail9[$val]['m2'] 	 		= str_replace(',', '', $valx['m2']);
-
-					if (!empty($valx['material'])) {
-						foreach ($valx['material'] as $val2 => $valx2) {
-							$key = $val . '-' . $val2;
-							$ArrDetail91[$key]['category'] 		= 'material others';
-							$ArrDetail91[$key]['no_bom'] 		= $no_bom;
-							$ArrDetail91[$key]['no_bom_detail'] = $no_bom . "-" . $urut;
-							$ArrDetail91[$key]['code_material']	= $valx2['id_material'];
-							$ArrDetail91[$key]['weight'] 		= str_replace(',', '', $valx2['weight']);
-						}
-					}
-				}
-			}
-
-			// print_r($ArrHeader);
-			// print_r($ArrDetail);
-			// exit;
-
-			$this->db->trans_start();
-			if (empty($no_bomx)) {
-				$this->db->insert('bom_header', $ArrHeader);
-			}
-			if (!empty($no_bomx)) {
-				$this->db->where('no_bom', $no_bom);
-				$this->db->update('bom_header', $ArrHeader);
-			}
-
-			$this->db->delete('bom_detail', array('no_bom' => $no_bom, 'category' => 'default'));
-			if (!empty($ArrDetail)) {
-				$this->db->insert_batch('bom_detail', $ArrDetail);
-			}
-
-			$this->db->delete('bom_detail', array('no_bom' => $no_bom, 'category' => 'additive'));
-			if (!empty($ArrDetail2)) {
-				$this->db->insert_batch('bom_detail', $ArrDetail2);
-			}
-
-			$this->db->delete('bom_detail_custom', array('no_bom' => $no_bom, 'category' => 'additive'));
-			if (!empty($ArrDetail21)) {
-				$this->db->insert_batch('bom_detail_custom', $ArrDetail21);
-			}
-
-			$this->db->delete('bom_detail', array('no_bom' => $no_bom, 'category' => 'topping'));
-			if (!empty($ArrDetail3)) {
-				$this->db->insert_batch('bom_detail', $ArrDetail3);
-			}
-
-			$this->db->delete('bom_detail_custom', array('no_bom' => $no_bom, 'category' => 'topping'));
-			if (!empty($ArrDetail31)) {
-				$this->db->insert_batch('bom_detail_custom', $ArrDetail31);
-			}
-
-			$this->db->delete('bom_detail', array('no_bom' => $no_bom, 'category' => 'hi grid std'));
-			if (!empty($ArrDetail8)) {
-				$this->db->insert_batch('bom_detail', $ArrDetail8);
-			}
-
-			$this->db->delete('bom_detail_custom', array('no_bom' => $no_bom, 'category' => 'hi grid std'));
-			if (!empty($ArrDetail81)) {
-				$this->db->insert_batch('bom_detail_custom', $ArrDetail81);
-			}
-
-			$this->db->delete('bom_detail_custom', array('no_bom' => $no_bom, 'category' => 'ukuran jadi'));
-			if (!empty($ArrDetail82)) {
-				$this->db->insert_batch('bom_detail_custom', $ArrDetail82);
-			}
-
-			$this->db->delete('bom_detail_custom', array('no_bom' => $no_bom, 'category' => 'material cutting'));
-			if (!empty($ArrDetail83)) {
-				$this->db->insert_batch('bom_detail_custom', $ArrDetail83);
-			}
-
-			$this->db->delete('bom_detail', array('no_bom' => $no_bom, 'category' => 'accessories'));
-			if (!empty($ArrDetail4)) {
-				$this->db->insert_batch('bom_detail', $ArrDetail4);
-			}
-
-			$this->db->delete('bom_detail', array('no_bom' => $no_bom, 'category' => 'mat joint'));
-			if (!empty($ArrDetail4MatLayer)) {
-				$this->db->insert_batch('bom_detail', $ArrDetail4MatLayer);
-			}
-
-			$this->db->delete('bom_detail', array('no_bom' => $no_bom, 'category' => 'flat sheet'));
-			if (!empty($ArrDetail5)) {
-				$this->db->insert_batch('bom_detail', $ArrDetail5);
-			}
-
-			$this->db->delete('bom_detail_custom', array('no_bom' => $no_bom, 'category' => 'material flat sheet'));
-			if (!empty($ArrDetail51)) {
-				$this->db->insert_batch('bom_detail_custom', $ArrDetail51);
-			}
-
-			$this->db->delete('bom_detail', array('no_bom' => $no_bom, 'category' => 'end plate'));
-			if (!empty($ArrDetail6)) {
-				$this->db->insert_batch('bom_detail', $ArrDetail6);
-			}
-
-			$this->db->delete('bom_detail_custom', array('no_bom' => $no_bom, 'category' => 'material end plate'));
-			if (!empty($ArrDetail61)) {
-				$this->db->insert_batch('bom_detail_custom', $ArrDetail61);
-			}
-
-			$this->db->delete('bom_detail', array('no_bom' => $no_bom, 'category' => 'ukuran jadi'));
-			if (!empty($ArrDetail7)) {
-				$this->db->insert_batch('bom_detail', $ArrDetail7);
-			}
-
-			$this->db->delete('bom_detail_custom', array('no_bom' => $no_bom, 'category' => 'material ukuran jadi'));
-			if (!empty($ArrDetail71)) {
-				$this->db->insert_batch('bom_detail_custom', $ArrDetail71);
-			}
-
-			$this->db->delete('bom_detail', array('no_bom' => $no_bom, 'category' => 'others'));
-			if (!empty($ArrDetail9)) {
-				$this->db->insert_batch('bom_detail', $ArrDetail9);
-			}
-
-			$this->db->delete('bom_detail_custom', array('no_bom' => $no_bom, 'category' => 'material others'));
-			if (!empty($ArrDetail91)) {
-				$this->db->insert_batch('bom_detail_custom', $ArrDetail91);
-			}
-
-			$this->db->trans_complete();
 
 			if ($this->db->trans_status() === FALSE) {
 				$this->db->trans_rollback();
@@ -522,18 +170,26 @@ class Bom_hi_grid_custom extends Admin_Controller
 					'pesan'		=> 'Save berhasil disimpan. Thanks ...',
 					'status'	=> 1
 				);
-				history($tanda . " BOM " . $no_bom);
+				// history($tanda . " BOM " . $no_bom);
 			}
 			echo json_encode($Arr_Data);
 		} else {
 			$session  = $this->session->userdata('app_session');
-			$no_bom 	  		= $this->uri->segment(3);
+			
+
+			$no_bom 	  			= $this->uri->segment(3);
+
+			$get_ipp_custom = $this->db->get_where('custom_ipp', array('no_bom' => $no_bom))->row();
+			$id_ipp = (!empty($get_ipp_custom)) ? $get_ipp_custom->id : '';
+
+			$getIppCustom = $this->db->get_where('custom_ipp', array('id' => $id_ipp))->result();
+
 			$header   			= $this->db->get_where('bom_header', array('no_bom' => $no_bom))->result();
 			$detail   			= $this->db->get_where('bom_detail', array('no_bom' => $no_bom, 'category' => 'default'))->result_array();
 			$detail_hi_grid   	= $this->db->get_where('bom_detail', array('no_bom' => $no_bom, 'category' => 'hi grid std'))->result_array();
 			$detail_additive   	= $this->db->get_where('bom_detail', array('no_bom' => $no_bom, 'category' => 'additive'))->result_array();
 			$detail_topping   	= $this->db->get_where('bom_detail', array('no_bom' => $no_bom, 'category' => 'topping'))->result_array();
-			$detail_accessories = $this->db->get_where('bom_detail', array('no_bom' => $no_bom, 'category' => 'accessories'))->result_array();
+			$detail_accessories 	= $this->db->get_where('bom_detail', array('no_bom' => $no_bom, 'category' => 'accessories'))->result_array();
 			$detail_mat_joint 	= $this->db->get_where('bom_detail', array('no_bom' => $no_bom, 'category' => 'mat joint'))->result_array();
 			$detail_flat_sheet 	= $this->db->get_where('bom_detail', array('no_bom' => $no_bom, 'category' => 'flat sheet'))->result_array();
 			$detail_end_plate 	= $this->db->get_where('bom_detail', array('no_bom' => $no_bom, 'category' => 'end plate'))->result_array();
@@ -549,9 +205,47 @@ class Bom_hi_grid_custom extends Admin_Controller
 			$bom_higridstd 		= array_merge($bom_higridstd1, $bom_higridstd2);
 			$satuan				= $this->bom_hi_grid_custom_model->get_data_where_array('ms_satuan', array('deleted_date' => NULL, 'category' => 'unit'));
 
+			$get_jenis_beton = $this->db->get_where('tr_jenis_beton_header', array('deleted_by' => null))->result();
+
+			$header_bom   = $this->db->get_where('bom_header', array('no_bom' => $no_bom))->result();
+
+			$this->db->select('a.*, b.nm_material');
+			$this->db->from('bom_detail a');
+			$this->db->join('tr_jenis_beton_detail b', 'b.id_detail_material = a.code_material', 'left');
+			$this->db->where('a.no_bom', $no_bom);
+			$detail_bom = $this->db->get()->result();
+
+			$this->db->select('a.*');
+			$this->db->from('bom_material_lain a');
+			$this->db->where('a.no_bom', $no_bom);
+			$detail_material_lain = $this->db->get()->result();
+
+			$product    = $this->db->get_where('new_inventory_4', array('deleted_date' => NULL, 'category' => 'product', 'code_lv1 <>' => 'P123000008'))->result();
+			$material    = $this->db->get_where('new_inventory_4', array('deleted_date' => NULL, 'category' => 'material'))->result();
+
+			$variant_product  = $this->db->get_where('list', array('menu' => 'bom std lainnya', 'category' => 'variant product'))->result();
+			$color_product    = $this->db->get_where('list', array('menu' => 'bom std lainnya', 'category' => 'color'))->result();
+
+			$jenis_beton = $this->db->get_where('tr_jenis_beton_header', ['deleted_by' => null])->result();
+
+			// print_r($header);
+			// exit;
+
+			$bom_standard_list   = $this->db->select('a.*, b.nama')->join('new_inventory_4 b', 'a.id_product=b.code_lv4', 'left')->get_where('bom_header a', array('a.category' => 'standard', 'a.deleted_date' => NULL))->result_array();
+
+			$list_satuan = $this->db->get_where('ms_satuan', ['category' => 'unit', 'deleted_by' => null])->result();
+
+			$this->db->select('a.*');
+			$this->db->from('new_inventory_4 a');
+			$this->db->where('a.category', 'material');
+			$this->db->where('a.deleted_by', null);
+			$get_list_material = $this->db->get()->result();
+
 			// print_r($header);
 			// exit;
 			$data = [
+				'headerIPP' => $getIppCustom,
+				'id_ipp' => $id_ipp,
 				'header' => $header,
 				'detail' => $detail,
 				'satuan' => $satuan,
@@ -571,10 +265,21 @@ class Bom_hi_grid_custom extends Admin_Controller
 				'bom_topping' => $bom_topping,
 				'bom_higridstd' => $bom_higridstd,
 				'GET_LEVEL4' => get_inventory_lv4(),
+				'jenis_beton' => $get_jenis_beton,
+				'list_material' => $get_list_material,
+				'header_bom' => $header_bom,
+				'detail_bom' => $detail_bom,
+				'list_variant_product' => $variant_product,
+				'list_color_product' => $color_product,
+				'material' => $material,
+				'jenis_beton' => $jenis_beton,
+				'list_satuan' => $list_satuan,
+				'detail_material_lain' => $detail_material_lain,
+				'id_ipp' => ''
 			];
 
 			$this->template->set('results', $data);
-			$this->template->title('Add BOM Assembly');
+			$this->template->title('Edit BOM Custom');
 			$this->template->page_icon('fa fa-edit');
 			$this->template->render('add', $data);
 		}
@@ -584,34 +289,34 @@ class Bom_hi_grid_custom extends Admin_Controller
 	{
 		// $this->auth->restrict($this->viewPermission);
 		$no_bom 	= $this->input->post('no_bom');
-		$header = $this->db->get_where('bom_header', array('no_bom' => $no_bom))->result();
-		$detail   			= $this->db->get_where('bom_detail', array('no_bom' => $no_bom, 'category' => 'default'))->result_array();
-		$detail_hi_grid   	= $this->db->get_where('bom_detail', array('no_bom' => $no_bom, 'category' => 'hi grid std'))->result_array();
-		$detail_additive   	= $this->db->get_where('bom_detail', array('no_bom' => $no_bom, 'category' => 'additive'))->result_array();
-		$detail_topping   	= $this->db->get_where('bom_detail', array('no_bom' => $no_bom, 'category' => 'topping'))->result_array();
-		$detail_accessories = $this->db->get_where('bom_detail', array('no_bom' => $no_bom, 'category' => 'accessories'))->result_array();
-		$detail_mat_joint 	= $this->db->get_where('bom_detail', array('no_bom' => $no_bom, 'category' => 'mat joint'))->result_array();
-		$detail_flat_sheet 	= $this->db->get_where('bom_detail', array('no_bom' => $no_bom, 'category' => 'flat sheet'))->result_array();
-		$detail_end_plate 	= $this->db->get_where('bom_detail', array('no_bom' => $no_bom, 'category' => 'end plate'))->result_array();
-		$detail_ukuran_jadi = $this->db->get_where('bom_detail', array('no_bom' => $no_bom, 'category' => 'ukuran jadi'))->result_array();
-		$detail_others 		= $this->db->get_where('bom_detail', array('no_bom' => $no_bom, 'category' => 'others'))->result_array();
-		$product    = $this->bom_hi_grid_custom_model->get_data_where_array('new_inventory_4', array('deleted_date' => NULL, 'category' => 'product'));
+
+		$this->db->select('a.*, b.nm_jenis_beton');
+		$this->db->from('bom_header a');
+		$this->db->join('tr_jenis_beton_header b', 'b.id_komposisi_beton = a.id_jenis_beton', 'left');
+		$this->db->where('a.no_bom', $no_bom);
+		$header = $this->db->get()->result();
+
+		$this->db->select('a.*, b.nm_material');
+		$this->db->from('bom_detail a');
+		$this->db->join('tr_jenis_beton_detail b', 'b.id_detail_material = a.code_material', 'left');
+		$this->db->where('a.no_bom', $no_bom);
+		$detail = $this->db->get()->result();
+
+		$this->db->select('a.*, b.code as satuan, c.nama as nm_material');
+		$this->db->from('bom_material_lain a');
+		$this->db->join('ms_satuan b', 'b.id = a.id_satuan', 'left');
+		$this->db->join('new_inventory_4 c', 'c.code_lv4 = a.id_material', 'left');
+		$this->db->where('a.no_bom', $no_bom);
+		$detail_material_lain = $this->db->get()->result();
+
+		$product    = $this->db->get_where('new_inventory_4', array('deleted_date' => NULL, 'category' => 'product'))->result();
 		// print_r($header);
 		$data = [
 			'header' => $header,
 			'detail' => $detail,
-			'detail_hi_grid' => $detail_hi_grid,
-			'detail_additive' => $detail_additive,
-			'detail_topping' => $detail_topping,
-			'detail_accessories' => $detail_accessories,
-			'detail_mat_joint' => $detail_mat_joint,
-			'detail_flat_sheet' => $detail_flat_sheet,
-			'detail_end_plate' => $detail_end_plate,
-			'detail_ukuran_jadi' => $detail_ukuran_jadi,
-			'detail_others' => $detail_others,
+			'detail_material_lain' => $detail_material_lain,
 			'product' => $product,
 			'GET_LEVEL4' => get_inventory_lv4(),
-			'GET_ACC' => get_accessories()
 		];
 		$this->template->set('results', $data);
 		$this->template->render('detail', $data);
