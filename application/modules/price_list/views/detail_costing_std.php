@@ -138,7 +138,7 @@ foreach ($detail_topping as $val => $valx) {
                             $harga_modal += $cost_machine;
                         }
                     }
-
+ 
                     $nomor = 3;
                     foreach ($dataList as $key => $value) {
                         if ($value['judul'] == 'Lainnya') {
