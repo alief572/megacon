@@ -184,22 +184,22 @@ foreach ($detail_topping as $val => $valx) {
                                 $harga_modal += $cost;
                             }
                             if ($value['code'] == '11') {
-                                $rate         = number_format($product_price[0]['ppn'], 2);
-                                $cost        = ($product_price[0]['ppn'] * $harga_modal / 100);
-
-                                $harga_modal += $cost;
-                            }
-                            if ($value['code'] == '12') {
                                 $rate         = '';
                                 $cost        = $harga_modal;
+
+                                // $harga_modal += $cost;
+                            }
+                            if ($value['code'] == '12') {
+                                $rate         = number_format($product_price[0]['ppn']);
+                                $cost        = ($harga_modal / (100 - ($product_price[0]['ppn'] + $product_price[0]['cost_persen_profit'])) * $product_price[0]['ppn']);
                             }
                             if ($value['code'] == '13') {
                                 $rate         = number_format($product_price[0]['cost_persen_profit'], 2);
-                                $cost       = ($harga_modal * $product_price[0]['cost_persen_profit'] / 100);
+                                $cost        = ($harga_modal / (100 - ($product_price[0]['ppn'] + $product_price[0]['cost_persen_profit'])) * $product_price[0]['cost_persen_profit']);
                             }
                             if ($value['code'] == '14') {
                                 $rate         = '';
-                                $cost        = ($harga_modal + ($harga_modal * $product_price[0]['cost_persen_profit'] / 100));
+                                $cost        = ($harga_modal / (100 - ($product_price[0]['ppn'] + $product_price[0]['cost_persen_profit'])) * 100);
                             }
                             if ($value['code'] == '15') {
                                 $rate         = number_format($product_price[0]['cost_factor_kompetitif'], 2);
@@ -207,7 +207,7 @@ foreach ($detail_topping as $val => $valx) {
                             }
                             if ($value['code'] == '16') {
                                 $rate = '';
-                                $cost = ((($harga_modal + ($harga_modal * $product_price[0]['cost_persen_profit'] / 100)) * $product_price[0]['cost_factor_kompetitif']));
+                                $cost = (($harga_modal / (100 - ($product_price[0]['ppn'] + $product_price[0]['cost_persen_profit'])) * 100) * $product_price[0]['cost_factor_kompetitif']);
                             }
                             echo "<tr>";
                             echo "<td class='text-center'>" . $nomor . "</td>";

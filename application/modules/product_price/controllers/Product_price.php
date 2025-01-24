@@ -589,7 +589,7 @@ class Product_price extends Admin_Controller
 			$factor_kompetitif	= $GET_RATE_COSTING[15];
 			$bottom_selling		= $bottom_price * $factor_kompetitif;
 
-			$ppn = ($GET_RATE_COSTING[11]);
+			$ppn = ($GET_RATE_COSTING[12]);
 			// $nego_allowance		= $bottom_selling * ($persen_allowance / 100);
 			$price_final		= ($bottom_selling + ($bottom_selling * $GET_RATE_COSTING[11] / 100));
 

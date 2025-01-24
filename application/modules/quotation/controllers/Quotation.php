@@ -263,7 +263,7 @@ class Quotation extends Admin_Controller
 			];
 			$this->db->insert('tr_penawaran', $data_header);
 
-			
+
 
 			$get_penawaran_detail = $this->db->get_where('tr_penawaran_detail', ['no_penawaran' => $session['id_user']])->result_array();
 			foreach ($get_penawaran_detail as $penawaran_detail) :
@@ -598,7 +598,7 @@ class Quotation extends Admin_Controller
 
 		$id_penawaran = ($no_surat == '' || $no_surat == $this->auth->user_id()) ? $no_penawaran : $no_surat;
 
-		
+
 
 
 		// print_r($post);
@@ -1935,25 +1935,24 @@ class Quotation extends Admin_Controller
 
 
 		$ttl_disc = (($harga_before_disc - $harga_after_disc) / $harga_before_disc * 100);
-		// print_r($ttl_disc);
-		// exit;
+		
 
 		$check_disc_penawaran = $this->db->query('SELECT MAX(diskon_persen) AS max_disc_persen FROM tr_penawaran_detail WHERE no_penawaran = "' . $id . '"')->row();
 
-		$get_disc = $this->db->query('SELECT * FROM ms_diskon ORDER BY diskon_awal DESC')->result();
+		$get_disc = $this->db->query('SELECT * FROM ms_diskon WHERE deleted_by IS NULL ORDER BY diskon_awal ASC')->result();
 
-		$tingkatan = '';
+		$tingkatan = 0;
+		$no_awd = 0;
 		foreach ($get_disc as $list_disc) {
-			if ($tingkatan == '') {
-				if ($check_disc_penawaran->max_disc_persen >= $list_disc->diskon_awal && $check_disc_penawaran->max_disc_persen <= $list_disc->diskon_akhir) {
-					$tingkatan = $list_disc->tingkatan;
-				} else {
-					if ($check_disc_penawaran->max_disc_persen >= $list_disc->diskon_awal) {
-						$tingkatan = $list_disc->tingkatan;
-					}
-				}
+			$no_awd++;
+			// print_r($list_disc->diskon_awal.' - '.$list_disc->diskon_akhir.'<br>');
+			if ($check_disc_penawaran->max_disc_persen >= $list_disc->diskon_awal && $check_disc_penawaran->max_disc_persen <= $list_disc->diskon_akhir) {
+				$tingkatan = $no_awd;
 			}
 		}
+
+		// print_r($tingkatan);
+		// exit;
 
 
 
@@ -1969,7 +1968,7 @@ class Quotation extends Admin_Controller
 		// 		'no_penawaran' => $id
 		// 	]);
 		// }
-		if ($tingkatan == 'Tingkat 2') {
+		if ($tingkatan == 1) {
 			// $this->db->update('tr_penawaran', [
 			// 	'status' => $updated_status,
 			// 	'req_app1' => 1,
@@ -1984,7 +1983,7 @@ class Quotation extends Admin_Controller
 				'no_penawaran' => $id
 			]);
 		}
-		if ($tingkatan == 'Tingkat 3') {
+		if ($tingkatan == 2) {
 			$this->db->update('tr_penawaran', [
 				'status' => $updated_status,
 				'req_app1' => 1,
@@ -1993,7 +1992,7 @@ class Quotation extends Admin_Controller
 				'no_penawaran' => $id
 			]);
 		}
-		if ($tingkatan == 'Tingkat 4') {
+		if ($tingkatan == 3) {
 			$this->db->update('tr_penawaran', [
 				'status' => $updated_status,
 				'req_app1' => 1,
@@ -3526,10 +3525,11 @@ class Quotation extends Admin_Controller
 		]);
 	}
 
-	public function hitung_new_total_other_cost() {
+	public function hitung_new_total_other_cost()
+	{
 		$no_surat = $this->input->post('no_surat');
 
-		
+
 
 		$get_other_cost = $this->db->select('SUM(nilai_pph) as ttl_pph, SUM(total_nilai) as ttl_nilai')->get_where('tr_penawaran_other_cost', array('id_penawaran' => $no_surat))->row();
 

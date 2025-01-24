@@ -135,7 +135,7 @@ $ENABLE_DELETE  = has_permission('Costing_rate.Delete');
 <script type="text/javascript">
     $(document).ready(function() {
         $('.autoNumeric').autoNumeric()
-        $('#rate_1,#rate_2,#rate_3,#rate_4,#rate_16,#rate_18,#rate_19,#rate_20,#rate_14,#coa_14,#coa_16,#coa_18,#coa_19,#coa_14,#coa_20').prop('readonly', true);
+        $('#rate_1,#rate_2,#rate_3,#rate_4,#rate_11,#rate_16,#rate_18,#rate_19,#rate_20,#rate_14,#coa_11,#coa_14,#coa_16,#coa_18,#coa_19,#coa_14,#coa_20').prop('readonly', true);
     })
 
     $('#save').click(function(e) {

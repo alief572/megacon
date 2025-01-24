@@ -1656,7 +1656,6 @@
                             'qty': qty_penawaran,
                             'diskon_persen': diskon_persen,
                             'diskon_nilai': diskon_nilai,
-                            'cutting_fee': cutting_fee,
                             'delivery_fee': delivery_fee
                         },
                         cache: false,
