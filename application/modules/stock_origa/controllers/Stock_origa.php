@@ -35,7 +35,8 @@ class Stock_origa extends Admin_Controller
     // $this->template->page_icon('fa fa-users');
 
     history("View index stock milik origa");
-    $this->template->title('SO Internal (Pengisian Stok)');
+    // $this->template->title('SO Internal (Pengisian Stok)');
+    $this->template->title('Gudang Finish Good Stock Yard');
     $this->template->render('index');
   }
 
