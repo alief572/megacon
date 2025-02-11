@@ -527,11 +527,15 @@ class Stock_origa extends Admin_Controller
     $ArrCategory = ['grid standard', 'standard', 'ftackel'];
 
     $result  = $this->db->select('a.*,b.nama')->where_in('a.category', $ArrCategory)->join('new_inventory_4 b', 'a.id_product=b.code_lv4', 'left')->get_where('bom_header a', array('a.id_product' => $id_product, 'a.deleted_date' => NULL))->result_array();
-
+    // print_r($ArrProductCT);
+    // echo $this->db->last_query();die();
+    // print_r($ArrProductCT);
     if (!empty($result)) {
       $option  = "";
       foreach ($result as $val => $valx) {
+        // print_r($valx);
         if (!in_array($valx['no_bom'], $ArrProductCT)) {
+        // if (!in_array('BOM25010051', $ArrProductCT)) {
           $variant_product = (!empty($valx['variant_product'])) ? ' - ' . $valx['variant_product'] : '';
           $option .= "<option value='" . $valx['no_bom'] . "'>" . strtoupper($valx['no_bom'] . ' - ' . $valx['nama'] . $variant_product) . "</option>";
         }
@@ -539,6 +543,8 @@ class Stock_origa extends Admin_Controller
     } else {
       $option  = "<option value='0'>BOM Not Found</option>";
     }
+    // print_r($option);
+    // die();
 
     $ArrJson  = array(
       'option' => $option
