@@ -280,18 +280,6 @@ class Request_pr_material extends Admin_Controller
     echo json_encode($Arr_Data);
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
   public function approval_planning($so_number = null)
   {
     if ($this->input->post()) {

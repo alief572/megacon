@@ -126,8 +126,8 @@ class Spk_material_model extends BF_Model
               SUM(b.qty) AS qty_spk,
               z.nama AS nama_level4,
               d.variant_product,
-              d.color AS color_product,
-              d.surface AS surface_product,
+              '' AS color_product,
+              '' AS surface_product,
               c.nm_customer
             FROM
               so_internal a
@@ -140,8 +140,6 @@ class Spk_material_model extends BF_Model
               a.code_lv4 LIKE '%" . $this->db->escape_like_str($like_value) . "%'
               OR z.nama LIKE '%" . $this->db->escape_like_str($like_value) . "%'
               OR d.variant_product LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-              OR d.color LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-              OR d.surface LIKE '%" . $this->db->escape_like_str($like_value) . "%'
               OR a.so_number LIKE '%" . $this->db->escape_like_str($like_value) . "%'
               OR c.nm_customer LIKE '%" . $this->db->escape_like_str($like_value) . "%'
             )
@@ -245,8 +243,8 @@ class Spk_material_model extends BF_Model
               SUM(b.qty) AS qty_spk,
               z.nama AS nama_level4,
               d.variant_product,
-              d.color AS color_product,
-              d.surface AS surface_product,
+              '' AS color_product,
+              '' AS surface_product,
               c.nm_customer
             FROM
               so_internal_spk b
@@ -259,8 +257,6 @@ class Spk_material_model extends BF_Model
               a.code_lv4 LIKE '%" . $this->db->escape_like_str($like_value) . "%'
               OR z.nama LIKE '%" . $this->db->escape_like_str($like_value) . "%'
               OR d.variant_product LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-              OR d.color LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-              OR d.surface LIKE '%" . $this->db->escape_like_str($like_value) . "%'
               OR a.so_number LIKE '%" . $this->db->escape_like_str($like_value) . "%'
               OR b.kode LIKE '%" . $this->db->escape_like_str($like_value) . "%'
               OR b.no_spk LIKE '%" . $this->db->escape_like_str($like_value) . "%'
