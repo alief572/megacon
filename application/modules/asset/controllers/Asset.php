@@ -326,7 +326,7 @@ class Asset extends Admin_Controller
 
 		$lopp 	= 0;
 		$lopp2 	= 0;
-		for ($no = 1; $no <= $data['qty']; $no++) {
+		for ($no = 1; $no <= 1; $no++) {
 			$Nomor	= sprintf('%02s', $no);
 			$lopp++;
 			$detailData[$lopp]['kd_asset'] 		= $kode_assets . $Nomor;
@@ -352,7 +352,7 @@ class Asset extends Admin_Controller
 				$date_now 	= date('Y-m-d', strtotime($data['tanggal']));
 			}
 
-			for ($x = 1; $x <= $jmlx; $x++) {
+			for ($x = 1; $x <= 1; $x++) {
 				$lopp2 += $x;
 
 				//bulan depat mulai menyusut
@@ -447,7 +447,7 @@ class Asset extends Admin_Controller
 			// echo $kode_assets;
 
 			$lopp = 0;
-			for ($no = 1; $no <= $data['qty']; $no++) {
+			for ($no = 1; $no <= 1; $no++) {
 				$Nomor	= sprintf('%02s', $no);
 				$lopp++;
 				$detailData[$lopp]['kd_asset'] 		= $kode_assets . $Nomor;

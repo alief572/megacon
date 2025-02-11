@@ -66,8 +66,7 @@ $ENABLE_DELETE = has_permission('Assets.Delete');
 				<tbody></tbody>
 				<tfoot>
 					<tr>
-						<th colspan="5" style="text-align:center">TOTAL KESELURUHAN</th>
-						<th></th>
+						<th colspan="6" style="text-align:center">TOTAL KESELURUHAN</th>
 						<th></th>
 						<th></th>
 						<th></th>
@@ -297,9 +296,9 @@ $ENABLE_DELETE = has_permission('Assets.Delete');
 			drawCallback: function(settings) {
 				var api = this.api();
 
-				$(api.column(5).footer()).html("<div align='right'>" + number_format(total_aset) + "</div>");
-				$(api.column(6).footer()).html("<div align='right'>" + number_format(total_susut) + "</div>");
-				$(api.column(7).footer()).html("<div align='right'>" + number_format(total_sisa) + "</div>");
+				$(api.column(6).footer()).html("<div align='right'>" + number_format(total_aset) + "</div>");
+				$(api.column(7).footer()).html("<div align='right'>" + number_format(total_susut) + "</div>");
+				$(api.column(8).footer()).html("<div align='right'>" + number_format(total_sisa) + "</div>");
 			}
 
 
