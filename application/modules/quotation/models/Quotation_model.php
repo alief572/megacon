@@ -1219,29 +1219,29 @@ class Quotation_model extends BF_Model
 		$this->db->trans_begin();
 
 		$insert_header = $this->db->insert('tr_history_penawaran', $data_array_header);
-		if (!$insert_header) {
-			$this->db->trans_rollback();
-			print_r($this->db->last_query());
-			exit;
-		}
+		// if (!$insert_header) {
+		// 	$this->db->trans_rollback();
+		// 	print_r($this->db->last_query());
+		// 	exit;
+		// }
 		$insert_detail = $this->db->insert_batch('tr_history_penawaran_detail', $data_array_detail);
-		if (!$insert_detail) {
-			$this->db->trans_rollback();
-			print_r($this->db->last_query());
-			exit;
-		}
+		// if (!$insert_detail) {
+		// 	$this->db->trans_rollback();
+		// 	print_r($this->db->last_query());
+		// 	exit;
+		// }
 		$insert_other_cost = $this->db->insert_batch('tr_history_penawaran_other_cost', $data_array_other_cost);
-		if (!$insert_other_cost) {
-			$this->db->trans_rollback();
-			print_r($this->db->last_query());
-			exit;
-		}
+		// if (!$insert_other_cost) {
+		// 	$this->db->trans_rollback();
+		// 	print_r($this->db->last_query());
+		// 	exit;
+		// }
 		$insert_other_item = $this->db->insert_batch('tr_history_penawaran_other_item', $data_array_other_item);
-		if (!$insert_other_item) {
-			$this->db->trans_rollback();
-			print_r($this->db->last_query());
-			exit;
-		}
+		// if (!$insert_other_item) {
+		// 	$this->db->trans_rollback();
+		// 	print_r($this->db->last_query());
+		// 	exit;
+		// }
 
 		if ($this->db->trans_status() === false) {
 			$this->db->trans_rollback();
