@@ -25,9 +25,9 @@ class Quotation extends Admin_Controller
 	public function index()
 	{
 		$this->template->page_icon('fa fa-list');
-		$data = $this->quotation_model->get_data_quotation();
+		// $data = $this->quotation_model->get_data_quotation();
 		$get_curr = $this->db->get_where('mata_uang', ['deleted' => null])->result();
-		$this->template->set('results', $data);
+		// $this->template->set('results', $data);
 		$this->template->set('list_curr', $get_curr);
 		$this->template->title('Indeks Of Quotation');
 		$this->template->render('list_quotation');
@@ -3540,5 +3540,9 @@ class Quotation extends Admin_Controller
 			'ttl_pph' => $ttl_nilai_pph,
 			'ttl_nilai' => $ttl_nilai
 		]);
+	}
+
+	public function get_quotation() {
+		$this->quotation_model->get_quotation();
 	}
 }
