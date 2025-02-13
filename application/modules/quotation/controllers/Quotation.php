@@ -25,9 +25,9 @@ class Quotation extends Admin_Controller
 	public function index()
 	{
 		$this->template->page_icon('fa fa-list');
-		$data = $this->quotation_model->get_data_quotation();
+		// $data = $this->quotation_model->get_data_quotation();
 		$get_curr = $this->db->get_where('mata_uang', ['deleted' => null])->result();
-		$this->template->set('results', $data);
+		// $this->template->set('results', $data);
 		$this->template->set('list_curr', $get_curr);
 		$this->template->title('Indeks Of Quotation');
 		$this->template->render('list_quotation');
@@ -529,18 +529,21 @@ class Quotation extends Admin_Controller
 
 					$get_penawaran_other_cost = $this->db->get_where('tr_penawaran_other_cost', ['id_penawaran' => $no_surat])->result();
 					foreach ($get_penawaran_other_cost as $other_cost) {
-						$insert_hisotry_other_cost = $this->db->insert('tr_history_penawaran_other_cost', [
+						$insert_history_other_cost = $this->db->insert('tr_history_penawaran_other_cost', [
 							'id_history_penawaran' => $id_history_penawaran,
 							'id_penawaran' => $other_cost->id_penawaran,
 							'curr' => $other_cost->curr,
+							'inc_exc_pph' => $other_cost->inc_exc_pph,
 							'nilai' => $other_cost->nilai,
+							'nilai_pph' => $other_cost->nilai_pph,
+							'total_nilai' => $other_cost->total_nilai,
 							'keterangan' => $other_cost->keterangan,
 							'dibuat_oleh' => $this->auth->user_id(),
 							'dibuat_tgl' => date('Y-m-d H:i:s')
 						]);
 
-						if (!$insert_hisotry_other_cost) {
-							print_r($this->db->error($insert_hisotry_other_cost));
+						if (!$insert_history_other_cost) {
+							print_r($this->db->error($insert_history_other_cost));
 							exit;
 						}
 					}
@@ -3540,5 +3543,9 @@ class Quotation extends Admin_Controller
 			'ttl_pph' => $ttl_nilai_pph,
 			'ttl_nilai' => $ttl_nilai
 		]);
+	}
+
+	public function get_quotation() {
+		$this->quotation_model->get_quotation();
 	}
 }
