@@ -38,7 +38,8 @@ class Spk_material extends Admin_Controller
     ];
 
     history("View data spk material");
-    $this->template->title('SPK Produksi');
+    // $this->template->title('SPK Produksi');
+    $this->template->title('Planning Harian');
     $this->template->render('index', $data);
   }
 

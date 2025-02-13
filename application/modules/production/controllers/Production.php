@@ -37,7 +37,7 @@ class Production extends Admin_Controller
       'listType' => $listType,
     ];
     history("View data production list");
-    $this->template->title('Production List');
+    $this->template->title('SPK Harian');
     $this->template->render('index', $data);
   }
 

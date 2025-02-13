@@ -102,6 +102,13 @@
 				});
 				$('#save').prop('disabled',false); return false;
 			}
+			if (no_bom === null || no_bom === "" || typeof no_bom === "undefined") {
+				swal({title	: "Error Message!",text	: 'No BOM empty, select first ...',type	: "warning"
+				});
+				$('#save').prop('disabled',false); return false;
+			}
+			// alert(no_bom);
+			// return;
 
 			swal({
 				  title: "Are you sure?",
