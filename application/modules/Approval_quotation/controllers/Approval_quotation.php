@@ -88,8 +88,16 @@ class Approval_quotation extends Admin_Controller
 				$update_status = $this->db->update('tr_penawaran', array('app_' . $post['approval_num'] => 1, 'status' => 2), array('no_penawaran' => $post['no_surat']));
 			}
 		} else {
-			$arr_data = 
-			$update_status = $this->db->update('tr_penawaran', );
+			$arr_data = [
+				'req_app1' => null,
+				'req_app2' => null,
+				'req_app3' => null,
+				'app_1' => null,
+				'app_2' => null,
+				'app_3' => null,
+				'status' => 0,
+			];
+			$update_status = $this->db->update('tr_penawaran', $arr_data, array('no_penawaran' => $post['no_surat']));
 		}
 
 
