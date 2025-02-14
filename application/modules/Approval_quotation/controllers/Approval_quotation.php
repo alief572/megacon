@@ -95,7 +95,7 @@ class Approval_quotation extends Admin_Controller
 				'app_1' => null,
 				'app_2' => null,
 				'app_3' => null,
-				'status' => 0,
+				'status' => 0
 			];
 			$update_status = $this->db->update('tr_penawaran', $arr_data, array('no_penawaran' => $post['no_surat']));
 		}
