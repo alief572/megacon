@@ -87,6 +87,9 @@ class Approval_quotation extends Admin_Controller
 			} else {
 				$update_status = $this->db->update('tr_penawaran', array('app_' . $post['approval_num'] => 1, 'status' => 2), array('no_penawaran' => $post['no_surat']));
 			}
+		} else {
+			$arr_data = 
+			$update_status = $this->db->update('tr_penawaran', );
 		}
 
 
