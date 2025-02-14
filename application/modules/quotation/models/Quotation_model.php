@@ -1360,13 +1360,13 @@ class Quotation_model extends BF_Model
 			}
 
 			$btn_approve2 = '';
-			if ($item['req_app1'] == 1 && $item['app_1'] == null) {
-				$check_disc_approval = $this->db->get_where('ms_diskon_approve_by', array('id_diskon' => 'MDISC-01-25000001', 'id_karyawan' => $this->auth->user_id()))->num_rows();
+			// if ($item['req_app1'] == 1 && $item['app_1'] == null) {
+			// 	$check_disc_approval = $this->db->get_where('ms_diskon_approve_by', array('id_diskon' => 'MDISC-01-25000001', 'id_karyawan' => $this->auth->user_id()))->num_rows();
 
-				if ($check_disc_approval > 0) {
-					$btn_approve2 = '<button type="button" class="btn btn-sm btn-primary approve_sales" data-id="' . $item['no_penawaran'] . '">Approve</button>';
-				}
-			}
+			// 	if ($check_disc_approval > 0) {
+			// 		$btn_approve2 = '<button type="button" class="btn btn-sm btn-primary approve_sales" data-id="' . $item['no_penawaran'] . '">Approve</button>';
+			// 	}
+			// }
 
 			// $btn_print = '<a href="' . base_url() . 'quotation/print_quotation/' . $item['no_penawaran'] . '" class="btn btn-sm bg-purple" target="_blank">Print</a>';
 

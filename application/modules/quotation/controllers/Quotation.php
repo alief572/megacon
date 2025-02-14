@@ -1932,7 +1932,7 @@ class Quotation extends Admin_Controller
 		$this->db->trans_begin();
 
 		for($i = 1; $i <= $tingkatan; $i++) {
-			$update_sts = $this->db->update('tr_penawaran', ['req_app'.$i.'' => 1], ['no_penawaran' => $id]);
+			$update_sts = $this->db->update('tr_penawaran', ['req_app'.$i.'' => 1, 'status' => 1], ['no_penawaran' => $id]);
 		}
 		
 

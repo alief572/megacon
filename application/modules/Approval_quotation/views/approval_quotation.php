@@ -222,20 +222,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-md-12">
-                                        <div class='col-sm-6'>
-                                            <div class='form-group row'>
-                                                <div class='col-md-12'>
-                                                    <input type="radio" name="pilih_action" class="pilih_action" id="" value="1" checked> <?= $results['action_app'] ?> <br>
-                                                    <input type="radio" name="pilih_action" class="pilih_action" id="" value="0"> Reject <br>
-                                                    <div class="keterangan_approve" style="display: none;">
-                                                        <label for="">Keterangan Reject</label>
-                                                        <textarea name="keterangan_approve" id="" cols="30" rows="5" class="form-control"></textarea>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+
                                 </div>
 
                                 <!-- <div class="col-md-12">
@@ -671,7 +658,20 @@
                     </div>
                     <hr>
                     <div class="row">
-                        <div class="col-lg-12">
+                        <div class="col-md-6">
+                            <div class='form-group row'>
+                                <div class='col-md-12'>
+                                    <input type="radio" name="pilih_action" class="pilih_action" id="" value="1" checked> <?= $results['action_app'] ?> <br>
+                                    <input type="radio" name="pilih_action" class="pilih_action" id="" value="0"> Reject <br>
+                                    <div class="keterangan_approve" style="display: none;">
+                                        <label for="">Keterangan Reject</label>
+                                        <textarea name="keterangan_approve" id="" cols="30" rows="5" class="form-control"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <input type="hidden" name="approval_num" value="<?= $results['approval_num'] ?>">
                             <button type="button" class="btn btn-success" onclick="savemutasi()">
                                 <i class="fa fa-save"></i><b> Update</b>
                             </button>
@@ -920,7 +920,7 @@
                                             showConfirmButton: false,
                                             allowOutsideClick: false
                                         });
-                                        window.location.href = base_url + active_controller + 'level' + data.app_quote;
+                                        window.location.href = base_url + active_controller + 'approval_quotation';
                                     } else {
 
                                         if (data.status == 2) {
