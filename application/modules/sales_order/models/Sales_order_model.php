@@ -13,6 +13,11 @@ class Sales_order_model extends BF_Model
 	public function __construct()
 	{
 		parent::__construct();
+
+		$this->ENABLE_ADD     = has_permission('Sales_Order_New.Add');
+		$this->ENABLE_MANAGE  = has_permission('Sales_Order_New.Manage');
+		$this->ENABLE_VIEW    = has_permission('Sales_Order_New.View');
+		$this->ENABLE_DELETE  = has_permission('Sales_Order_New.Delete');
 	}
 
 	public function get_data($table, $where_field = '', $where_value = '')
@@ -352,5 +357,255 @@ class Sales_order_model extends BF_Model
 
 		$data['query'] = $this->db->query($sql);
 		return $data;
+	}
+
+	public function get_data_so()
+	{
+		$draw = $this->input->post('draw');
+		$length = $this->input->post('length');
+		$start = $this->input->post('start');
+		$search = $this->input->post('search');
+
+		$this->db->select('a.*, b.nm_customer, c.no_so, f.req_app, f.approve');
+		$this->db->from('tr_penawaran a');
+		$this->db->join('customer b', 'b.id_customer = a.id_customer', 'left');
+		$this->db->join('tr_sales_order c', 'c.no_penawaran = a.no_penawaran', 'left');
+		$this->db->join('tr_sales_order f', 'f.no_penawaran = a.no_penawaran');
+		$this->db->group_start();
+		$this->db->where('a.status', 2);
+		$this->db->or_where('a.status', 3);
+		$this->db->group_end();
+		if (!empty($search)) {
+			$this->db->group_start();
+			$this->db->like('DATE_FORMAT(a.tgl_penawaran, "%d %M %Y")', $search['value'], 'both');
+			$this->db->or_like('c.no_so', $search['value'], 'both');
+			$this->db->or_like('b.nm_customer', $search['value'], 'both');
+			$this->db->or_like('a.no_penawaran', $search['value'], 'both');
+			$this->db->or_like('a.project', $search['value'], 'both');
+			$this->db->group_end();
+		}
+		$this->db->order_by('a.created_on', 'desc');
+		$this->db->limit($length, $start);
+		$get_data = $this->db->get();
+
+		$this->db->select('a.*, b.nm_customer, c.no_so, f.req_app, f.approve');
+		$this->db->from('tr_penawaran a');
+		$this->db->join('customer b', 'b.id_customer = a.id_customer', 'left');
+		$this->db->join('tr_sales_order c', 'c.no_penawaran = a.no_penawaran', 'left');
+		$this->db->join('tr_sales_order f', 'f.no_penawaran = a.no_penawaran');
+		$this->db->group_start();
+		$this->db->where('a.status', 2);
+		$this->db->or_where('a.status', 3);
+		$this->db->group_end();
+		if (!empty($search)) {
+			$this->db->group_start();
+			$this->db->like('DATE_FORMAT(a.tgl_penawaran, "%d %M %Y")', $search['value'], 'both');
+			$this->db->or_like('c.no_so', $search['value'], 'both');
+			$this->db->or_like('b.nm_customer', $search['value'], 'both');
+			$this->db->or_like('a.no_penawaran', $search['value'], 'both');
+			$this->db->or_like('a.project', $search['value'], 'both');
+			$this->db->group_end();
+		}
+		$this->db->order_by('a.created_on', 'desc');
+		$get_data_all = $this->db->get();
+
+		$hasil = array();
+
+		$no = 1;
+		foreach ($get_data->result() as $data) {
+			$check_so = $this->db->get_where('tr_sales_order', ['no_penawaran' => $data->no_penawaran])->result();
+
+			$print = '&nbsp;<a href="sales_order/print_sales_order/' . $data->no_so . '" class="btn btn-sm bg-purple" data-no_so="' . $data->no_so . '">Print SO</a>';
+			if (count($check_so) < 1) {
+				$print = '';
+			}
+
+			$edit    = "&nbsp;<a href='" . site_url($this->uri->segment(1)) . '/deal_so/' . $data->no_penawaran . "' class='btn btn-sm btn-primary' title='Edit Data' data-role='qtip'>Deal SO</a>";
+			if (!$this->ENABLE_MANAGE) {
+				$edit = '';
+			}
+
+			$check_so = $this->db->get_where('tr_sales_order', ['no_penawaran' => $data->no_penawaran])->row();
+
+			$ajukan = '';
+			if ($data->status == '2' && count($check_so) > 0 && $this->ENABLE_MANAGE) {
+				$ajukan = '<button type="button" class="btn btn-sm btn-success ajukan" data-id_so="' . $data->no_so . '">Ajukan</button>';
+			}
+
+			$view = "";
+			if (count($check_so) > 0) {
+				$view = "<button type='button' class='btn btn-sm btn-warning detail' title='Detail' data-no_so='" . $data->no_so . "'>View</button>";
+			}
+
+			$approval = '';
+			if ($data->req_app > 0 && $this->ENABLE_MANAGE) {
+				$approval = '<button type="button" class="btn btn-sm btn-primary approval" data-id_so="' . $data->no_so . '">Approval</button>';
+			}
+
+			$buttons = $view . ' ' . $edit . ' ' . $print . ' ' . $ajukan . ' ' . $approval;
+			if ($data->req_app == '1') {
+				$buttons = $view . ' ' . $print;
+				if ($data->approve < 1 && $this->uri->segment(2) == 'approval') {
+					$buttons .= ' ' . $approval;
+				}
+			}
+
+			if ($data->approve == '1') {
+				$status = '<div class="badge bg-green">SO</div>';
+			} else {
+				if ($data->req_app == '1' && $data->approve == '0') {
+					$status = '<div class="badge bg-blue">Waiting Approval SO</div>';
+				} else {
+					$status = '<div class="badge bg-yellow">Waiting SO</div>';
+				}
+			}
+
+			$hasil[] = [
+				'no' => $no,
+				'tgl' => date('d F Y', strtotime($data->tgl_penawaran)),
+				'so_no' => $data->no_so,
+				'customer' => $data->nm_customer,
+				'quotation_no' => $data->no_penawaran,
+				'project' => $data->project,
+				'rev' => $data->no_revisi,
+				'status' => $status,
+				'option' => $buttons
+			];
+
+			$no++;
+		}
+
+		echo json_encode([
+			'draw' => intval($draw),
+			'recordsTotal' => $get_data_all->num_rows(),
+			'recordsFiltered' => $get_data_all->num_rows(),
+			'data' => $hasil
+		]);
+	}
+
+	public function get_data_so_app()
+	{
+		$draw = $this->input->post('draw');
+		$length = $this->input->post('length');
+		$start = $this->input->post('start');
+		$search = $this->input->post('search');
+
+		$this->db->select('a.*, b.nm_customer, c.no_so, f.req_app as req_app_so, f.approve');
+		$this->db->from('tr_penawaran a');
+		$this->db->join('customer b', 'b.id_customer = a.id_customer', 'left');
+		$this->db->join('tr_sales_order c', 'c.no_penawaran = a.no_penawaran', 'left');
+		$this->db->join('tr_sales_order f', 'f.no_penawaran = a.no_penawaran');
+		$this->db->where('f.req_app', 1);
+		$this->db->group_start();
+		$this->db->where('a.status', 2);
+		$this->db->or_where('a.status', 3);
+		$this->db->group_end();
+		if (!empty($search)) {
+			$this->db->group_start();
+			$this->db->like('DATE_FORMAT(a.tgl_penawaran, "%d %M %Y")', $search['value'], 'both');
+			$this->db->or_like('c.no_so', $search['value'], 'both');
+			$this->db->or_like('b.nm_customer', $search['value'], 'both');
+			$this->db->or_like('a.no_penawaran', $search['value'], 'both');
+			$this->db->or_like('a.project', $search['value'], 'both');
+			$this->db->group_end();
+		}
+		$this->db->order_by('a.created_on', 'desc');
+		$this->db->limit($length, $start);
+		$get_data = $this->db->get();
+
+		$this->db->select('a.*, b.nm_customer, c.no_so, f.req_app as req_app_so, f.approve');
+		$this->db->from('tr_penawaran a');
+		$this->db->join('customer b', 'b.id_customer = a.id_customer', 'left');
+		$this->db->join('tr_sales_order c', 'c.no_penawaran = a.no_penawaran', 'left');
+		$this->db->join('tr_sales_order f', 'f.no_penawaran = a.no_penawaran');
+		$this->db->where('f.req_app', 1);
+		$this->db->group_start();
+		$this->db->where('a.status', 2);
+		$this->db->or_where('a.status', 3);
+		$this->db->group_end();
+		if (!empty($search)) {
+			$this->db->group_start();
+			$this->db->like('DATE_FORMAT(a.tgl_penawaran, "%d %M %Y")', $search['value'], 'both');
+			$this->db->or_like('c.no_so', $search['value'], 'both');
+			$this->db->or_like('b.nm_customer', $search['value'], 'both');
+			$this->db->or_like('a.no_penawaran', $search['value'], 'both');
+			$this->db->or_like('a.project', $search['value'], 'both');
+			$this->db->group_end();
+		}
+		$this->db->order_by('a.created_on', 'desc');
+		$get_data_all = $this->db->get();
+
+		$hasil = array();
+
+		$no = 1;
+		foreach ($get_data->result() as $data) {
+			$check_so = $this->db->get_where('tr_sales_order', ['no_penawaran' => $data->no_penawaran])->result();
+
+			$print = '&nbsp;<a href="sales_order/print_sales_order/' . $data->no_so . '" class="btn btn-sm bg-purple" data-no_so="' . $data->no_so . '">Print SO</a>';
+			if (count($check_so) < 1) {
+				$print = '';
+			}
+
+			$edit    = "&nbsp;<a href='" . site_url($this->uri->segment(1)) . '/deal_so/' . $data->no_penawaran . "' class='btn btn-sm btn-primary' title='Edit Data' data-role='qtip'>Deal SO</a>";
+			if (!$this->ENABLE_MANAGE) {
+				$edit = '';
+			}
+
+			$check_so = $this->db->get_where('tr_sales_order', ['no_penawaran' => $data->no_penawaran])->row();
+
+			$ajukan = '';
+			if ($data->status == '2' && count($check_so) > 0 && $this->ENABLE_MANAGE) {
+				$ajukan = '<button type="button" class="btn btn-sm btn-success ajukan" data-id_so="' . $data->no_so . '">Ajukan</button>';
+			}
+
+			$view = "";
+			if (count($check_so) > 0) {
+				$view = "<button type='button' class='btn btn-sm btn-warning detail' title='Detail' data-no_so='" . $data->no_so . "'>View</button>";
+			}
+
+			$approval = '';
+			if ($data->req_app_so > 0 && $this->ENABLE_MANAGE) {
+				$approval = '<button type="button" class="btn btn-sm btn-primary approval" data-id_so="' . $data->no_so . '">Approval</button>';
+			}
+
+			$buttons = $view . ' ' . $edit . ' ' . $print . ' ' . $ajukan . ' ' . $approval;
+			if ($data->req_app_so == '1') {
+				$buttons = $view . ' ' . $print;
+				if ($data->approve < 1 && $this->uri->segment(2) == 'approval') {
+					$buttons .= ' ' . $approval;
+				}
+			}
+
+			if ($data->approve == '1') {
+				$status = '<div class="badge bg-green">SO</div>';
+			} else {
+				if ($data->req_app_so == '1' && $data->approve == '0') {
+					$status = '<div class="badge bg-blue">Waiting Approval SO</div>';
+				} else {
+					$status = '<div class="badge bg-yellow">Waiting SO</div>';
+				}
+			}
+
+			$hasil[] = [
+				'no' => $no,
+				'tgl' => date('d F Y', strtotime($data->tgl_penawaran)),
+				'so_no' => $data->no_so,
+				'customer' => $data->nm_customer,
+				'quotation_no' => $data->no_penawaran,
+				'project' => $data->project,
+				'rev' => $data->no_revisi,
+				'status' => $status,
+				'option' => $buttons
+			];
+
+			$no++;
+		}
+
+		echo json_encode([
+			'draw' => intval($draw),
+			'recordsTotal' => $get_data_all->num_rows(),
+			'recordsFiltered' => $get_data_all->num_rows(),
+			'data' => $hasil
+		]);
 	}
 }

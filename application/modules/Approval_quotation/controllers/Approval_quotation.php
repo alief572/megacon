@@ -4,7 +4,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 class Approval_quotation extends Admin_Controller
 {
 
-	//Permission
+	//Permissiona
 
 	protected $viewPermission   = "Approval_Quotation.View";
 	protected $addPermission    = "Approval_Quotation.Add";

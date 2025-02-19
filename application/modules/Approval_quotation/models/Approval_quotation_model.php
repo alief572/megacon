@@ -1,7 +1,7 @@
 <?php
 class Approval_quotation_model extends BF_Model
 {
-
+// aa
 	public function __construct()
 	{
 		parent::__construct();

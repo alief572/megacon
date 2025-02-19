@@ -79,24 +79,6 @@
 					<?= ($sales_order->pengiriman !== '') ? ucfirst($sales_order->pengiriman) : null ?>
 				</td>
 			</tr>
-			<tr>
-				<th>Tipe SO</th>
-				<td>:</td>
-				<td>
-					<?php 
-						$tipe_so = '';
-						if($sales_order->tipe_so == '1') {
-							$tipe_so = 'Produk';
-						}
-						if($sales_order->tipe_so == '2') {
-							$tipe_so = 'Instalasi';
-						}
-
-						echo $tipe_so;
-					?>
-				</td>
-				<td colspan="3"></td>
-			</tr>
 		</table>
 		<div class="form-group row">
 			<div class="tableFixHead">
@@ -106,8 +88,6 @@
 							<th class='text-center'>No.</th>
 							<th class='text-center'>Code</th>
 							<th class='text-center' style="width: 250px;">Product Name</th>
-							<th class='text-center'>Color</th>
-							<th class='text-center'>Surface</th>
 							<th class='text-center'>Variant</th>
 							<th class='text-center'>Qty</th>
 							<th class='text-center'>Price</th>
@@ -131,8 +111,6 @@
 										<td class="text-center" style="vertical-align: middle;">' . $x . '</td>
 										<td class="text-center" style="vertical-align: middle;">' . $sales_order_detail->product_code . '</td>
 										<td class="text-center" style="vertical-align: middle;min-width: 250px; max-width: 250px;">' . $sales_order_detail->nama_produk . '</td>
-										<td class="text-center" style="vertical-align: middle;">' . $sales_order_detail->color . '</td>
-										<td class="text-center" style="vertical-align: middle;">' . $sales_order_detail->surface . '</td>
 										<td class="text-center" style="vertical-align: middle;">' . $sales_order_detail->variant_product . '</td>
 										<td class="text-center" style="vertical-align: middle;">' . number_format($sales_order_detail->qty, 2) . '</td>
 										
@@ -151,19 +129,19 @@
 					</tbody>
 					<tbody>
 						<tr>
-							<td colspan="8" class="text-right">Subtotal</td>
+							<td colspan="6" class="text-right">Subtotal</td>
 							<td>(<?= $data_penawaran->currency ?>) <?= number_format($subtotal, 2) ?></td>
 						</tr>
 						<tr>
-							<td colspan="8" class="text-right">Discount</td>
+							<td colspan="6" class="text-right">Discount</td>
 							<td>(<?= $data_penawaran->currency ?>) <?= number_format($discount, 2) ?></td>
 						</tr>
 						<tr>
-							<td colspan="8" class="text-right">PPn</td>
+							<td colspan="6" class="text-right">PPn</td>
 							<td>(<?= $data_penawaran->currency ?>) <?= number_format($ppn, 2) ?></td>
 						</tr>
 						<tr>
-							<td colspan="8" class="text-right">Grand Total</td>
+							<td colspan="6" class="text-right">Grand Total</td>
 							<td>(<?= $data_penawaran->currency ?>) <?= number_format($subtotal - ($discount) + $ppn, 2) ?></td>
 						</tr>
 					</tbody>
