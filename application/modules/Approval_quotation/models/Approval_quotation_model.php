@@ -407,6 +407,9 @@ class Approval_quotation_model extends BF_Model
 		$this->db->limit($length, $start);
 		$get_data = $this->db->get();
 
+		print_r($this->db->last_query());
+		exit;
+
 		$this->db->select('a.no_penawaran, a.tgl_penawaran, a.status, a.project, a.req_app1, a.app_1, a.req_app2, a.app_2, a.req_app3, a.app_3, b.nm_customer');
 		$this->db->from('tr_penawaran a');
 		$this->db->join('customer b', 'b.id_Customer = a.id_customer', 'left');
