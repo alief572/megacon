@@ -374,11 +374,9 @@ class Approval_quotation_model extends BF_Model
 		// $tingkatan = COUNT($get_approve_step);
 		$tingkatan = $no_step;
 
-
-
 		$this->db->select('a.no_penawaran, a.tgl_penawaran, a.project, a.status, a.req_app1, a.app_1, a.req_app2, a.app_2, a.req_app3, a.app_3, b.nm_customer');
 		$this->db->from('tr_penawaran a');
-		$this->db->join('customer b', 'b.id_Customer = a.id_customer', 'left');
+		$this->db->join('customer b', 'b.id_customer = a.id_customer', 'left');
 		$this->db->where('a.status', 1);
 		if (!empty($no_step)) {
 			$noo = 1;
