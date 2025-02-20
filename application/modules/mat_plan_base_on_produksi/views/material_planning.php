@@ -57,7 +57,10 @@
 						 $GET_OUTANDING_PR = get_pr_on_progress();
 						foreach ($detail as $key => $value) { $key++;
 							$nm_material 	= (!empty($GET_LEVEL4[$value['id_material']]['nama']))?$GET_LEVEL4[$value['id_material']]['nama']:'';
-							$stock_free 	= (!empty($GET_STOK_PUSAT[$value['id_material']]['stok']))?$GET_STOK_PUSAT[$value['id_material']]['stok']:'';
+							// $stock_free 	= (!empty($GET_STOK_PUSAT[$value['id_material']]['stok']))?$GET_STOK_PUSAT[$value['id_material']]['stok']:'';//version old
+							$stock_free = (!empty($GET_STOK_PUSAT[$value['id_material']]['stok']))
+										? (float)$GET_STOK_PUSAT[$value['id_material']]['stok']
+    									: 0; // Defaultkan ke 0 jika kosong
 							$use_stock 		= (!empty($value['use_stock']))?$value['use_stock']:$value['qty_order'];
 							if($stock_free < $use_stock){
 								$use_stock 		= $stock_free;
