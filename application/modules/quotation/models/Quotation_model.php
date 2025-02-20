@@ -24,7 +24,7 @@ class Quotation_model extends BF_Model
 			$get_penawaran_detail = $this->db->get_where('tr_penawaran_detail', ['no_penawaran' => $no_penawaran])->result();
 
 			$get_other_cost = $this->db->get_where('tr_penawaran_other_cost', ['id_penawaran' => $no_penawaran])->result();
-			
+
 			$get_other_item = $this->db->query("
 			SELECT
 				a.code_lv4 as id_product,
@@ -48,7 +48,7 @@ class Quotation_model extends BF_Model
 				a.deleted_by IS NULL
 		")->result();
 
-		$get_list_item_others = $this->db->get_where('tr_penawaran_other_item', ['id_penawaran' => $no_penawaran])->result();
+			$get_list_item_others = $this->db->get_where('tr_penawaran_other_item', ['id_penawaran' => $no_penawaran])->result();
 
 			$this->template->set('results', [
 				'customers' => $Cust,
@@ -180,7 +180,7 @@ class Quotation_model extends BF_Model
 			$get_penawaran_detail = $this->db->get_where('tr_penawaran_detail', ['no_penawaran' => $no_penawaran])->result();
 
 			$get_other_cost = $this->db->get_where('tr_penawaran_other_cost', ['id_penawaran' => $no_penawaran])->result();
-			
+
 			$get_other_item = $this->db->query("
 			SELECT
 				a.code_lv4 as id_product,
@@ -204,7 +204,7 @@ class Quotation_model extends BF_Model
 				a.deleted_by IS NULL
 		")->result();
 
-		$get_list_item_others = $this->db->get_where('tr_penawaran_other_item', ['id_penawaran' => $no_penawaran])->result();
+			$get_list_item_others = $this->db->get_where('tr_penawaran_other_item', ['id_penawaran' => $no_penawaran])->result();
 
 			$this->template->set('results', [
 				'customers' => $Cust,
@@ -366,8 +366,8 @@ class Quotation_model extends BF_Model
 
 		$json_data = array(
 			"draw"            	=> intval($requestData['draw']),
-			"recordsTotal"    	=> intval($totalData),
-			"recordsFiltered" 	=> intval($totalFiltered),
+			"item['otal']"    	=> intval($totalData),
+			"item['iltered']" 	=> intval($totalFiltered),
 			"data"            	=> $data
 		);
 
@@ -511,8 +511,8 @@ class Quotation_model extends BF_Model
 
 		$json_data = array(
 			"draw"            	=> intval($requestData['draw']),
-			"recordsTotal"    	=> intval($totalData),
-			"recordsFiltered" 	=> intval($totalFiltered),
+			"item['otal']"    	=> intval($totalData),
+			"item['iltered']" 	=> intval($totalFiltered),
 			"data"            	=> $data
 		);
 
@@ -554,8 +554,18 @@ class Quotation_model extends BF_Model
 	function generate_nopn($tgl)
 	{
 		$arr_tgl = array(
-			1 => 'A', 2 => 'B', 3 => 'C', 4 => 'D', 5 => 'E', 6 => 'F',
-			7 => 'G', 8 => 'H', 9 => 'I', 10 => 'J', 11 => 'K', 12 => 'L'
+			1 => 'A',
+			2 => 'B',
+			3 => 'C',
+			4 => 'D',
+			5 => 'E',
+			6 => 'F',
+			7 => 'G',
+			8 => 'H',
+			9 => 'I',
+			10 => 'J',
+			11 => 'K',
+			12 => 'L'
 		);
 		$bln_now = date('m', strtotime($tgl));
 		$kode_bln = '';
@@ -653,8 +663,18 @@ class Quotation_model extends BF_Model
 	function generate_nopn_np($tgl)
 	{
 		$arr_tgl = array(
-			1 => 'A', 2 => 'B', 3 => 'C', 4 => 'D', 5 => 'E', 6 => 'F',
-			7 => 'G', 8 => 'H', 9 => 'I', 10 => 'J', 11 => 'K', 12 => 'L'
+			1 => 'A',
+			2 => 'B',
+			3 => 'C',
+			4 => 'D',
+			5 => 'E',
+			6 => 'F',
+			7 => 'G',
+			8 => 'H',
+			9 => 'I',
+			10 => 'J',
+			11 => 'K',
+			12 => 'L'
 		);
 		$bln_now = date('m', strtotime($tgl));
 		$kode_bln = '';
@@ -732,7 +752,7 @@ class Quotation_model extends BF_Model
 		// 				OR b.nama LIKE '%" . $this->db->escape_like_str($like_value) . "%'
 		// 				OR d.variant_product LIKE '%" . $this->db->escape_like_str($like_value) . "%'
 		// 			)
-				
+
 		// 		UNION ALL
 
 		// 		SELECT
@@ -787,7 +807,7 @@ class Quotation_model extends BF_Model
 				)
 		";
 
-		
+
 		// echo $sql; exit;
 
 		$data['totalData'] = $this->db->query($sql)->num_rows();
@@ -838,13 +858,13 @@ class Quotation_model extends BF_Model
 				$nomor = ($total_data - $start_dari) - $urut2;
 			}
 
-			if(!isset($row['price_unit']) || $row['price_unit'] <= 0){
+			if (!isset($row['price_unit']) || $row['price_unit'] <= 0) {
 				$idr_price = $row['price_list_idr'];
 				$usd_price = $row['price_list'];
-			}else{
+			} else {
 				$idr_price = $row['price_unit'];
 				$usd_price = 0;
-				if($row['kurs'] > 0) {
+				if ($row['kurs'] > 0) {
 					$usd_price = ($row['price_unit'] / $row['kurs']);
 				}
 			}
@@ -879,7 +899,7 @@ class Quotation_model extends BF_Model
 			// $nestedData[]	= "<div align='left'><span class='badge bg-".$warna."'>".$status."</span></div>";
 
 
-			$view	= '<button type="button" class="btn btn-sm btn-success select_product_price_' . $row['id'] . '_'.$row['id_ukuran_jadi'].'" onclick="add_product_price(' . $row['id'] . ', ' . $row['id_ukuran_jadi'] . ')"><i class="fa fa-plus"></i>Select</button>';
+			$view	= '<button type="button" class="btn btn-sm btn-success select_product_price_' . $row['id'] . '_' . $row['id_ukuran_jadi'] . '" onclick="add_product_price(' . $row['id'] . ', ' . $row['id_ukuran_jadi'] . ')"><i class="fa fa-plus"></i>Select</button>';
 			$edit	= "";
 
 			// $view	= "<a href='" . site_url($this->uri->segment(1)) . '/detail_costing/' . $row['no_bom'] . "' class='btn btn-sm btn-warning' title='Detail' data-role='qtip'><i class='fa fa-eye'></i></a>";
@@ -999,8 +1019,8 @@ class Quotation_model extends BF_Model
 
 		$json_data = array(
 			"draw"            	=> intval($requestData['draw']),
-			"recordsTotal"    	=> intval($totalData),
-			"recordsFiltered" 	=> intval($totalFiltered),
+			"item['otal']"    	=> intval($totalData),
+			"item['iltered']" 	=> intval($totalFiltered),
 			"data"            	=> $data
 		);
 
@@ -1050,14 +1070,15 @@ class Quotation_model extends BF_Model
 		return $data;
 	}
 
-	public function generate_quotation_hist($id_penawaran){
+	public function generate_quotation_hist($id_penawaran)
+	{
 		$id_history = $this->generate_id_history();
 
 		$get_data_header = $this->db->get_where('tr_penawaran', ['no_penawaran' => $id_penawaran])->row_array();
 
 		$get_no_revisi = $this->db->query('SELECT a.revisi FROM tr_history_penawaran a ORDER BY a.revisi DESC LIMIT 1')->row_array();
 
-		if(count($get_no_revisi) < 1) {
+		if (count($get_no_revisi) < 1) {
 			$no_revisi = 0;
 		} else {
 			$no_revisi = ($get_no_revisi['revisi'] + 1);
@@ -1124,9 +1145,9 @@ class Quotation_model extends BF_Model
 		];
 
 		$get_data_detail = $this->db->get_where('tr_penawaran_detail', ['no_penawaran' => $id_penawaran])->result_array();
-		
+
 		$data_array_detail = [];
-		foreach($get_data_detail as $item) {
+		foreach ($get_data_detail as $item) {
 			$data_array_detail[] = [
 				'id_history_penawaran' => $id_history,
 				'id_penawaran_detail' => $item['id_penawaran_detail'],
@@ -1160,7 +1181,7 @@ class Quotation_model extends BF_Model
 		$data_array_other_cost = [];
 
 		$get_other_cost = $this->db->get_where('tr_penawaran_other_cost', ['id_penawaran' => $id_penawaran])->result_array();
-		foreach($get_other_cost as $item) {
+		foreach ($get_other_cost as $item) {
 			$data_array_other_cost[] = [
 				'id_history_penawaran' => $id_history,
 				'id_other_cost' => $item['id_other_cost'],
@@ -1181,7 +1202,7 @@ class Quotation_model extends BF_Model
 
 		$get_other_item = $this->db->get_where('tr_penawaran_other_item', ['id_penawaran' => $id_penawaran])->result_array();
 
-		foreach($get_other_item as $item) {
+		foreach ($get_other_item as $item) {
 			$data_array_other_item[] = [
 				'id_history_penawaran' => $id_history,
 				'id_penawaran' => $item['id_penawaran'],
@@ -1198,34 +1219,211 @@ class Quotation_model extends BF_Model
 		$this->db->trans_begin();
 
 		$insert_header = $this->db->insert('tr_history_penawaran', $data_array_header);
-		if(!$insert_header) {
-			$this->db->trans_rollback();
-			print_r($this->db->last_query());
-			exit;
-		}
+		// if (!$insert_header) {
+		// 	$this->db->trans_rollback();
+		// 	print_r($this->db->last_query());
+		// 	exit;
+		// }
 		$insert_detail = $this->db->insert_batch('tr_history_penawaran_detail', $data_array_detail);
-		if(!$insert_detail) {
-			$this->db->trans_rollback();
-			print_r($this->db->last_query());
-			exit;
-		}
+		// if (!$insert_detail) {
+		// 	$this->db->trans_rollback();
+		// 	print_r($this->db->last_query());
+		// 	exit;
+		// }
 		$insert_other_cost = $this->db->insert_batch('tr_history_penawaran_other_cost', $data_array_other_cost);
-		if(!$insert_other_cost) {
-			$this->db->trans_rollback();
-			print_r($this->db->last_query());
-			exit;
-		}
+		// if (!$insert_other_cost) {
+		// 	$this->db->trans_rollback();
+		// 	print_r($this->db->last_query());
+		// 	exit;
+		// }
 		$insert_other_item = $this->db->insert_batch('tr_history_penawaran_other_item', $data_array_other_item);
-		if(!$insert_other_item) {
-			$this->db->trans_rollback();
-			print_r($this->db->last_query());
-			exit;
-		}
+		// if (!$insert_other_item) {
+		// 	$this->db->trans_rollback();
+		// 	print_r($this->db->last_query());
+		// 	exit;
+		// }
 
-		if($this->db->trans_status() === false) {
+		if ($this->db->trans_status() === false) {
 			$this->db->trans_rollback();
 		} else {
 			$this->db->trans_commit();
 		}
+	}
+
+	public function get_quotation()
+	{
+		$draw = $this->input->post('draw');
+		$length = $this->input->post('length');
+		$start = $this->input->post('start');
+		$search = $this->input->post('search');
+
+		$this->db->select('a.no_penawaran, a.tgl_penawaran, a.project, a.status, a.req_app1, a.app_1, b.nm_customer');
+		$this->db->from('tr_penawaran a');
+		$this->db->join('customer b', 'b.id_Customer = a.id_customer', 'left');
+		if (!empty($search)) {
+			$this->db->like('DATE_FORMAT(a.tgl_penawaran, "%d-%M-%Y")', $search['value'], 'both');
+			$this->db->or_like('b.nm_customer', $search['value'], 'both');
+			$this->db->or_like('a.no_penawaran', $search['value'], 'both');
+			$this->db->or_like('a.project', $search['value'], 'both');
+			$this->db->or_like('a.no_revisi', $search['value'], 'both');
+		}
+		$this->db->order_by('a.created_on', 'desc');
+		$this->db->limit($length, $start);
+		$get_data = $this->db->get();
+
+		$this->db->select('a.no_penawaran, a.tgl_penawaran, a.status, a.project, a.req_app1, a.app_1, b.nm_customer');
+		$this->db->from('tr_penawaran a');
+		$this->db->join('customer b', 'b.id_Customer = a.id_customer', 'left');
+		if (!empty($search)) {
+			$this->db->like('DATE_FORMAT(a.tgl_penawaran, "%d-%M-%Y")', $search['value'], 'both');
+			$this->db->or_like('b.nm_customer', $search['value'], 'both');
+			$this->db->or_like('a.no_penawaran', $search['value'], 'both');
+			$this->db->or_like('a.project', $search['value'], 'both');
+			$this->db->or_like('a.no_revisi', $search['value'], 'both');
+		}
+		$this->db->order_by('a.created_on', 'desc');
+		$get_data_all = $this->db->get();
+
+		$hasil = [];
+
+		$no = 0;
+		foreach ($get_data->result_array() as $item) {
+			$no++;
+
+			$Status = '';
+
+			if ($item['status'] == 0) {
+				$Status = "<span class='badge bg-yellow'>Draft</span>";
+			} elseif ($item['status'] == 1) {
+
+				$num_approval = 'Staff Sales';
+				if ($item['req_app2'] == '1' && $item['app_1'] == '1') {
+					$num_approval = 'Manager Sales';
+				}
+				if ($item['req_app3'] == '1' && $item['app_2'] == '1') {
+					$num_approval = 'Direktur';
+				}
+
+				$Status = "<span class='badge bg-blue'>Waiting Approval " . $num_approval . "</span>";
+			} elseif ($item['status'] == '2') {
+				$Status = "<span class='badge bg-green'>Waiting SO</span>";
+			} elseif ($item['status'] == '3') {
+				$Status = "<span class='badge bg-purple'>SO Approved</span>";
+			} elseif ($item['status'] == '4') {
+				$Status = "<span class='badge bg-red'>Loss</span>";
+			}
+
+			$btn_edit = '<a href="quotation/modal_detail_invoice/' . $item['no_penawaran'] . '" class="btn btn-sm btn-success">Edit</a>';
+			$check_so = $this->db->get_where('tr_sales_order', ['no_penawaran' => $item['no_penawaran']])->num_rows();
+			if ($check_so > 0) {
+				$btn_edit = '';
+			}
+
+			$btn_view = '<a href="quotation/view_quotation/' . $item['no_penawaran'] . '" class="btn btn-sm btn-info">View</a>';
+
+
+
+			$check_disc_penawaran = $this->db->query('SELECT MAX(diskon_persen) AS max_disc_persen FROM tr_penawaran_detail WHERE no_penawaran = "' . $item['no_penawaran'] . '"')->row();
+
+			$get_disc = $this->db->query('SELECT * FROM ms_diskon WHERE deleted = 0 ORDER BY diskon_awal ASC')->result();
+
+			$tingkatan = 0;
+
+			$no_awd = 0;
+			foreach ($get_disc as $list_disc) {
+				$no_awd++;
+				// if ($tingkatan == '') {
+				// 	if ($check_disc_penawaran->max_disc_persen >= $list_disc->diskon_awal && $check_disc_penawaran->max_disc_persen <= $list_disc->diskon_akhir) {
+				// 		$tingkatan = $list_disc->tingkatan;
+				// 	} else {
+				// 		if ($check_disc_penawaran->max_disc_persen >= $list_disc->diskon_awal && $list_disc->diskon_akhir == 0) {
+				// 			$tingkatan = $list_disc->tingkatan;
+				// 		}
+				// 	}
+				// }
+
+				if ($check_disc_penawaran->max_disc_persen >= $list_disc->diskon_awal && $check_disc_penawaran->max_disc_persen <= $list_disc->diskon_akhir) {
+					$tingkatan = $no_awd;
+				}
+			}
+
+			$btn_ajukan = '<a href="javascript:void(0);" class="btn btn-sm btn-success ajukan" data-id="' . $item['no_penawaran'] . '" data-status="' . $item['status'] . '" data-tingkatan="' . $tingkatan . '">Ajukan</a>';
+
+			if ($tingkatan == 1) {
+				$btn_ajukan = '';
+			}
+
+			$btn_approve = '<a href="javascript:void(0);" class="btn btn-sm btn-success approve" data-id="' . $item['no_penawaran'] . '">Approve</a>';
+
+			if ($btn_ajukan !== '') {
+				$btn_approve = '';
+			}
+
+			$btn_approve2 = '';
+			// if ($item['req_app1'] == 1 && $item['app_1'] == null) {
+			// 	$check_disc_approval = $this->db->get_where('ms_diskon_approve_by', array('id_diskon' => 'MDISC-01-25000001', 'id_karyawan' => $this->auth->user_id()))->num_rows();
+
+			// 	if ($check_disc_approval > 0) {
+			// 		$btn_approve2 = '<button type="button" class="btn btn-sm btn-primary approve_sales" data-id="' . $item['no_penawaran'] . '">Approve</button>';
+			// 	}
+			// }
+
+			// $btn_print = '<a href="' . base_url() . 'quotation/print_quotation/' . $item['no_penawaran'] . '" class="btn btn-sm bg-purple" target="_blank">Print</a>';
+
+			$btn_print = '<a href="javascript:void(0);" class="btn btn-sm bg-purple print_quotation" data-id_penawaran="' . $item['no_penawaran'] . '">Print</a>';
+
+			// $btn_print = '<a href="javascript:"></a>';
+
+			if ($item['status'] == '1' || $item['status'] == '0') {
+				$btn_print = '';
+			}
+
+			// if ($item['req_app1'] == '1') {
+			// 	if ($item['app_1'] !== '1') {
+			// 		$btn_print = '';
+			// 	}
+			// }
+			// if ($item['req_app2'] == '1') {
+			// 	if ($item['app_2'] !== '1') {
+			// 		$btn_print = '';
+			// 	}
+			// }
+			// if ($item['req_app3'] == '1') {
+			// 	if ($item['app_3'] !== '1') {
+			// 		$btn_print = '';
+			// 	}
+			// }
+
+			$btn_loss = '<a href="javascript:void(0);" class="btn btn-sm btn-danger loss" data-id="' . $item['no_penawaran'] . '">Loss</a>';
+
+			$buttons = $btn_edit . ' ' . $btn_view . ' ' . $btn_ajukan . ' ' . $btn_approve . ' ' . $btn_print . ' ' . $btn_loss;
+			if ($item['status'] == '1') {
+				$buttons = $btn_view . ' ' . $btn_print.' '.$btn_approve2;
+			}
+			if ($item['status'] == '2') {
+				$buttons = $btn_edit . ' ' . $btn_view . ' ' . $btn_print;
+			}
+			if ($item['status'] == '3') {
+				$buttons = $btn_view . ' ' . $btn_print;
+			}
+
+			$hasil[] = [
+				'no' => $no,
+				'tgl' => date('d F Y', strtotime($item['tgl_penawaran'])),
+				'customer' => strtoupper($item['nm_customer']),
+				'quotation_no' => $item['no_penawaran'],
+				'project' => $item['project'],
+				'rev' => $item['revisi'],
+				'status' => $Status,
+				'option' => $buttons
+			];
+		}
+
+		echo json_encode([
+			'draw' => intval($draw),
+			'recordsTotal' => $get_data_all->num_rows(),
+			'recordsFiltered' => $get_data_all->num_rows(),
+			'data' => $hasil
+		]);
 	}
 }

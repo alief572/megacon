@@ -1,229 +1,355 @@
 <?php
-$ENABLE_ADD     = has_permission('Cycletime.Add');
-$ENABLE_MANAGE  = has_permission('Cycletime.Manage');
-$ENABLE_VIEW    = has_permission('Cycletime.View');
-$ENABLE_DELETE  = has_permission('Cycletime.Delete');
+$ENABLE_ADD     = has_permission('Sales_Order_New.Add');
+$ENABLE_MANAGE  = has_permission('Sales_Order_New.Manage');
+$ENABLE_VIEW    = has_permission('Sales_Order_New.View');
+$ENABLE_DELETE  = has_permission('Sales_Order_New.Delete');
 ?>
 <style type="text/css">
-	thead input {
-		width: 100%;
-	}
+    thead input {
+        width: 100%;
+    }
 </style>
 <div id='alert_edit' class="alert alert-success alert-dismissable" style="padding: 15px; display: none;"></div>
 <link rel="stylesheet" href="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.css') ?>">
 
 <div class="box">
-	<div class="box-header">
-		<?php if ($ENABLE_ADD) : ?>
-			<a class="btn btn-success btn-sm" href="<?= base_url('cycletime/add') ?>" title="Add"> <i class="fa fa-plus">&nbsp;</i>Add</a>
-		<?php endif; ?>
+    <div class="box-header">
 
-		<span class="pull-right">
-		</span>
-	</div>
-	<!-- /.box-header -->
-	<div class="box-body">
-		<table id="example1" class="table table-bordered table-striped">
-			<thead>
-				<tr>
-					<th width="5">#</th>
-					<th>Product Name</th>
-					<th>Created By</th>
-					<th>Created Date</th>
-					<?php if ($ENABLE_MANAGE) : ?>
-						<th width="13%">Action</th>
-					<?php endif; ?>
-				</tr>
-			</thead>
 
-			<tbody>
-				<?php if (empty($results)) {
-				} else {
-					$numb = 0;
-					foreach ($results as $record) {
-						$numb++; ?>
-						<tr>
-							<td><?= $numb; ?></td>
-							<td><?= strtoupper(get_name('ms_inventory_category2', 'nama', 'id_category2', $record->id_product)); ?></td>
-							<td><?= get_name('users', 'username', 'id_user', $record->created_by); ?></td>
-							<td><?= $record->created_date ?></td>
-
-							<td style="padding-left:20px">
-								<?php if ($ENABLE_VIEW) : ?>
-									<a class="btn btn-primary btn-sm view" href="javascript:void(0)" title="View" data-id_inventory1="<?= $record->id_time ?>"><i class="fa fa-eye"></i>
-									</a>
-								<?php endif; ?>
-
-								<?php if ($ENABLE_MANAGE) : ?>
-									<a class="btn btn-success btn-sm edit" href="<?= base_url('cycletime/edit/' . $record->id_time) ?>" title="Edit" data-id_inventory1="<?= $record->id_time ?>"><i class="fa fa-edit"></i>
-									</a>
-								<?php endif; ?>
-
-								<?php if ($ENABLE_DELETE) : ?>
-									<a class="btn btn-danger btn-sm delete" href="javascript:void(0)" title="Delete" data-id_inventory1="<?= $record->id_time ?>"><i class="fa fa-trash"></i>
-									</a>
-								<?php endif; ?>
-							</td>
-
-						</tr>
-				<?php }
-				}  ?>
-			</tbody>
-		</table>
-	</div>
-	<!-- /.box-body -->
+        <span class="pull-right">
+        </span>
+    </div>
+    <!-- /.box-header -->
+    <div class="box-body">
+        <table id="example1" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th width="5">No</th>
+                    <th>Date</th>
+                    <th>SO No</th>
+                    <th>Customer</th>
+                    <th>Quotation No.</th>
+                    <th>Project</th>
+                    <th>Rev</th>
+                    <th>Status</th>
+                    <th width="13%">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
+    </div>
+    <!-- /.box-body -->
 </div>
 
 
 <div class="modal modal-default fade" id="dialog-popup" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-	<div class="modal-dialog modal-lg" style='width:80%; '>
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-				<h4 class="modal-title" id="myModalLabel"><span class="fa fa-users"></span>&nbsp;Detail Data</h4>
-			</div>
-			<div class="modal-body" id="ModalView">
-				...
-			</div>
-		</div>
-	</div>
+    <div class="modal-dialog modal-lg" style='width:50%; '>
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="myModalLabel"><span class="fa fa-users"></span>&nbsp;Detail Data</h4>
+            </div>
+            <div class="modal-body" id="ModalView">
+                ...
+            </div>
+            <div class="modal-footer"></div>
+        </div>
+    </div>
+</div>
 
-	<!-- DataTables -->
-	<script src="<?= base_url('assets/plugins/datatables/jquery.dataTables.min.js') ?>"></script>
-	<script src="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.min.js') ?>"></script>
+<div class="modal modal-default fade" id="ModalPrintQuote" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id='head_title'>Print SO</h4>
+            </div>
+            <form action="" id="print_so_form">
+                <div class="modal-body" id="viewX">
+                    <input type="hidden" name="no_so" class="no_so">
+                    <div class="form-group">
+                        <label for="">Show PPN / Hide PPN</label>
+                        <select name="show_hide_ppn" id="" class="form-control form-control-sm show_hide_ppn">
+                            <option value="1">Show PPN</option>
+                            <option value="0">Hide PPN</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="">Show Disc / Hide Disc</label>
+                        <select name="show_hide_disc" id="" class="form-control form-control-sm show_hide_disc">
+                            <option value="1">Show Disc</option>
+                            <option value="0">Hide Disc</option>
+                        </select>
+                    </div>
 
-	<!-- page script -->
-	<script type="text/javascript">
-		$(document).on('click', '.view', function() {
-			var id = $(this).data('id_inventory1');
-			// alert(id);
-			$("#head_title").html("<i class='fa fa-list-alt'></i><b>Detail Cycletime</b>");
-			$.ajax({
-				type: 'POST',
-				url: siteurl + 'cycletime/view/' + id,
-				data: {
-					'id': id
-				},
-				success: function(data) {
-					$("#dialog-popup").modal();
-					$("#ModalView").html(data);
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
 
-				}
-			})
-		});
-		$(document).on('click', '.add', function() {
-			$("#head_title").html("<i class='fa fa-list-alt'></i><b>Tambah Inventory</b>");
-			$.ajax({
-				type: 'POST',
-				url: siteurl + 'inventory_1/addInventory',
-				success: function(data) {
-					$("#dialog-popup").modal();
-					$("#ModalView").html(data);
+<!-- DataTables -->
+<script src="<?= base_url('assets/plugins/datatables/jquery.dataTables.min.js') ?>"></script>
+<script src="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.min.js') ?>"></script>
 
-				}
-			})
-		});
+<!-- page script -->
+<script type="text/javascript">
+    $(document).on('click', '.detail', function() {
+        var no_so = $(this).data('no_so');
+        // alert(id);
+        $("#head_title").html("<i class='fa fa-list-alt'></i><b>Detail Cycletime</b>");
+        $.ajax({
+            type: 'POST',
+            url: siteurl + active_controller + '/detail_sales_order/' + no_so,
+            data: {
+                'no_so': no_so
+            },
+            success: function(data) {
+                $("#dialog-popup").modal();
+                $("#ModalView").html(data);
+
+                $('.modal-footer').html('');
+            }
+        });
+    });
+
+    $(document).on('click', '.approval', function() {
+        var no_so = $(this).data('id_so');
+
+        $('#myModalLabel').html('<span class="fa fa-check"></span>&nbsp;Approval SO');
+        $.ajax({
+            type: 'POST',
+            url: siteurl + active_controller + '/approval_modal/' + no_so,
+            data: {
+                'no_so': no_so
+            },
+            cache: false,
+            success: function(data) {
+                $("#dialog-popup").modal();
+                $("#ModalView").html(data);
+
+                $('.modal-footer').html('<button type="button" class="btn btn-sm btn-success save_approval"><i class="fa fa-save"></i> Update</button>');
+            }
+        });
+    });
+
+    $(document).on('click', '.ajukan', function() {
+        var id_so = $(this).data('id_so');
+
+        swal({
+                title: "Anda yakin?",
+                text: "Apa anda yakin ingin Request Approval SO ini ?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: "btn-danger",
+                confirmButtonText: "Ya",
+                cancelButtonText: "Tidak",
+                closeOnConfirm: true,
+                closeOnCancel: true
+            },
+            function(isConfirm) {
+                if (isConfirm) {
+                    $.ajax({
+                        type: 'post',
+                        url: siteurl + active_controller + '/update_status',
+                        data: {
+                            'id_so': id_so
+                        },
+                        cache: false,
+                        dataType: 'json',
+                        success: function(result) {
+                            if (result.status == '1') {
+                                swal({
+                                    title: "Request Approval Berhasil !",
+                                    text: result.pesan,
+                                    type: "success",
+                                    timer: 5000,
+                                    showCancelButton: false,
+                                    showConfirmButton: false,
+                                    allowOutsideClick: false
+                                });
+
+                                location.reload();
+                            } else {
+                                swal({
+                                    title: "Request Approval Gagal !",
+                                    text: result.pesan,
+                                    type: "error",
+                                    timer: 5000,
+                                    showCancelButton: false,
+                                    showConfirmButton: false,
+                                    allowOutsideClick: false
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+    });
+
+    $(document).on('click', '.save_approval', function() {
+        var no_so = $('.no_so').val();
+        var action_type = $('.action_type').val();
+        var keterangan_approve_reject = $('.keterangan_approve_reject').val();
+
+        if (action_type == '') {
+            swal({
+                title: "Peringatan",
+                text: "Mohon pilih status SO nya Approve / Reject terlebih dahulu !",
+                type: "warning",
+                timer: 5000,
+                showCancelButton: false,
+                showConfirmButton: false,
+                allowOutsideClick: false
+            });
+        } else {
+            if (action_type == '1') {
+                var type_ac = 'Approve';
+            } else {
+                var type_ac = 'Reject';
+            }
+            swal({
+                    title: "Anda yakin?",
+                    text: "Apa anda yakin ingin " + type_ac + " SO ini ?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonClass: "btn-danger",
+                    confirmButtonText: "Ya",
+                    cancelButtonText: "Tidak",
+                    closeOnConfirm: true,
+                    closeOnCancel: true
+                },
+                function(isConfirm) {
+                    if (isConfirm) {
+                        $.ajax({
+                            type: 'post',
+                            url: siteurl + active_controller + '/save_approval',
+                            data: {
+                                'no_so': no_so,
+                                'action_type': action_type,
+                                'keterangan_approve_reject': keterangan_approve_reject
+                            },
+                            cache: false,
+                            dataType: 'json',
+                            success: function(result) {
+                                if (result.status == '1') {
+                                    swal({
+                                        title: type_ac + " Berhasil",
+                                        text: result.pesan,
+                                        type: "success",
+                                        timer: 5000,
+                                        showCancelButton: false,
+                                        showConfirmButton: false,
+                                        allowOutsideClick: false
+                                    });
+
+                                    location.reload();
+                                } else {
+                                    swal({
+                                        title: type_ac + " Gagal",
+                                        text: result.pesan,
+                                        type: "error",
+                                        timer: 5000,
+                                        showCancelButton: false,
+                                        showConfirmButton: false,
+                                        allowOutsideClick: false
+                                    });
+                                }
+                            }
+                        });
+                    }
+                });
+        }
+    });
+
+    $(document).on('click', '.print_so', function() {
+        var no_so = $(this).data('no_so');
+
+        $('.no_so').val(no_so);
+        $('#ModalPrintQuote').modal('show');
+    });
+
+    $(document).on('submit', '#print_so_form', function(e) {
+        e.preventDefault();
+        var no_so = $('.no_so').val();
+
+        var show_hide_ppn = $('.show_hide_ppn').val();
+        var show_hide_disc = $('.show_hide_disc').val();
+        if (show_hide_ppn > 0) {
+            if (show_hide_disc == '1') {
+                window.open(siteurl + active_controller + 'print_sales_order/' + no_so + '/' + show_hide_disc);
+            } else {
+                window.open(siteurl + active_controller + 'print_sales_order/' + no_so);
+            }
+        } else {
+            if (show_hide_ppn !== null) {
+                if (show_hide_disc == '1') {
+                    window.open(siteurl + active_controller + 'print_sales_order_non_ppn/' + no_so + '/' + show_hide_disc);
+                } else {
+                    window.open(siteurl + active_controller + 'print_sales_order_non_ppn/' + no_so);
+                }
+            } else {
+                swal({
+                    title: "Error !",
+                    text: 'Please select show / hide PPn First !!',
+                    type: "warning"
+                });
+            }
+        }
+    });
 
 
-		// DELETE DATA
-		$(document).on('click', '.delete', function(e) {
-			e.preventDefault()
-			var id = $(this).data('id_inventory1');
-			// alert(id);
-			swal({
-					title: "Anda Yakin?",
-					text: "Data Inventory akan di hapus.",
-					type: "warning",
-					showCancelButton: true,
-					confirmButtonClass: "btn-info",
-					confirmButtonText: "Ya, Hapus!",
-					cancelButtonText: "Batal",
-					closeOnConfirm: false
-				},
-				function() {
-					$.ajax({
-						type: 'POST',
-						url: siteurl + 'cycletime/delete_cycletime',
-						dataType: "json",
-						data: {
-							'id': id
-						},
-						success: function(result) {
-							if (result.status == '1') {
-								swal({
-										title: "Sukses",
-										text: "Data berhasil dihapus.",
-										type: "success"
-									},
-									function() {
-										window.location.reload(true);
-									})
-							} else {
-								swal({
-									title: "Error",
-									text: "Data error. Gagal hapus data",
-									type: "error"
-								})
 
-							}
-						},
-						error: function() {
-							swal({
-								title: "Error",
-								text: "Data error. Gagal request Ajax",
-								type: "error"
-							})
-						}
-					})
-				});
-
-		})
-
-		$(function() {
-			// $('#example1 thead tr').clone(true).appendTo( '#example1 thead' );
-			// $('#example1 thead tr:eq(1) th').each( function (i) {
-			// var title = $(this).text();
-			//alert(title);
-			// if (title == "#" || title =="Action" ) {
-			// $(this).html( '' );
-			// }else{
-			// $(this).html( '<input type="text" />' );
-			// }
-
-			// $( 'input', this ).on( 'keyup change', function () {
-			// if ( table.column(i).search() !== this.value ) {
-			// table
-			// .column(i)
-			// .search( this.value )
-			// .draw();
-			// }else{
-			// table
-			// .column(i)
-			// .search( this.value )
-			// .draw();
-			// }
-			// } );
-			// } );
-
-			var table = $('#example1').DataTable({
-				orderCellsTop: true,
-				fixedHeader: true
-			});
-			$("#form-area").hide();
-		});
+    $(function() {
+        DataTables();
+    });
 
 
-		//Delete
-
-		function PreviewPdf(id) {
-			param = id;
-			tujuan = 'customer/print_request/' + param;
-
-			$(".modal-body").html('<iframe src="' + tujuan + '" frameborder="no" width="570" height="400"></iframe>');
-		}
-
-		function PreviewRekap() {
-			tujuan = 'customer/rekap_pdf';
-			$(".modal-body").html('<iframe src="' + tujuan + '" frameborder="no" width="100%" height="400"></iframe>');
-		}
-	</script>
+    function DataTables() {
+        var dataTable = $('#example1').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: {
+                type: 'post',
+                url: siteurl + active_controller + 'get_data_so'
+            },
+            columns: [
+                {
+                    data: 'no'
+                },
+                {
+                    data: 'tgl'
+                },
+                {
+                    data: 'so_no'
+                },
+                {
+                    data: 'customer'
+                },
+                {
+                    data: 'quotation_no'
+                },
+                {
+                    data: 'project'
+                },
+                {
+                    data: 'rev'
+                },
+                {
+                    data: 'status'
+                },
+                {
+                    data: 'option'
+                }
+            ]
+        });
+    }
+</script>

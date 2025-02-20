@@ -31,32 +31,8 @@ class Sales_order extends Admin_Controller
     $this->auth->restrict($this->viewPermission);
     $session = $this->session->userdata('app_session');
     $this->template->page_icon('fa fa-users');
-    $deleted = '0';
-    $data = $this->db->query("
-      SELECT
-          (@row:=@row+1) AS nomor,
-          a.*,
-          b.nm_customer,
-          IF(a.modified_by != '' OR a.modified_by IS NOT NULL, e.nm_lengkap, d.nm_lengkap) AS update_by,
-          c.no_so,
-          f.req_app,
-          f.approve
-      FROM
-      tr_penawaran a
-        LEFT JOIN customer b ON b.id_customer = a.id_customer
-        LEFT JOIN tr_sales_order c ON c.no_penawaran = a.no_penawaran
-        LEFT JOIN users d ON d.id_user = a.created_by
-        LEFT JOIN users e ON e.id_user = a.modified_by
-        LEFT JOIN tr_sales_order f ON f.no_penawaran = a.no_penawaran
-      WHERE 1=1 AND (a.status = '2' OR a.status = '3') 
-      ORDER BY a.no_penawaran DESC
-    ")->result();
-    // history("View index sales order");
-    $this->template->set('results', [
-      'list_data' => $data
-    ]);
     $this->template->title('Sales Order');
-    $this->template->render('list_approval_so');
+    $this->template->render('index');
   }
 
   public function approval()
@@ -64,30 +40,6 @@ class Sales_order extends Admin_Controller
     $this->auth->restrict($this->viewPermission);
     $session = $this->session->userdata('app_session');
     $this->template->page_icon('fa fa-users');
-    $deleted = '0';
-    $data = $this->db->query("
-      SELECT
-          (@row:=@row+1) AS nomor,
-      a.*,
-          b.nm_customer,
-      IF(a.modified_by != '' OR a.modified_by IS NOT NULL, e.nm_lengkap, d.nm_lengkap) AS update_by,
-      c.no_so,
-      f.req_app,
-      f.approve
-      FROM
-      tr_penawaran a
-      LEFT JOIN customer b ON b.id_customer = a.id_customer
-      LEFT JOIN tr_sales_order c ON c.no_penawaran = a.no_penawaran
-      LEFT JOIN users d ON d.id_user = a.created_by
-      LEFT JOIN users e ON e.id_user = a.modified_by
-      LEFT JOIN tr_sales_order f ON f.no_penawaran = a.no_penawaran
-      WHERE 1=1 AND (a.status = '2' OR a.status = '3') AND f.req_app = '1'
-      ORDER BY a.no_penawaran DESC
-    ")->result();
-    // history("View index sales order");
-    $this->template->set('results', [
-      'list_data' => $data
-    ]);
     $this->template->title('Approval Sales Order');
     $this->template->render('list_approval_so');
   }
@@ -449,7 +401,7 @@ class Sales_order extends Admin_Controller
     $config['upload_path'] = './uploads/po'; //path folder
     $config['allowed_types'] = 'gif|jpg|png|jpeg|bmp|pdf|webp'; //type yang dapat diakses bisa anda sesuaikan
     $config['max_size'] = 100000000; // Maximum file size in kilobytes (2MB).
-    $config['encrypt_name'] = FALSE; // Encrypt the uploaded file's name.
+    $config['encrypt_name'] = TRUE; // Encrypt the uploaded file's name.
     $config['remove_spaces'] = TRUE; // Remove spaces from the file name.
 
     $this->load->library('upload', $config);
@@ -572,7 +524,7 @@ class Sales_order extends Admin_Controller
       'pengiriman' => $data['pengiriman'],
       'po_date' => $data['po_date'],
       'po_no' => $data['po_no'],
-      'tipe_so' => $data['tipe_so']
+      'tipe_so' => 1
     ]);
 
     foreach ($get_penawaran_detail as $penawaran_detail) :
@@ -951,5 +903,14 @@ class Sales_order extends Admin_Controller
       ];
     }
     $this->load->view('print_sales_order_non_ppn', ['results' => $data]);
+  }
+
+  public function get_data_so()
+  {
+    $this->Sales_order_model->get_data_so();
+  }
+  public function get_data_so_app()
+  {
+    $this->Sales_order_model->get_data_so_app();
   }
 }

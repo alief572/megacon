@@ -229,5 +229,40 @@
 	$(document).ready(function(){
     	$('.chosen-select').select2({width: '100%'});
 		$('.maskM').autoNumeric();
+		// Event ketika modal ditampilkan
+		$('#dialog-popup').on('shown.bs.modal', function () {
+			// Inisialisasi Select2
+			$('#code_lv1').select2({
+				width: '100%',
+				placeholder: "Pilih Kategori Produk",
+				allowClear: true,
+				dropdownParent: $('#dialog-popup') // Pastikan dropdown muncul di dalam modal
+			});
+			$('#code_lv2').select2({
+				width: '100%',
+				placeholder: "Pilih Tipe Ukuran",
+				allowClear: true,
+				dropdownParent: $('#dialog-popup') // Pastikan dropdown muncul di dalam modal
+			});
+			$('#code_lv3').select2({
+				width: '100%',
+				placeholder: "Pilih Varian",
+				allowClear: true,
+				dropdownParent: $('#dialog-popup') // Pastikan dropdown muncul di dalam modal
+			});
+			$('#id_unit_packing').select2({
+				width: '100%',
+				// placeholder: "Pilih Kategori Produk",
+				allowClear: true,
+				dropdownParent: $('#dialog-popup') // Pastikan dropdown muncul di dalam modal
+			});
+			$('#id_unit').select2({
+				width: '100%',
+				// placeholder: "Pilih Kategori Produk",
+				allowClear: true,
+				dropdownParent: $('#dialog-popup') // Pastikan dropdown muncul di dalam modal
+			});
+		});
+
   	});
 </script>

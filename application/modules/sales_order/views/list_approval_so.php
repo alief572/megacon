@@ -30,80 +30,13 @@ $ENABLE_DELETE  = has_permission('Sales_Order_New.Delete');
                     <th>Customer</th>
                     <th>Quotation No.</th>
                     <th>Project</th>
-                    <th>Update By</th>
                     <th>Rev</th>
                     <th>Status</th>
                     <th width="13%">Action</th>
                 </tr>
             </thead>
             <tbody>
-                <?php
-                $x = 1;
-                foreach ($results['list_data'] as $data) {
-                    $check_so = $this->db->get_where('tr_sales_order', ['no_penawaran' => $data->no_penawaran])->result();
-
-                    $print = '&nbsp;<a href="sales_order/print_sales_order/' . $data->no_so . '" class="btn btn-sm bg-purple" data-no_so="' . $data->no_so . '">Print SO</a>';
-                    if (count($check_so) < 1) {
-                        $print = '';
-                    }
-
-                    $edit    = "&nbsp;<a href='" . site_url($this->uri->segment(1)) . '/deal_so/' . $data->no_penawaran . "' class='btn btn-sm btn-primary' title='Edit Data' data-role='qtip'>Deal SO</a>";
-                    if (!$ENABLE_MANAGE) {
-                        $edit = '';
-                    }
-
-                    $check_so = $this->db->get_where('tr_sales_order', ['no_penawaran' => $data->no_penawaran])->row();
-
-                    $ajukan = '';
-                    if ($data->status == '2' && count($check_so) > 0 && $ENABLE_MANAGE) {
-                        $ajukan = '<button type="button" class="btn btn-sm btn-success ajukan" data-id_so="' . $data->no_so . '">Ajukan</button>';
-                    }
-
-                    $view = "";
-                    if (count($check_so) > 0) {
-                        $view = "<button type='button' class='btn btn-sm btn-warning detail' title='Detail' data-no_so='" . $data->no_so . "'>View</button>";
-                    }
-
-                    $approval = '';
-                    if ($data->req_app > 0 && $ENABLE_MANAGE) {
-                        $approval = '<button type="button" class="btn btn-sm btn-primary approval" data-id_so="' . $data->no_so . '">Approval</button>';
-                    }
-
-                    $buttons = $view . ' ' . $edit . ' ' . $print . ' ' . $ajukan . ' ' . $approval;
-                    if ($data->req_app == '1') {
-                        $buttons = $view . ' ' . $print;
-                        if ($data->approve < 1 && $this->uri->segment(2) == 'approval') {
-                            $buttons .= ' ' . $approval;
-                        }
-                    }
-
-                    if ($data->approve == '1') {
-                        $status = '<div class="badge bg-green">SO</div>';
-                    } else {
-                        if ($data->req_app == '1' && $data->approve == '0') {
-                            $status = '<div class="badge bg-blue">Waiting Approval SO</div>';
-                        } else {
-                            $status = '<div class="badge bg-yellow">Waiting SO</div>';
-                        }
-                    }
-
-                    echo "
-                    <tr>
-                        <td align='center'>" . $x . "</td>
-                        <td align='center'>" . date('d F Y', strtotime($data->tgl_penawaran)) . "</td>
-                        <td align='left'>" . strtoupper(strtolower($data->no_so)) . "</td>
-                        <td align='left'>" . strtoupper(strtolower($data->nm_customer)) . "</td>
-                        <td align='left'>" . strtoupper(strtolower($data->no_penawaran)) . "</td>
-                        <td align='left'>" . $data->project . "</td>
-                        <td align='center'>" . $data->update_by . "</td>
-                        <td align='left'>" . $data->no_revisi . "</td>
-                        <td align='left'>" . $status . "</td>
-                        <td align='center'>" . $buttons . "</td>
-                    </tr>";
-
-                    $x++;
-                }
-                ?>
+                
             </tbody>
         </table>
     </div>
@@ -380,60 +313,43 @@ $ENABLE_DELETE  = has_permission('Sales_Order_New.Delete');
     });
 
 
-    // function DataTables() {
-    //     var dataTable = $('#example1').DataTable({
-    //         // "scrollX": true,
-    //         "scrollY": "500",
-    //         "scrollCollapse": true,
-    //         "processing": true,
-    //         "serverSide": true,
-    //         "stateSave": true,
-    //         "bAutoWidth": true,
-    //         "destroy": true,
-    //         "responsive": true,
-    //         "oLanguage": {
-    //             "sSearch": "<b>Live Search : </b>",
-    //             "sLengthMenu": "_MENU_ &nbsp;&nbsp;<b>Records Per Page</b>&nbsp;&nbsp;",
-    //             "sInfo": "Showing _START_ to _END_ of _TOTAL_ entries",
-    //             "sInfoFiltered": "(filtered from _MAX_ total entries)",
-    //             "sZeroRecords": "No matching records found",
-    //             "sEmptyTable": "No data available in table",
-    //             "sLoadingRecords": "Please wait - loading...",
-    //             "oPaginate": {
-    //                 "sPrevious": "Prev",
-    //                 "sNext": "Next"
-    //             }
-    //         },
-    //         "aaSorting": [
-    //             [1, "desc"]
-    //         ],
-    //         "columnDefs": [{
-    //             "targets": 'no-sort',
-    //             "orderable": false,
-    //         }],
-    //         "sPaginationType": "simple_numbers",
-    //         "iDisplayLength": 10,
-    //         "aLengthMenu": [
-    //             [10, 20, 50, 100, 150],
-    //             [10, 20, 50, 100, 150]
-    //         ],
-    //         "ajax": {
-    //             url: siteurl + active_controller + 'data_side_approval_sales_order',
-    //             type: "post",
-    //             data: function(d) {
-    //                 // d.kode_partner = $('#kode_partner').val()
-    //             },
-    //             cache: false,
-    //             error: function() {
-    //                 $(".my-grid-error").html("");
-    //                 $("#my-grid").append('<tbody class="my-grid-error"><tr><th colspan="3">No data found in the server</th></tr></tbody>');
-    //                 $("#my-grid_processing").css("display", "none");
-    //             }
-    //         }
-    //     });
-    // }
-
     function DataTables() {
-        var dataTable = $('#example1').DataTable();
+        var dataTable = $('#example1').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: {
+                type: 'post',
+                url: siteurl + active_controller + 'get_data_so_app'
+            },
+            columns: [
+                {
+                    data: 'no'
+                },
+                {
+                    data: 'tgl'
+                },
+                {
+                    data: 'so_no'
+                },
+                {
+                    data: 'customer'
+                },
+                {
+                    data: 'quotation_no'
+                },
+                {
+                    data: 'project'
+                },
+                {
+                    data: 'rev'
+                },
+                {
+                    data: 'status'
+                },
+                {
+                    data: 'option'
+                }
+            ]
+        });
     }
 </script>

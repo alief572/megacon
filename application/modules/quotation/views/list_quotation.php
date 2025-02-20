@@ -21,7 +21,7 @@ $ENABLE_DELETE  = has_permission('Quotation.Delete');
 				<i class="fa fa-plus"></i>Add Penawaran
 			</button> -->
 			<button class="btn btn-success" type="button" onclick="add_quote()">
-				<i class="fa fa-plus"></i>Add Penawaran
+				<i class="fa fa-plus"></i> Add Penawaran
 			</button>
 		<?php endif; ?>
 
@@ -39,7 +39,6 @@ $ENABLE_DELETE  = has_permission('Quotation.Delete');
 					<th class="text-center">Customer</th>
 					<th class="text-center">Quotation No.</th>
 					<th class="text-center">Project</th>
-					<th class="text-center">Update By</th>
 					<th class="text-center">Rev</th>
 					<th class="text-center">Status</th>
 					<?php if ($ENABLE_MANAGE) : ?>
@@ -47,144 +46,8 @@ $ENABLE_DELETE  = has_permission('Quotation.Delete');
 					<?php endif; ?>
 				</tr>
 			</thead>
-
 			<tbody>
-				<?php if (empty($results)) {
-				} else {
-
-					$numb = 0;
-					foreach ($results as $record) {
-						$numb++;
-
-
-						if ($record->status == 0) {
-							$Status = "<span class='badge bg-yellow'>Draft</span>";
-						} elseif ($record->status == 1) {
-
-							$num_approval = 'Staff Sales';
-							if ($record->req_app2 == '1' && $record->app_1 == '1') {
-								$num_approval = 'Manager Sales';
-							}
-							if ($record->req_app3 == '1' && $record->app_2 == '1') {
-								$num_approval = 'Direktur';
-							}
-
-							$Status = "<span class='badge bg-blue'>Waiting Approval " . $num_approval . "</span>";
-						} elseif ($record->status == '2') {
-							$Status = "<span class='badge bg-green'>Waiting SO</span>";
-						} elseif ($record->status == '3') {
-							$Status = "<span class='badge bg-purple'>SO Approved</span>";
-						} elseif ($record->status == '4') {
-							$Status = "<span class='badge bg-red'>Loss</span>";
-						}
-				?>
-
-						<?php if ($record->status <> '4') {
-							$get_created_user = $this->db->get_where('users', ['id_user' => $record->created_by])->row();
-							$get_modified_user = $this->db->get_where('users', ['id_user' => $record->modified_by])->row();
-						?>
-							<tr>
-								<td class="text-center"><?= $numb; ?></td>
-								<td class="text-center"><?= date('d F Y', strtotime($record->tgl_penawaran)) ?></td>
-								<td class="text-center"><?= $record->nm_customer ?></td>
-								<td class="text-center"><?= $record->no_penawaran ?></td>
-								<td class="text-center"><?= $record->project ?></td>
-								<?= ($record->modified_by !== '' && $record->modified_by !== null) ? '<td class="text-center">' . $get_modified_user->nm_lengkap . '</td>' : '<td class="text-center">' . $get_created_user->nm_lengkap . '</td>' ?>
-								<td class="text-center"><?= $record->no_revisi ?></td>
-								<td class="text-center"><?= $Status ?></td>
-
-								<?php
-								$btn_edit = '<a href="quotation/modal_detail_invoice/' . $record->no_penawaran . '" class="btn btn-sm btn-success">Edit</a>';
-								$check_so = $this->db->get_where('tr_sales_order', ['no_penawaran' => $record->no_penawaran])->num_rows();
-								if ($check_so > 0) {
-									$btn_edit = '';
-								}
-
-								$btn_view = '<a href="quotation/view_quotation/' . $record->no_penawaran . '" class="btn btn-sm btn-info">View</a>';
-
-								$btn_ajukan = '<a href="javascript:void(0);" class="btn btn-sm btn-success ajukan" data-id="' . $record->no_penawaran . '" data-status="' . $record->status . '">Ajukan</a>';
-
-								$check_disc_penawaran = $this->db->query('SELECT MAX(diskon_persen) AS max_disc_persen FROM tr_penawaran_detail WHERE no_penawaran = "' . $record->no_penawaran . '"')->row();
-
-								$get_disc = $this->db->query('SELECT * FROM ms_diskon WHERE deleted = 0 ORDER BY diskon_awal ASC')->result();
-
-								$tingkatan = 0;
-
-								$no_awd = 0;
-								foreach ($get_disc as $list_disc) {
-									$no_awd++;
-									// if ($tingkatan == '') {
-									// 	if ($check_disc_penawaran->max_disc_persen >= $list_disc->diskon_awal && $check_disc_penawaran->max_disc_persen <= $list_disc->diskon_akhir) {
-									// 		$tingkatan = $list_disc->tingkatan;
-									// 	} else {
-									// 		if ($check_disc_penawaran->max_disc_persen >= $list_disc->diskon_awal && $list_disc->diskon_akhir == 0) {
-									// 			$tingkatan = $list_disc->tingkatan;
-									// 		}
-									// 	}
-									// }
-
-									if($check_disc_penawaran->max_disc_persen >= $list_disc->diskon_awal && $check_disc_penawaran->max_disc_persen <= $list_disc->diskon_akhir) {
-										$tingkatan = $no_awd;
-									}
-								}
-
-								if ($tingkatan == 0) {
-									$btn_ajukan = '';
-								}
-
-								$btn_approve = '<a href="javascript:void(0);" class="btn btn-sm btn-success approve" data-id="' . $record->no_penawaran . '">Approve</a>';
-
-								if ($btn_ajukan !== '') {
-									$btn_approve = '';
-								}
-
-								// $btn_print = '<a href="' . base_url() . 'quotation/print_quotation/' . $record->no_penawaran . '" class="btn btn-sm bg-purple" target="_blank">Print</a>';
-
-								$btn_print = '<a href="javascript:void(0);" class="btn btn-sm bg-purple print_quotation" data-id_penawaran="' . $record->no_penawaran . '">Print</a>';
-
-								// $btn_print = '<a href="javascript:"></a>';
-
-								if ($record->status == '1' || $record->status == '0') {
-									$btn_print = '';
-								}
-
-								// if ($record->req_app1 == '1') {
-								// 	if ($record->app_1 !== '1') {
-								// 		$btn_print = '';
-								// 	}
-								// }
-								// if ($record->req_app2 == '1') {
-								// 	if ($record->app_2 !== '1') {
-								// 		$btn_print = '';
-								// 	}
-								// }
-								// if ($record->req_app3 == '1') {
-								// 	if ($record->app_3 !== '1') {
-								// 		$btn_print = '';
-								// 	}
-								// }
-
-								$btn_loss = '<a href="javascript:void(0);" class="btn btn-sm btn-danger loss" data-id="' . $record->no_penawaran . '">Loss</a>';
-
-								$buttons = $btn_edit . ' ' . $btn_view . ' ' . $btn_ajukan . ' ' . $btn_approve . ' ' . $btn_print . ' ' . $btn_loss;
-								if ($record->status == '1') {
-									$buttons = $btn_view . ' ' . $btn_print;
-								}
-								if ($record->status == '2') {
-									$buttons = $btn_edit . ' ' . $btn_view . ' ' . $btn_print;
-								}
-								if ($record->status == '3') {
-									$button = $btn_view . ' ' . $btn_print;
-								}
-								?>
-								<td class="text-center">
-									<?= $buttons ?>
-								</td>
-
-							</tr>
-				<?php 	 }
-					}
-				}  ?>
+				
 			</tbody>
 		</table>
 	</div>
@@ -325,12 +188,13 @@ $ENABLE_DELETE  = has_permission('Quotation.Delete');
 <!-- page script -->
 <script type="text/javascript">
 	$(document).ready(function() {
-		$('#example1').dataTable();
+		DataTables();
 
 		$(".chosen-select").select2({
 			width: '100%'
 		});
 	});
+
 	$(document).on('click', '.edit', function(e) {
 		var id = $(this).data('no_penawaran');
 		$("#head_title").html("<i class='fa fa-list-alt'></i><b>Edit Inventory</b>");
@@ -408,9 +272,9 @@ $ENABLE_DELETE  = has_permission('Quotation.Delete');
 	$(document).on('click', '.ajukan', function() {
 		var id = $(this).data('id');
 		var status = $(this).data('status');
+		var tingkatan = $(this).data('tingkatan');
 
 		msg = 'Anda yakin ingin update penawaran ini ke Waiting Approval ?';
-
 
 		swal({
 				title: "Peringatan !",
@@ -431,7 +295,8 @@ $ENABLE_DELETE  = has_permission('Quotation.Delete');
 						type: 'POST',
 						data: {
 							'id': id,
-							'status': status
+							'status': status,
+							'tingkatan': tingkatan
 						},
 						success: function(data) {
 							var updated_status = 'Waiting Approval';
@@ -683,6 +548,43 @@ $ENABLE_DELETE  = has_permission('Quotation.Delete');
 
 		window.open(siteurl + active_controller + 'modal_add_invoice/' + curr);
 	});
+
+	function DataTables() {
+		$('#example1').DataTable({
+			processing: true,
+			serverSide: true,
+			ajax: {
+				type: 'post',
+				url: siteurl + active_controller + 'get_quotation'
+			},
+			columns: [
+				{
+					data: 'no'
+				},
+				{
+					data: 'tgl'
+				},
+				{
+					data: 'customer'
+				},
+				{
+					data: 'quotation_no'
+				},
+				{
+					data: 'project'
+				},
+				{
+					data: 'rev'
+				},
+				{
+					data: 'status'
+				},
+				{
+					data: 'option'
+				}
+			]
+		});
+	}
 
 	function add_inv() {
 		window.location.href = base_url + active_controller + 'modal_detail_invoice';

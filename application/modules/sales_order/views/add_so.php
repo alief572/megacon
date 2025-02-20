@@ -122,18 +122,6 @@ $no_po          = (!empty($header)) ? $header[0]->no_po : '';
 						</select>
 					</td>
 				</tr>
-				<tr>
-					<th>Tipe SO</th>
-					<th>:</th>
-					<td>
-						<select name="tipe_so" id="" class="form-control form-control-sm" required>
-							<option value="">- Tipe SO -</option>
-							<option value="1">Produk</option>
-							<option value="2">Instalasi</option>
-						</select>
-					</td>
-					<td colspan="3"></td>
-				</tr>
 			</table>
 
 
@@ -152,8 +140,6 @@ $no_po          = (!empty($header)) ? $header[0]->no_po : '';
 								<th class='text-center'>No.</th>
 								<th class='text-center'>Code</th>
 								<th class='text-center' style="width: 350px;">Product Name</th>
-								<th class='text-center'>Color</th>
-								<th class='text-center'>Surface</th>
 								<th class='text-center'>Variant</th>
 								<th class='text-center'>Qty</th>
 								<th class='text-center'>Price</th>
@@ -179,8 +165,6 @@ $no_po          = (!empty($header)) ? $header[0]->no_po : '';
 										<td class="text-center" style="vertical-align: middle;">' . $x . '</td>
 										<td class="text-center" style="vertical-align: middle;">' . $penawaran_detail->product_code . '</td>
 										<td class="text-center" style="vertical-align: middle;">' . $penawaran_detail->nama_produk . '</td>
-										<td class="text-center" style="vertical-align: middle;">' . $penawaran_detail->color . '</td>
-										<td class="text-center" style="vertical-align: middle;">' . $penawaran_detail->surface . '</td>
 										<td class="text-center" style="vertical-align: middle;">' . $penawaran_detail->variant_product . '</td>
 										<td class="text-center" style="vertical-align: middle;">' . number_format($penawaran_detail->qty, 2) . '</td>
 										<td class="text-right" style="vertical-align: middle;">(' . $data_penawaran->currency . ') ' . number_format(($penawaran_detail->harga_satuan - ($penawaran_detail->harga_satuan * $penawaran_detail->diskon_persen / 100)), 2) . '</td>
@@ -205,19 +189,19 @@ $no_po          = (!empty($header)) ? $header[0]->no_po : '';
 						</tbody>
 						<tbody>
 							<tr>
-								<td colspan="8" class="text-right">Subtotal</td>
+								<td colspan="6" class="text-right">Subtotal</td>
 								<td class="text-right">(<?= $data_penawaran->currency ?>) <?= number_format($subtotal, 2) ?></td>
 							</tr>
 							<tr>
-								<td colspan="8" class="text-right">Discount</td>
+								<td colspan="6" class="text-right">Discount</td>
 								<td class="text-right">(<?= $data_penawaran->currency ?>) <?= number_format($discount, 2) ?></td>
 							</tr>
 							<tr>
-								<td colspan="8" class="text-right">PPn (<?= $persen_ppn ?>%)</td>
+								<td colspan="6" class="text-right">PPn (<?= $persen_ppn ?>%)</td>
 								<td class="text-right">(<?= $data_penawaran->currency ?>) <?= number_format($ppn, 2) ?></td>
 							</tr>
 							<tr>
-								<td colspan="8" class="text-right">Grand Total</td>
+								<td colspan="6" class="text-right">Grand Total</td>
 								<td class="text-right">(<?= $data_penawaran->currency ?>) <?= number_format($subtotal + $subtotal_other - ($discount) + $ppn, 2) ?></td>
 							</tr>
 						</tbody>
