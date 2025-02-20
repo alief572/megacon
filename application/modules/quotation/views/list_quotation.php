@@ -272,9 +272,9 @@ $ENABLE_DELETE  = has_permission('Quotation.Delete');
 	$(document).on('click', '.ajukan', function() {
 		var id = $(this).data('id');
 		var status = $(this).data('status');
+		var tingkatan = $(this).data('tingkatan');
 
 		msg = 'Anda yakin ingin update penawaran ini ke Waiting Approval ?';
-
 
 		swal({
 				title: "Peringatan !",
@@ -295,7 +295,8 @@ $ENABLE_DELETE  = has_permission('Quotation.Delete');
 						type: 'POST',
 						data: {
 							'id': id,
-							'status': status
+							'status': status,
+							'tingkatan': tingkatan
 						},
 						success: function(data) {
 							var updated_status = 'Waiting Approval';

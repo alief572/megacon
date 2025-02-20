@@ -917,8 +917,8 @@ class Quotation_model extends BF_Model
 
 		$json_data = array(
 			"draw"            	=> intval($requestData['draw']),
-			"item['otal']"    	=> intval($totalData),
-			"item['iltered']" 	=> intval($totalFiltered),
+			"recordsTotal"    	=> intval($totalData),
+			"recordsFiltered" 	=> intval($totalFiltered),
 			"data"            	=> $data
 		);
 
@@ -1257,9 +1257,7 @@ class Quotation_model extends BF_Model
 		$start = $this->input->post('start');
 		$search = $this->input->post('search');
 
-		$query =  $this->db->query("SELECT a.*, b.nm_customer FROM tr_penawaran a LEFT JOIN customer b ON b.id_customer = a.id_customer ORDER BY a.created_on DESC");
-
-		$this->db->select('a.no_penawaran, a.tgl_penawaran, a.project, b.nm_customer');
+		$this->db->select('a.no_penawaran, a.tgl_penawaran, a.project, a.status, a.req_app1, a.app_1, b.nm_customer');
 		$this->db->from('tr_penawaran a');
 		$this->db->join('customer b', 'b.id_Customer = a.id_customer', 'left');
 		if (!empty($search)) {
@@ -1273,7 +1271,7 @@ class Quotation_model extends BF_Model
 		$this->db->limit($length, $start);
 		$get_data = $this->db->get();
 
-		$this->db->select('a.no_penawaran, a.tgl_penawaran, a.project, b.nm_customer');
+		$this->db->select('a.no_penawaran, a.tgl_penawaran, a.status, a.project, a.req_app1, a.app_1, b.nm_customer');
 		$this->db->from('tr_penawaran a');
 		$this->db->join('customer b', 'b.id_Customer = a.id_customer', 'left');
 		if (!empty($search)) {
@@ -1323,7 +1321,7 @@ class Quotation_model extends BF_Model
 
 			$btn_view = '<a href="quotation/view_quotation/' . $item['no_penawaran'] . '" class="btn btn-sm btn-info">View</a>';
 
-			$btn_ajukan = '<a href="javascript:void(0);" class="btn btn-sm btn-success ajukan" data-id="' . $item['no_penawaran'] . '" data-status="' . $item['status'] . '">Ajukan</a>';
+
 
 			$check_disc_penawaran = $this->db->query('SELECT MAX(diskon_persen) AS max_disc_persen FROM tr_penawaran_detail WHERE no_penawaran = "' . $item['no_penawaran'] . '"')->row();
 
@@ -1349,7 +1347,9 @@ class Quotation_model extends BF_Model
 				}
 			}
 
-			if ($tingkatan == 0) {
+			$btn_ajukan = '<a href="javascript:void(0);" class="btn btn-sm btn-success ajukan" data-id="' . $item['no_penawaran'] . '" data-status="' . $item['status'] . '" data-tingkatan="' . $tingkatan . '">Ajukan</a>';
+
+			if ($tingkatan == 1) {
 				$btn_ajukan = '';
 			}
 
@@ -1358,6 +1358,15 @@ class Quotation_model extends BF_Model
 			if ($btn_ajukan !== '') {
 				$btn_approve = '';
 			}
+
+			$btn_approve2 = '';
+			// if ($item['req_app1'] == 1 && $item['app_1'] == null) {
+			// 	$check_disc_approval = $this->db->get_where('ms_diskon_approve_by', array('id_diskon' => 'MDISC-01-25000001', 'id_karyawan' => $this->auth->user_id()))->num_rows();
+
+			// 	if ($check_disc_approval > 0) {
+			// 		$btn_approve2 = '<button type="button" class="btn btn-sm btn-primary approve_sales" data-id="' . $item['no_penawaran'] . '">Approve</button>';
+			// 	}
+			// }
 
 			// $btn_print = '<a href="' . base_url() . 'quotation/print_quotation/' . $item['no_penawaran'] . '" class="btn btn-sm bg-purple" target="_blank">Print</a>';
 
@@ -1389,7 +1398,7 @@ class Quotation_model extends BF_Model
 
 			$buttons = $btn_edit . ' ' . $btn_view . ' ' . $btn_ajukan . ' ' . $btn_approve . ' ' . $btn_print . ' ' . $btn_loss;
 			if ($item['status'] == '1') {
-				$buttons = $btn_view . ' ' . $btn_print;
+				$buttons = $btn_view . ' ' . $btn_print.' '.$btn_approve2;
 			}
 			if ($item['status'] == '2') {
 				$buttons = $btn_edit . ' ' . $btn_view . ' ' . $btn_print;

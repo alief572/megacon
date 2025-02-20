@@ -1923,89 +1923,18 @@ class Quotation extends Admin_Controller
 	public function update_status()
 	{
 		$id = $this->input->post('id');
+		$tingkatan = $this->input->post('tingkatan');
 
 		$get_penawaran = $this->db->get_where('tr_penawaran', ['no_penawaran' => $id])->row();
-		$updated_status = ($get_penawaran->status + 1);
-
 		$get_penawaran_detail = $this->db->get_where('tr_penawaran_detail', ['no_penawaran' => $id])->result();
-
-		$harga_before_disc = 0;
-		$harga_after_disc = 0;
-		foreach ($get_penawaran_detail as $penawaran_detail) :
-			$harga_before_disc += ($penawaran_detail->harga_satuan * $penawaran_detail->qty);
-			$harga_after_disc += $penawaran_detail->total_harga;
-		endforeach;
-
-
-		$ttl_disc = (($harga_before_disc - $harga_after_disc) / $harga_before_disc * 100);
-		
-
-		$check_disc_penawaran = $this->db->query('SELECT MAX(diskon_persen) AS max_disc_persen FROM tr_penawaran_detail WHERE no_penawaran = "' . $id . '"')->row();
-
-		$get_disc = $this->db->query('SELECT * FROM ms_diskon WHERE deleted_by IS NULL ORDER BY diskon_awal ASC')->result();
-
-		$tingkatan = 0;
-		$no_awd = 0;
-		foreach ($get_disc as $list_disc) {
-			$no_awd++;
-			// print_r($list_disc->diskon_awal.' - '.$list_disc->diskon_akhir.'<br>');
-			if ($check_disc_penawaran->max_disc_persen >= $list_disc->diskon_awal && $check_disc_penawaran->max_disc_persen <= $list_disc->diskon_akhir) {
-				$tingkatan = $no_awd;
-			}
-		}
-
-		// print_r($tingkatan);
-		// exit;
-
-
 
 
 		$this->db->trans_begin();
 
-
-		// if ($tingkatan == 'Tingkat 1') {
-		// 	$this->db->update('tr_penawaran', [
-		// 		'status' => $updated_status,
-		// 		'req_app1' => 1
-		// 	], [
-		// 		'no_penawaran' => $id
-		// 	]);
-		// }
-		if ($tingkatan == 1) {
-			// $this->db->update('tr_penawaran', [
-			// 	'status' => $updated_status,
-			// 	'req_app1' => 1,
-			// 	'req_app2' => 1
-			// ], [
-			// 	'no_penawaran' => $id
-			// ]);
-			$this->db->update('tr_penawaran', [
-				'status' => $updated_status,
-				'req_app1' => 1
-			], [
-				'no_penawaran' => $id
-			]);
+		for($i = 1; $i <= $tingkatan; $i++) {
+			$update_sts = $this->db->update('tr_penawaran', ['req_app'.$i.'' => 1, 'status' => 1], ['no_penawaran' => $id]);
 		}
-		if ($tingkatan == 2) {
-			$this->db->update('tr_penawaran', [
-				'status' => $updated_status,
-				'req_app1' => 1,
-				'req_app2' => 1
-			], [
-				'no_penawaran' => $id
-			]);
-		}
-		if ($tingkatan == 3) {
-			$this->db->update('tr_penawaran', [
-				'status' => $updated_status,
-				'req_app1' => 1,
-				'req_app2' => 1,
-				'req_app3' => 1
-			], [
-				'no_penawaran' => $id
-			]);
-		}
-
+		
 
 		if ($this->db->trans_status() === FALSE) {
 			$this->db->trans_rollback();
@@ -2016,8 +1945,7 @@ class Quotation extends Admin_Controller
 		}
 
 		echo json_encode([
-			'status' => $valid,
-			'updated_sts' => $updated_status
+			'status' => $valid
 		]);
 	}
 

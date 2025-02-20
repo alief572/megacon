@@ -14,17 +14,6 @@
                                         <div class="col-sm-6">
                                             <div class="form-group row">
                                                 <div class="col-md-4">
-                                                    <label for="customer">Quotation By :</label>
-                                                </div>
-                                                <div class="col-md-8">
-                                                    <select name="quote_by" id="" class="form-control" disabled>
-                                                        <option value="ORINDO" <?= (isset($results['data_penawaran']) && $results['data_penawaran']->quote_by == 'ORINDO') ? 'selected' : null ?>>ORINDO</option>
-                                                        <option value="ORIGA" <?= (isset($results['data_penawaran']) && $results['data_penawaran']->quote_by == 'ORIGA') ? 'selected' : null ?>>ORIGA</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="form-group row">
-                                                <div class="col-md-4">
                                                     <label for="customer">Quotation No :</label>
                                                 </div>
                                                 <div class="col-md-8">
@@ -53,7 +42,7 @@
                                                     <select id="id_customer" name="id_customer" class="form-control select2 get_data_customer" disabled>
                                                         <option value="">--Pilih--</option>
                                                         <?php foreach ($results['customers'] as $customers) { ?>
-                                                            <option value="<?= $customers->id_customer ?>" <?= (isset($results['data_penawaran']) && $customers->id_customer) ? 'selected' : null ?>><?= ucfirst($customers->nm_customer) ?></option>
+                                                            <option value="<?= $customers->id_customer ?>" <?= (isset($results['data_penawaran']) && $customers->id_customer == $results['data_penawaran']->id_customer) ? 'selected' : null ?>><?= ucfirst($customers->nm_customer) ?></option>
                                                         <?php } ?>
                                                     </select>
                                                 </div>
@@ -130,8 +119,6 @@
                                                         }
                                                         ?>
                                                     </select>
-
-                                                    <textarea name="term_of_payment_custom" id="" cols="30" rows="5" class="form-control" style="margin-top: 2rem;" readonly><?= (isset($results['data_penawaran'])) ? $results['data_penawaran']->top_custom : null ?></textarea>
                                                 </div>
                                             </div>
                                         </div>
@@ -146,22 +133,24 @@
                                             </div>
                                         </div>
                                     </div>
-
-                                    <div class="col-md-12 mt-5">
-                                        <h4>Informasi Tambahan</h4>
-                                    </div>
-
                                     <div class="col-md-12">
-                                        <div class='col-sm-6'>
-                                            <div class='form-group row'>
+                                        <div class="col-md-6">
+                                            <div class="form-group row">
                                                 <div class='col-md-4'>
-                                                    <label for='email_customer'>Subject</label>
+                                                    <label for='email_customer'>Notes</label>
                                                 </div>
                                                 <div class='col-md-8'>
-                                                    <input type="text" name="subject" id="" class="form-control" value="<?= (isset($results['data_penawaran'])) ? $results['data_penawaran']->subject : null ?>" readonly>
+                                                    <textarea name="notes" id="" cols="30" rows="5" class="form-control" style="margin-top: 2rem;" readonly><?= (isset($results['data_penawaran'])) ? $results['data_penawaran']->notes : null ?></textarea>
                                                 </div>
                                             </div>
                                         </div>
+                                    </div>
+
+                                    <div class="col-md-12 mt-5">
+                                        <h4>Additional Information</h4>
+                                    </div>
+
+                                    <div class="col-md-12">
                                         <div class='col-sm-6'>
                                             <div class='form-group row'>
                                                 <div class='col-md-4'>
@@ -169,19 +158,6 @@
                                                 </div>
                                                 <div class='col-md-8' id="">
                                                     <input type="text" name="time_delivery" id="" class="form-control" value="<?= (isset($results['data_penawaran'])) ? $results['data_penawaran']->time_delivery : null ?>" readonly>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-12">
-                                        <div class='col-sm-6'>
-                                            <div class='form-group row'>
-                                                <div class='col-md-4'>
-                                                    <label for='email_customer'>Offer Period</label>
-                                                </div>
-                                                <div class='col-md-8'>
-                                                    <input type="text" name="offer_period" id="" class="form-control" value="<?= (isset($results['data_penawaran'])) ? $results['data_penawaran']->offer_period : null ?>" readonly>
                                                 </div>
                                             </div>
                                         </div>
@@ -332,13 +308,13 @@
                     <table class="table table-bordered" width="100%" id="tabel-detail-mutasi">
                         <thead>
                             <tr class="bg-blue">
-                                <th class="text-center">Produk</th>
-                                <th class="text-center">Qty Penawaran</th>
+                                <th class="text-center">Product Name</th>
+                                <th class="text-center">Qty</th>
                                 <th class="text-center">Price List</th>
                                 <th class="text-center">Free Stock</th>
-                                <th class="text-center">Diskon (%)</th>
+                                <th class="text-center">Discount (%)</th>
                                 <th class="text-center">Price Unit After Discount</th>
-                                <th class="text-center">Total Harga</th>
+                                <th class="text-center">Total Price</th>
                                 <!-- <th class="text-center">Aksi</th> -->
                             </tr>
                         </thead>
@@ -359,66 +335,50 @@
                                     $total_nilai_discount += ($penawaran_detail->diskon_nilai * $penawaran_detail->qty);
 
                                     echo '
-                                        <tr>
-                                            <td>
-                                                <span>' . $penawaran_detail->nama_produk . '</span> <br><br>
-                                                <table class="table">
-                                                    <tr>
-                                                        <td>Cut Size</td>
-                                                        <td width="2" class="text-center">:</td>
-                                                        <td>
-                                                            <input type="text" name="ukuran_potong_' . $penawaran_detail->id_penawaran_detail . '" id="" class="form-control form-control-sm ukuran_potong_' . $penawaran_detail->id_penawaran_detail . '" value="' . $penawaran_detail->ukuran_potongan . '" placeholder="- Cut Size -" readonly>
-                                                        </td>
-                                                    </tr>
-                                                </table>
-                                            </td>
-                                            <td>
-                                                <input type="number" name="qty_' . $penawaran_detail->id_penawaran_detail . '" value="' . $penawaran_detail->qty . '" class="form-control text-right qty qty_' . $penawaran_detail->id_penawaran_detail . '" onchange="hitung_all(' . $penawaran_detail->id_penawaran_detail . ')" readonly>
-                                            </td>
-                                            <td class="text-right">
-                                                (' . $results['curr'] . ') ' . number_format($penawaran_detail->harga_satuan, 2) . '
-                                                <table class="w-100" border="0">
-                                                    <tr>
-                                                        <td class="text-center" style="vertical-align: top;">Cutting Fee</td>
-                                                        <td class="text-center" style="vertical-align: top;">:</td>
-                                                        <td class="text-center" style="vertical-align: top;">
-                                                            <input type="text" name="cutting_fee_' . $penawaran_detail->id_penawaran_detail . '" id="" class="form-control cutting_fee_' . $penawaran_detail->id_penawaran_detail . ' input_cutting_fee auto_num" value="' . number_format($penawaran_detail->cutting_fee, 2) . '" style="margin-top: 0.5vh; text-align: right" data-id="' . $penawaran_detail->id_penawaran_detail . '" readonly>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="text-center" style="vertical-align: top;">Delivery Fee</td>
-                                                        <td class="text-center" style="vertical-align: top;">:</td>
-                                                        <td class="text-center" style="vertical-align: top;">
-                                                            <input type="text" name="delivery_fee_' . $penawaran_detail->id_penawaran_detail . '" id="" class="form-control delivery_fee_' . $penawaran_detail->id_penawaran_detail . ' input_delivery_fee auto_num" value="' . number_format($penawaran_detail->delivery_fee, 2) . '" style="margin-top: 0.5vh; text-align: right" data-id="' . $penawaran_detail->id_penawaran_detail . '" readonly>
-                                                        </td>
-                                                    </tr>
-                                                </table>
-                                            </td>
-                                            <td class="text-right">' . number_format($penawaran_detail->stok_tersedia, 2) . '</td>
-                                            <td>
-                                                <table class="w-100">
-                                                    <tr>
-                                                        <td>(%)</td>
-                                                        <td>
-                                                            <input type="text" name="diskon_persen_' . $penawaran_detail->id_penawaran_detail . '" id="" class="form-control diskon_persen_' . $penawaran_detail->id_penawaran_detail . '" placeholder="Input (%)" value="' . $penawaran_detail->diskon_persen . '%" onchange="hitung_all(' . $penawaran_detail->id_penawaran_detail . ')" readonly>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>(' . $results['curr'] . ')</td>
-                                                        <td>
-                                                            <input type="text" class="form-control diskon_nilai diskon_nilai_' . $penawaran_detail->id_penawaran_detail . '" name="diskon_nilai_' . $penawaran_detail->id_penawaran_detail . '" id="" value="' . ($penawaran_detail->diskon_nilai) . '" onchange="hitung_all(' . $penawaran_detail->id_penawaran_detail . ')" readonly>
-                                                        </td>
-                                                    </tr>
-                                                </table>
-                                            </td>
-                                            <td class="text-right">
-                                            (' . $results['curr'] . ') ' . number_format($price_after_disc, 2) . '
-                                            </td>
-                                            <td class="text-right">
-                                            (' . $results['curr'] . ') ' . number_format($total_harga, 2) . '
-                                            </td>
-                                        </tr>
-                                    ';
+                                            <tr>
+                                                <td>
+                                                    <span>' . $penawaran_detail->nama_produk . '</span> <br><br>
+                                                </td>
+                                                <td>
+                                                    <input type="number" name="qty_' . $penawaran_detail->id_penawaran_detail . '" value="' . $penawaran_detail->qty . '" class="form-control text-right qty qty_' . $penawaran_detail->id_penawaran_detail . '" onchange="hitung_all(' . $penawaran_detail->id_penawaran_detail . ')" readonly>
+                                                </td>
+                                                <td class="text-right">
+                                                    (' . $results['curr'] . ') ' . number_format($penawaran_detail->harga_satuan, 2) . '
+                                                    <table class="w-100" border="0">
+                                                        <tr>
+                                                            <td class="text-center" style="vertical-align: top;">Delivery Fee</td>
+                                                            <td class="text-center" style="vertical-align: top;">:</td>
+                                                            <td class="text-center" style="vertical-align: top;">
+                                                                <input type="text" name="delivery_fee_' . $penawaran_detail->id_penawaran_detail . '" id="" class="form-control delivery_fee_' . $penawaran_detail->id_penawaran_detail . ' input_delivery_fee auto_num" value="' . number_format($penawaran_detail->delivery_fee, 2) . '" style="margin-top: 0.5vh; text-align: right" data-id="' . $penawaran_detail->id_penawaran_detail . '" readonly>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                                <td class="text-right">' . number_format($penawaran_detail->stok_tersedia, 2) . '</td>
+                                                <td>
+                                                    <table class="w-100">
+                                                        <tr>
+                                                            <td>(%)</td>
+                                                            <td>
+                                                                <input type="text" name="diskon_persen_' . $penawaran_detail->id_penawaran_detail . '" id="" class="form-control diskon_persen_' . $penawaran_detail->id_penawaran_detail . '" placeholder="Input (%)" value="' . $penawaran_detail->diskon_persen . '%" onchange="hitung_all(' . $penawaran_detail->id_penawaran_detail . ')" readonly>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>(' . $results['curr'] . ')</td>
+                                                            <td>
+                                                                <input type="text" class="form-control diskon_nilai diskon_nilai_' . $penawaran_detail->id_penawaran_detail . '" name="diskon_nilai_' . $penawaran_detail->id_penawaran_detail . '" id="" value="' . ($penawaran_detail->diskon_nilai) . '" onchange="hitung_all(' . $penawaran_detail->id_penawaran_detail . ')" readonly>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                                <td class="text-right">
+                                                (' . $results['curr'] . ') ' . number_format($price_after_disc, 2) . '
+                                                </td>
+                                                <td class="text-right">
+                                                (' . $results['curr'] . ') ' . number_format($total_harga, 2) . '
+                                                </td>
+                                            </tr>
+                                        ';
                                 }
                             } else {
                                 foreach ($results['list_penawaran_detail'] as $penawaran_detail) {
@@ -432,67 +392,67 @@
                                     $total_nilai_discount += ($penawaran_detail->diskon_nilai * $penawaran_detail->qty);
 
                                     echo '
-                                <tr>
-                                    <td>
-                                        <span>' . $penawaran_detail->nama_produk . '</span> <br><br>
-                                        <table class="table">
-                                            <tr>
-                                                <td>Ukuran Potongan</td>
-                                                <td width="2" class="text-center">:</td>
-                                                <td>
-                                                    <input type="text" name="ukuran_potong_' . $penawaran_detail->id_penawaran_detail . '" id="" class="form-control form-control-sm ukuran_potong_' . $penawaran_detail->id_penawaran_detail . '" value="' . $penawaran_detail->ukuran_potongan . '" placeholder="- Ukuran Potong -" readonly>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <input type="number" name="qty_' . $penawaran_detail->id_penawaran_detail . '" value="' . $penawaran_detail->qty . '" class="form-control text-right qty qty_' . $penawaran_detail->id_penawaran_detail . '" onchange="hitung_all(' . $penawaran_detail->id_penawaran_detail . ')" readonly>
-                                    </td>
-                                    <td class="text-right">
-                                        (' . $results['curr'] . ') ' . number_format($penawaran_detail->harga_satuan, 2) . '
+                                    <tr>
+                                        <td>
+                                            <span>' . $penawaran_detail->nama_produk . '</span> <br><br>
+                                            <table class="table">
+                                                <tr>
+                                                    <td>Ukuran Potongan</td>
+                                                    <td width="2" class="text-center">:</td>
+                                                    <td>
+                                                        <input type="text" name="ukuran_potong_' . $penawaran_detail->id_penawaran_detail . '" id="" class="form-control form-control-sm ukuran_potong_' . $penawaran_detail->id_penawaran_detail . '" value="' . $penawaran_detail->ukuran_potongan . '" placeholder="- Ukuran Potong -" readonly>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                        <td>
+                                            <input type="number" name="qty_' . $penawaran_detail->id_penawaran_detail . '" value="' . $penawaran_detail->qty . '" class="form-control text-right qty qty_' . $penawaran_detail->id_penawaran_detail . '" onchange="hitung_all(' . $penawaran_detail->id_penawaran_detail . ')" readonly>
+                                        </td>
+                                        <td class="text-right">
+                                            (' . $results['curr'] . ') ' . number_format($penawaran_detail->harga_satuan, 2) . '
 
-                                        <table class="w-100" border="0">
-                                            <tr>
-                                                <td class="text-center" style="vertical-align: top;">Cutting Fee</td>
-                                                <td class="text-center" style="vertical-align: top;">:</td>
-                                                <td class="text-center" style="vertical-align: top;">
-                                                    <input type="text" name="cutting_fee_' . $penawaran_detail->id_penawaran_detail . '" id="" class="form-control cutting_fee_' . $penawaran_detail->id_penawaran_detail . ' input_cutting_fee auto_num" value="' . number_format($penawaran_detail->cutting_fee, 2) . '" style="margin-top: 0.5vh; text-align: right" data-id="' . $penawaran_detail->id_penawaran_detail . '" readonly>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="text-center" style="vertical-align: top;">Delivery Fee</td>
-                                                <td class="text-center" style="vertical-align: top;">:</td>
-                                                <td class="text-center" style="vertical-align: top;">
-                                                    <input type="text" name="delivery_fee_' . $penawaran_detail->id_penawaran_detail . '" id="" class="form-control delivery_fee_' . $penawaran_detail->id_penawaran_detail . ' input_delivery_fee auto_num" value="' . number_format($penawaran_detail->delivery_fee, 2) . '" style="margin-top: 0.5vh; text-align: right" data-id="' . $penawaran_detail->id_penawaran_detail . '" readonly>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                    <td class="text-right">' . number_format($penawaran_detail->stok_tersedia, 2) . '</td>
-                                    <td>
-                                        <table class="w-100">
-                                            <tr>
-                                                <td>(%)</td>
-                                                <td>
-                                                    <input type="text" name="diskon_persen_' . $penawaran_detail->id_penawaran_detail . '" id="" class="form-control diskon_persen_' . $penawaran_detail->id_penawaran_detail . '" placeholder="Input (%)" value="' . $penawaran_detail->diskon_persen . '%" onchange="hitung_all(' . $penawaran_detail->id_penawaran_detail . ')" readonly>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>(' . $results['curr'] . ')</td>
-                                                <td>
-                                                    <input type="text" class="form-control diskon_nilai diskon_nilai_' . $penawaran_detail->id_penawaran_detail . '" name="diskon_nilai_' . $penawaran_detail->id_penawaran_detail . '" id="" value="' . ($penawaran_detail->diskon_nilai) . '" onchange="hitung_all(' . $penawaran_detail->id_penawaran_detail . ')" readonly>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                    <td class="text-right">
-                                    (' . $results['curr'] . ') ' . number_format($price_after_disc, 2) . '
-                                    </td>
-                                    <td class="text-right">
-                                    (' . $results['curr'] . ') ' . number_format($total_harga, 2) . '
-                                    </td>
-                                </tr>
-                            ';
+                                            <table class="w-100" border="0">
+                                                <tr>
+                                                    <td class="text-center" style="vertical-align: top;">Cutting Fee</td>
+                                                    <td class="text-center" style="vertical-align: top;">:</td>
+                                                    <td class="text-center" style="vertical-align: top;">
+                                                        <input type="text" name="cutting_fee_' . $penawaran_detail->id_penawaran_detail . '" id="" class="form-control cutting_fee_' . $penawaran_detail->id_penawaran_detail . ' input_cutting_fee auto_num" value="' . number_format($penawaran_detail->cutting_fee, 2) . '" style="margin-top: 0.5vh; text-align: right" data-id="' . $penawaran_detail->id_penawaran_detail . '" readonly>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-center" style="vertical-align: top;">Delivery Fee</td>
+                                                    <td class="text-center" style="vertical-align: top;">:</td>
+                                                    <td class="text-center" style="vertical-align: top;">
+                                                        <input type="text" name="delivery_fee_' . $penawaran_detail->id_penawaran_detail . '" id="" class="form-control delivery_fee_' . $penawaran_detail->id_penawaran_detail . ' input_delivery_fee auto_num" value="' . number_format($penawaran_detail->delivery_fee, 2) . '" style="margin-top: 0.5vh; text-align: right" data-id="' . $penawaran_detail->id_penawaran_detail . '" readonly>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                        <td class="text-right">' . number_format($penawaran_detail->stok_tersedia, 2) . '</td>
+                                        <td>
+                                            <table class="w-100">
+                                                <tr>
+                                                    <td>(%)</td>
+                                                    <td>
+                                                        <input type="text" name="diskon_persen_' . $penawaran_detail->id_penawaran_detail . '" id="" class="form-control diskon_persen_' . $penawaran_detail->id_penawaran_detail . '" placeholder="Input (%)" value="' . $penawaran_detail->diskon_persen . '%" onchange="hitung_all(' . $penawaran_detail->id_penawaran_detail . ')" readonly>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>(' . $results['curr'] . ')</td>
+                                                    <td>
+                                                        <input type="text" class="form-control diskon_nilai diskon_nilai_' . $penawaran_detail->id_penawaran_detail . '" name="diskon_nilai_' . $penawaran_detail->id_penawaran_detail . '" id="" value="' . ($penawaran_detail->diskon_nilai) . '" onchange="hitung_all(' . $penawaran_detail->id_penawaran_detail . ')" readonly>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                        <td class="text-right">
+                                        (' . $results['curr'] . ') ' . number_format($price_after_disc, 2) . '
+                                        </td>
+                                        <td class="text-right">
+                                        (' . $results['curr'] . ') ' . number_format($total_harga, 2) . '
+                                        </td>
+                                    </tr>
+                                ';
                                 }
                             }
                             ?>
@@ -504,7 +464,7 @@
             <div class="text-right">
                 <div class="box active">
                     <div class="box-body">
-                    <div class="row">
+                        <div class="row">
                             <div class="col-lg-7">
                                 <div class="col-lg-12">
                                     <table class="table table-bordered">
@@ -520,6 +480,7 @@
                                         <tbody class="list_other_cost">
                                             <?php
                                             $total_other_cost = 0;
+                                            $total_other_cost_pph = 0;
                                             foreach ($results['list_other_cost'] as $other_cost) {
                                                 $inc_exc_pph = ($other_cost->inc_exc_pph == '1') ? 'Include' : 'Exclude';
                                                 echo '
@@ -544,9 +505,22 @@
                                             ';
 
                                                 $total_other_cost += $other_cost->total_nilai;
+                                                $total_other_cost_pph += $other_cost->nilai_pph;
                                                 // $total_all += $other_cost->total_nilai;
                                             }
                                             ?>
+                                        </tbody>
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="3" class="text-right">Total Other Cost</td>
+                                                <td class="text-right">
+                                                    <?= '(' . $results['curr'] . ') ' . number_format($total_other_cost_pph, 2) ?>
+                                                </td>
+                                                <td class="text-right">
+                                                    <?= '(' . $results['curr'] . ') ' . number_format($total_other_cost, 2) ?>
+                                                </td>
+                                                <td></td>
+                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -703,8 +677,8 @@
                         <hr>
                         <div class="row">
                             <div class="col-lg-12">
-                                <a href="<?= base_url() ?>quotation" class="btn btn-danger">
-                                    <i class="fa fa-refresh"></i><b> Kembali</b>
+                                <a href="<?= base_url('') ?>approval_quotation" class="btn btn-danger">
+                                    <i class="fa fa-refresh"></i><b> Back</b>
                                 </a>
                             </div>
                         </div>
