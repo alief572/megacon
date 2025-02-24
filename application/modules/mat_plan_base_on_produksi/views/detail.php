@@ -5,17 +5,20 @@
 				<tr class='bg-blue'>
 					<th class='text-center th'>#</th>
 					<th class='text-left th'>Material Name</th>
-					<th class='text-right th'>Qty Order SO</th>
+					<th class='text-right th'>Qty Order SO (m3)</th>
+					<th class='text-right th'>Qty Order SO (Kg)</th>
 				</tr>
 			</thead>
 			<tbody>
 				<?php
-				foreach ($detail as $key => $value) { $key++;
-					$nm_material = (!empty($GET_LEVEL4[$value['id_material']]['nama']))?$GET_LEVEL4[$value['id_material']]['nama']:'';
+				foreach ($detail as $key => $value) {
+					$key++;
+					$nm_material = $value['nm_material'];
 					echo "<tr>";
-						echo "<td class='text-center'>".$key."</td>";
-						echo "<td class='text-left'>".$nm_material."</td>";
-						echo "<td class='text-right'>".number_format($value['qty_order'],5)." Kg</td>";
+					echo "<td class='text-center'>" . $key . "</td>";
+					echo "<td class='text-left'>" . $nm_material . "</td>";
+					echo "<td class='text-right'>" . number_format($value['qty_order'], 5) . " m3</td>";
+					echo "<td class='text-right'>" . number_format($value['nominal_kg'], 5) . " Kg</td>";
 					echo "</tr>";
 				}
 				?>
