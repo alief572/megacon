@@ -66,13 +66,21 @@ class Mat_plan_base_on_produksi_model extends BF_Model
         $nomor = $urut1 + $start_dari;
       }
 
+      $this->db->select('SUM(b.satuan_lainnya) as nominal_kg');
+      $this->db->from('material_planning_base_on_produksi_detail a');
+      $this->db->join('tr_jenis_beton_detail b', 'b.id_detail_material = a.id_material');
+      $this->db->where('a.so_number', $row['so_number']);
+      $get_nominal_kg = $this->db->get()->row();
+
+      $nominal_kg = (!empty($get_nominal_kg)) ? number_format($get_nominal_kg->nominal_kg, 5) : 0;
+
       $nestedData   = array();
       $nestedData[]  = "<div align='center'>" . $nomor . "</div>";
       $nestedData[]  = "<div align='center'>" . strtoupper($row['so_number']) . "</div>";
       $nestedData[]  = "<div align='center'>" . date('d-M-Y', strtotime($row['tgl_so'])) . "</div>";
       $nestedData[]  = "<div align='left'>" . strtoupper($row['nm_customer']) . "</div>";
       $nestedData[]  = "<div align='left'>" . strtoupper($row['project']) . "</div>";
-      $nestedData[]  = "<div class='text-right'>" . number_format($row['qty_order'], 5) . "</div>";
+      $nestedData[]  = "<div class='text-right'>" . $nominal_kg . "</div>";
       $nestedData[]  = "<div class='text-right'>" . number_format($row['qty_use_stok'], 5) . "</div>";
       $nestedData[]  = "<div class='text-right'>" . number_format($row['qty_propose'], 5) . "</div>";
 

@@ -38,7 +38,16 @@ class Mat_plan_base_on_produksi extends Admin_Controller
   public function detail()
   {
     $so_number   = $this->input->post('so_number');
-    $detail   = $this->db->get_where('material_planning_base_on_produksi_detail', array('so_number' => $so_number))->result_array();
+
+    // $detail   = $this->db->get_where('material_planning_base_on_produksi_detail', array('so_number' => $so_number))->result_array();
+
+    $this->db->select('a.*, b.satuan_lainnya as nominal_kg, c.nama as nm_material');
+    $this->db->from('material_planning_base_on_produksi_detail a');
+    $this->db->join('tr_jenis_beton_detail b', 'b.id_detail_material = a.id_material');
+    $this->db->join('new_inventory_4 c', 'c.code_lv4 = b.id_material');
+    $this->db->group_by('a.id');
+    $this->db->where('a.so_number', $so_number);
+    $detail = $this->db->get()->result_array();
 
     $data = [
       'so_number' => $so_number,
@@ -135,8 +144,9 @@ class Mat_plan_base_on_produksi extends Admin_Controller
         )
         ->result_array();
       $detail     = $this->db
-        ->select('a.*, b.max_stok, b.min_stok')
-        ->join('new_inventory_4 b', 'a.id_material=b.code_lv4', 'left')
+        ->select('a.*, b.satuan_lainnya as nominal_kg, c.nama as nm_material, c.max_stok, c.min_stok')
+        ->join('tr_jenis_beton_detail b', 'b.id_detail_material = a.id_material', 'left')
+        ->join('new_inventory_4 c', 'b.id_material = c.code_lv4', 'left')
         ->get_where(
           'material_planning_base_on_produksi_detail a',
           array(
@@ -168,7 +178,13 @@ class Mat_plan_base_on_produksi extends Admin_Controller
       'booking_date'    => $this->datetime
     );
 
-    $detail = $this->db->get_where('material_planning_base_on_produksi_detail', array('so_number' => $so_number))->result_array();
+    // $detail = $this->db->get_where('material_planning_base_on_produksi_detail', array('so_number' => $so_number))->result_array();
+
+    $this->db->select('a.use_stock, b.id_material');
+    $this->db->from('material_planning_base_on_produksi_detail a');
+    $this->db->from('tr_jenis_beton_detail b', 'b.id_detail_material = a.id_material');
+    $this->db->where('a.so_number', $so_number);
+    $detail = $this->db->get()->result_array();
 
     $ArrStock = [];
     if (!empty($detail)) {

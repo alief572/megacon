@@ -86,7 +86,7 @@ class Stock_origa extends Admin_Controller
       //BOM material
       $GET_LEVEL4 = get_inventory_lv4();
       $GET_LEVEL1 = get_list_inventory_lv1('material');
-      $dataBOM = $this->db->select('code_material,SUM(weight) AS weight,spk')->group_by('code_material')->get_where('bom_detail', array('no_bom' => $no_bom))->result_array();
+      $dataBOM = $this->db->select('code_material,SUM(volume_m3) AS weight,spk')->group_by('code_material')->get_where('bom_detail', array('no_bom' => $no_bom))->result_array();
       $ArrBOMDetail = [];
       $ArrPlanningDetail = [];
       $SUM_PLANNING = 0;
