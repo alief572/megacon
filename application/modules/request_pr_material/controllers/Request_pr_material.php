@@ -397,8 +397,11 @@ class Request_pr_material extends Admin_Controller
       )
       ->result_array();
     $detail     = $this->db
-      ->select('a.*, b.max_stok, b.min_stok')
-      ->join('new_inventory_4 b', 'a.id_material=b.code_lv4', 'left')
+      // ->select('a.*, b.max_stok, b.min_stok')
+      // ->join('new_inventory_4 b', 'a.id_material=b.code_lv4', 'left')
+      ->select('a.*, b.satuan_lainnya as nominal_kg, c.nama as nm_material, c.max_stok, c.min_stok')
+      ->join('tr_jenis_beton_detail b', 'b.id_detail_material = a.id_material', 'left')
+      ->join('new_inventory_4 c', 'b.id_material = c.code_lv4', 'left')
       ->get_where(
         'material_planning_base_on_produksi_detail a',
         array(
@@ -433,8 +436,9 @@ class Request_pr_material extends Admin_Controller
       )
       ->result_array();
     $detail     = $this->db
-      ->select('a.*, b.max_stok, b.min_stok')
-      ->join('new_inventory_4 b', 'a.id_material=b.code_lv4', 'left')
+      ->select('a.*, c.nama as nm_material, c.max_stok, c.min_stok, b.id_material as material_id')
+      ->join('tr_jenis_beton_detail b', 'b.id_detail_material = a.id_material', 'left')
+      ->join('new_inventory_4 c', 'b.id_material=c.code_lv4', 'left')
       ->get_where(
         'material_planning_base_on_produksi_detail a',
         array(
@@ -442,7 +446,9 @@ class Request_pr_material extends Admin_Controller
         )
       )
       ->result_array();
-
+          // print_r($detail);
+      // echo $this->db->last_query();
+      // die();
     $this->db->select('a.*');
     $this->db->from('new_inventory_4 a');
     $this->db->where('a.category', 'material');
@@ -607,7 +613,23 @@ class Request_pr_material extends Admin_Controller
     $Nama_Beda    = $Split_Beda[$Jum_Beda - 2];
 
     $getData        = $this->db->get_where('material_planning_base_on_produksi', array('so_number' => $kode))->result_array();
-    $getDataDetail  = $this->db->get_where('material_planning_base_on_produksi_detail', array('so_number' => $kode))->result_array();
+    // $getDataDetail  = $this->db->get_where('material_planning_base_on_produksi_detail', array('so_number' => $kode))->result_array();
+    // $this->db->select('a.*, b.nama as nm_material, `b`.`max_stok`, `b`.`min_stok`');
+    // $this->db->from('material_planning_base_on_produksi_detail a');
+    // $this->db->join('tr_jenis_beton_detail b', 'b.id_detail_material = a.id_material', 'left');
+    // $this->db->where('a.so_number', $kode);
+    // $getDataDetail = $this->db->get()->result_array();
+    $getDataDetail     = $this->db
+        ->select('a.*, b.satuan_lainnya as nominal_kg, c.nama as nm_material, c.max_stok, c.min_stok, b.id_material as material_id')
+        ->join('tr_jenis_beton_detail b', 'b.id_detail_material = a.id_material', 'left')
+        ->join('new_inventory_4 c', 'b.id_material = c.code_lv4', 'inner')
+        ->get_where(
+          'material_planning_base_on_produksi_detail a',
+          array(
+            'a.so_number' => $kode
+          )
+        )
+        ->result_array();
     $getCustomer    = $this->db->get_where('customer', array('id_customer' => $getData[0]['id_customer']))->result_array();
 
     $data = array(
@@ -684,8 +706,11 @@ class Request_pr_material extends Admin_Controller
     $so_number = $post['so_number'];
 
     $detail     = $this->db
-      ->select('a.*, b.max_stok, b.min_stok, b.nama as nm_material')
-      ->join('new_inventory_4 b', 'a.id_material=b.code_lv4', 'left')
+      // ->select('a.*, b.max_stok, b.min_stok, b.nama as nm_material')
+      // ->join('new_inventory_4 b', 'a.id_material=b.code_lv4', 'left')
+      ->select('a.*, c.nama as nm_material, c.max_stok, c.min_stok, b.id_material as material_id')
+      ->join('tr_jenis_beton_detail b', 'b.id_detail_material = a.id_material', 'left')
+      ->join('new_inventory_4 c', 'b.id_material=c.code_lv4', 'left')
       ->get_where(
         'material_planning_base_on_produksi_detail a',
         array(

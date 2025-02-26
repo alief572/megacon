@@ -1,6 +1,6 @@
 <?php
 
-$sroot         = $_SERVER['DOCUMENT_ROOT'] . 'origa_live/';
+$sroot         = $_SERVER['DOCUMENT_ROOT'] . '/megacon/';
 include $sroot . "application/libraries/MPDF57/mpdf.php";
 $mpdf = new mPDF('utf-8', 'A4');
 $mpdf->defaultheaderline = 0;
@@ -122,13 +122,13 @@ $HTML_HEADER .= "</table>";
     <?php
     foreach ($getDataDetail as $key => $value) {
         $key++;
-        $tandaMat = substr($value['id_material'], 0, 1);
+        $tandaMat = substr($value['material_id'], 0, 1);
         if ($tandaMat == 'M') {
-            $nm_product_code    = (!empty($GET_DET_Lv4[$value['id_material']]['code'])) ? $GET_DET_Lv4[$value['id_material']]['code'] : '';
-            $nm_product         = (!empty($GET_DET_Lv4[$value['id_material']]['nama'])) ? $GET_DET_Lv4[$value['id_material']]['nama'] : '';
+            $nm_product_code    = (!empty($GET_DET_Lv4[$value['material_id']]['code_lv4'])) ? $GET_DET_Lv4[$value['material_id']]['code_lv4'] : '';
+            $nm_product         = (!empty($GET_DET_Lv4[$value['material_id']]['nama'])) ? $GET_DET_Lv4[$value['material_id']]['nama'] : '';
         } else {
-            $nm_product_code    = (!empty($GET_ACCESSORIES[$value['id_material']]['code'])) ? $GET_ACCESSORIES[$value['id_material']]['code'] : '';
-            $nm_product         = (!empty($GET_ACCESSORIES[$value['id_material']]['nama'])) ? $GET_ACCESSORIES[$value['id_material']]['nama'] : '';
+            $nm_product_code    = (!empty($GET_ACCESSORIES[$value['material_id']]['code_lv4'])) ? $GET_ACCESSORIES[$value['material_id']]['code_lv4'] : '';
+            $nm_product         = (!empty($GET_ACCESSORIES[$value['material_id']]['nama'])) ? $GET_ACCESSORIES[$value['material_id']]['nama'] : '';
         }
         echo "<tr>";
         echo "<td align='center'>" . $key . " </td>";
@@ -310,3 +310,4 @@ $mpdf->AddPageByArray([
 // $mpdf->SetFooter($footer);
 $mpdf->WriteHTML($html);
 $mpdf->Output("spk-material.pdf", 'I');
+?>
