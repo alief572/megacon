@@ -172,8 +172,11 @@ class App_pr_material extends Admin_Controller
           ->result_array();
       } else {
         $detail     = $this->db
-          ->select('a.*, b.max_stok, b.min_stok, b.nama AS nm_material')
-          ->join('new_inventory_4 b', 'a.id_material=b.code_lv4', 'left')
+          // ->select('a.*, b.max_stok, b.min_stok, b.nama AS nm_material')
+          // ->join('new_inventory_4 b', 'a.id_material=b.code_lv4', 'left')
+          ->select('a.*, c.nama as nm_material, c.max_stok, c.min_stok, b.id_material as material_id')
+          ->join('tr_jenis_beton_detail b', 'b.id_detail_material = a.id_material', 'left')
+          ->join('new_inventory_4 c', 'b.id_material=c.code_lv4', 'inner')
           ->get_where(
             'material_planning_base_on_produksi_detail a',
             array(
@@ -223,8 +226,11 @@ class App_pr_material extends Admin_Controller
         ->result_array();
     } else {
       $detail     = $this->db
-        ->select('a.*, b.max_stok, b.min_stok, b.nama AS nm_material')
-        ->join('new_inventory_4 b', 'a.id_material=b.code_lv4', 'left')
+        // ->select('a.*, b.max_stok, b.min_stok, b.nama AS nm_material')
+        // ->join('new_inventory_4 b', 'a.id_material=b.code_lv4', 'left')
+        ->select('a.*, c.nama as nm_material, c.max_stok, c.min_stok, b.id_material as material_id')
+        ->join('tr_jenis_beton_detail b', 'b.id_detail_material = a.id_material', 'left')
+        ->join('new_inventory_4 c', 'b.id_material=c.code_lv4', 'inner')
         ->get_where(
           'material_planning_base_on_produksi_detail a',
           array(
