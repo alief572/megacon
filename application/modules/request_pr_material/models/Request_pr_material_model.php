@@ -245,7 +245,7 @@ class Request_pr_material_model extends BF_Model
 
       $nestedData   = array();
       $nestedData[]  = "<div align='center'>" . $nomor . "</div>";
-      $nestedData[]  = "<div align='left'>" . $row['code'] . "</div>";
+      $nestedData[]  = "<div align='left'>" . $row['code_lv4'] . "</div>";
       $nestedData[]  = "<div align='left'>" . $row['nama'] . "</div>";
       $nestedData[]  = "<div align='left'>" . strtoupper($row['nama_level1']) . "</div>";
 

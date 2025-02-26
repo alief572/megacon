@@ -154,7 +154,7 @@ if (!empty($header)) {
 						<thead class='thead'>
 							<tr class='bg-blue'>
 								<th class='text-center th'>#</th>
-								<th class='text-center th'>Material Name</th>
+								<th class='text-center th'>Material Names</th>
 								<th class='text-center th'>Min Stock</th>
 								<th class='text-center th'>Max Stock</th>
 								<th class='text-center th'>Min Order</th>
@@ -203,7 +203,7 @@ if (!empty($header)) {
 							<?php
 							foreach ($detail as $key => $value) {
 								$key++;
-								$get_material = $this->db->select('nama')->get_where('new_inventory_4', ['code_lv4' => $value['id_material']])->row_array();
+								$get_material = $this->db->select('nama')->get_where('new_inventory_4', ['code_lv4' => $value['material_id']])->row_array();
 								$nm_material 	= (!empty($get_material)) ? $get_material['nama'] : '';
 								$stock_free 	= $value['stock_free'];
 								$use_stock 		= $value['use_stock'];

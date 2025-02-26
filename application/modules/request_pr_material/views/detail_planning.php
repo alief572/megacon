@@ -156,7 +156,8 @@ if (!empty($header)) {
 							<?php
 							foreach ($detail as $key => $value) {
 								$key++;
-								$nm_material 	= (!empty($GET_LEVEL4[$value['id_material']]['nama'])) ? $GET_LEVEL4[$value['id_material']]['nama'] : '';
+								$nm_material 	= $value['nm_material'];
+								// $nm_material 	= (!empty($GET_LEVEL4[$value['id_material']]['nama'])) ? $GET_LEVEL4[$value['id_material']]['nama'] : '';
 								$stock_free 	= $value['stock_free'];
 								$use_stock 		= $value['use_stock'];
 								$sisa_free 		= $stock_free - $use_stock;
