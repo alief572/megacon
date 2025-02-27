@@ -52,6 +52,7 @@ $ENABLE_DELETE  = has_permission('Approval_PR_Stock_Management.Delete');
     </div>
     <!-- /.box-header -->
     <div class="box-body">
+        <input type="hidden" name='uri2' id='uri2' value='<?= @$uri2; ?>'>
         <table id="example1" class="table table-bordered table-striped" width='100%'>
             <thead>
                 <tr>

@@ -70,9 +70,17 @@ class App_pr_stock extends Admin_Controller
     $this->auth->restrict($this->viewPermission3);
     $session  = $this->session->userdata('app_session');
 
+    $uri2 = $this->uri->segment(2);
+    // print_r($uri2);
+    // die();
+
+    $data = [
+        'uri2' => $uri2
+      ];
+
     // history("View index approval pr stock");
     $this->template->title('Approval PR Stock - Management');
-    $this->template->render('approval_management');
+    $this->template->render('approval_management', $data);
   }
 
   public function data_side_approval_pr_material()
