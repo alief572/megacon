@@ -139,7 +139,7 @@ $tgl_dibutuhkan = (!empty($header[0]['tgl_dibutuhkan']))?date('d F Y',strtotime(
 
     	//back
 		$(document).on('click', '#back', function(){
-		    window.location.href = base_url + active_controller
+		    window.location.href = base_url + active_controller + '/approval_head'
 		});
     });
 </script>
