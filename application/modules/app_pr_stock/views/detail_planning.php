@@ -7,6 +7,7 @@ $tgl_dibutuhkan = (!empty($header[0]['tgl_dibutuhkan'])) ? date('d F Y', strtoti
 	<div class="box-body">
 		<form id="data-form" method="post" autocomplete="off"><br>
 			<input type="hidden" name='so_number' id='so_number' value='<?= $header[0]['so_number']; ?>'>
+			<!-- <input type="hidden" name='uri2' id='uri2' value='<?= @$uri2; ?>'> -->
 			<div class="form-group row">
 				<div class="col-md-12">
 					<table class='table' width='70%'>
@@ -142,7 +143,7 @@ $tgl_dibutuhkan = (!empty($header[0]['tgl_dibutuhkan'])) ? date('d F Y', strtoti
 
 			//back
 			$(document).on('click', '#back', function() {
-				window.location.href = base_url + active_controller
+				window.location.href = base_url + active_controller + '/approval_cost_control'
 			});
 		});
 	</script>
