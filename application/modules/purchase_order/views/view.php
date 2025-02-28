@@ -307,7 +307,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 															
 														</td>
 														<td class='text-center'>".ucfirst($value->unit_measure)."</td>
-														<td class='text-center'>" . ucfirst($value->packing_unit) . ucfirst($value->packing_unit2) . "</td>
+														<td class='text-center'>" . ucfirst($value->packing_unit) . ucfirst($value->packing_unit2) . ucfirst($value->packing_unit3) . "</td>
 												<td hidden>
 															<select class='form-control input-sm' id='dt_ratelme_" . $key . "' name='dt[" . $key . "][ratelme]' onchange='CariPrice(" . $key . ")'>
 																<option value=''>-Pilih-</option>
