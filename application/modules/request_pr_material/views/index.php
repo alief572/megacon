@@ -73,20 +73,27 @@ $ENABLE_DELETE  = has_permission('PR_Material.Delete');
 					echo '<tr>';
 					$list_barang = [];
 					$list_qty_barang = [];
-					$this->db->select('a.propose_purchase, a.qty_order, b.nama as nm_barang, c.code as satuan');
+					$this->db->select('a.id_material, a.propose_purchase, a.qty_order, b.nama as nm_barang, d.nm_material as nm_material, c.code as satuan, "Kg" as satuan_material');
 					$this->db->from('material_planning_base_on_produksi_detail a');
 					$this->db->join('new_inventory_4 b', 'b.code_lv4 = a.id_material', 'left');
 					$this->db->join('ms_satuan c', 'c.id = b.id_unit', 'left');
+					$this->db->join('tr_jenis_beton_detail d', 'd.id_detail_material = a.id_material', 'left');
 					$this->db->where('a.so_number', $row['so_number']);
-					$this->db->where('b.nama <>', null);
 
 					$get_barang = $this->db->get()->result();
+
 					foreach ($get_barang as $item) {
-						$list_barang[] = $item->nm_barang;
-						if ($item->propose_purchase == null || $item->propose_purchase <= 0) {
-							$list_qty_barang[] = number_format($item->qty_order, 2) . ' ' . strtoupper($item->satuan);
+						if($item->nm_barang !== '' && $item->nm_barang !== null) {
+							$list_barang[] = $item->nm_barang;
 						} else {
-							$list_qty_barang[] = number_format($item->propose_purchase, 2) . ' ' . strtoupper($item->satuan);
+							$list_barang[] = $item->nm_material;
+						}
+
+						$satuan = $item->satuan.' '.$item->satuan_material;
+						if ($item->propose_purchase == null || $item->propose_purchase <= 0) {
+							$list_qty_barang[] = number_format($item->qty_order, 2) . ' ' . $satuan;
+						} else {
+							$list_qty_barang[] = number_format($item->propose_purchase, 2) . ' ' . $satuan;
 						}
 					}
 					$list_barang = implode('<br><br>', $list_barang);
