@@ -464,17 +464,17 @@ class Product_master extends Admin_Controller
     $sheet->mergeCells('A' . $NewRow . ':A' . $NextRow);
 
     $sheet->getColumnDimension("B")->setAutoSize(true);
-    $sheet->setCellValue('B' . $NewRow, 'PRODUCT TYPE');
+    $sheet->setCellValue('B' . $NewRow, 'KATEGORI PRODUK');
     $sheet->getStyle('B' . $NewRow . ':B' . $NextRow)->applyFromArray($whiteCenterBold);
     $sheet->mergeCells('B' . $NewRow . ':B' . $NextRow);
 
     $sheet->getColumnDimension("C")->setAutoSize(true);
-    $sheet->setCellValue('C' . $NewRow, 'PRODUCT CATEGORY');
+    $sheet->setCellValue('C' . $NewRow, 'TIPE UKURAN');
     $sheet->getStyle('C' . $NewRow . ':C' . $NextRow)->applyFromArray($whiteCenterBold);
     $sheet->mergeCells('C' . $NewRow . ':C' . $NextRow);
 
     $sheet->getColumnDimension("D")->setAutoSize(true);
-    $sheet->setCellValue('D' . $NewRow, 'PRODUCT JENIS');
+    $sheet->setCellValue('D' . $NewRow, 'VARIAN');
     $sheet->getStyle('D' . $NewRow . ':D' . $NextRow)->applyFromArray($whiteCenterBold);
     $sheet->mergeCells('D' . $NewRow . ':D' . $NextRow);
 
@@ -484,7 +484,7 @@ class Product_master extends Admin_Controller
     $sheet->mergeCells('E' . $NewRow . ':E' . $NextRow);
 
     $sheet->getColumnDimension("F")->setAutoSize(true);
-    $sheet->setCellValue('F' . $NewRow, 'PRODUCT MASTER');
+    $sheet->setCellValue('F' . $NewRow, 'NAMA PRODUK');
     $sheet->getStyle('F' . $NewRow . ':F' . $NextRow)->applyFromArray($whiteCenterBold);
     $sheet->mergeCells('F' . $NewRow . ':F' . $NextRow);
 
