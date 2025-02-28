@@ -174,7 +174,8 @@ class Purchase_order extends Admin_Controller
 				e.propose_purchase as propose_purchase,
 				g.code as packing_unit,
 				h.code as packing_unit2,
-				IF(i.code IS NOT NULL, i.code, j.code) as unit_measure
+				IF(g.code IS NULL AND h.code IS NULL, 'm3', '') as packing_unit3,
+				IF(i.code IS NOT NULL, i.code, IF(j.code IS NULL, 'Kg', j.code)) as unit_measure
 			FROM
 				dt_trans_po a
 				LEFT JOIN warehouse_stock b ON b.id_material = a.idmaterial
@@ -216,6 +217,7 @@ class Purchase_order extends Admin_Controller
 				a.qty as propose_purchase,
 				IF(f.code IS NULL, 'Pcs', f.code) as packing_unit,
 				'' as packing_unit2,
+				'' as packing_unit3,
 				IF(f.code IS NULL, 'Pcs', f.code) as unit_measure
 			FROM
 				dt_trans_po a
@@ -251,6 +253,7 @@ class Purchase_order extends Admin_Controller
 				a.qty as propose_purchase,
 				'Pcs' as packing_unit,
 				'' as packing_unit2,
+				'' as packing_unit3,
 				'Pcs' as unit_measure
 			FROM
 				dt_trans_po a
@@ -2052,7 +2055,7 @@ class Purchase_order extends Admin_Controller
 			// exit;
 		} else {
 			$data['detail']  = $this->db->query("SELECT a.*, 
-				a.namamaterial as nama, IF(b.code IS NULL OR b.code = '', e.id_stock, b.code), IF(b.konversi IS NULL, 1, b.konversi), c.code as satuan, d.code as satuan_packing FROM dt_trans_po a 
+				a.namamaterial as nama, IF(b.code IS NULL OR b.code = '', e.id_stock, b.code), IF(b.konversi IS NULL, 1, b.konversi), IF(c.code IS NULL, 'Kg', c.code) as satuan, IF(d.code IS NULL, 'M3', d.code) as satuan_packing FROM dt_trans_po a 
 			LEFT JOIN new_inventory_4 b ON b.code_lv4 = a.idmaterial OR b.id = a.idmaterial
 			LEFT JOIN ms_satuan c ON c.id = b.id_unit
 			LEFT JOIN ms_satuan d ON d.id = b.id_unit_packing
@@ -2866,11 +2869,12 @@ class Purchase_order extends Admin_Controller
 				(b.qty_stock - b.qty_booking) AS avl_stock, 
 				IF(c.code = '' OR c.code IS NULL, d.id_stock, c.code) as code, 
 				'' as code1, 
-				IF(c.nama = '' OR c.nama IS NULL, d.stock_name, c.nama) as nm_material,
+				IF(c.nama = '' OR c.nama IS NULL, IF(d.stock_name IS NULL OR d.stock_name = '', i.nm_material, d.stock_name), c.nama) as nm_material,
 				'' as tipe_pr,
 				e.code as packing_unit,	
 				f.code as packing_unit2,
-				IF(g.code IS NOT NULL, g.code, h.code) as unit_measure
+				IF(e.code IS NULL AND f.code IS NULL, 'm3', '') as packing_unit3,
+				IF(g.code IS NOT NULL, g.code, IF(h.code IS NULL, 'Kg', h.code)) as unit_measure
 			FROM
 				material_planning_base_on_produksi_detail a
 				LEFT JOIN warehouse_stock b ON b.id_material = a.id_material
@@ -2880,6 +2884,7 @@ class Purchase_order extends Admin_Controller
 				LEFT JOIN ms_satuan f ON f.id = d.id_unit_gudang
 				LEFT JOIN ms_satuan g ON g.id = c.id_unit
 				LEFT JOIN ms_satuan h ON h.id = d.id_unit
+				LEFT JOIN tr_jenis_beton_detail i ON i.id_detail_material = a.id_material
 			WHERE
 				a.so_number IN ('" . str_replace(",", "','", implode(',', $getparam)) . "')
 				AND a.status_app = 'Y'
@@ -2899,6 +2904,7 @@ class Purchase_order extends Admin_Controller
 				'pr depart' as tipe_pr,
 				b.code as packing_unit,
 				'' as packing_unit2,
+				'' as packing_unit3,
 				b.code as unit_measure
 			FROM
 				rutin_non_planning_detail a 
@@ -2922,6 +2928,7 @@ class Purchase_order extends Admin_Controller
 				'pr asset' as tipe_pr,
 				'Pcs' as packing_unit,
 				'' as packing_unit2,
+				'' as packing_unit3,
 				'Pcs' as unit_measure
 			FROM
 				asset_planning a 
@@ -3126,7 +3133,8 @@ class Purchase_order extends Admin_Controller
 				e.propose_purchase as propose_purchase,
 				g.code as packing_unit,
 				h.code as packing_unit2,
-				IF(i.code IS NOT NULL, i.code, j.code) as unit_measure
+				IF(g.code IS NULL AND h.code IS NULL, 'm3', '') as packing_unit3,
+				IF(i.code IS NOT NULL, i.code, IF(j.code IS NULL, 'Kg', j.code)) as unit_measure
 			FROM
 				dt_trans_po a
 				LEFT JOIN warehouse_stock b ON b.id_material = a.idmaterial
@@ -3168,6 +3176,7 @@ class Purchase_order extends Admin_Controller
 				a.qty as propose_purchase,
 				IF(f.code IS NULL, 'Pcs', f.code) as packing_unit,
 				'' as packing_unit2,
+				'' as packing_unit3,
 				IF(f.code IS NULL, 'Pcs', f.code) as unit_measure
 			FROM
 				dt_trans_po a
@@ -3203,6 +3212,7 @@ class Purchase_order extends Admin_Controller
 				a.qty as propose_purchase,
 				'Pcs' as packing_unit,
 				'' as packing_unit2,
+				'' as packing_unit3,
 				'Pcs' as unit_measure
 			FROM
 				dt_trans_po a

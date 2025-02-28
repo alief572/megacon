@@ -319,19 +319,21 @@ class Approval_po extends Admin_Controller
 				(b.qty_stock - b.qty_booking) AS avl_stock, 
 				if(c.code IS NULL, d.id_stock, c.code) as code, 
 				'' as code1, 
-				if(c.nama IS NULL, d.stock_name, c.nama) as nm_material, 
+				if(c.nama IS NULL, IF(d.stock_name IS NULL, i.nm_material, d.stock_name), c.nama) as nm_material, 
 				'' as nm_material1, 
 				e.propose_purchase as propose_purchase,
         if(c.konversi IS NULL, 1, c.konversi) as konversi,
         '0' as konversi1,
         f.code as satuan,
         '' as satuan1,
+        IF(f.code IS NULL, 'Kg', '') as satuan2,
         a.description as description,
         a.note as note,
         a.persen_disc as persen_disc,
         a.nilai_disc as nilai_disc,
         g.code as packing_unit,
-        h.code as packing_unit2
+        h.code as packing_unit2,
+        IF(g.code IS NULL AND h.code IS NULL, 'M3', '') as packing_unit3
 			FROM
 				dt_trans_po a
 				LEFT JOIN warehouse_stock b ON b.id_material = a.idmaterial
@@ -341,6 +343,7 @@ class Approval_po extends Admin_Controller
         LEFT JOIN ms_satuan f ON f.id = c.id_unit
         LEFT JOIN ms_satuan g ON g.id = c.id_unit_packing
         LEFT JOIN ms_satuan h ON h.id = d.id_unit_gudang
+        LEFT JOIN tr_jenis_beton_detail i ON i.id_detail_material = a.idmaterial
 			WHERE
 				a.no_po IN ('".str_replace(",","','",$no_po)."') AND
 				(a.tipe IS NULL OR a.tipe = '')
@@ -372,12 +375,14 @@ class Approval_po extends Admin_Controller
         '0' as konversi1,
         f.code as satuan,
         '' as satuan1,
+        '' as satuan2,
         a.description as description,
         a.note as note,
         a.persen_disc as persen_disc,
         a.nilai_disc as nilai_disc,
         'Pcs' as packing_unit,
-        '' as packing_unit2
+        '' as packing_unit2,
+        '' as packing_unit3
 			FROM
 				dt_trans_po a
 				JOIN rutin_non_planning_detail e ON e.id = a.idpr
@@ -413,12 +418,14 @@ class Approval_po extends Admin_Controller
         '0' as konversi1,
         f.code as satuan,
         '' as satuan1,
+        '' as satuan2,
         a.description as description,
         a.note as note,
         a.persen_disc as persen_disc,
         a.nilai_disc as nilai_disc,
         'Pcs' as packing_unit,
-        '' as packing_unit2
+        '' as packing_unit2,
+        '' as packing_unit3
 			FROM
 				dt_trans_po a
 				JOIN rutin_non_planning_detail e ON e.id = a.idpr

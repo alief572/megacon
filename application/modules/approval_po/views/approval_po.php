@@ -297,7 +297,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 												<td><input type='text' class='form-control input-sm' name='dt[" . $key . "][description]' id='dt_description_" . $key . "' value='" . $value->description . "' readonly></td>
 											  
 											  <td><input type='text' class='form-control input-sm' id='dt_pr_" . $key . "' name='dt[" . $key . "][pr]' value='" . $value->propose_purchase  . "' readonly ></td>
-											  <td>" . $value->satuan . $value->satuan1 . "</td>
+											  <td align='center'>" . $value->satuan . $value->satuan1 . $value->satuan2 . "</td>
 											  ";
 
 												if ($value->nm_material1 == "") {
@@ -312,7 +312,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 												<td>
 																	<input type='text' class='form-control input-sm' id='dt_qty_" . $key . "' name='dt[" . $key . "][qty]' value='" . $po . "' onkeyup='HitAmmount(" . $key . ")' readonly>
 														</td>
-														<td class='text-center'>" . ucfirst($value->packing_unit) . ucfirst($value->packing_unit2) . "</td>
+														<td class='text-center'>" . ucfirst($value->packing_unit) . ucfirst($value->packing_unit2) . ucfirst($value->packing_unit3) . "</td>
 												<td hidden>
 															<select class='form-control input-sm' id='dt_ratelme_" . $key . "' name='dt[" . $key . "][ratelme]' onchange='CariPrice(" . $key . ")'>
 																<option value=''>-Pilih-</option>

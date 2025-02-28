@@ -349,11 +349,11 @@
 
                     $satuan = $detail->satuan;
                     $satuan_packing = $detail->satuan_packing;
-                    if($detail->tipe == '' || $detail->tipe == null) {
+                    if($detail->tipe !== '' && $detail->tipe !== null) {
                         $check_code4 = $this->db->get_where('new_inventory_4', ['code_lv4' => $detail->idmaterial])->num_rows();
 
                         if($check_code4 < 1) {
-                            $this->db->select('b.code as satuan, c.code as satuan_packing');
+                            $this->db->select('IF(b.code, "Kg", b.code) as satuan, IF(c.code IS NULL, "M3", c.code) as satuan_packing');
                             $this->db->from('accessories a');
                             $this->db->join('ms_satuan b', 'b.id = a.id_unit', 'left');
                             $this->db->join('ms_satuan c', 'c.id = a.id_unit_gudang', 'left');
@@ -380,7 +380,7 @@
                             <td style='font-size: 8px; max-width: 250px !important; word-wrap: break-word;'>" . $final_detail_nama . "</td>
                             <td style='font-size: 8px; max-width: 250px !important; word-wrap: break-word;' align='center'>" . ucfirst($satuan) . "</td>
                             <td style='font-size: 8px; max-width: 250px !important; word-wrap: break-word;' align='right'>" . number_format($detail->qty / $konversi, 2) . "</td>
-                            <td style='font-size: 8px; max-width: 250px !important; word-wrap: break-word;'>" . ucfirst($satuan_packing) . "</td>
+                            <td style='font-size: 8px; max-width: 250px !important; word-wrap: break-word;' align='center'>" . ucfirst($satuan_packing) . "</td>
                             <td style='font-size: 8px; max-width: 250px !important; word-wrap: break-word;' align='right'>" . $HS . "</td>
                             <td style='font-size: 8px; max-width: 250px !important; word-wrap: break-word;' align='right'>" . $detail->qty . "</td>
                             <td style='font-size: 8px; max-width: 250px !important; word-wrap: break-word;' align='right'>" . number_format($detail->nilai_disc) . "</td>
