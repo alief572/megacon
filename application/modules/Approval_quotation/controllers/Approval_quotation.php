@@ -100,6 +100,7 @@ class Approval_quotation extends Admin_Controller
 			$update_status = $this->db->update('tr_penawaran', $arr_data, array('no_penawaran' => $post['no_surat']));
 		}
 
+
 		if ($this->db->trans_status() === FALSE) {
 			$valid = 0;
 			$msg = 'Maaf, penawaran gagal di ' . $action;
