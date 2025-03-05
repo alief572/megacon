@@ -75,6 +75,10 @@ class Asset_model extends BF_Model
 		$urut1  = 1;
 		$urut2  = 0;
 		$sumx	= 0;
+
+		$totalAset		= 0;
+		$totalSusut		= 0;
+		$totalSisa		= 0;
 		foreach ($query->result_array() as $row) {
 			$total_data     = $totalData;
 			$start_dari     = $requestData['start'];
@@ -86,6 +90,29 @@ class Asset_model extends BF_Model
 				$nomor = ($total_data - $start_dari) - $urut2;
 			}
 
+			$tahun_tgl_perolehan = date('y', strtotime($row['tgl_perolehan']));
+			$tahun = date('y');
+
+			$exp_tahun = (($tahun - $tahun_tgl_perolehan) * 12);
+
+			$bulan_tgl_perolehan = date('m', strtotime($row['tgl_perolehan']));
+			$bulan = date('m');
+
+			$exp_bulan = ($bulan - $bulan_tgl_perolehan);
+
+			$akumulasi_depresiasi = ($row['value'] * ($exp_tahun + $exp_bulan));
+			if ($akumulasi_depresiasi < 0) {
+				$akumulasi_depresiasi = 0;
+			}
+			if($akumulasi_depresiasi > $row['nilai_asset']) { 
+				$akumulasi_depresiasi = $row['nilai_asset'];
+			}
+
+			$asset_val = ($row['nilai_asset'] - $akumulasi_depresiasi);
+			if ($asset_val < 0) {
+				$asset_val = 0;
+			}
+
 			$nestedData 	= array();
 			$nestedData[]	= "<div align='center'>" . $nomor . "</div>";
 			$nestedData[]	= "<div align='left'>" . strtoupper(strtolower($row['kd_asset'])) . "</div>";
@@ -95,7 +122,7 @@ class Asset_model extends BF_Model
 			$nestedData[]	= "<div align='center'>" . $row['depresiasi'] . " Tahun</div>";
 			$nestedData[]	= number_format($row['nilai_asset']);
 			$nestedData[]	= number_format($row['value']);
-			$nestedData[]	= number_format($row['sisa_nilai']);
+			$nestedData[]	= number_format($asset_val);
 
 			$update = "";
 			$delete = "";
@@ -117,6 +144,10 @@ class Asset_model extends BF_Model
 			$data[] = $nestedData;
 			$urut1++;
 			$urut2++;
+
+			$totalAset += $row['nilai_asset'];
+			$totalSusut += $row['value'];
+			$totalSisa += $asset_val;
 		}
 
 		$json_data = array(
@@ -158,6 +189,7 @@ class Asset_model extends BF_Model
 				a.kd_asset,
 				a.nm_asset,
 				a.category,
+				a.tgl_perolehan,
 				a.nm_category,
 				a.nilai_asset,
 				a.depresiasi,
