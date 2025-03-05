@@ -95,9 +95,13 @@ class Product_master extends Admin_Controller
         $nomor = ($total_data - $start_dari) - $urut2;
       }
 
-      $product_type       = (!empty($get_level_1[$row['code_lv1']]['nama'])) ? $get_level_1[$row['code_lv1']]['nama'] : '';
-      $product_category   = (!empty($get_level_2[$row['code_lv1']][$row['code_lv2']]['nama'])) ? $get_level_2[$row['code_lv1']][$row['code_lv2']]['nama'] : '';
-      $product_jenis       = (!empty($get_level_3[$row['code_lv1']][$row['code_lv2']][$row['code_lv3']]['nama'])) ? $get_level_3[$row['code_lv1']][$row['code_lv2']][$row['code_lv3']]['nama'] : '';
+      $get_product_type = $this->db->get_where('new_inventory_1', array('code_lv1' => $row['code_lv1']))->row();
+      $get_product_category = $this->db->get_where('new_inventory_2', array('code_lv2' => $row['code_lv2']))->row();
+      $get_product_jenis = $this->db->get_where('new_inventory_3', array('code_lv3' => $row['code_lv3']))->row();
+
+      $product_type       = (!empty($get_product_jenis)) ? $get_product_jenis->nama : '';
+      $product_category   = (!empty($get_product_category)) ? $get_product_category->nama : '';
+      $product_jenis       = (!empty($get_product_jenis)) ? $get_product_jenis->nama : '';
 
       $nestedData   = array();
       $nestedData[]  = "<div align='left'>" . $nomor . "</div>";
