@@ -99,7 +99,7 @@ class Product_master extends Admin_Controller
       $get_product_category = $this->db->get_where('new_inventory_2', array('code_lv2' => $row['code_lv2']))->row();
       $get_product_jenis = $this->db->get_where('new_inventory_3', array('code_lv3' => $row['code_lv3']))->row();
 
-      $product_type       = (!empty($get_product_jenis)) ? $get_product_jenis->nama : '';
+      $product_type       = (!empty($get_product_type)) ? $get_product_type->nama : '';
       $product_category   = (!empty($get_product_category)) ? $get_product_category->nama : '';
       $product_jenis       = (!empty($get_product_jenis)) ? $get_product_jenis->nama : '';
 
