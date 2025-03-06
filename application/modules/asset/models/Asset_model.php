@@ -165,7 +165,7 @@ class Asset_model extends BF_Model
 
 	public function queryDataJSON($kdcab, $tgl, $kategori, $like_value = NULL, $column_order = NULL, $column_dir = NULL, $limit_start = NULL, $limit_length = NULL)
 	{
-
+		
 		$where_kdcab = "";
 		if (!empty($kdcab)) {
 			$where_kdcab = " AND a.kdcab = '" . $kdcab . "' ";
@@ -176,6 +176,8 @@ class Asset_model extends BF_Model
 			$where_kategori = " AND a.category = '" . $kategori . "' ";
 		}
 
+		// print_r($where_kategori);
+		// die();
 		// $where_tgl = "";
 		// if(!empty($tgl)){
 		// $ArrEx	= explode('-', $tgl);
@@ -202,6 +204,7 @@ class Asset_model extends BF_Model
 				asset a LEFT JOIN asset_nilai b ON a.kd_asset = b.kd_asset
 			WHERE 1=1
 				AND a.deleted = 'N'
+				" . $where_kategori . "
 				AND (
 				a.nm_asset LIKE '%" . $this->db->escape_like_str($like_value) . "%'
 				OR a.category LIKE '%" . $this->db->escape_like_str($like_value) . "%'
