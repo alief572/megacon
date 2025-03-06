@@ -489,6 +489,7 @@ class Sales_order_model extends BF_Model
 		$length = $this->input->post('length');
 		$start = $this->input->post('start');
 		$search = $this->input->post('search');
+		$approval = $this->input->post('approval');
 
 		$this->db->select('a.*, b.nm_customer, c.no_so, f.req_app as req_app_so, f.approve');
 		$this->db->from('tr_penawaran a');
@@ -496,6 +497,12 @@ class Sales_order_model extends BF_Model
 		$this->db->join('tr_sales_order c', 'c.no_penawaran = a.no_penawaran', 'left');
 		$this->db->join('tr_sales_order f', 'f.no_penawaran = a.no_penawaran');
 		$this->db->where('f.req_app', 1);
+		if($approval == '1') {
+			$this->db->group_start();
+			$this->db->where('f.approve', 0);
+			$this->db->or_where('f.approve', null);
+			$this->db->group_end();
+		}
 		$this->db->group_start();
 		$this->db->where('a.status', 2);
 		$this->db->or_where('a.status', 3);
@@ -519,6 +526,12 @@ class Sales_order_model extends BF_Model
 		$this->db->join('tr_sales_order c', 'c.no_penawaran = a.no_penawaran', 'left');
 		$this->db->join('tr_sales_order f', 'f.no_penawaran = a.no_penawaran');
 		$this->db->where('f.req_app', 1);
+		if($approval == '1') {
+			$this->db->group_start();
+			$this->db->where('f.approve', 0);
+			$this->db->or_where('f.approve', null);
+			$this->db->group_end();
+		}
 		$this->db->group_start();
 		$this->db->where('a.status', 2);
 		$this->db->or_where('a.status', 3);
@@ -563,18 +576,18 @@ class Sales_order_model extends BF_Model
 				$view = "<button type='button' class='btn btn-sm btn-warning detail' title='Detail' data-no_so='" . $data->no_so . "'>View</button>";
 			}
 
-			$approval = '';
-			if ($data->req_app_so > 0 && $this->ENABLE_MANAGE) {
-				$approval = '<button type="button" class="btn btn-sm btn-primary approval" data-id_so="' . $data->no_so . '">Approval</button>';
+			$approval_btn = '';
+			if ($approval == '1' && $data->approve !== '1' && $this->ENABLE_MANAGE) {
+				$approval_btn = '<button type="button" class="btn btn-sm btn-primary approval" data-id_so="' . $data->no_so . '">Approval</button>';
 			}
 
-			$buttons = $view . ' ' . $edit . ' ' . $print . ' ' . $ajukan . ' ' . $approval;
-			if ($data->req_app_so == '1') {
-				$buttons = $view . ' ' . $print;
-				if ($data->approve < 1 && $this->uri->segment(2) == 'approval') {
-					$buttons .= ' ' . $approval;
-				}
-			}
+			$buttons = $view . ' ' . $print . ' ' . $approval_btn;
+			// if ($data->req_app_so == '1') {
+			// 	$buttons = $view . ' ' . $print;
+			// 	if ($approval == '1' && $data->approve !== '1' && $this->uri->segment(2) == 'approval') {
+			// 		$buttons .= ' ' . $approval_btn;
+			// 	}
+			// }
 
 			if ($data->approve == '1') {
 				$status = '<div class="badge bg-green">SO</div>';

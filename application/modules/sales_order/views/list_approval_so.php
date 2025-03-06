@@ -36,7 +36,7 @@ $ENABLE_DELETE  = has_permission('Sales_Order_New.Delete');
                 </tr>
             </thead>
             <tbody>
-                
+
             </tbody>
         </table>
     </div>
@@ -314,15 +314,19 @@ $ENABLE_DELETE  = has_permission('Sales_Order_New.Delete');
 
 
     function DataTables() {
+        var approval = "<?= (isset($approval)) ? $approval : '' ?>";
+
         var dataTable = $('#example1').DataTable({
             processing: true,
             serverSide: true,
             ajax: {
                 type: 'post',
-                url: siteurl + active_controller + 'get_data_so_app'
+                url: siteurl + active_controller + 'get_data_so_app',
+                data: function(d) {
+                    d.approval = approval
+                }
             },
-            columns: [
-                {
+            columns: [{
                     data: 'no'
                 },
                 {
