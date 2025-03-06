@@ -40,6 +40,8 @@ class Sales_order extends Admin_Controller
     $this->auth->restrict($this->viewPermission);
     $session = $this->session->userdata('app_session');
     $this->template->page_icon('fa fa-users');
+
+    $this->template->set('approval', 1);
     $this->template->title('Approval Sales Order');
     $this->template->render('list_approval_so');
   }
