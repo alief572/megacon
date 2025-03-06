@@ -20,6 +20,7 @@
 	$konversi = (!empty($listData[0]->konversi))?$listData[0]->konversi:'';
 	$id_unit = (!empty($listData[0]->id_unit))?$listData[0]->id_unit:'';
 	$id_unit_other = (!empty($listData[0]->id_unit_other))?$listData[0]->id_unit_other:'';
+	$daily_usage_qty = (!empty($listData[0]->daily_usage_qty))?$listData[0]->daily_usage_qty:'1';
 	$konversi_other = (!empty($listData[0]->konversi_other))?$listData[0]->konversi_other:'';
 
 	$length = (!empty($listData[0]->length))?$listData[0]->length:'';
@@ -152,21 +153,29 @@
 				</div>
 			</div>
 			<div class="form-group row">
-				<div class="col-md-2">
-					<label>Other Unit <span class='text-danger'>*</span> / Conversion <span class='text-danger'>*</span></label>
+				<div style="display: none;">
+					<div class="col-md-2">
+						<label>Other Unit <span class='text-danger'>*</span> / Conversion <span class='text-danger'>*</span></label>
+					</div>
+					<div class="col-md-2">
+						<select id="id_unit_other" name="id_unit_other" class="form-control input-md chosen-select" required>
+							<option value="0">Select An Option</option>
+							<?php foreach ($satuan as $value){
+							$sel = ($value->id == $id_unit_other)?'selected':'';
+							?>
+							<option value="<?= $value->id;?>" <?=$sel;?>><?= strtoupper(strtolower($value->code))?></option>
+							<?php } ?>
+						</select>
+					</div>
+					<div class="col-md-2">
+						<input type="text" id="konversi_other" name="konversi_other" class="form-control input-md maskM" placeholder="Conversion" value='<?=$konversi_other;?>'>
+					</div>
 				</div>
 				<div class="col-md-2">
-					<select id="id_unit_other" name="id_unit_other" class="form-control input-md chosen-select" required>
-						<option value="0">Select An Option</option>
-						<?php foreach ($satuan as $value){
-						$sel = ($value->id == $id_unit_other)?'selected':'';
-						?>
-						<option value="<?= $value->id;?>" <?=$sel;?>><?= strtoupper(strtolower($value->code))?></option>
-						<?php } ?>
-					</select>
+					<label>Est. Pemakaian Sehari : <span class='text-danger'>*</span></label>
 				</div>
-				<div class="col-md-2">
-					<input type="text" id="konversi_other" name="konversi_other" class="form-control input-md maskM" placeholder="Conversion" value='<?=$konversi_other;?>'>
+				<div class="col-md-4">
+				<input type="number" id="daily_usage_qty" name="daily_usage_qty" class="form-control input-md" placeholder="Input Qty" value='<?=$daily_usage_qty;?>'>
 				</div>
 			</div>
 			<div class="form-group row">

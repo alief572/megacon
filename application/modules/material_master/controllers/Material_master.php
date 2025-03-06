@@ -218,6 +218,12 @@ class Material_master extends Admin_Controller
 
       $id_unit_packing  = $post['id_unit_packing'];
       $id_unit_other    = $post['id_unit_other'];
+      $daily_usage_qty  = $post['daily_usage_qty'];//new kolom
+      if($daily_usage_qty <= 0 || $daily_usage_qty == ''){
+        $dailyUsageQty = '1';
+      }else{
+        $dailyUsageQty = $daily_usage_qty;
+      }
       $id_unit          = $post['id_unit'];
       $id_supplier      = $post['id_supplier'];
       $konversi         = str_replace(',', '', $post['konversi']);
@@ -245,6 +251,7 @@ class Material_master extends Admin_Controller
         'code'  => $code,
         'trade_name'  => $trade_name,
         'id_unit_packing'  => $id_unit_packing,
+        'daily_usage_qty'  => $dailyUsageQty,
         'id_unit'  => $id_unit,
         'konversi'  => $konversi,
         'id_unit_other'  => $id_unit_other,
