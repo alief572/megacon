@@ -20,7 +20,7 @@
 	$konversi = (!empty($listData[0]->konversi))?$listData[0]->konversi:'';
 	$id_unit = (!empty($listData[0]->id_unit))?$listData[0]->id_unit:'';
 	$id_unit_other = (!empty($listData[0]->id_unit_other))?$listData[0]->id_unit_other:'';
-	$daily_usage_qty = (!empty($listData[0]->daily_usage_qty))?$listData[0]->daily_usage_qty:'1';
+	$daily_usage_qty = (!empty($listData[0]->daily_usage_qty))?$listData[0]->daily_usage_qty:'1g';
 	$konversi_other = (!empty($listData[0]->konversi_other))?$listData[0]->konversi_other:'';
 
 	$length = (!empty($listData[0]->length))?$listData[0]->length:'';
@@ -271,8 +271,56 @@
 </div>
 
 <script>
+	// $(document).ready(function(){
+    // 	$('.chosen-select').select2({width: '100%'});
+	// 	$('.maskM').autoNumeric();
+  	// });
+</script>
+
+<script>
 	$(document).ready(function(){
     	$('.chosen-select').select2({width: '100%'});
 		$('.maskM').autoNumeric();
+		// Event ketika modal ditampilkan
+		$('#dialog-popup').on('shown.bs.modal', function () {
+			// Inisialisasi Select2
+			$('#code_lv1').select2({
+				width: '100%',
+				placeholder: "Pilih Kategori Produk",
+				allowClear: true,
+				dropdownParent: $('#dialog-popup') // Pastikan dropdown muncul di dalam modal
+			});
+			$('#code_lv2').select2({
+				width: '100%',
+				placeholder: "Pilih Tipe Ukuran",
+				allowClear: true,
+				dropdownParent: $('#dialog-popup') // Pastikan dropdown muncul di dalam modal
+			});
+			$('#code_lv3').select2({
+				width: '100%',
+				placeholder: "Pilih Varian",
+				allowClear: true,
+				dropdownParent: $('#dialog-popup') // Pastikan dropdown muncul di dalam modal
+			});
+			$('#id_unit_packing').select2({
+				width: '100%',
+				// placeholder: "Pilih Kategori Produk",
+				allowClear: true,
+				dropdownParent: $('#dialog-popup') // Pastikan dropdown muncul di dalam modal
+			});
+			$('#id_unit').select2({
+				width: '100%',
+				// placeholder: "Pilih Kategori Produk",
+				allowClear: true,
+				dropdownParent: $('#dialog-popup') // Pastikan dropdown muncul di dalam modal
+			});
+			$('#id_supplier').select2({
+				width: '100%',
+				// placeholder: "Pilih Kategori Produk",
+				allowClear: true,
+				dropdownParent: $('#dialog-popup') // Pastikan dropdown muncul di dalam modal
+			});
+		});
+
   	});
 </script>
