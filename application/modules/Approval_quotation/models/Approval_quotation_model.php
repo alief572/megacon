@@ -415,6 +415,7 @@ class Approval_quotation_model extends BF_Model
 		if (!empty($search)) {
 			$this->db->group_start();
 			// $this->db->like('DATE_FORMAT(a.tgl_penawaran, "%d-%M-%Y")', $search['value'], 'both');
+			// $this->db->where("DATE_FORMAT(a.tgl_penawaran, '%d-%M-%Y') LIKE", "%" . $search['value'] . "%", false);
 			$this->db->like('a.tgl_penawaran', date('Y-m-d', strtotime($search['value'])), 'both');
 			$this->db->or_like('b.nm_customer', $search['value'], 'both');
 			$this->db->or_like('a.no_penawaran', $search['value'], 'both');
