@@ -675,7 +675,7 @@
                             <button type="button" class="btn btn-success" onclick="savemutasi()">
                                 <i class="fa fa-save"></i><b> Update</b>
                             </button>
-                            <a href="<?= base_url() ?>Approval_quotation/level1" class="btn btn-danger">
+                            <a href="<?= base_url() ?>Approval_quotation" class="btn btn-danger">
                                 <i class="fa fa-refresh"></i><b> Back</b>
                             </a>
                         </div>
