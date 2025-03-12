@@ -19,7 +19,7 @@ $ENABLE_DELETE  = has_permission('Quotation.Delete');
 		<span class="pull-right">
 		</span>
 	</div>
-	<!-- /.box-header -->
+	<!-- /.box-headera -->
 	<!-- /.box-header -->
 	<div class="box-body">
 		<table id="example1" class="table table-bordered table-striped">

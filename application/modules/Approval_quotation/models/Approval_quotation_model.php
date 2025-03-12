@@ -1,7 +1,7 @@
 <?php
 class Approval_quotation_model extends BF_Model
 {
-// aa
+// aaa
 	public function __construct()
 	{
 		parent::__construct();
@@ -426,8 +426,8 @@ class Approval_quotation_model extends BF_Model
 		$this->db->order_by('a.created_on', 'desc');
 		$this->db->limit($length, $start);
 		$get_data = $this->db->get();
-		echo $this->db->last_query();
-		die();
+		// echo $this->db->last_query();
+		// die();
 
 		$this->db->select('a.no_penawaran, a.tgl_penawaran, a.status, a.project, a.req_app1, a.app_1, a.req_app2, a.app_2, a.req_app3, a.app_3, b.nm_customer');
 		$this->db->from('tr_penawaran a');
