@@ -400,7 +400,7 @@ class Request_pr_material extends Admin_Controller
       // ->select('a.*, b.max_stok, b.min_stok')
       // ->join('new_inventory_4 b', 'a.id_material=b.code_lv4', 'left')
       ->select('a.*, b.satuan_lainnya as nominal_kg, c.nama as nm_material, c.max_stok, c.min_stok')
-      ->join('tr_jenis_beton_detail b', 'b.id_detail_material = a.id_material', 'left')
+      ->join('tr_jenis_beton_detail b', 'b.id_material = a.id_material', 'left')
       ->join('new_inventory_4 c', 'a.id_material = c.code_lv4', 'left')
       ->get_where(
         'material_planning_base_on_produksi_detail a',
@@ -438,8 +438,8 @@ class Request_pr_material extends Admin_Controller
     $huruf_pertama = substr($so_number, 0, 1);
     if($huruf_pertama == 'P'){//UNTUK REQUEST
       $detail     = $this->db
-      ->select('a.*, c.nama as nm_material, c.max_stok, c.min_stok, b.id_material as material_id')
-      ->join('tr_jenis_beton_detail b', 'b.id_detail_material = a.id_material', 'left')
+      ->select('a.*, c.nama as nm_material, c.max_stok, c.min_stok, a.id_material as material_id')
+      ->join('tr_jenis_beton_detail b', 'b.id_material = a.id_material', 'left')
       ->join('new_inventory_4 c', 'a.id_material=c.code_lv4', 'left')
       ->get_where(
         'material_planning_base_on_produksi_detail a',
