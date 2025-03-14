@@ -502,7 +502,8 @@ if (!empty($header)) {
 											type: 'success'
 										}, function(isConfirm) {
 											if (isConfirm) {
-												refresh_pr_detail();
+												// refresh_pr_detail();
+												location.reload();
 											}
 										});
 									} else {
@@ -552,7 +553,8 @@ if (!empty($header)) {
 						$(".add_material_pr_" + id_material).html("<i class='fa fa-spinner fa-spin'></i>");
 					},
 					success: function(result) {
-						refresh_pr_detail();
+						// refresh_pr_detail();
+						location.reload();
 						$(".add_material_pr_" + id_material).html("<i class='fa fa-plus'></i>");
 						$(".add_material_pr_" + id_material).prop("disabled", true);
 					},
