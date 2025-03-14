@@ -57,34 +57,6 @@
 			<?php
 			echo form_button(array('type' => 'button', 'class' => 'btn btn-md btn-success', 'style' => 'min-width:100px; float:right; margin: 5px 0px 5px 0px;', 'content' => 'Purchase Request', 'id' => 'saveRequest')) . ' ';
 			?>
-			<br><h2>DATA TABLE BARU</h2><br>
-			<table id="example2" class="table table-bordered table-striped" width='100%'>
-				<thead>
-					<tr>
-						<th class="text-center mid" >#</th>
-						<th class="text-center mid" >Material</th>
-						<th class="text-center mid" >Stock (Pack)</th>
-						<th class="text-center mid" >Satuan (Pack)</th>
-						<th class="text-center mid" >Konversi</th>
-						<th class="text-center mid" >Stok Konversi</th>
-						<th class="text-center mid" >Unit Measurement</th>
-						<th class="text-center mid" >Pemakaian Sehari (Pack)</th>
-						<th class="text-center mid" >Sisa Kecukupan (Hari)</th>
-						<th class="text-center mid" >Max. Stock (Pack)</th>
-						<th class="text-center mid" >Propose Request</th>
-					</tr>
-					<!-- <tr>
-						<th>Qty Pack</th>
-						<th>Pack Unit</th>
-						<th>Convertion</th>
-						<th>Weight (Kg)</th>
-						<th width='7%'>Kg</th>
-						<th width='7%'>Qty Packing</th>
-					</tr> -->
-				</thead>
-				<tbody></tbody>
-			</table>
-			<br>
 		</div>
 		<!-- /.box-body -->
 	</div>
@@ -364,46 +336,6 @@
 			],
 			"ajax": {
 				url: base_url + active_controller + '/server_side_reorder_point',
-				type: "post",
-				// data: function(d){
-				// d.gudang = $('#gudang').val()
-				// },
-				cache: false,
-				// success: function(){
-				// 	$('.maskM').autoNumeric('init', {mDec: '2', aPad: false});
-				// },
-				error: function() {
-					$(".my-grid-error").html("");
-					$("#my-grid").append('<tbody class="my-grid-error"><tr><th colspan="3">No data found in the server</th></tr></tbody>');
-					$("#my-grid_processing").css("display", "none");
-				}
-			}
-		});
-	}
-
-	function DataTables_New() {
-		var dataTable = $('#example2').DataTable({
-			"processing": true,
-			"serverSide": true,
-			"stateSave": true,
-			"bAutoWidth": true,
-			"destroy": true,
-			"responsive": true,
-			"aaSorting": [
-				[2, "asc"]
-			],
-			"columnDefs": [{
-				"targets": 'no-sort',
-				"orderable": false,
-			}],
-			"sPaginationType": "simple_numbers",
-			"iDisplayLength": 10,
-			"aLengthMenu": [
-				[10, 20, 50, 100, 150],
-				[10, 20, 50, 100, 150]
-			],
-			"ajax": {
-				url: base_url + active_controller + '/server_side_reorder_point_new',
 				type: "post",
 				// data: function(d){
 				// d.gudang = $('#gudang').val()
