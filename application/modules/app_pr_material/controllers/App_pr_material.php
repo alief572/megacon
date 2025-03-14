@@ -170,6 +170,7 @@ class App_pr_material extends Admin_Controller
             )
           )
           ->result_array();
+          // echo $this->db->last_query();
       } else {
         $detail     = $this->db
           // ->select('a.*, b.max_stok, b.min_stok, b.nama AS nm_material')
@@ -184,7 +185,10 @@ class App_pr_material extends Admin_Controller
             )
           )
           ->result_array();
+          // echo $this->db->last_query();
       }
+      
+      // die();
 
       $data = [
         'so_number' => $so_number,
