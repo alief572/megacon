@@ -34,7 +34,8 @@ class Request_pr_material extends Admin_Controller
               material_planning_base_on_produksi a
               LEFT JOIN customer b ON a.id_customer = b.id_customer
               LEFT JOIN users c ON c.id_user = a.created_by
-            WHERE 1=1 AND a.category in ('pr material','base on production') AND a.booking_date IS NOT NULL AND a.close_pr IS NULL";
+            WHERE 1=1 AND a.category in ('pr material','base on production') AND a.booking_date IS NOT NULL AND a.close_pr IS NULL
+            ORDER BY a.created_date DESC";
     $get_pr = $this->db->query($sql)->result_array();
 
     history("View index request pr material");
@@ -57,6 +58,11 @@ class Request_pr_material extends Admin_Controller
   public function server_side_reorder_point()
   {
     $this->request_pr_material_model->get_data_json_reorder_point();
+  }
+
+  public function server_side_reorder_point_new()
+  {
+    $this->request_pr_material_model->get_data_json_reorder_point_new();
   }
 
   public function clear_update_reorder()
