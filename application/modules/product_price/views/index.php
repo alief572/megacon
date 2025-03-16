@@ -14,7 +14,7 @@
 			<span class='text-bold text-red'><?= $last_update; ?></span>
 		</span>
 		<span class="pull-right">
-			<a class="btn btn-success btn-sm" style='float:right;' href="<?= base_url('product_price/download_excel') ?>" title="Download">Download</a>
+			<a class="btn btn-success btn-sm" style='float:right;' href="<?= base_url('product_price/export_excel') ?>" target="_blank" title="Export Excel">Export Excel</a>
 		</span>
 	</div>
 

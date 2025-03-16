@@ -2840,4 +2840,10 @@ class Product_price extends Admin_Controller
 		$this->template->title('Detail Price List Costing Custom');
 		$this->template->render('detail_costing_ass', $data);
 	}
+
+	public function export_excel() {
+		$get_data = $this->product_price_model->get_export_product_price_data();
+
+		$this->load->view('export_excel_product_costing', array('results' => $get_data));
+	}
 }
