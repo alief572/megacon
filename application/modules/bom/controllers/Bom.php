@@ -553,125 +553,38 @@ class Bom extends Admin_Controller
 		$objWriter->save("php://output");
 	}
 
-	public function excel_report_all_bom_detail()
+	public function excel_report_all_bom_detail($no_bom)
 	{
-		$kode_bom = $this->uri->segment(3);
-		set_time_limit(0);
-		ini_set('memory_limit', '1024M');
+		
+		$this->db->select('a.*, b.nm_jenis_beton');
+		$this->db->from('bom_header a');
+		$this->db->join('tr_jenis_beton_header b', 'b.id_komposisi_beton = a.id_jenis_beton', 'left');
+		$this->db->where('a.no_bom', $no_bom);
+		$header = $this->db->get()->result();
 
-		$this->load->library("PHPExcel");
-		$objPHPExcel	= new PHPExcel();
+		$this->db->select('a.*, b.nm_material');
+		$this->db->from('bom_detail a');
+		$this->db->join('tr_jenis_beton_detail b', 'b.id_detail_material = a.code_material', 'left');
+		$this->db->where('a.no_bom', $no_bom);
+		$detail = $this->db->get()->result();
 
-		$tableHeader 	= tableHeader();
-		$mainTitle 		= mainTitle();
-		$tableBodyCenter = tableBodyCenter();
-		$tableBodyLeft 	= tableBodyLeft();
-		$tableBodyRight = tableBodyRight();
+		$this->db->select('a.*, b.code as satuan, c.nama as nm_material');
+		$this->db->from('bom_material_lain a');
+		$this->db->join('ms_satuan b', 'b.id = a.id_satuan', 'left');
+		$this->db->join('new_inventory_4 c', 'c.code_lv4 = a.id_material', 'left');
+		$this->db->where('a.no_bom', $no_bom);
+		$detail_material_lain = $this->db->get()->result();
 
-		$sheet 		= $objPHPExcel->getActiveSheet();
-
-		$sql = "
-  			SELECT
-  				a.id_product,
-				a.variant_product,
-          		b.code_material,
-          		b.weight,
-				c.nama AS nm_product
-  			FROM
-  				bom_header a 
-				LEFT JOIN bom_detail b ON a.no_bom = b.no_bom
-				LEFT JOIN new_inventory_4 c ON a.id_product = c.code_lv4
-  		    WHERE 
-				a.no_bom = '" . $kode_bom . "' 
-				AND b.no_bom = '" . $kode_bom . "'
-				AND a.category = 'standard'
-  			ORDER BY
-  				b.id ASC
-  		";
-		$product    = $this->db->query($sql)->result_array();
-
-		$Row		= 1;
-		$NewRow		= $Row + 1;
-		$Col_Akhir	= $Cols	= getColsChar(3);
-		$sheet->setCellValue('A' . $Row, 'BOM HEAD TO HEAD DETAIL');
-		$sheet->getStyle('A' . $Row . ':' . $Col_Akhir . $NewRow)->applyFromArray($mainTitle);
-		$sheet->mergeCells('A' . $Row . ':' . $Col_Akhir . $NewRow);
-
-		$NewRow	= $NewRow + 2;
-
-		$sheet->setCellValue('A' . $NewRow, $product[0]['nm_product']);
-		$sheet->getStyle('A' . $NewRow . ':C' . $NewRow)->applyFromArray($tableBodyLeft);
-		$sheet->mergeCells('A' . $NewRow . ':C' . $NewRow);
-		$sheet->getColumnDimension('A')->setAutoSize(true);
-
-		$NewRow	 = $NewRow + 1;
-		$NextRow = $NewRow;
-
-		$sheet->setCellValue('A' . $NewRow, $product[0]['variant_product']);
-		$sheet->getStyle('A' . $NewRow . ':C' . $NewRow)->applyFromArray($tableBodyLeft);
-		$sheet->mergeCells('A' . $NewRow . ':C' . $NewRow);
-		$sheet->getColumnDimension('A')->setAutoSize(true);
-
-		$NewRow	 = $NewRow + 2;
-		$NextRow = $NewRow;
-
-		$sheet->setCellValue('A' . $NewRow, 'No');
-		$sheet->getStyle('A' . $NewRow . ':A' . $NextRow)->applyFromArray($tableHeader);
-		$sheet->mergeCells('A' . $NewRow . ':A' . $NextRow);
-		$sheet->getColumnDimension('A')->setAutoSize(true);
-
-		$sheet->setCellValue('B' . $NewRow, 'Material Name');
-		$sheet->getStyle('B' . $NewRow . ':B' . $NextRow)->applyFromArray($tableHeader);
-		$sheet->mergeCells('B' . $NewRow . ':B' . $NextRow);
-		$sheet->getColumnDimension('B')->setAutoSize(true);
-
-		$sheet->setCellValue('C' . $NewRow, 'Total Weight');
-		$sheet->getStyle('C' . $NewRow . ':C' . $NextRow)->applyFromArray($tableHeader);
-		$sheet->mergeCells('C' . $NewRow . ':C' . $NextRow);
-		$sheet->getColumnDimension('C')->setAutoSize(true);
-
-		if ($product) {
-			$awal_row	= $NextRow;
-			$no = 0;
-			foreach ($product as $key => $row_Cek) {
-				$no++;
-				$awal_row++;
-				$awal_col	= 0;
-
-				$awal_col++;
-				$Cols			= getColsChar($awal_col);
-				$sheet->setCellValue($Cols . $awal_row, $no);
-				$sheet->getStyle($Cols . $awal_row)->applyFromArray($tableBodyLeft);
-
-				$awal_col++;
-				$status_date	= strtoupper(get_name('new_inventory_4', 'nama', 'code_lv4', $row_Cek['code_material']));
-				$Cols			= getColsChar($awal_col);
-				$sheet->setCellValue($Cols . $awal_row, $status_date);
-				$sheet->getStyle($Cols . $awal_row)->applyFromArray($tableBodyLeft);
-
-				$awal_col++;
-				$status_date	= number_format($row_Cek['weight'], 4);
-				$Cols			= getColsChar($awal_col);
-				$sheet->setCellValue($Cols . $awal_row, $status_date);
-				$sheet->getStyle($Cols . $awal_row)->applyFromArray($tableBodyLeft);
-			}
-		}
-
-
-		$sheet->setTitle('List BOM DETAIL');
-		//mulai menyimpan excel format xlsx, kalau ingin xls ganti Excel2007 menjadi Excel5
-		$objWriter		= PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
-		ob_end_clean();
-		//sesuaikan headernya
-		header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
-		header("Cache-Control: no-store, no-cache, must-revalidate");
-		header("Cache-Control: post-check=0, pre-check=0", false);
-		header("Pragma: no-cache");
-		header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-		//ubah nama file saat diunduh
-		header('Content-Disposition: attachment;filename="bom-detail-' . $kode_bom . '.xls"');
-		//unduh file
-		$objWriter->save("php://output");
+		$product    = $this->bom_model->get_data_where_array('new_inventory_4', array('deleted_date' => NULL, 'category' => 'product'));
+		// print_r($header);
+		$data = [
+			'header' => $header,
+			'detail' => $detail,
+			'detail_material_lain' => $detail_material_lain,
+			'product' => $product,
+			'GET_LEVEL4' => get_inventory_lv4(),
+		];
+		$this->load->view('export_excel_bom', $data);
 	}
 
 	public function get_add_copy()

@@ -79,7 +79,7 @@ class Bom_model extends BF_Model
 			$nestedData 	= array();
 			$nestedData[]	= "<div align='center'>" . $nomor . "</div>";
 			$nestedData[]	= "<div align='left'>" . strtoupper(strtolower($row['nama'])) . "</div>";
-			$nestedData[]   = "<div align='center'>".number_format($row['volume_m3'], 2)."</div>";
+			$nestedData[]   = "<div align='center'>" . number_format($row['volume_m3'], 2) . "</div>";
 			$nestedData[]	= "<div align='left'>" . $row['keterangan'] . "</div>";
 			$moq = (!empty($row['moq'])) ? number_format($row['moq'], 4) : '-';
 
@@ -103,6 +103,7 @@ class Bom_model extends BF_Model
 								<button type='button' class='btn btn-sm btn-warning detail' title='Detail' data-no_bom='" . $row['no_bom'] . "'><i class='fa fa-eye'></i></button>
 								" . $edit . "
 								" . $delete . "
+								" . $excel . "
 								</div>";
 			$data[] = $nestedData;
 			$urut1++;
