@@ -104,6 +104,8 @@ class Request_pr_material extends Admin_Controller
     $data = $this->input->post();
 
     $id_material   = $data['id_material'];
+    // print_r($data['purchase']);
+    // die();
     $purchase     = str_replace(',', '', $data['purchase']);
     $tanggal       = $data['tanggal'];
     $keterangan       = $data['keterangan'];
@@ -162,6 +164,12 @@ class Request_pr_material extends Admin_Controller
       $ArrSaveDetail[$key]['note'] = $value['keterangan'];
     }
 
+    // $tgl_dibutuhkan = isset($value['tgl_dibutuhkan']) && !empty($value['tgl_dibutuhkan']) ? $value['tgl_dibutuhkan'] : '';
+    $tgl_dibutuhkan = !empty($getraw_materials) && isset($getraw_materials[0]['tgl_dibutuhkan']) 
+    ? $getraw_materials[0]['tgl_dibutuhkan'] 
+    : '';
+
+
     $ArrSaveHeader = array(
       'so_number'   => $so_number,
       'no_pr'   => generateNoPR(),
@@ -170,7 +178,8 @@ class Request_pr_material extends Admin_Controller
       'id_customer'   => 'C100-2401002',
       'project' => 'Pengisian Stok Internal',
       'qty_propose' => $SUM,
-      'tgl_dibutuhkan' => $value['tgl_dibutuhkan'],
+      // 'tgl_dibutuhkan' => $value['tgl_dibutuhkan'],
+      'tgl_dibutuhkan' => $tgl_dibutuhkan,
       'created_by'      => $this->id_user,
       'created_date'    => $this->datetime,
       'booking_by'      => $this->id_user,
