@@ -27,7 +27,7 @@
 		</div>
 		<!-- /.box-header -->
 		<div class="box-body">
-			<table id="example1" class="table table-bordered table-striped" width='100%'>
+			<!-- <table id="example1" class="table table-bordered table-striped" width='100%'>
 				<thead>
 					<tr>
 						<th class="text-center mid" rowspan='2' width='3%'>#</th>
@@ -53,11 +53,11 @@
 				</thead>
 				<tbody></tbody>
 			</table>
-			<br>
+			<br> -->
 			<?php
-			echo form_button(array('type' => 'button', 'class' => 'btn btn-md btn-success', 'style' => 'min-width:100px; float:right; margin: 5px 0px 5px 0px;', 'content' => 'Purchase Request', 'id' => 'saveRequest')) . ' ';
+			// echo form_button(array('type' => 'button', 'class' => 'btn btn-md btn-success', 'style' => 'min-width:100px; float:right; margin: 5px 0px 5px 0px;', 'content' => 'Purchase Request', 'id' => 'saveRequest')) . ' ';
 			?>
-			<br><h2>DATA TABLE BARU</h2><br>
+			<!-- <br><h2>DATA TABLE BARU</h2><br> -->
 			<table id="example2" class="table table-bordered table-striped" width='100%'>
 				<thead>
 					<tr>
@@ -71,7 +71,8 @@
 						<th class="text-center mid" >Pemakaian Sehari (Pack)</th>
 						<th class="text-center mid" >Sisa Kecukupan (Hari)</th>
 						<th class="text-center mid" >Max. Stock (Pack)</th>
-						<th class="text-center mid" >Propose Request</th>
+						<th class="text-center mid" >Qty PR</th>
+						<th class="text-center" >Propose Request</th>
 					</tr>
 					<!-- <tr>
 						<th>Qty Pack</th>
@@ -85,6 +86,9 @@
 				<tbody></tbody>
 			</table>
 			<br>
+			<?php
+			echo form_button(array('type' => 'button', 'class' => 'btn btn-md btn-success', 'style' => 'min-width:100px; float:right; margin: 5px 0px 5px 0px;', 'content' => 'Purchase Request', 'id' => 'saveRequest')) . ' ';
+			?>
 		</div>
 		<!-- /.box-body -->
 	</div>
@@ -103,7 +107,8 @@
 </style>
 <script>
 	$(document).ready(function() {
-		DataTables();
+		DataTables();//version old
+		DataTables_New();
 		$('.autoNumeric2').autoNumeric('init', {
 			mDec: '2',
 			aPad: false
@@ -173,7 +178,7 @@
 		var nomor = $(this).data('no');
 		var id_material = $(this).data('id_material');
 		var purchase = $('#purchase_' + nomor).val().split(",").join("");
-		var keterangan = $('#keterangan_' + nomor).val().split(",").join("");
+		// var keterangan = $('#keterangan_' + nomor).val().split(",").join("");//version old
 		var tanggal = $('#tgl_butuh').val();
 
 		var HTML = $(this).parent().parent().parent()
@@ -193,7 +198,7 @@
 			data: {
 				"id_material": id_material,
 				"purchase": purchase,
-				"keterangan": keterangan,
+				// "keterangan": keterangan,
 				"tanggal": tanggal
 			},
 			cache: false,

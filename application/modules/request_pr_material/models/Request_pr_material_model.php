@@ -396,9 +396,9 @@ class Request_pr_material_model extends BF_Model
 
       $nestedData   = array();
       $nestedData[]  = "<div align='center'>" . $nomor . "</div>";
-      $nestedData[]  = "<div align='left'>" . $row['code_lv4'] . "</div>";
+      // $nestedData[]  = "<div align='left'>" . $row['code_lv4'] . "</div>";
       $nestedData[]  = "<div align='left'>" . $row['nama'] . "</div>";
-      $nestedData[]  = "<div align='left'>" . strtoupper($row['nama_level1']) . "</div>";
+      // $nestedData[]  = "<div align='left'>" . strtoupper($row['nama_level1']) . "</div>";
 
       $konversi = $row['konversi'];
       $qty_pack = 0;
@@ -411,18 +411,40 @@ class Request_pr_material_model extends BF_Model
       $nestedData[]  = "<div align='right'>" . number_format($qty_pack, 2) . "</div>";
       $nestedData[]  = "<div align='center'>" . $satuan . "</div>";
       $nestedData[]  = "<div align='center' class='konversi'>" . number_format($konversi, 2) . "</div>";
-      $nestedData[]  = "<div align='right'>" . number_format($row['qty_stock'], 4) . "</div>";
-      $nestedData[]  = "<div align='right'>" . number_format($row['min_stok'], 2) . "</div>";
+      //START STOCK KONEVERSI
+      $stok_konversi = $qty_pack * $konversi;
+      //END STOCK KONVERSI
+      $nestedData[]  = "<div align='right'>" . number_format($stok_konversi, 2) . "</div>";
+      //START GET UNIT MEASUREMENT
+      $Unit_ID = $row['id_unit'];
+      $getDataUnitMeasurement = $this->db->query("SELECT * FROM ms_satuan WHERE id ='$Unit_ID'")->row();
+      $Unit_Measurement = $getDataUnitMeasurement->code;
+      //END GET UNIT MEASUREMENT
+      $nestedData[]  = "<div align='right'>" . @$Unit_Measurement . "</div>";
+      //START DAILY USAGE QTY
+      $daily_usage_qty = isset($row['daily_usage_qty']) && !empty($row['daily_usage_qty']) ? $row['daily_usage_qty'] : 1;
+      //END DAILY USAGE QTY
+      $nestedData[]  = "<div align='right'>" . @$row['daily_usage_qty'] . "</div>";
+      //START GET SISA KECUKUPAN
+      $sisa_kecukupan = $qty_pack / $daily_usage_qty;
+      //END GET SISA KECUKUPAN
+      $nestedData[]  = "<div align='right'>" . number_format($sisa_kecukupan , 2) . "</div>";
+      // $nestedData[]  = "<div align='right'>" . number_format($row['qty_stock'], 4) . "</div>";
+      // $nestedData[]  = "<div align='right'>" . number_format($row['min_stok'], 2) . "</div>";
       $nestedData[]  = "<div align='right'>" . number_format($row['max_stok'], 2) . "</div>";
 
       $outanding_pr   = (!empty($GET_OUTANDING_PR[$row['code_lv4']]) and $GET_OUTANDING_PR[$row['code_lv4']] > 0) ? $GET_OUTANDING_PR[$row['code_lv4']] : 0;
-      $nestedData[]  = "<div align='right'>" . number_format($outanding_pr, 2) . "</div>";
+      // $nestedData[]  = "<div align='right'>" . number_format($outanding_pr, 2) . "</div>";
 
       $QTY_PR = '';
       if ($row['qty_stock'] < $row['min_stok']) {
         $QTY_PR = ($row['max_stok'] - ($row['qty_stock'] + $outanding_pr));
         $QTY_PR = ($QTY_PR < 0) ? 0 : $QTY_PR;
       }
+      // else{
+      //   $QTY_PR = 1;
+      // }
+      $nestedData[]  = "<div align='right'>" . $QTY_PR . "</div>";
 
       // $kg_per_bulan 	= 0;
       // $reorder 		= ($row['min_stok']/30) * $kg_per_bulan;
@@ -432,8 +454,18 @@ class Request_pr_material_model extends BF_Model
       // if($QTY_PR < 0){
       // 	$QTY_PR = '';
       // }
-
+      // var_dump($row['request']); 
+      // var_dump($QTY_PR);
+      // exit();
+      $request_input = $this->input->post('request');
+      $row['request'] = (!empty($request_input) || $request_input === "0") ? $request_input : $row['request'];
       $purchase2 = (!empty($row['request'])) ? $row['request'] : $QTY_PR;
+      if ($purchase2 >= 1000) {
+          $purchase2_fix = number_format($purchase2, 0, '.', ','); // Format ribuan dengan koma
+      } else {
+          $purchase2_fix = number_format($purchase2, 0, '.', ''); // Format biasa tanpa koma
+      }
+
       $keterangan = (!empty($row['keterangan'])) ? $row['keterangan'] : '';
 
       $purchase_packing = 0;
@@ -442,13 +474,13 @@ class Request_pr_material_model extends BF_Model
       }
 
       $nestedData[]  = " <div align='left'>
-                          <input type='text' name='purchase' id='purchase_" . $nomor . "' data-id_material='" . $row['code_lv4'] . "' data-no='" . $nomor . "' class='form-control input-sm text-right maskM changeSave' style='width:100px;' value='" . $purchase2 . "'>
+                          <input type='text' name='purchase' id='purchase_" . $nomor . "' data-id_material='" . $row['code_lv4'] . "' data-no='" . $nomor . "' class='form-control input-sm text-right maskM changeSave' style='width:100px;' value='" . $purchase2_fix . "'>
                         </div>";
-      $nestedData[]  = " <div align='center' class='propose_packing'>" . number_format($purchase_packing, 2) . "</div>";
-      $nestedData[]  = "<div align='center'>" . $satuan . "</div><script type='text/javascript'>$('.maskM').autoNumeric('init', {mDec: '2', aPad: false});</script>";
-      $nestedData[]  = " <div align='left'>
-                          <input type='text' name='keterangan' id='keterangan_" . $nomor . "' data-id_material='" . $row['code_lv4'] . "' data-no='" . $nomor . "' class='form-control input-sm text-right changeSave' style='width:150px;' value='" . $keterangan . "'>
-                        </div>";
+      // $nestedData[]  = " <div align='center' class='propose_packing'>" . number_format($purchase_packing, 2) . "</div>";
+      // $nestedData[]  = "<div align='center'>" . $satuan . "</div><script type='text/javascript'>$('.maskM').autoNumeric('init', {mDec: '2', aPad: false});</script>";
+      // $nestedData[]  = " <div align='left'>
+      //                     <input type='text' name='keterangan' id='keterangan_" . $nomor . "' data-id_material='" . $row['code_lv4'] . "' data-no='" . $nomor . "' class='form-control input-sm text-right changeSave' style='width:150px;' value='" . $keterangan . "'>
+      //                   </div>";
 
       $data[] = $nestedData;
       $urut1++;
