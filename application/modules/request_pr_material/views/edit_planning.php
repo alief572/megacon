@@ -121,7 +121,7 @@ if (!empty($header)) {
 										<input type="text" name="keterangan_1" id="" class="form-control" value="<?= $keterangan_1 ?>">
 									</td>
 								</tr>
-								<tr>
+								<!-- <tr>
 									<td class="text-center">Cost Control</td>
 									<td class="text-center">
 										<?= $status2 ?>
@@ -144,7 +144,7 @@ if (!empty($header)) {
 									<td>
 										<input type="text" name="keterangan_3" id="" class="form-control" value="<?= $keterangan_3 ?>">
 									</td>
-								</tr>
+								</tr> -->
 							</tbody>
 						</table>
 					</div>
