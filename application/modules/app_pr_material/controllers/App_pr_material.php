@@ -409,6 +409,78 @@ class App_pr_material extends Admin_Controller
     echo json_encode($Arr_Data);
   }
 
+  public function process_approval_all_new()
+  {
+    $data       = $this->input->post();
+    $check      = $data['check'];
+    $so_number  = $data['so_number'];
+    $tingkat_approval = $data['tingkat_approval'];
+
+    $ArrUpdateHeader = [];
+    $ArrUpdate = [];
+    // if ($tingkat_approval == '3') :
+    //   $ArrUpdateHeader = [
+    //     'app_3' => 1,
+    //     'app_3_by' => $this->auth->user_id(),
+    //     'app_3_date' => date('Y-m-d H:i:s'),
+    //     'app_post' => 4
+    //   ];
+
+    //   foreach ($check as $key => $value) {
+    //     $ArrUpdate[$key]['id'] = $value;
+    //     $ArrUpdate[$key]['propose_rev'] = str_replace(',', '', $data['pr_rev_' . $value]);
+    //     $ArrUpdate[$key]['status_app'] = 'Y';
+    //     $ArrUpdate[$key]['app_by'] = $this->id_user;
+    //     $ArrUpdate[$key]['app_date'] = $this->datetime;
+    //   }
+    // else :
+      $ArrUpdateHeader = [
+        'app_' . $tingkat_approval => 1,
+        'app_' . $tingkat_approval . '_by' => $this->auth->user_id(),
+        'app_' . $tingkat_approval . '_date' => date('Y-m-d H:i:s'),
+        'keterangan_' . $tingkat_approval => $data['keterangan_' . $tingkat_approval],
+        'app_post' => ($tingkat_approval == '2') ? 3 : 2
+      ];
+
+      foreach ($check as $key => $value) {
+        $ArrUpdate[$key]['id'] = $value;
+        $ArrUpdate[$key]['propose_rev'] = str_replace(',', '', $data['pr_rev_' . $value]);
+        $ArrUpdate[$key]['status_app'] = 'Y';
+        $ArrUpdate[$key]['app_by'] = $this->id_user;
+        $ArrUpdate[$key]['app_date'] = $this->datetime;
+      }
+    // endif;
+
+    $this->db->trans_start();
+
+    if (!empty($ArrUpdateHeader)) {
+      $this->db->update('material_planning_base_on_produksi', $ArrUpdateHeader, ['so_number' => $so_number]);
+    }
+    if (!empty($ArrUpdate)) {
+      $this->db->update_batch('material_planning_base_on_produksi_detail', $ArrUpdate, 'id');
+    }
+
+    $this->db->trans_complete();
+
+    if ($this->db->trans_status() === FALSE) {
+      $this->db->trans_rollback();
+      $Arr_Data  = array(
+        'pesan'    => 'Process Failed !',
+        'status'  => 0,
+        'so_number'  => $so_number
+      );
+    } else {
+      $this->db->trans_commit();
+      $Arr_Data  = array(
+        'pesan'    => 'Process Success !',
+        'status'  => 1,
+        'so_number'  => $so_number
+      );
+      history("Approve pr material  : " . $so_number);
+    }
+    echo json_encode($Arr_Data);
+  }
+
   public function process_reject()
   {
     $data       = $this->input->post();
