@@ -201,4 +201,51 @@ class Product_price_model extends BF_Model
 		$data['query'] = $this->db->query($sql);
 		return $data;
 	}
+
+	public function get_export_product_price_data()
+	{
+		$hasil = [];
+
+		$get_product_price = $this->db->get_where('product_price', array('deleted_by' => NULL))->result();
+
+		$no = 0;
+		foreach ($get_product_price as $item) :
+			$no++;
+
+			$material = $item->price_material;
+			$man_power = $item->price_man_power;
+			$mesin = ($item->cost_machine * $item->berat_material);
+			$mold = $item->cost_mould;
+			$consumable = ($item->cost_consumable * $item->berat_material);
+			$engineering = ($item->cost_enginnering * $item->berat_material);
+			$foh = ($item->cost_foh * $item->berat_material);
+			$sdm_ho = ($item->cost_fin_adm * $item->berat_material);
+			$marketing = ($item->cost_mkt_sales * $item->berat_material);
+			$interest = ($item->cost_interest * $item->berat_material);
+			$modal_exc_ppn = ($material + $man_power + $mesin + $mold + $consumable + $engineering + $foh + $sdm_ho + $marketing + $interest);
+
+			$hasil[] = [
+				'no' => $no,
+				'nama_produk' => $item->product_master,
+				'material' => $item->price_material,
+				'man_power' => $item->price_man_power,
+				'mesin' => ($item->cost_machine * $item->berat_material),
+				'mold' => $item->cost_mould,
+				'consumable' => ($item->cost_consumable * $item->berat_material),
+				'engineering' => ($item->cost_enginnering * $item->berat_material),
+				'foh' => ($item->cost_foh * $item->berat_material),
+				'sdm_ho' => ($item->cost_fin_adm * $item->berat_material),
+				'marketing' => ($item->cost_mkt_sales * $item->berat_material),
+				'interest' => ($item->cost_interest * $item->berat_material),
+				'modal_exc_ppn' => $modal_exc_ppn,
+				'ppn' => ($modal_exc_ppn / (100 - ($item->ppn + $item->cost_persen_profit)) * $item->ppn),
+				'profit' => ($modal_exc_ppn / (100 - ($item->ppn + $item->cost_persen_profit)) * $item->cost_persen_profit),
+				'harga_jual' => ($modal_exc_ppn / (100 - ($item->ppn + $item->cost_persen_profit)) * 100),
+				'kompetitif_faktor' => $item->cost_factor_kompetitif,
+				'harga_jual_komp_faktor' => (($modal_exc_ppn / (100 - ($item->ppn + $item->cost_persen_profit)) * 100) * $item->cost_factor_kompetitif)
+			];
+		endforeach;
+
+		return $hasil;
+	}
 }
