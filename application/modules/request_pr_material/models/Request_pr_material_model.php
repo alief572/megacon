@@ -417,8 +417,12 @@ class Request_pr_material_model extends BF_Model
       $nestedData[]  = "<div align='right'>" . number_format($stok_konversi, 2) . "</div>";
       //START GET UNIT MEASUREMENT
       $Unit_ID = $row['id_unit'];
-      $getDataUnitMeasurement = $this->db->query("SELECT * FROM ms_satuan WHERE id ='$Unit_ID'")->row();
-      $Unit_Measurement = $getDataUnitMeasurement->code;
+      if(!empty($row['id_unit'])){
+        $getDataUnitMeasurement = $this->db->query("SELECT * FROM ms_satuan WHERE id ='$Unit_ID'")->row();
+        $Unit_Measurement = $getDataUnitMeasurement->code;
+      }else{
+        $Unit_Measurement = '';
+      }
       //END GET UNIT MEASUREMENT
       $nestedData[]  = "<div align='right'>" . @$Unit_Measurement . "</div>";
       //START DAILY USAGE QTY
