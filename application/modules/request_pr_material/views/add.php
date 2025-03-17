@@ -71,7 +71,7 @@
 						<th class="text-center mid" >Pemakaian Sehari (Pack)</th>
 						<th class="text-center mid" >Sisa Kecukupan (Hari)</th>
 						<th class="text-center mid" >Max. Stock (Pack)</th>
-						<th class="text-center mid" >Qty PR</th>
+						<!-- <th class="text-center mid" >Qty PR</th> -->
 						<th class="text-center" >Propose Request</th>
 					</tr>
 					<!-- <tr>
@@ -107,7 +107,7 @@
 </style>
 <script>
 	$(document).ready(function() {
-		DataTables();//version old
+		// DataTables();//version old
 		DataTables_New();
 		$('.autoNumeric2').autoNumeric('init', {
 			mDec: '2',

@@ -444,7 +444,7 @@ class Request_pr_material_model extends BF_Model
       // else{
       //   $QTY_PR = 1;
       // }
-      $nestedData[]  = "<div align='right'>" . $QTY_PR . "</div>";
+      // $nestedData[]  = "<div align='right'>" . $QTY_PR . "</div>";
 
       // $kg_per_bulan 	= 0;
       // $reorder 		= ($row['min_stok']/30) * $kg_per_bulan;
