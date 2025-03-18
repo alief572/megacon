@@ -501,6 +501,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 											<th class="text-center">Group TOP</th>
 											<th class="text-center">Progress (%)</th>
 											<th class="text-center">Value</th>
+											<th class="text-center">Jatuh Tempo</th>
 											<th class="text-center">Keterangan</th>
 										</tr>
 									</thead>
@@ -528,6 +529,10 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 
 											echo '<td class="text-right">';
 											echo '<input type="text" class="form-control form-control-sm nilai_top nilai_top_' . $no . ' auto_num" name="nilai_top_' . $no . '" data-no="' . $no . '" value="' . number_format($item_top->nilai, 2) . '">';
+											echo '</td>';
+
+											echo '<td class="text-right">';
+											echo '<input type="text" class="form-control form-control-sm jatuh_tempo_top_' . $no . '" name="jatuh_tempo_top_' . $no . '" data-no="' . $no . '" value="' . $item_top->jatuh_tempo . '">';
 											echo '</td>';
 
 											echo '<td>';
