@@ -155,9 +155,9 @@ if (!empty($header)) {
 							<tr class='bg-blue'>
 								<th class='text-center th'>#</th>
 								<th class='text-center th'>Material Names</th>
-								<th class='text-center th'>Min Stock</th>
+								<!-- <th class='text-center th'>Min Stock</th> -->
 								<th class='text-center th'>Max Stock</th>
-								<th class='text-center th'>Min Order</th>
+								<!-- <th class='text-center th'>Min Order</th> -->
 								<th class='text-center th'>Qty PR</th>
 								<th class='text-center th'>Notes</th>
 								<th class='text-center th'>Action</th>
@@ -172,9 +172,9 @@ if (!empty($header)) {
 								echo '<tr>';
 								echo '<td class="text-center">' . $no_non_pr . '</td>';
 								echo '<td>' . $item['nama'] . '</td>';
-								echo '<td class="text-right">' . number_format($item['min_stok'], 2) . '</td>';
+								// echo '<td class="text-right">' . number_format($item['min_stok'], 2) . '</td>';
 								echo '<td class="text-right">' . number_format($item['max_stok'], 2) . '</td>';
-								echo '<td class="text-right">' . number_format(0, 2) . '</td>';
+								// echo '<td class="text-right">' . number_format(0, 2) . '</td>';
 								echo '<td><input type="text" class="form-control form-control-sm autoNumeric2 nmat_qty_pr_' . $item['code_lv4'] . '" data-id_material="' . $item['code_lv4'] . '"></td>';
 								echo '<td><input type="text" class="form-control form-control-sm nmat_notes_' . $item['code_lv4'] . '" data-id_material="' . $item['code_lv4'] . '"></td>';
 								echo '<td class="text-center"><button type="button" class="btn btn-sm btn-success add_material_pr add_material_pr_' . $item['code_lv4'] . '" data-id_material="' . $item['code_lv4'] . '"><i class="fa fa-plus"></i></button></td>';
