@@ -27,7 +27,7 @@
 		</div>
 		<!-- /.box-header -->
 		<div class="box-body">
-			<!-- <table id="example1" class="table table-bordered table-striped" width='100%'>
+			<table id="example1" class="table table-bordered table-striped" width='100%'>
 				<thead>
 					<tr>
 						<th class="text-center mid" rowspan='2' width='3%'>#</th>
@@ -53,7 +53,7 @@
 				</thead>
 				<tbody></tbody>
 			</table>
-			<br> -->
+			<br>
 			<?php
 			// echo form_button(array('type' => 'button', 'class' => 'btn btn-md btn-success', 'style' => 'min-width:100px; float:right; margin: 5px 0px 5px 0px;', 'content' => 'Purchase Request', 'id' => 'saveRequest')) . ' ';
 			?>
@@ -107,7 +107,7 @@
 </style>
 <script>
 	$(document).ready(function() {
-		// DataTables();//version old
+		DataTables();//version old
 		DataTables_New();
 		$('.autoNumeric2').autoNumeric('init', {
 			mDec: '2',
