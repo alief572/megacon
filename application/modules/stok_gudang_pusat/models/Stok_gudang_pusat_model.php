@@ -48,7 +48,7 @@ class Stok_gudang_pusat_model extends BF_Model
 
 			$nestedData 	= array();
 			$nestedData[]	= "<div align='center'>" . $nomor . "</div>";
-			$nestedData[]	= "<div align='left'>" . $row['code'] . "</div>";
+			// $nestedData[]	= "<div align='left'>" . $row['code'] . "</div>";
 			$nestedData[]	= "<div align='left'>" . strtoupper($row['nama']) . "</div>";
 
 			$unit_packing = (!empty($GET_UNIT[$row['id_unit_packing']]['code'])) ? $GET_UNIT[$row['id_unit_packing']]['code'] : '';
@@ -57,14 +57,22 @@ class Stok_gudang_pusat_model extends BF_Model
 			$id_material = $row['code_lv4'];
 			$stock_pack = (!empty($GET_STOK[$id_material]['stok_packing'])) ? $GET_STOK[$id_material]['stok_packing'] : 0;
 			$stock      = (!empty($GET_STOK[$id_material]['stok'])) ? $GET_STOK[$id_material]['stok'] : 0;
-			$booking    = (!empty($GET_STOK[$id_material]['booking'])) ? $GET_STOK[$id_material]['booking'] : 0;
+			$booking    = (!empty($GET_STOK[$id_material]['booking'])) ? $GET_STOK[$id_material]['booking'] : 0;//version old
+			$qty_pack    = (!empty($GET_STOK[$id_material]['stok_packing'])) ? $GET_STOK[$id_material]['stok_packing'] : 0;
 			$available  = $stock - $booking;
+			// $daily_usage_qty = $row['daily_usage_qty'] ? $row['daily_usage_qty'] : 0;
+			// $sisa_kecukupan = $qty_pack / $daily_usage_qty;
+			$daily_usage_qty = isset($row['daily_usage_qty']) ? $row['daily_usage_qty'] : 0;
+			$sisa_kecukupan = ($daily_usage_qty > 0) ? ($qty_pack / $daily_usage_qty) : 0;
+
 
 			$nestedData[]	= "<div align='right'>" . number_format($stock_pack, 2) . "</div>";
 			$nestedData[]	= "<div align='right'>" . number_format($row['konversi'], 2) . "</div>";
 			$nestedData[]	= "<div align='right'>" . number_format($stock, 2) . "</div>";
-			$nestedData[]	= "<div align='right'>" . number_format($booking, 2) . "</div>";
-			$nestedData[]	= "<div align='right'>" . number_format($available, 2) . "</div>";
+			// $nestedData[]	= "<div align='right'>" . number_format($booking, 2) . "s</div>";//version old
+			$nestedData[]	= "<div align='right'>" . number_format($row['max_stok'], 2) . "s</div>";
+			// $nestedData[]	= "<div align='right'>" . number_format($available, 2) . "</div>";//version old
+			$nestedData[]	= "<div align='right'>" . number_format($sisa_kecukupan, 2) . "</div>";
 			$nestedData[]	= "<div align='center'></div>";
 			$nestedData[]	= "<div align='center'>
 			<button type='button' class='btn btn-sm btn-primary hist' data-gudang='" . $id_gudang . "' data-material='" . $id_material . "' title='History'><i class='fa fa-history'></i></button>
@@ -102,7 +110,9 @@ class Stok_gudang_pusat_model extends BF_Model
               a.nama,
               a.id_unit_packing,
               a.id_unit,
-              a.konversi
+              a.konversi,
+			  a.max_stok,
+			  a.daily_usage_qty
             FROM
               new_inventory_4 a,
               (SELECT @row:=0) r
