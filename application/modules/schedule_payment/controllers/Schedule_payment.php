@@ -4,24 +4,24 @@
  * @author Harboens
  * @copyright Copyright (c) 2022
  *
- * This is controller for Request Payment
+ * This is controller for Schedule Payment
  */
 
 $status = array();
-class Request_payment extends Admin_Controller
+class Schedule_payment extends Admin_Controller
 {
 
 	//Permission
-	protected $viewPermission   = "Request_Payment.View";
-	protected $addPermission    = "Request_Payment.Add";
-	protected $managePermission = "Request_Payment.Manage";
-	protected $deletePermission = "Request_Payment.Delete";
+	protected $viewPermission   = "Schedule_payment.View";
+	protected $addPermission    = "Schedule_payment.Add";
+	protected $managePermission = "Schedule_payment.Manage";
+	protected $deletePermission = "Schedule_payment.Delete";
 
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->model(array('Request_payment/Request_payment_model', 'All/All_model', 'Jurnal_nomor/Jurnal_model'));
-		$this->template->title('Manage Request Payment');
+		$this->load->model(array('Schedule_payment/Schedule_payment_model', 'All/All_model', 'Jurnal_nomor/Jurnal_model'));
+		$this->template->title('Manage Schedule Payment');
 		$this->template->page_icon('fa fa-table');
 		$this->status = array("0" => "Baru", "1" => "Disetujui", "2" => "Selesai");
 		date_default_timezone_set("Asia/Bangkok");
@@ -29,7 +29,7 @@ class Request_payment extends Admin_Controller
 
 	public function index()
 	{
-		$data = $this->Request_payment_model->GetListDataRequestNew();
+		$data = $this->Schedule_payment_model->GetListDataRequestNew();
 		$list_mata_uang = $this->db->get('mata_uang')->result_array();
 		// $list_coa = $this->db->get_where(DBACC.'.coa_master', ['no_perkirran'])->result_array();
 
@@ -55,12 +55,12 @@ class Request_payment extends Admin_Controller
 		$this->template->set('list_coa', $list_coa);
 		$this->template->set('list_no_invoice', $list_no_invoice);
 		$this->template->set('list_vendor', $get_vendor);
-		$this->template->title('Request Payment');
+		$this->template->title('Schedule Payment');
 		$this->template->render('index');
 	}
 	public function payment_list()
 	{
-		$data = $this->Request_payment_model->GetListDataPaymentList();
+		$data = $this->Schedule_payment_model->GetListDataPaymentList();
 
 		$list_tgl_pengajuan_pembayaran = [];
 		$get_payment_approve = $this->db->select('no_doc, created_by, pay_by, DATE_FORMAT(created_on, "%d %M %Y") as tgl_pengajuan, IF(pay_on IS NULL, "", DATE_FORMAT(pay_on, "%d %M %Y")) as tgl_pembayaran')->get('payment_approve')->result();
@@ -125,7 +125,7 @@ class Request_payment extends Admin_Controller
 					'total_pph' => str_replace(',', '', $this->input->post('nilai_pph_' . $val)),
 					'link_doc' => $filenames
 				);
-				$idreq = $this->All_model->dataSave('request_payment', $data);
+				$idreq = $this->All_model->dataSave('Schedule_payment', $data);
 				if ($tipe == 'transportasi') {
 					$this->All_model->dataUpdate('tr_transport_req', array('status' => 2), array('no_doc' => $no_doc));
 				}
@@ -158,7 +158,7 @@ class Request_payment extends Admin_Controller
 
 	public function list_approve()
 	{
-		$data = $this->Request_payment_model->GetListDataApproval('status <> 2');
+		$data = $this->Schedule_payment_model->GetListDataApproval('status <> 2');
 
 		$list_no_invoice = [];
 		$this->db->select('id, invoice_no');
@@ -170,13 +170,14 @@ class Request_payment extends Admin_Controller
 
 		$this->template->set('data', $data);
 		$this->template->set('list_no_invoice', $list_no_invoice);
-		$this->template->title('Request Payment Approval');
+		$this->template->title('Schedule Payment Approval');
 		$this->template->render('list_approve');
 	}
 
 	public function list_approve_checker()
 	{
-		$data = $this->Request_payment_model->GetListDataApproval('a.status <> 2 AND a.app_checker IS NULL');
+		$data = $this->Schedule_payment_model->GetListDataApproval('a.status <> 2 AND a.app_checker IS NULL');//version old
+		$dataNew = $this->Schedule_payment_model->GetListDataApprovalNew();//vbevrsion new
 
 		$list_no_invoice = [];
 		$this->db->select('id, invoice_no');
@@ -188,14 +189,15 @@ class Request_payment extends Admin_Controller
 
 		$this->template->set('tingkat_approval', 1);
 		$this->template->set('data', $data);
+		$this->template->set('dataNew', $dataNew);
 		$this->template->set('list_no_invoice', $list_no_invoice);
-		$this->template->title('Request Payment Approval Checker');
+		$this->template->title('Schedule Payment Approval Checker');
 		$this->template->render('list_approve_checker');
 	}
 
 	public function list_approve_management()
 	{
-		$data = $this->Request_payment_model->GetListDataApproval('a.status <> 2 AND a.app_checker = 1');
+		$data = $this->Schedule_payment_model->GetListDataApproval('a.status <> 2 AND a.app_checker = 1');
 
 		$list_no_invoice = [];
 		$this->db->select('id, invoice_no');
@@ -208,7 +210,7 @@ class Request_payment extends Admin_Controller
 		$this->template->set('tingkat_approval', 2);
 		$this->template->set('data', $data);
 		$this->template->set('list_no_invoice', $list_no_invoice);
-		$this->template->title('Request Payment Approval Management');
+		$this->template->title('Schedule Payment Approval Management');
 		$this->template->render('list_approve_management');
 	}
 
@@ -223,7 +225,7 @@ class Request_payment extends Admin_Controller
 		$type 	= $_GET['type'];
 		$id_exp 	= $_GET['id'];
 
-		$get_id = $this->db->get_where('request_payment', ['id' => $id_exp])->row();
+		$get_id = $this->db->get_where('Schedule_payment', ['id' => $id_exp])->row();
 
 		$id = $get_id->ids;
 
@@ -275,7 +277,7 @@ class Request_payment extends Admin_Controller
 		// $this->template->set('data', $data);
 		// $this->template->set('stsview', 'view');
 
-		$get_req_payment = $this->db->get_where('request_payment', ['id' => $id_exp])->row_array();
+		$get_req_payment = $this->db->get_where('Schedule_payment', ['id' => $id_exp])->row_array();
 
 		$list_coa = [];
 		$get_coa = $this->db->get(DBACC . '.coa_master')->result();
@@ -297,10 +299,10 @@ class Request_payment extends Admin_Controller
 
 	public function approval_payment_checker($type = null, $id = null)
 	{
-		$type 	= $_GET['type'];
+		// $type 	= $_GET['type'];//version old
 		$id_exp 	= $_GET['id'];
 
-		$get_id = $this->db->get_where('request_payment', ['id' => $id_exp])->row();
+		$get_id = $this->db->get_where('Schedule_payment', ['id' => $id_exp])->row();
 
 		$id = $get_id->ids;
 
@@ -352,7 +354,7 @@ class Request_payment extends Admin_Controller
 		// $this->template->set('data', $data);
 		// $this->template->set('stsview', 'view');
 
-		$get_req_payment = $this->db->get_where('request_payment', ['id' => $id_exp])->row_array();
+		$get_req_payment = $this->db->get_where('Schedule_payment', ['id' => $id_exp])->row_array();
 
 
 		$list_coa = [];
@@ -385,7 +387,7 @@ class Request_payment extends Admin_Controller
 					'approved_by' => $this->auth->user_name(),
 					'approved_on' => date("Y-m-d h:i:s"),
 				);
-				$this->All_model->dataUpdate('request_payment', $data, array('id' => $val));
+				$this->All_model->dataUpdate('Schedule_payment', $data, array('id' => $val));
 			}
 		}
 		if ($this->db->trans_status() === FALSE) {
@@ -440,7 +442,7 @@ class Request_payment extends Admin_Controller
 	public function save_approval()
 	{
 		$Data		= $this->input->post();
-		$header 	= $this->db->get_where('request_payment', ['no_doc' => $Data['no_doc'], 'tipe' => $Data['tipe'], 'ids' => $Data['id']])->row_array();
+		$header 	= $this->db->get_where('Schedule_payment', ['no_doc' => $Data['no_doc'], 'tipe' => $Data['tipe'], 'ids' => $Data['id']])->row_array();
 		// $Id 		= $this->_getIdPayment(str_replace('/', '-', $Data['date']));
 
 		$no_coa_bank = explode(' - ', $header['bank_name']);
@@ -452,20 +454,20 @@ class Request_payment extends Admin_Controller
 			$kode_bank = $get_kode_bank->kode_bank;
 		}
 
-		$Id = $this->Request_payment_model->generate_id_payment($kode_bank);
+		$Id = $this->Schedule_payment_model->generate_id_payment($kode_bank);
 
 		// $detail = 
 		$ArrDetail 			= [];
 		// $idDetail 			= $this->_getIdDetail($Id);
 
-		// print_r($this->Request_payment_model->generate_id_detail());
+		// print_r($this->Schedule_payment_model->generate_id_detail());
 		// exit;
 
 		$n = 0;
 		foreach ($Data['item'] as $detail) {
 			$n++;
 			// $idDetail++;
-			$id_detail = $this->Request_payment_model->generate_id_detail($n);
+			$id_detail = $this->Schedule_payment_model->generate_id_detail($n);
 			if ($Data['tipe'] == 'expense') {
 				$dtl 				= $this->db->get_where('tr_expense_detail', ['id' => $detail['id']])->row();
 
@@ -656,7 +658,7 @@ class Request_payment extends Admin_Controller
 
 
 
-				// Update request_payment
+				// Update Schedule_payment
 				$no_doc = '';
 				$get_no_doc = $this->db->select('no_doc')->get_where('tr_expense', ['id' => $Data['id']])->row_array();
 				$no_doc = $get_no_doc['no_doc'];
@@ -666,15 +668,15 @@ class Request_payment extends Admin_Controller
 
 				// $get_expense_detail = $this->db->get_where('tr_expense_detail', ['id' => $Data['id']])->row_array();
 
-				// $data_request_payment = $this->db->select('id')->get_where('request_payment', ['no_doc' => $get_expense_detail['no_doc']])->row_array();
+				// $data_Schedule_payment = $this->db->select('id')->get_where('Schedule_payment', ['no_doc' => $get_expense_detail['no_doc']])->row_array();
 
 				// if ($countData > $actualPayment) {
-				// 	$this->db->update('request_payment', ['status' => '1'], ['no_doc' => $get_expense_detail['no_doc']]);
+				// 	$this->db->update('Schedule_payment', ['status' => '1'], ['no_doc' => $get_expense_detail['no_doc']]);
 				// } elseif (($countData == $actualPayment)) {
 
 				// print_r($no_doc);
 				// exit;
-				$this->db->update('request_payment', ['status' => '2'], ['no_doc' => $no_doc]);
+				$this->db->update('Schedule_payment', ['status' => '2'], ['no_doc' => $no_doc]);
 				// }
 
 			}
@@ -684,18 +686,18 @@ class Request_payment extends Admin_Controller
 				$this->db->insert_batch('payment_approve_details', $ArrDetail);
 				$this->db->update_batch('tr_kasbon', $updateDetail, 'id');
 
-				// Update request_payment
+				// Update Schedule_payment
 				$countData 		= $this->db->get_where('tr_kasbon', ['id' => $Data['id']])->num_rows();
 				$actualPayment 	= $this->db->get_where('tr_kasbon', ['id' => $Data['id'], 'status >=' => '3'])->num_rows();
 
 				$get_kasbon = $this->db->get_where('tr_kasbon', ['id' => $Data['id']])->row_array();
 
-				$data_request_payment = $this->db->select('id')->get_where('request_payment', ['no_doc' => $get_kasbon['no_doc']])->row_array();
+				$data_Schedule_payment = $this->db->select('id')->get_where('Schedule_payment', ['no_doc' => $get_kasbon['no_doc']])->row_array();
 
 				if ($countData > $actualPayment) {
-					$this->db->update('request_payment', ['status' => '1'], ['id' => $data_request_payment['id']]);
+					$this->db->update('Schedule_payment', ['status' => '1'], ['id' => $data_Schedule_payment['id']]);
 				} elseif (($countData == $actualPayment)) {
-					$this->db->update('request_payment', ['status' => '2'], ['id' => $data_request_payment['id']]);
+					$this->db->update('Schedule_payment', ['status' => '2'], ['id' => $data_Schedule_payment['id']]);
 				}
 
 				// print_r($countData.' - '.$actualPayment);
@@ -706,18 +708,18 @@ class Request_payment extends Admin_Controller
 				$this->db->insert_batch('payment_approve_details', $ArrDetail);
 				$this->db->update_batch('tr_transport', $updateDetail, 'id');
 
-				// Update request_payment
+				// Update Schedule_payment
 				$countData 		= $this->db->get_where('tr_transport', ['id' => $Data['id']])->num_rows();
 				$actualPayment 	= $this->db->get_where('tr_transport', ['id' => $Data['id'], 'status >=' => '2'])->num_rows();
 
 				$get_transport = $this->db->get_where('tr_transport_req', ['id' => $Data['id']])->row_array();
 
-				$data_request_payment = $this->db->select('id')->get_where('request_payment', ['no_doc' => $get_transport['no_doc']])->row_array();
+				$data_Schedule_payment = $this->db->select('id')->get_where('Schedule_payment', ['no_doc' => $get_transport['no_doc']])->row_array();
 
 				if ($countData > $actualPayment) {
-					$this->db->update('request_payment', ['status' => '1'], ['id' => $data_request_payment['id']]);
+					$this->db->update('Schedule_payment', ['status' => '1'], ['id' => $data_Schedule_payment['id']]);
 				} elseif (($countData == $actualPayment)) {
-					$this->db->update('request_payment', ['status' => '2'], ['id' => $data_request_payment['id']]);
+					$this->db->update('Schedule_payment', ['status' => '2'], ['id' => $data_Schedule_payment['id']]);
 				}
 			}
 
@@ -725,18 +727,18 @@ class Request_payment extends Admin_Controller
 				$this->db->insert_batch('payment_approve_details', $ArrDetail);
 				$this->db->update_batch('tr_non_po_detail', $updateDetail, 'id');
 
-				// Update request_payment
+				// Update Schedule_payment
 				$countData 		= $this->db->get_where('tr_non_po_detail', ['id' => $Data['id']])->num_rows();
 				$actualPayment 	= $this->db->get_where('tr_non_po_detail', ['id' => $Data['id'], 'status >=' => '1'])->num_rows();
 
 				$get_nonpo = $this->db->get_where('tr_non_po_detail', ['id' => $Data['id']])->row_array();
 
-				$data_request_payment = $this->db->select('id')->get_where('request_payment', ['no_doc' => $get_nonpo['no_doc']])->row_array();
+				$data_Schedule_payment = $this->db->select('id')->get_where('Schedule_payment', ['no_doc' => $get_nonpo['no_doc']])->row_array();
 
 				if ($countData > $actualPayment) {
-					$this->db->update('request_payment', ['status' => '1'], ['id' => $data_request_payment['id']]);
+					$this->db->update('Schedule_payment', ['status' => '1'], ['id' => $data_Schedule_payment['id']]);
 				} elseif (($countData == $actualPayment)) {
-					$this->db->update('request_payment', ['status' => '2'], ['id' => $data_request_payment['id']]);
+					$this->db->update('Schedule_payment', ['status' => '2'], ['id' => $data_Schedule_payment['id']]);
 				}
 			}
 
@@ -744,21 +746,21 @@ class Request_payment extends Admin_Controller
 				$this->db->insert_batch('payment_approve_details', $ArrDetail);
 				$this->db->update_batch('tr_pengajuan_rutin_detail', $updateDetail, 'id');
 
-				// Update request_payment
+				// Update Schedule_payment
 				$countData 		= $this->db->get_where('tr_pengajuan_rutin_detail', ['id' => $Data['id']])->num_rows();
 				$actualPayment 	= $this->db->get_where('tr_pengajuan_rutin_detail', ['id' => $Data['id'], 'status >=' => '1'])->num_rows();
 
 				$get_nonpo = $this->db->get_where('tr_pengajuan_rutin_detail', ['id' => $Data['id']])->row_array();
 
-				$data_request_payment = $this->db->select('id')->get_where('request_payment', ['no_doc' => $get_nonpo['no_doc']])->row_array();
+				$data_Schedule_payment = $this->db->select('id')->get_where('Schedule_payment', ['no_doc' => $get_nonpo['no_doc']])->row_array();
 
 				// if ($countData > $actualPayment) {
-				// 	$this->db->update('request_payment', ['status' => '1'], ['id' => $data_request_payment['id']]);
+				// 	$this->db->update('Schedule_payment', ['status' => '1'], ['id' => $data_Schedule_payment['id']]);
 				// } elseif (($countData == $actualPayment)) {
-				// 	$this->db->update('request_payment', ['status' => '2'], ['id' => $data_request_payment['id']]);
+				// 	$this->db->update('Schedule_payment', ['status' => '2'], ['id' => $data_Schedule_payment['id']]);
 				// }
-				$update_request_payment = $this->db->update('request_payment', ['status' => '2'], ['no_doc' => $get_nonpo['no_doc'], 'ids' => $get_nonpo['id']]);
-				// if(!$update_request_payment){
+				$update_Schedule_payment = $this->db->update('Schedule_payment', ['status' => '2'], ['no_doc' => $get_nonpo['no_doc'], 'ids' => $get_nonpo['id']]);
+				// if(!$update_Schedule_payment){
 				// 	print_r($this->db->error()['message']);
 				// 	exit;
 				// }
@@ -788,7 +790,7 @@ class Request_payment extends Admin_Controller
 		foreach ($post['item'] as $item) :
 			if (isset($item['id'])) {
 				if ($post['tipe'] == "periodik") {
-					$this->db->update('request_payment', [
+					$this->db->update('Schedule_payment', [
 						'app_checker' => 1,
 						'app_checker_by' => $this->auth->user_id(),
 						'app_checker_date' => date('Y-m-d H:i:s')
@@ -799,7 +801,7 @@ class Request_payment extends Admin_Controller
 
 					$this->db->update('tr_pengajuan_rutin_detail', ['sts_reject' => 0, 'sts_reject_manage' => 0], ['no_doc' => $post['no_doc'], 'id' => $item['id']]);
 				} else {
-					$this->db->update('request_payment', [
+					$this->db->update('Schedule_payment', [
 						'app_checker' => 1,
 						'app_checker_by' => $this->auth->user_id(),
 						'app_checker_date' => date('Y-m-d H:i:s')
@@ -840,7 +842,7 @@ class Request_payment extends Admin_Controller
 	public function list_payment()
 	{
 		$data_coa = $this->All_model->GetCoaCombo(5, 'a.no_perkiraan LIKE "%1101-02%" AND (a.kode_bank IS NOT NULL AND a.kode_bank <> "")');
-		$results = $this->Request_payment_model->GetListDataPayment('status IS NOT NULL');
+		$results = $this->Schedule_payment_model->GetListDataPayment('status IS NOT NULL');
 		$this->template->set('data_coa', $data_coa);
 		$this->template->set('results', $results);
 		$this->template->title('Payment');
@@ -1174,7 +1176,7 @@ class Request_payment extends Admin_Controller
 
 	public function payment_jurnal_list()
 	{
-		$results = $this->Request_payment_model->GetListDataJurnal();
+		$results = $this->Schedule_payment_model->GetListDataJurnal();
 		$this->template->set('results', $results);
 		$this->template->title('Payment Jurnal');
 		$this->template->render('list_jurnal');
@@ -1183,7 +1185,7 @@ class Request_payment extends Admin_Controller
 	{
 		$data = $this->db->query("select * from jurnal where nomor='" . $id . "' order by kredit,debet,no_perkiraan")->result();
 		$data_coa = $this->All_model->GetCoaCombo();
-		$results = $this->Request_payment_model->GetListDataPayment('status=1');
+		$results = $this->Schedule_payment_model->GetListDataPayment('status=1');
 		$this->template->set('data', $data);
 		$this->template->set('datacoa', $data_coa);
 		$this->template->set('results', $results);
@@ -1195,7 +1197,7 @@ class Request_payment extends Admin_Controller
 	{
 		$data = $this->db->query("select * from jurnal where nomor='" . $id . "' order by kredit,debet,no_perkiraan")->result();
 		$data_coa = $this->All_model->GetCoaCombo();
-		$results = $this->Request_payment_model->GetListDataPayment('status=1');
+		$results = $this->Schedule_payment_model->GetListDataPayment('status=1');
 		$this->template->set('data', $data);
 		$this->template->set('datacoa', $data_coa);
 		$this->template->set('status', 'edit');
@@ -1283,7 +1285,7 @@ class Request_payment extends Admin_Controller
 
 	public function list_return()
 	{
-		// $controller			= 'request_payment/index';
+		// $controller			= 'Schedule_payment/index';
 		// $Arr_Akses			= getAcccesmenu($controller);
 		// if ($Arr_Akses['read'] != '1') {
 		// 	$this->session->set_flashdata("alert_data", "<div class=\"alert alert-warning\" id=\"flash-message\">You Don't Have Right To Access This Page, Please Contact Your Administrator....</div>");
@@ -1300,7 +1302,7 @@ class Request_payment extends Admin_Controller
 			// 'akses_menu'	=> $Arr_Akses
 		);
 		// history('View Pengembalian Expense');
-		// $this->load->view('Request_payment/list_return', $data);
+		// $this->load->view('Schedule_payment/list_return', $data);
 
 		$this->template->set($data);
 		$this->template->title('Pengembalian Expense');
@@ -1322,7 +1324,7 @@ class Request_payment extends Admin_Controller
 
 		$this->db->trans_begin();
 
-		$get_req_payment = $this->db->get_where('request_payment', ['no_doc' => $post['no_doc']])->row_array();
+		$get_req_payment = $this->db->get_where('Schedule_payment', ['no_doc' => $post['no_doc']])->row_array();
 		if ($post['tingkat_approval'] == '1') {
 			if ($get_req_payment['tipe'] == 'transportasi') {
 				$this->db->update('tr_transport_req', ['status' => 1, 'sts_reject' => 1, 'sts_reject_manage' => 0, 'reject_reason' => $post['reject_reason']], ['no_doc' => $post['no_doc']]);
@@ -1363,13 +1365,13 @@ class Request_payment extends Admin_Controller
 			}
 		}
 
-		// $this->db->update('request_payment', ['status' => '9'], ['no_doc' => $post['no_doc']]);
+		// $this->db->update('Schedule_payment', ['status' => '9'], ['no_doc' => $post['no_doc']]);
 		if ($post['tipe'] == "periodik") {
 			foreach ($post['item'] as $item) {
-				$this->db->delete('request_payment', ['no_doc' => $post['no_doc'], 'ids' => $item['id']]);
+				$this->db->delete('Schedule_payment', ['no_doc' => $post['no_doc'], 'ids' => $item['id']]);
 			}
 		} else {
-			$this->db->delete('request_payment', ['no_doc' => $post['no_doc']]);
+			$this->db->delete('Schedule_payment', ['no_doc' => $post['no_doc']]);
 		}
 
 		if ($this->db->trans_status() == FALSE) {
@@ -1433,15 +1435,15 @@ class Request_payment extends Admin_Controller
 		$tgl_to = $this->input->post('tgl_to');
 		$bank = $this->input->post('bank');
 
-		$this->Request_payment_model->search_payment_list($tgl_from, $tgl_to, $bank);
+		$this->Schedule_payment_model->search_payment_list($tgl_from, $tgl_to, $bank);
 	}
 
 	public function search_req_payment()
 	{
-		$ENABLE_ADD     = has_permission('Request_Payment.Add');
-		$ENABLE_MANAGE  = has_permission('Request_Payment.Manage');
-		$ENABLE_DELETE  = has_permission('Request_Payment.Delete');
-		$ENABLE_VIEW    = has_permission('Request_Payment.View');
+		$ENABLE_ADD     = has_permission('Schedule_payment.Add');
+		$ENABLE_MANAGE  = has_permission('Schedule_payment.Manage');
+		$ENABLE_DELETE  = has_permission('Schedule_payment.Delete');
+		$ENABLE_VIEW    = has_permission('Schedule_payment.View');
 
 		$from_date = $this->input->post('from_date');
 		$to_date = $this->input->post('to_date');
@@ -1454,7 +1456,7 @@ class Request_payment extends Admin_Controller
 			$nm_vendor = $get_nm_vendor->nama;
 		}
 
-		$data = $this->Request_payment_model->GetListDataRequest($actived_tab, $from_date, $to_date);
+		$data = $this->Schedule_payment_model->GetListDataRequest($actived_tab, $from_date, $to_date);
 
 		$list_curr = $this->db->get('mata_uang')->result();
 
@@ -1731,13 +1733,13 @@ class Request_payment extends Admin_Controller
 
 	public function change_tab()
 	{
-		$ENABLE_ADD     = has_permission('Request_Payment.Add');
-		$ENABLE_MANAGE  = has_permission('Request_Payment.Manage');
-		$ENABLE_DELETE  = has_permission('Request_Payment.Delete');
-		$ENABLE_VIEW    = has_permission('Request_Payment.View');
+		$ENABLE_ADD     = has_permission('Schedule_payment.Add');
+		$ENABLE_MANAGE  = has_permission('Schedule_payment.Manage');
+		$ENABLE_DELETE  = has_permission('Schedule_payment.Delete');
+		$ENABLE_VIEW    = has_permission('Schedule_payment.View');
 
 		$tab = $this->input->post('tab');
-		$data = $this->Request_payment_model->GetListDataRequest($tab);
+		$data = $this->Schedule_payment_model->GetListDataRequest($tab);
 
 		$list_curr = $this->db->get_where('mata_uang', ['deleted' => null])->result();
 		$list_coa = $this->db->get_where(DBACC . '.coa_master', ['kode_bank <>' => null])->result();
@@ -2015,7 +2017,7 @@ class Request_payment extends Admin_Controller
 		$tgl_to = $this->uri->segment(4);
 		$bank = $this->uri->segment(5);
 
-		$this->Request_payment_model->excel_payment_list($tgl_from, $tgl_to, $bank);
+		$this->Schedule_payment_model->excel_payment_list($tgl_from, $tgl_to, $bank);
 	}
 
 	public function view_receive_invoice()

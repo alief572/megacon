@@ -28,6 +28,18 @@ foreach ($data as $item) :
         $count_periodik += 1;
     }
 endforeach;
+//START BAGIAN DATA PO KONSEP BARU
+$count_pembayaran_po_new = 0;
+foreach ($dataNew as $itemNew) :
+    // if ($item->tipe == 'expense') {
+    //     if (strpos($item->no_doc, 'ER-') !== false || strpos($item->no_doc, 'ROS-') !== false) {
+    //         $count_expense += 1;
+    //     } else {
+            $count_pembayaran_po_new += 1;
+        // }
+    // }
+endforeach; 
+//END BAGIAN DATA PO KONSEP BARU
 ?>
 <script src="//cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>
 <link rel="stylesheet" href="https://cdn.datatables.net/2.0.7/css/dataTables.dataTables.min.css">
@@ -84,7 +96,7 @@ endforeach;
                 <div class="panel panel-default">
                     <div class="panel-heading bg-light-blue">Pembayaran PO</div>
                     <div class="panel-body">
-                        <h2><?= $count_pembayaran_po ?></h2>
+                        <h2><?= $count_pembayaran_po_new ?></h2>
                     </div>
                     <div class="panel-footer w-100">
                         <button type="button" class="btn btn-sm btn-primary btn_view_req" style="width: 100%;" data-val="pembayaran_po"><i class="fa fa-eye"></i> View</button>
@@ -336,7 +348,7 @@ endforeach;
                 </table>
             </div>
             <div class="col-md-12 list_pembayaran_po" style="display: none;">
-                <h2>Pembayaran PO</h2>
+                <!-- <h2>Pembayaran PO</h2>
                 <table class="table table-bordered">
                     <thead>
                         <tr>
@@ -422,6 +434,86 @@ endforeach;
                                 }
                             }
                         endforeach;
+                        ?>
+                    </tbody>
+                </table> -->
+                <!-- bagian data table baru -->
+                <h2>Pembayaran PO</h2>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th class="text-center">No</th>
+                            <th class="text-center">No. PO</th>
+                            <th class="text-center">Supplier</th>
+                            <th class="text-center">Tipe Pembayaran</th>
+                            <th class="text-center">Tgl Jatuh Tempo</th>
+                            <th class="text-center">Estimasi Jatuh Tempo (hari)</th>
+                            <th class="text-center">Status</th>
+                            <!-- <th class="text-center">Action</th>
+                            <th class="text-center">Tanggal Pembayaran</th>
+                            <th class="text-center">Keterangan PO</th>
+                            <th class="text-center">Status</th> -->
+                            <th class="text-center" width="100">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        $angka = 0;
+                            foreach ($dataNew as $item_expense_new) :
+                                $angka++;
+                                // $no_invoice = (isset($list_no_invoice[$item_expense_new->no_doc])) ? $list_no_invoice[$item_expense_new->no_doc] : '';
+                                $getDataPO = $this->db->get_where('tr_purchase_order', ['no_surat' => $item_expense_new->no_po ])->row();
+                                // print_r($getDataPO);
+                                $NO_PO = $getDataPO->no_po;
+                                $Term = $getDataPO->term;
+                                $getDataTop_PO = $this->db->get_where('tr_top_po', ['no_po' => $NO_PO ])->row();
+                                if(!empty($getDataTop_PO->jatuh_tempo)){
+                                    $JatuhTempo = $getDataTop_PO->jatuh_tempo;
+                                    // Ambil tanggal hari ini
+                                    $tanggal_hari_ini = date('Y-m-d');
+                                    // Contoh tanggal jatuh tempo (bisa dari database atau inputan)
+                                    $tanggal_jatuh_tempo = $JatuhTempo;//'2025-03-24';
+                                    // Konversi ke objek DateTime
+                                    $tanggal_hari_ini_obj = new DateTime($tanggal_hari_ini);
+                                    $tanggal_jatuh_tempo_obj = new DateTime($tanggal_jatuh_tempo);
+                                    // Hitung selisih
+                                    // $selisih = $tanggal_hari_ini_obj->diff($tanggal_jatuh_tempo_obj);
+                                    $selisih = $tanggal_hari_ini_obj->diff($tanggal_jatuh_tempo_obj)->days;
+                                    // Tentukan status
+                                    if ($tanggal_hari_ini_obj > $tanggal_jatuh_tempo_obj) {
+                                        $status = "Telat"; // Sudah lewat jatuh tempo
+                                    } elseif ($selisih <= 7) {
+                                        $status = "Segera"; // H-7 sampai jatuh tempo
+                                    } else {
+                                        $status = "Aman"; // Masih di atas H-7 hari
+                                    }
+                                }else{
+                                    $JatuhTempo = "";
+                                    $selisih = "";
+                                    $status = "";
+                                }
+
+                                echo '<tr>';
+                                echo '<td>' . $angka . '</td>';
+                                echo '<td>' . $item_expense_new->no_po . '</td>';
+                                echo '<td>' . $item_expense_new->nm_supplier . '</td>';
+                                echo '<td>' . @$Term. '</td>';
+                                echo '<td>' . $JatuhTempo . '</td>';
+                                echo '<td>' . $selisih . '</td>';
+                                echo '<td>' . $status . '</td>';
+                                // echo '<td class="text-right">' . number_format($item_expense->jumlah) . '</td>';
+                                // echo '<td>' . $item_expense->tanggal . '</td>';
+                                // echo '<td>' . $po_note . '</td>';
+                                echo '</td>';
+                                    echo '<td class="text-center">';
+                                    ?>
+                                    <!-- <a href="<?= base_url($this->uri->segment(1) . '/approval_payment_checker/?type=' . $item_expense->tipe . '&id=' . $item_expense_new->id . '&nilai=' . $item_expense->jumlah); ?>" name="save" class="btn btn-primary btn-sm"><i class="fa fa-check-square-o"></i></a> -->
+                                    <a href="<?= base_url($this->uri->segment(1) . '/approval_payment_checker/?id=' . $item_expense_new->id . '&nilai=' . $item_expense_new->total_invoice); ?>" name="save" class="btn btn-primary btn-sm"><i class="fa fa-check-square-o"></i></a>
+                                    <a href="javascript:void(0);" class="btn btn-sm btn-info view_receive_invoice" data-id_invoice="<?= $item_expense_new->id ?>"><i class="fa fa-eye"></i></a>
+                                    <?php
+                                    echo '</td>';
+                                echo '</tr>';
+                            endforeach;
                         ?>
                     </tbody>
                 </table>

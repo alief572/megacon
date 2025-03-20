@@ -35,7 +35,8 @@
     <div class="col-md-6">
         <div class="form-group">
             <label for="">DPP</label>
-            <input type="text" name="total_pembelian" id="" class="form-control form-control-sm text-right total_pembelian" value="<?= number_format((($get_total_po['ttl_po'] - $nilai_disc) * $get_top->progress / 100), 2) ?>" readonly>
+            <input type="text" name="total_pembelian" id="" class="form-control form-control-sm text-right total_pembelian" value="<?= number_format((($get_total_po['ttl_po'] - $nilai_disc) * $get_top->progress / 100), 2) ?>" >
+            <!-- readonly -->
         </div>
     </div>
     <div class="col-md-6">

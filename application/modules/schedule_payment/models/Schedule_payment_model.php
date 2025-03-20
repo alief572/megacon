@@ -7,7 +7,7 @@
  * This is Model for Request Payment
  */
 
-class Request_payment_model extends BF_Model
+class Schedule_payment_model extends BF_Model
 {
 
     /**
@@ -144,6 +144,12 @@ class Request_payment_model extends BF_Model
     public function GetListDataApproval($where = '')
     {
         $data    = $this->db->query("SELECT a.* FROM request_payment a WHERE " . $where . " order by tanggal desc, tipe ,id")->result();
+        return $data;
+    }
+
+    public function GetListDataApprovalNew($where = '')
+    {
+        $data    = $this->db->query("SELECT a.* FROM tr_invoice_po a order by created_date desc")->result();
         return $data;
     }
 
