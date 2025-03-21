@@ -275,7 +275,7 @@ class Request_pr_material extends Admin_Controller
       // Mengatur nilai default jika qty_stock bernilai null atau kosong
       $Qty_Stok = isset($get_qty_stok->qty_stock) && $get_qty_stok->qty_stock !== '' ? $get_qty_stok->qty_stock : 0;
       // Mengatur nilai default jika max_stok bernilai null atau kosong
-      $Max_Stok = isset($row['max_stok']) && $row['max_stok'] !== '' ? $row['max_stok'] : 0;
+      $Max_Stok = isset($value['max_stok']) && $value['max_stok'] !== '' ? $value['max_stok'] : 0;
       // Menghitung jumlah yang bisa diajukan
       $Get_Propose = $Max_Stok - $Qty_Stok;
       // if ($Get_Propose >= 1000) {
