@@ -443,9 +443,17 @@ class Request_pr_material_model extends BF_Model
       $QTY_PR = '';
       //START BAGIAN SET UTO PROPOSE NEW
       $ID_Material = $row['code_lv4'];
+      // $get_qty_stok = $this->db->get_where('warehouse_stock', ['id_material' => $ID_Material])->row();
+      // $Qty_Stok = $get_qty_stok->qty_stock;
+      // $Max_Stok = $row['max_stok'];
+      // $Get_Propose = $Max_Stok - $Qty_Stok;
+      // Mengambil data stok dari database
       $get_qty_stok = $this->db->get_where('warehouse_stock', ['id_material' => $ID_Material])->row();
-      $Qty_Stok = $get_qty_stok->qty_stock;
-      $Max_Stok = $row['max_stok'];
+      // Mengatur nilai default jika qty_stock bernilai null atau kosong
+      $Qty_Stok = isset($get_qty_stok->qty_stock) && $get_qty_stok->qty_stock !== '' ? $get_qty_stok->qty_stock : 0;
+      // Mengatur nilai default jika max_stok bernilai null atau kosong
+      $Max_Stok = isset($row['max_stok']) && $row['max_stok'] !== '' ? $row['max_stok'] : 0;
+      // Menghitung jumlah yang bisa diajukan
       $Get_Propose = $Max_Stok - $Qty_Stok;
       // if ($Get_Propose >= 1000) {
       //     $Get_Propose_fix = number_format($Get_Propose, 0, '.', ','); // Format ribuan dengan koma
