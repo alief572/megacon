@@ -264,9 +264,25 @@ class Request_pr_material extends Admin_Controller
       $outanding_pr   = (!empty($GET_OUTANDING_PR[$value['code_lv4']]) and $GET_OUTANDING_PR[$value['code_lv4']] > 0) ? $GET_OUTANDING_PR[$value['code_lv4']] : 0;
 
       $QTY_PR = NULL;
+      //START BAGIAN SET UTO PROPOSE NEW
+      $ID_Material = $value['code_lv4'];
+      $get_qty_stok = $this->db->get_where('warehouse_stock', ['id_material' => $ID_Material])->row();
+      $Qty_Stok = $get_qty_stok->qty_stock;
+      $Max_Stok = $value['max_stok'];
+      $Get_Propose = $Max_Stok - $Qty_Stok;
+      // if ($Get_Propose >= 1000) {
+      //     $Get_Propose_fix = number_format($Get_Propose, 0, '.', ','); // Format ribuan dengan koma
+      // } else {
+      //     $Get_Propose_fix = number_format($Get_Propose, 0, '.', ''); // Format biasa tanpa koma
+      // }
+      //END BAGIAN SET AUTO PROPOSE NEW
       if ($value['qty_stock'] < $value['min_stok']) {
         $QTY_PR = ($value['max_stok'] - ($value['qty_stock'] + $outanding_pr));
-        $QTY_PR = ($QTY_PR < 0) ? NULL : $QTY_PR;
+        //start version new
+        $Get_Propose = $Max_Stok - $Qty_Stok;
+        //end version new
+        // $QTY_PR = ($QTY_PR < 0) ? NULL : $QTY_PR;//version old
+        $QTY_PR = ($Get_Propose < 0) ? 0 : $Get_Propose;
       }
 
       $ArrUpdate[$key]['code_lv4'] = $value['code_lv4'];
