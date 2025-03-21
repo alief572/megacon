@@ -21,14 +21,16 @@
       <thead>
         <tr>
           <th class="text-center">#</th>
-          <th class="text-center">Code</th>
+          <!-- <th class="text-center">Code</th> -->
           <th class="text-center">Material</th>
           <th class="text-center no-sort">Unit Packing</th>
           <th class="text-center no-sort">Stok Packing</th>
           <th class="text-center no-sort">Convertion</th>
           <th class="text-center no-sort">Stok Unit</th>
-          <th class="text-center no-sort">Booking</th>
-          <th class="text-center no-sort">Available</th>
+          <!-- <th class="text-center no-sort">Booking</th> -->
+          <th class="text-center no-sort">Max. Stock</th>
+          <!-- <th class="text-center no-sort">Available</th> -->
+          <th class="text-center no-sort">Sisa Kecukupan (hari)</th>
           <th class="text-center no-sort">Expired</th>
           <th class="text-center no-sort">History</th>
         </tr>

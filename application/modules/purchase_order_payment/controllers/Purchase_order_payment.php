@@ -392,7 +392,7 @@ class Purchase_order_payment extends Admin_Controller
 		$this->load->library('upload', $config);
 		$this->upload->initialize($config);
 
-		$this->db->trans_begin();
+		// $this->db->trans_begin();
 
 		$link_doc = '';
 		if ($this->upload->do_upload('upload_invoice')) {
@@ -407,41 +407,160 @@ class Purchase_order_payment extends Admin_Controller
 		// exit;
 
 		$no_invoice = $this->Pr_model->generate_no_invoice();
-
+		// echo $no_invoice;
 		if ($post['tipe_req'] == 'dp') {
 			$get_po = $this->db->get_where('tr_purchase_order', ['no_surat' => $post['nomor_po']])->row();
 			$get_supplier = $this->db->get_where('new_supplier', ['kode_supplier' => $get_po->id_suplier])->row();
+			// print_r($get_supplier);
+			// echo "<br>";
+			// die();
+			// $test = array(
+			// 	'id' => $no_invoice,
+			// 	'no_po' => $post['nomor_po'],
+			// 	'curr' => $post['currency'],
+			// 	'invoice_date' => $post['invoice_date'],
+			// 	'value_dp' => str_replace(',', '', $post['value_dp']),
+			// 	'invoice_no' => $post['nomor_invoice'],
+			// 	'total_pembelian' => str_replace(',', '', $post['total_pembelian']),
+			// 	'no_faktur_pajak' => $post['nomor_faktur_pajak'],
+			// 	'persen_dp' => $post['persen_dp'],
+			// 	// 'link_doc' => $link_doc,
+			// 	'link_doc' => !empty($link_doc) ? $link_doc : null,
+			// 	'invoice_date_real' => $post['invoice_date_real'],
+			// 	'tanggal_faktur_pajak' => $post['tanggal_faktur_pajak'],
+			// 	'id_supplier' => $get_supplier->kode_supplier,
+			// 	'nm_supplier' => $get_supplier->nama,
+			// 	'id_top' => $post['id_top'],
+			// 	'bank' => $post['bank'],
+			// 	'no_bank' => $post['no_bank'],
+			// 	'nm_acc_bank' => $post['nm_acc_bank'],
+			// 	'nilai_disc' => str_replace(',', '', $post['nilai_disc']),
+			// 	// 'nilai_ppn' => str_replace(',', '', $post['nilai_ppn']),
+			// 	// 'total_invoice' => str_replace(',', '', $post['nilai_ppn']) + str_replace(',', '', $post['total_pembelian']),
+			// 	'nilai_ppn' => isset($post['nilai_ppn']) ? (float)str_replace(',', '', $post['nilai_ppn']) : 0,
+			// 	'total_invoice' => (isset($post['nilai_ppn']) ? (float)str_replace(',', '', $post['nilai_ppn']) : 0) + (isset($post['total_pembelian']) ? (float)str_replace(',', '', $post['total_pembelian']) : 0),
+			// 	'kurs' => str_replace(',', '', $post['kurs']),
+			// 	'created_by' => $this->auth->user_id(),
+			// 	'created_date' => date('Y-m-d H:i:s')
+			// 	);
+			// $insert_invoice = $this->db->insert('tr_invoice_po', [
+			// 	'id' => $no_invoice,
+			// 	'no_po' => $post['nomor_po'],
+			// 	'curr' => $post['currency'],
+			// 	'invoice_date' => $post['invoice_date'],
+			// 	'value_dp' => str_replace(',', '', $post['value_dp']),
+			// 	'invoice_no' => $post['nomor_invoice'],
+			// 	'total_pembelian' => str_replace(',', '', $post['total_pembelian']),
+			// 	'no_faktur_pajak' => $post['nomor_faktur_pajak'],
+			// 	'persen_dp' => $post['persen_dp'],
+			// 	// 'link_doc' => $link_doc,
+			// 	'link_doc' => !empty($link_doc) ? $link_doc : null,
+			// 	'invoice_date_real' => $post['invoice_date_real'],
+			// 	'tanggal_faktur_pajak' => $post['tanggal_faktur_pajak'],
+			// 	'id_supplier' => $get_supplier->kode_supplier,
+			// 	'nm_supplier' => $get_supplier->nama,
+			// 	'id_top' => $post['id_top'],
+			// 	'bank' => $post['bank'],
+			// 	'no_bank' => $post['no_bank'],
+			// 	'nm_acc_bank' => $post['nm_acc_bank'],
+			// 	'nilai_disc' => str_replace(',', '', $post['nilai_disc']),
+			// 	// 'nilai_ppn' => str_replace(',', '', $post['nilai_ppn']),
+			// 	// 'total_invoice' => str_replace(',', '', $post['nilai_ppn']) + str_replace(',', '', $post['total_pembelian']),
+			// 	'nilai_ppn' => isset($post['nilai_ppn']) ? (float)str_replace(',', '', $post['nilai_ppn']) : 0,
+			// 	'total_invoice' => (isset($post['nilai_ppn']) ? (float)str_replace(',', '', $post['nilai_ppn']) : 0) + (isset($post['total_pembelian']) ? (float)str_replace(',', '', $post['total_pembelian']) : 0),
+			// 	'kurs' => str_replace(',', '', $post['kurs']),
+			// 	'created_by' => $this->auth->user_id(),
+			// 	'created_date' => date('Y-m-d H:i:s')
+			// ]);
+			// // print_r($test);
+			// echo $this->db->last_query();
+			// die();
+			// if (!$insert_invoice) {
+			// 	print_r($this->db->error($insert_invoice));
+			// 	die();
+			// }
+			//start version new
+			// Bersihkan input untuk menghindari error (terutama angka)
+			
+		    $data = [
+		        'id' => $no_invoice,
+		        'no_po' => $post['nomor_po'],
+		        'curr' => $post['currency'],
+		        'invoice_date' => $post['invoice_date'],
+		        'value_dp' => !empty($post['value_dp']) ? str_replace(',', '', $post['value_dp']) : 0,
+		        'invoice_no' => $post['nomor_invoice'],
+		        'total_pembelian' => !empty($post['total_pembelian']) ? str_replace(',', '', $post['total_pembelian']) : 0,
+		        'no_faktur_pajak' => $post['nomor_faktur_pajak'],
+		        'persen_dp' => $post['persen_dp'],
+		        'link_doc' => !empty($link_doc) ? $link_doc : null,
+		        'invoice_date_real' => $post['invoice_date_real'],
+		        'tanggal_faktur_pajak' => $post['tanggal_faktur_pajak'],
+		        'id_supplier' => $get_supplier->kode_supplier,
+		        'nm_supplier' => $get_supplier->nama,
+		        'id_top' => $post['id_top'],
+		        'bank' => $post['bank'],
+		        'no_bank' => $post['no_bank'],
+		        'nm_acc_bank' => $post['nm_acc_bank'],
+		        'nilai_disc' => !empty($post['nilai_disc']) ? str_replace(',', '', $post['nilai_disc']) : 0,
+		        'nilai_ppn' => !empty($post['nilai_ppn']) ? str_replace(',', '', $post['nilai_ppn']) : 0,
+		        'total_invoice' => (!empty($post['nilai_ppn']) ? str_replace(',', '', $post['nilai_ppn']) : 0) 
+		                          + (!empty($post['total_pembelian']) ? str_replace(',', '', $post['total_pembelian']) : 0),
+		        // 'total_invoice' => '0',
+		        'kurs' => !empty($post['kurs']) ? str_replace(',', '', $post['kurs']) : 1,
+		        'created_by' => $this->auth->user_id(),
+		        'created_date' => date('Y-m-d H:i:s')
+		    ];
+		    // echo "<pre>";
+			// print_r($data);
+			// echo "</pre>";
+			// die();
+		    // Debugging: Cek Data Sebelum Insert
+		    // echo "Mulai eksekusi query...<br>";
+		    // $this->db->trans_start();
+		    // $sql = "INSERT INTO `tr_invoice_po` (`id`, `no_po`, `curr`, `invoice_date`, `value_dp`, `invoice_no`, `total_pembelian`, `no_faktur_pajak`, `persen_dp`, `link_doc`, `invoice_date_real`, `tanggal_faktur_pajak`, `id_supplier`, `nm_supplier`, `id_top`, `bank`, `no_bank`, `nm_acc_bank`, `nilai_disc`, `nilai_ppn`, `total_invoice`, `kurs`, `created_by`, `created_date`) VALUES ('PI-2025-03-000001', 'PO-001/MP/03/2025', 'IDR', '2025-03-20', '1', '1234', '0.00', '123123', '1.00', 'uploads/invoice/6d474df3c234061834d9e05713653292.png', '2025-03-20', '2025-03-20', 'SUP2500001', 'PT Sentral SIstem Consulting', '3', 'ada', '1231', 'ada', '0.00', '0.00', '0', '10.00', '27', '2025-03-20 10:16:17')";
+		    // $this->db->trans_complete();
+		    // if ($this->db->trans_status() === FALSE) {
+			//     echo "Transaksi gagal!<br>";
+			//     print_r($this->db->error());
+			//     die();
+			// } else {
+			//     echo "Transaksi sukses!<br>";
+			// }
+			// die();
+		    // echo "Query yang akan dieksekusi: <br><pre>$sql</pre><br>";
+			// $execute = $this->db->query($sql);
 
-			$insert_invoice = $this->db->insert('tr_invoice_po', [
-				'id' => $no_invoice,
-				'no_po' => $post['nomor_po'],
-				'curr' => $post['currency'],
-				'invoice_date' => $post['invoice_date'],
-				'value_dp' => str_replace(',', '', $post['value_dp']),
-				'invoice_no' => $post['nomor_invoice'],
-				'total_pembelian' => str_replace(',', '', $post['total_pembelian']),
-				'no_faktur_pajak' => $post['nomor_faktur_pajak'],
-				'persen_dp' => $post['persen_dp'],
-				'link_doc' => $link_doc,
-				'invoice_date_real' => $post['invoice_date_real'],
-				'tanggal_faktur_pajak' => $post['tanggal_faktur_pajak'],
-				'id_supplier' => $get_supplier->kode_supplier,
-				'nm_supplier' => $get_supplier->nama,
-				'id_top' => $post['id_top'],
-				'bank' => $post['bank'],
-				'no_bank' => $post['no_bank'],
-				'nm_acc_bank' => $post['nm_acc_bank'],
-				'nilai_disc' => str_replace(',', '', $post['nilai_disc']),
-				'nilai_ppn' => str_replace(',', '', $post['nilai_ppn']),
-				'total_invoice' => str_replace(',', '', $post['nilai_ppn']) + str_replace(',', '', $post['total_pembelian']),
-				'kurs' => str_replace(',', '', $post['kurs']),
-				'created_by' => $this->auth->user_id(),
-				'created_date' => date('Y-m-d H:i:s')
-			]);
-			if (!$insert_invoice) {
+			// if ($execute) {
+			//     echo "Query berhasil dieksekusi!<br>";
+			// } else {
+			//     echo "Query gagal: <br>";
+			//     print_r($this->db->error());
+			// }
+
+			// die(); // Hentikan eksekusi agar tidak lanjut ke bagian lain
+		    // log_message('debug', 'Insert Data: ' . json_encode($data));
+
+		    // Insert ke Database
+		    $this->db->trans_start();
+		    $insert_invoice = $this->db->insert('tr_invoice_po', $data);
+		    $this->db->trans_complete();
+		    // echo $this->db->last_query();
+			// die();
+		    // Debugging: Jika Gagal, Log Error
+		    // if (!$insert) {
+		    //     $error = $this->db->error();
+		    //     log_message('error', 'Gagal Insert: ' . json_encode($error));
+		    //     return ['status' => false, 'message' => 'Gagal insert data: ' . $error['message']];
+		    // }
+		    if (!$insert_invoice) {
 				print_r($this->db->error($insert_invoice));
+				// echo "gagal 0";
+				die();
 			}
+			//end version new
+			// echo "kondisi 1";
 		} else {
+			// echo "kondisi 2";
 			$arr_id_suplier = [];
 			$get_id_suplier = $this->db->query("SELECT a.id_suplier FROM tr_purchase_order a WHERE a.no_surat IN ('" . str_replace(",", "','", $post['nomor_po']) . "') GROUP BY a.id_suplier")->result();
 			foreach ($get_id_suplier as $item_id_suplier) {
@@ -484,14 +603,20 @@ class Purchase_order_payment extends Admin_Controller
 				print_r($this->db->error($insert_invoice));
 			}
 		}
-
+		// echo "done 1";
+		// exit;
 		$get_users = $this->db->get_where('users', ['id_user' => $this->auth->user_id()])->row_array();
-
+		// print_r($get_users);
+		// echo "error aja";
+		// die();
+		// exit;
 		if ($post['tipe_req'] == 'dp') {
 			$get_po = $this->db->get_where('tr_purchase_order', ['no_surat' => $post['nomor_po']])->row();
 			$get_supplier = $this->db->get_where('new_supplier', ['kode_supplier' => $get_po->id_suplier])->row();
 
 			$get_top = $this->db->get_where('tr_top_po', ['id' => $post['id_top']])->row();
+			// print_r($get_top);
+			// die();
 			if ($get_top->group_top == 76) {
 				$insert_expense = $this->db->insert('tr_expense', [
 					'no_doc' => $no_invoice,
@@ -513,6 +638,7 @@ class Purchase_order_payment extends Admin_Controller
 				]);
 				if (!$insert_expense) {
 					print_r($this->db->error($insert_expense));
+					echo "gagal 1";
 					exit;
 				}
 
@@ -531,6 +657,7 @@ class Purchase_order_payment extends Admin_Controller
 				]);
 				if (!$insert_expense_detail) {
 					print_r($this->db->error($insert_expense_detail));
+					echo "gagal 2";
 					exit;
 				}
 
@@ -546,6 +673,8 @@ class Purchase_order_payment extends Admin_Controller
 				$update_uang_muka = $this->db->update('tr_purchase_order', ['uang_muka_idr' => $dpp_dp_idr], ['no_surat' => $no_po1]);
 				$update_uang_muka1 = $this->db->update('tr_purchase_order', ['uang_muka' => $dpp_dp], ['no_surat' => $no_po1]);
 				$update_kurs       = $this->db->update('tr_purchase_order', ['kurs_terima_invoice' => $kurs], ['no_surat' => $no_po1]);
+				// print_r('error 1');
+				// die();
 			}
 			if ($get_top->group_top == 77) {
 				$insert_expense = $this->db->insert('tr_expense', [
@@ -567,6 +696,7 @@ class Purchase_order_payment extends Admin_Controller
 				]);
 				if (!$insert_expense) {
 					print_r($this->db->error($insert_expense));
+					echo "gagal 3";
 					exit;
 				}
 
@@ -585,6 +715,7 @@ class Purchase_order_payment extends Admin_Controller
 				]);
 				if (!$insert_expense_detail) {
 					print_r($this->db->error($insert_expense_detail));
+					echo "gagal 4";
 					exit;
 				}
 
@@ -600,6 +731,8 @@ class Purchase_order_payment extends Admin_Controller
 				$update_uang_muka = $this->db->update('tr_purchase_order', ['uang_muka_idr' => $dpp_dp_idr], ['no_surat' => $no_po1]);
 				$update_uang_muka1 = $this->db->update('tr_purchase_order', ['uang_muka' => $dpp_dp], ['no_surat' => $no_po1]);
 				$update_kurs       = $this->db->update('tr_purchase_order', ['kurs_terima_invoice' => $kurs], ['no_surat' => $no_po1]);
+				// print_r('error 2');
+				// die();
 			}
 			if ($get_top->group_top == 78) {
 				$insert_expense = $this->db->insert('tr_expense', [
@@ -621,6 +754,7 @@ class Purchase_order_payment extends Admin_Controller
 				]);
 				if (!$insert_expense) {
 					print_r($this->db->error($insert_expense));
+					echo "gagal 5";
 					exit;
 				}
 
@@ -639,8 +773,11 @@ class Purchase_order_payment extends Admin_Controller
 				]);
 				if (!$insert_expense) {
 					print_r($this->db->error($insert_expense));
+					echo "gagal 6";
 					exit;
 				}
+				// print_r('error 3');
+				// die();
 			}
 		} else {
 			$arr_id_suplier = [];
@@ -688,6 +825,7 @@ class Purchase_order_payment extends Admin_Controller
 			]);
 			if (!$insert_expense) {
 				print_r($this->db->error($insert_expense));
+				echo "gagal 7";
 				exit;
 			}
 
@@ -706,16 +844,22 @@ class Purchase_order_payment extends Admin_Controller
 			]);
 			if (!$insert_expense_detail) {
 				print_r($this->db->error($insert_expense_detail));
+				echo "gagal 8";
 				exit;
 			}
+			// print_r('error 5');
+			// 	die();
 		}
 
 		if ($post['tipe_req'] == 'dp') {
 			$update_po = $this->db->update('tr_purchase_order', ['po_inv_create' => 1], ['no_surat' => $post['nomor_po']]);
 			if (!$update_po) {
 				print_r($this->db->error($update_po));
+				echo "gagal 9";
 				exit;
 			}
+			// print_r('error 6');
+			// 	die();
 		} else {
 			$clean_no_po = str_replace(', ', ',', $post['nomor_po']);
 			// if ($post['tipe_incoming'] == 'incoming material') {
@@ -727,6 +871,7 @@ class Purchase_order_payment extends Admin_Controller
 			$update_incoming = $this->db->update('tr_incoming_check', ['inc_inv_create' => 1]);
 			if (!$update_incoming) {
 				print_r($this->db->error($update_incoming));
+				echo "gagal 10";
 				exit;
 			}
 
@@ -734,6 +879,7 @@ class Purchase_order_payment extends Admin_Controller
 			$update_warehouse = $this->db->update('warehouse_adjustment', ['inc_inv_create' => 1]);
 			if (!$update_warehouse) {
 				print_r($this->db->error($update_warehouse));
+				echo "gagal 11";
 				exit;
 			}
 
@@ -741,6 +887,7 @@ class Purchase_order_payment extends Admin_Controller
 			$update_invoice = $this->db->delete('tr_check_invoice');
 			if (!$update_invoice) {
 				print_r($this->db->error($update_invoice));
+				echo "gagal 12";
 				exit;
 			}
 		}
@@ -767,6 +914,8 @@ class Purchase_order_payment extends Admin_Controller
 			$nilai_ppn = str_replace(',', '', $post['nilai_ppn']) * $kurs;
 			$kode_supplier = $get_supplier->kode_supplier;
 			$nama = $get_supplier->nama;
+			// print_r('error 7');
+			// 	die();
 		} else {
 
 			if ($post['currency'] == 'IDR') {
@@ -787,6 +936,12 @@ class Purchase_order_payment extends Admin_Controller
 		// exit;
 
 		$datajurnal1 = $this->db->query("select * from " . DBACC . ".master_oto_jurnal_detail where kode_master_jurnal='" . $jenis_jurnal . "' order by parameter_no")->result();
+		// echo $this->db->last_query();
+		// echo "<br>";
+		// echo "<pre>";
+		// print_r($datajurnal1);
+		// echo "<pre>";
+		// die();
 		$data_po     = $this->db->query("select * from tr_purchase_order WHERE no_surat='$no_po'")->row();
 
 		// print_r($data_po);
@@ -876,6 +1031,8 @@ class Purchase_order_payment extends Admin_Controller
 					}
 				}
 			}
+			// print_r('error 8');
+			// 	die();
 		} else {
 			if ($nilai_invoice > 0) {
 				foreach ($datajurnal1 as $rec) {
@@ -967,9 +1124,12 @@ class Purchase_order_payment extends Admin_Controller
 				}
 			}
 		}
+		// print_r($det_Jurnaltes1);
+		// die();
 		$insert_jurnaltras = $this->db->insert_batch('jurnaltras', $det_Jurnaltes1);
 		if (!$insert_jurnaltras) {
 			print_r($this->db->error($insert_jurnaltras));
+			echo "gagal 13";
 			exit;
 		}
 
@@ -995,6 +1155,7 @@ class Purchase_order_payment extends Admin_Controller
 			$insert_jurnal = $this->db->insert(DBACC . '.jurnal', $datadetail);
 			if (!$insert_jurnal) {
 				print_r($this->db->error($insert_jurnal));
+				echo "gagal 14";
 				exit;
 			}
 		}
@@ -1014,6 +1175,7 @@ class Purchase_order_payment extends Admin_Controller
 		$insert_javh = $this->db->insert(DBACC . '.javh', $dataJVhead);
 		if (!$insert_javh) {
 			print_r($this->db->error($insert_javh));
+			echo "gagal 15";
 			exit;
 		}
 		$datahutang = array(
@@ -1032,6 +1194,7 @@ class Purchase_order_payment extends Admin_Controller
 		$insert_kartu_hutang = $this->db->insert('tr_kartu_hutang', $datahutang);
 		if (!$insert_kartu_hutang) {
 			print_r($this->db->error($insert_kartu_hutang));
+			echo "gagal 16";
 			exit;
 		}
 		$datahutang = array(
@@ -1050,10 +1213,12 @@ class Purchase_order_payment extends Admin_Controller
 		$insert_kartu_hutang = $this->db->insert('tr_kartu_hutang', $datahutang);
 		if (!$insert_kartu_hutang) {
 			print_r($this->db->error($insert_kartu_hutang));
+			echo "gagal 17";
 			exit;
 		}
 		//end auto jurnal
-
+		// print_r('error 9');
+		// 		die();
 
 
 		if ($this->db->trans_status() === false) {
@@ -2257,5 +2422,88 @@ class Purchase_order_payment extends Admin_Controller
 	// 	$get_po_dp = $this->db->get_where()
 	// }
 
+	function save_invoice_new(){
+		$post = $this->input->post();
+
+		$config['upload_path'] = './uploads/invoice'; //path folder
+		$config['allowed_types'] = '*'; //type yang dapat diakses bisa anda sesuaikan
+		$config['max_size'] = 100000000; // Maximum file size in kilobytes (2MB).
+		$config['encrypt_name'] = TRUE; // Encrypt the uploaded file's name.
+		$config['remove_spaces'] = FALSE; // Remove spaces from the file name.
+
+		$this->load->library('upload', $config);
+		$this->upload->initialize($config);
+
+		// $this->db->trans_begin();
+
+		$link_doc = '';
+		if ($this->upload->do_upload('upload_invoice')) {
+			$data_upload_po = $this->upload->data();
+			$link_doc = 'uploads/invoice/' . $data_upload_po['file_name'];
+		}
+
+		$no_po = $post['no_po'];
+		$no_po1 = $post['nomor_po'];
+
+		// print_r($no_po);
+		// exit;
+
+			$get_po = $this->db->get_where('tr_purchase_order', ['no_surat' => $post['nomor_po']])->row();
+			$get_supplier = $this->db->get_where('new_supplier', ['kode_supplier' => $get_po->id_suplier])->row();
+			$no_invoice = $this->Pr_model->generate_no_invoice();
+		    $data = [
+		        'id' => $no_invoice,
+		        'no_po' => $post['nomor_po'],
+		        'curr' => $post['currency'],
+		        'invoice_date' => $post['invoice_date'],
+		        'value_dp' => !empty($post['value_dp']) ? str_replace(',', '', $post['value_dp']) : 0,
+		        'invoice_no' => $post['nomor_invoice'],
+		        'total_pembelian' => !empty($post['total_pembelian']) ? str_replace(',', '', $post['total_pembelian']) : 0,
+		        'no_faktur_pajak' => $post['nomor_faktur_pajak'],
+		        'persen_dp' => $post['persen_dp'],
+		        'link_doc' => !empty($link_doc) ? $link_doc : null,
+		        'invoice_date_real' => $post['invoice_date_real'],
+		        'tanggal_faktur_pajak' => $post['tanggal_faktur_pajak'],
+		        'id_supplier' => $get_supplier->kode_supplier,
+		        'nm_supplier' => $get_supplier->nama,
+		        'id_top' => $post['id_top'],
+		        'bank' => $post['bank'],
+		        'no_bank' => $post['no_bank'],
+		        'nm_acc_bank' => $post['nm_acc_bank'],
+		        'nilai_disc' => !empty($post['nilai_disc']) ? str_replace(',', '', $post['nilai_disc']) : 0,
+		        'nilai_ppn' => !empty($post['nilai_ppn']) ? str_replace(',', '', $post['nilai_ppn']) : 0,
+		        'total_invoice' => (!empty($post['nilai_ppn']) ? str_replace(',', '', $post['nilai_ppn']) : 0) 
+		                          + (!empty($post['total_pembelian']) ? str_replace(',', '', $post['total_pembelian']) : 0),
+		        // 'total_invoice' => '0',
+		        'kurs' => !empty($post['kurs']) ? str_replace(',', '', $post['kurs']) : 1,
+		        'created_by' => $this->auth->user_id(),
+		        'created_date' => date('Y-m-d H:i:s')
+		    ];
+		$this->db->trans_start();
+	 	// Insert ke Database
+	    $insert = $this->db->insert('tr_invoice_po', $data);
+	    $this->db->trans_complete();
+	    echo $this->db->last_query();
+		die();
+	    // Debugging: Jika Gagal, Log Error
+	    if (!$insert) {
+	        $error = $this->db->error();
+	        log_message('error', 'Gagal Insert: ' . json_encode($error));
+	        return ['status' => false, 'message' => 'Gagal insert data: ' . $error['message']];
+	    }
+
+	    if ($this->db->trans_status() === false) {
+			$this->db->trans_rollback();
+			$valid = 0;
+		} else {
+			$this->db->trans_commit();
+			$valid = 1;
+		}
+
+		echo json_encode([
+			'status' => $valid
+		]);
+
+	}
 
 }

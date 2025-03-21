@@ -272,7 +272,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Order.Delete');
 					var formdata = new FormData($('#frm-data')[0]);
 					$.ajax({
 						type: 'POST',
-						url: siteurl + active_controller + '/save_invoice',
+						url: siteurl + active_controller + 'save_invoice',
 						data: formdata,
 						cache: false,
 						dataType: 'json',
@@ -296,9 +296,11 @@ $ENABLE_DELETE  = has_permission('Purchase_Order.Delete');
 							}
 						},
 						error: function(result) {
+							// console.log("Error Response:", result);
 							swal({
 								title: 'Error !',
-								text: 'Please try again later !',
+								// text: result.responseText || 'Please try again later 99 !',
+								text: 'Please try again later 99 !',
 								type: 'error'
 							});
 						}

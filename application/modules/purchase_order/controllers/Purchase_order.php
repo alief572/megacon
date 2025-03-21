@@ -1662,6 +1662,7 @@ class Purchase_order extends Admin_Controller
 					$group_top = $this->input->post('group_top_' . $i);
 					$progress = $this->input->post('progress_' . $i);
 					$nilai_top = $this->input->post('nilai_top_' . $i);
+					$jatuh_tempo_top = $this->input->post('jatuh_tempo_top_' . $i);
 					$keterangan_top = $this->input->post('keterangan_top_' . $i);
 
 					// print_r($num_top.'<br>');
@@ -1671,6 +1672,7 @@ class Purchase_order extends Admin_Controller
 						'group_top' => $group_top,
 						'progress' => str_replace(',', '', $progress),
 						'nilai' => str_replace(',', '', $nilai_top),
+						'jatuh_tempo' => $jatuh_tempo_top,
 						'keterangan' => $keterangan_top,
 						'created_by' => $this->auth->user_id(),
 						'created_on' => date('Y-m-d H:i:s')
@@ -1816,6 +1818,7 @@ class Purchase_order extends Admin_Controller
 					$group_top = $this->input->post('group_top_' . $i);
 					$progress = $this->input->post('progress_' . $i);
 					$nilai_top = $this->input->post('nilai_top_' . $i);
+					$jatuh_tempo_top = $this->input->post('jatuh_tempo_top_' . $i);
 					$keterangan_top = $this->input->post('keterangan_top_' . $i);
 
 					// print_r($num_top.'<br>');
@@ -1825,6 +1828,7 @@ class Purchase_order extends Admin_Controller
 						'group_top' => $group_top,
 						'progress' => str_replace(',', '', $progress),
 						'nilai' => str_replace(',', '', $nilai_top),
+						'jatuh_tempo' => $jatuh_tempo_top,
 						'keterangan' => $keterangan_top,
 						'created_by' => $this->auth->user_id(),
 						'created_on' => date('Y-m-d H:i:s')

@@ -464,6 +464,8 @@ class Request_pr_material_model extends BF_Model
       $request_input = $this->input->post('request');
       $row['request'] = (!empty($request_input) || $request_input === "0") ? $request_input : $row['request'];
       $purchase2 = (!empty($row['request'])) ? $row['request'] : $QTY_PR;
+      // Pastikan nilai $purchase2 adalah angka
+      $purchase2 = is_numeric($purchase2) ? (float) $purchase2 : 0;
       if ($purchase2 >= 1000) {
           $purchase2_fix = number_format($purchase2, 0, '.', ','); // Format ribuan dengan koma
       } else {

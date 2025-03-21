@@ -124,12 +124,12 @@ $ENABLE_DELETE  = has_permission('PR_Material.Delete');
 						if ($row['app_1'] == null && $row['app_2'] == null && $row['app_3'] == null) :
 							$warna = "blue";
 							$sts = "Waiting Approval Head";
-						elseif ($row['app_1'] !== null && $row['app_2'] == null && $row['app_3'] == null) :
-							$warna = "blue";
-							$sts = "Waiting Approval Cost Control";
-						elseif ($row['app_1'] !== null && $row['app_2'] !== null && $row['app_3'] == null) :
-							$warna = "blue";
-							$sts = "Waiting Approval Management";
+						// elseif ($row['app_1'] !== null && $row['app_2'] == null && $row['app_3'] == null) :
+						// 	$warna = "blue";
+						// 	$sts = "Waiting Approval Cost Control";
+						// elseif ($row['app_1'] !== null && $row['app_2'] !== null && $row['app_3'] == null) :
+						// 	$warna = "blue";
+						// 	$sts = "Waiting Approval Management";
 						else :
 							if ($row['sts_app'] == "Y") :
 								$warna = "green";

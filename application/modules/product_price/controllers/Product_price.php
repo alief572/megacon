@@ -141,7 +141,7 @@ class Product_price extends Admin_Controller
 		$date 		= date('YmdHis');
 
 		$GET_RATE_COSTING = get_rate_costing_rate();
-		$GET_RATE_MAN_POWER = $this->db->order_by('id', 'desc')->get('rate_man_power')->result();
+		$GET_RATE_MAN_POWER = $this->db->get_where('tr_rate_borongan', array('id_product' => $result[0]['id_product'], 'deleted_by' => NULL))->result();
 		$GET_LEVEL4 = get_inventory_lv4();
 		$GET_PRICE_REF = get_price_ref();
 		$GET_MACHINE_PRODUCT = get_machine_product();
@@ -442,7 +442,7 @@ class Product_price extends Admin_Controller
 					$rate_cycletime_mch 	= $cycletimeMesin / 60;
 				}
 			}
-			$rate_manpower 	= $GET_RATE_MAN_POWER[0]->upah_per_jam_dollar;
+			$rate_manpower 	= $GET_RATE_MAN_POWER[0]->rate_borongan;
 
 			$kode_mesin 	= (!empty($GET_MACHINE_PRODUCT[$code_level4])) ? $GET_MACHINE_PRODUCT[$code_level4] : 0;
 			$kode_mold 		= (!empty($GET_MOLD_PRODUCT[$code_level4])) ? $GET_MOLD_PRODUCT[$code_level4] : 0;
@@ -554,7 +554,7 @@ class Product_price extends Admin_Controller
 			$charge_setting_ct		= 0;
 			//2 man power
 
-			$get_rate_borongan = $this->db->get_where('tr_rate_borongan', ['id_product' => $value['id_product']])->row();
+			$get_rate_borongan = $this->db->get_where('tr_rate_borongan', ['id_product' => $value['id_product'], 'deleted_by' => null])->row();
 			$cost_man_power = (!empty($get_rate_borongan)) ? $get_rate_borongan->rate_borongan : 0;
 			//3 machine mould consumable
 			$machine 	= $rate_depresiasi;
@@ -611,7 +611,7 @@ class Product_price extends Admin_Controller
 			$ArrHeader[$key]['rate_cycletime'] 			= $rate_cycletime;
 			$ArrHeader[$key]['rate_cycletime_machine'] 	= $rate_cycletime_mch;
 			$ArrHeader[$key]['rate_man_power_usd'] 		= $rate_manpower;
-			$ArrHeader[$key]['rate_man_power_idr'] 	= $GET_RATE_MAN_POWER[0]->upah_per_jam;
+			$ArrHeader[$key]['rate_man_power_idr'] 	= $GET_RATE_MAN_POWER[0]->rate_borongan;
 			$ArrHeader[$key]['rate_depresiasi'] 	= $rate_depresiasi;
 			$ArrHeader[$key]['rate_mould'] 			= $rate_mould;
 			$ArrHeader[$key]['cost_material'] 		= $cost_material;
@@ -1085,7 +1085,7 @@ class Product_price extends Admin_Controller
 			$ArrHeader[$key]['deleted_by'] 			= NULL;
 			$ArrHeader[$key]['deleted_date'] 		= NULL;
 
-			$rate_manpower 	= $GET_RATE_MAN_POWER[0]->upah_per_jam_dollar;
+			$rate_manpower 	= $GET_RATE_MAN_POWER[0]->rate_borongan;
 			$persen_indirect 	= $GET_RATE_COSTING[3];
 			$persen_consumable 	= $GET_RATE_COSTING[6];
 			$persen_packing 	= $GET_RATE_COSTING[7];
