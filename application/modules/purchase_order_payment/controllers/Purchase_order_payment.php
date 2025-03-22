@@ -539,11 +539,36 @@ class Purchase_order_payment extends Admin_Controller
 
 			// die(); // Hentikan eksekusi agar tidak lanjut ke bagian lain
 		    // log_message('debug', 'Insert Data: ' . json_encode($data));
+		    
 
 		    // Insert ke Database
 		    $this->db->trans_start();
 		    $insert_invoice = $this->db->insert('tr_invoice_po', $data);
 		    $this->db->trans_complete();
+
+		    //START BAGIAN INSERT REQUEST PAYMENT
+		    $get_tr_invoice_po = $this->db->get_where('tr_invoice_po', ['no_po' => $post['nomor_po']])->row();
+		    $NO_DOC = $get_tr_invoice_po->id;
+		    $dataRequestPayment = [
+		        // 'id' => $no_invoice,
+		        'no_doc' => $NO_DOC,
+		        'nama' => $post['currency'],
+		        'tgl_doc' => $post['invoice_date'],
+		        'keperluan' => 'improve schedule payment',
+		        'tipe' => 'expense',
+		        'jumlah' => (!empty($post['nilai_ppn']) ? str_replace(',', '', $post['nilai_ppn']) : 0) 
+		                          + (!empty($post['total_pembelian']) ? str_replace(',', '', $post['total_pembelian']) : 0),
+		        'status' => 2,
+		        'created_by' => $this->auth->user_id(),
+		        'created_on' => date('Y-m-d H:i:s')
+		    ];
+		    //END BAGIAN INSERT REQUEST PAYMENT
+		    // $this->db->trans_begin();
+		    // $this->db->trans_start();
+		    $this->db->insert('request_payment', $dataRequestPayment);
+		    // echo $this->db->last_query();
+		    // die();
+		    // $this->db->trans_complete();
 		    // echo $this->db->last_query();
 			// die();
 		    // Debugging: Jika Gagal, Log Error

@@ -375,6 +375,88 @@ class Schedule_payment extends Admin_Controller
 		$this->template->render('detail_approve_checker');
 	}
 
+	public function approval_payment_checker_new($no_po = null)
+	{
+		// $type 	= $_GET['type'];//version old
+		$no_po 	= $_GET['no_po'];
+		// $get_id = $this->db->get_where('request_payment', ['id' => $id_exp])->row();
+		// $id = $get_id->ids;
+		$this->template->title('Approval Payment');
+		//START CODING YANG DIPAKAI
+		$getDataPO = $this->db->get_where('tr_purchase_order', ['no_po' => $no_po ])->row();
+		// print_r($getDataPO);
+		$No_Surat_PO = $getDataPO->no_surat;
+		$data = $this->db->query("SELECT a.* FROM tr_invoice_po a order by created_date desc")->result();
+		//END CODING YANG DIPAKAI
+
+		// /* Expense */
+		// if (isset($type) && $type == 'expense') {
+		// 	$data 			= $this->db->get_where('tr_expense', ['id' => $id])->row();
+			$data_detail	= $this->db->get_where('tr_expense_detail', ['no_doc' => $no_po])->result();
+		// }
+
+		// /* Kasbon */
+		// $kasbon_pr = 0;
+		// $data_detail_pr_kasbon = '';
+		// if (isset($type) && $type == 'kasbon') {
+		// 	$data 			= $this->db->get_where('tr_kasbon', ['id' => $id])->row();
+		// 	$data_detail	= $this->db->get_where('tr_kasbon', ['id' => $id])->result();
+		// 	if (!empty($data->id_pr)) {
+		// 		$kasbon_pr = 1;
+		// 		$data_detail_pr_kasbon = $this->db->get_where('tr_pr_detail_kasbon', ['id_kasbon' => $data->no_doc])->result();
+		// 	}
+		// }
+
+		// /* Transportasi */
+		// if (isset($type) && $type == 'transportasi') {
+		// 	$data 			= $this->db->get_where('tr_transport_req', ['id' => $id])->row();
+		// 	$data_detail	= $this->db->get_where('tr_transport', ['no_req' => $data->no_doc, 'req_payment' => 0])->result();
+		// }
+
+		// /* NON PO */
+		// if (isset($type) && $type == 'nonpo') {
+		// 	$data 			= $this->db->get_where('tr_non_po_header', ['id' => $id])->row();
+		// 	$data_detail	= $this->db->get_where('tr_non_po_detail', ['no_doc' => $data->no_doc])->result();
+		// }
+
+		// /* Periodik/Rutin */
+		// if (isset($type) && $type == 'periodik') {
+		// 	$data 			= $this->db->get_where('tr_pengajuan_rutin_detail', ['id' => $id])->row();
+		// 	$data_detail	= $this->db->get_where('tr_pengajuan_rutin_detail', ['id' => $id])->result();
+		// }
+
+		// $data_budget 	= $this->All_model->GetComboBudget('', 'EXPENSE', date('Y'));
+		// $data_pc 		= $this->All_model->GetPettyCashCombo();
+
+		// $this->template->set('data_pc', $data_pc);
+		// $this->template->set('data_budget', $data_budget);
+		// $this->template->set('data_detail', $data_detail);
+		// $this->template->set('status', $this->status);
+		// $this->template->set('data', $data);
+		// $this->template->set('stsview', 'view');
+
+		// $get_req_payment = $this->db->get_where('request_payment', ['id' => $id_exp])->row_array();
+
+
+		$list_coa = [];
+		$get_coa = $this->db->get(DBACC . '.coa_master')->result();
+		foreach ($get_coa as $item_coa) {
+			$list_coa[$item_coa->no_perkiraan] = $item_coa->nama;
+		}
+
+		$this->template->set([
+			'header'	 => $data,
+			'dataPO' 	=> $getDataPO,
+			'type' => 'expense',
+			'details' 	=> $data_detail,
+			// 'kasbon_pr' => $kasbon_pr,
+			// 'data_detail_pr_kasbon' => $data_detail_pr_kasbon,
+			// 'data_req_payment' => $get_req_payment,
+			'list_coa' => $list_coa
+		]);
+		$this->template->render('detail_approve_checker_new');
+	}
+
 
 	/* public function save_approval()
 	{
@@ -824,6 +906,94 @@ class Schedule_payment extends Admin_Controller
 				}
 			}
 		endforeach;
+
+		if ($this->db->trans_status() === FALSE) {
+			$this->db->trans_rollback();
+			$result = false;
+		} else {
+			$this->db->trans_commit();
+			$result = true;
+		}
+		$param = array(
+			'save' => $result
+		);
+
+		echo json_encode($param);
+	}
+
+	public function save_approval_checker_new()
+	{
+		$post = $this->input->post();
+		// print_r($post['no_doc']);exit;
+
+		$this->db->trans_begin();
+
+		// foreach ($post['item'] as $item) :
+		// 	if (isset($item['id'])) {
+				// if ($post['tipe'] == "periodik") {
+				// 	$this->db->update('request_payment', [
+				// 		'app_checker' => 1,
+				// 		'app_checker_by' => $this->auth->user_id(),
+				// 		'app_checker_date' => date('Y-m-d H:i:s')
+				// 	], [
+				// 		'no_doc' => $post['no_doc'],
+				// 		'ids' => $item['id']
+				// 	]);
+
+				// 	$this->db->update('tr_pengajuan_rutin_detail', ['sts_reject' => 0, 'sts_reject_manage' => 0], ['no_doc' => $post['no_doc'], 'id' => $item['id']]);
+				// } else {
+					$getDataTrInvoicePO = $this->db->get_where('tr_invoice_po', ['no_po' => $post['no_doc'] ])->row();
+					// echo $this->db->last_query();
+					// die();
+					$NO_DOC_PI = $getDataTrInvoicePO->id;
+					$this->db->update('request_payment', [
+						'app_checker' => 1,
+						'app_checker_by' => $this->auth->user_id(),
+						'app_checker_date' => date('Y-m-d H:i:s')
+					], [
+						'no_doc' => $NO_DOC_PI//$post['no_doc']
+						// 'app_checker' => null
+					]);
+
+					$header = $this->db->get_where('request_payment', ['no_doc' => $NO_DOC_PI, 'tipe' => 'expense'])->row_array();
+					
+					// $Id = $this->Schedule_payment_model->generate_id_payment($kode_bank);
+					$Id = $this->Schedule_payment_model->generate_id_payment_new();
+					// print_r($Id);
+					// exit;
+					// $header['jumlah'] 	= array_sum($Harga);//version old
+					$header['jumlah'] 	= $header['jumlah'];//version old
+					$header['status'] 	= '1';
+					if (($header)) {
+						$header['id'] = $Id;
+						$header['approved_by'] = $this->auth->user_name();
+						$header['approved_on'] = date("Y-m-d h:i:s");
+						// $exist_data = $this->db->get_where('payment_approve', ['id' => $Data['id'], 'tipe' => $Data['tipe']])->num_rows();
+						// if ($exist_data == '0') {
+							$insert_payment_approve = $this->db->insert('payment_approve', $header);
+							if (!$insert_payment_approve) {
+								print_r($this->db->error()['message']);
+								print_r('error 1');
+								exit;
+							}
+							// print_r($this->db->last_query());
+							// exit;
+						// }
+					}
+					// if ($post['tipe'] == "transportasi") {
+					// 	$this->db->update('tr_transport_req', ['sts_reject' => 0, 'sts_reject_manage' => 0], ['no_doc' => $post['no_doc']]);
+					// 	$this->db->update('tr_transport', ['req_payment' => 1], ['id' => $item['id']]);
+					// }
+					// if ($post['tipe'] == "expense") {
+					// 	$this->db->update('tr_expense', ['sts_reject' => 0, 'sts_reject_manage' => 0], ['no_doc' => $post['no_doc']]);
+					// 	$this->db->update('tr_expense_detail', ['req_payment' => 1], ['id' => $item['id']]);
+					// }
+					// if ($post['tipe'] == "kasbon") {
+					// 	$this->db->update('tr_kasbon', ['sts_reject' => 0, 'sts_reject_manage' => 0], ['no_doc' => $post['no_doc']]);
+					// }
+				// }
+		// 	}
+		// endforeach;
 
 		if ($this->db->trans_status() === FALSE) {
 			$this->db->trans_rollback();

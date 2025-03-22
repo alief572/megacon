@@ -89,7 +89,8 @@ $ENABLE_DELETE  = has_permission('PR_Material.Delete');
 							$list_barang[] = $item->nm_material;
 						}
 
-						$satuan = $item->satuan.' '.$item->satuan_material;
+						// $satuan = $item->satuan.' '.$item->satuan_material;//version old
+						$satuan = $item->satuan;//version new
 						if ($item->propose_purchase == null || $item->propose_purchase <= 0) {
 							$list_qty_barang[] = number_format($item->qty_order, 2) . ' ' . $satuan;
 						} else {

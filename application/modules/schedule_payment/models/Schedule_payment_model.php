@@ -149,7 +149,7 @@ class Schedule_payment_model extends BF_Model
 
     public function GetListDataApprovalNew($where = '')
     {
-        $data    = $this->db->query("SELECT a.* FROM tr_invoice_po a order by created_date desc")->result();
+        $data    = $this->db->query("SELECT a.*, b.status FROM tr_invoice_po a inner join request_payment b ON a.id = b.no_doc where b.status = '2' and (b.app_checker IS NULL OR b.app_checker = '' ) order by a.created_date desc")->result();
         return $data;
     }
 
@@ -361,6 +361,27 @@ class Schedule_payment_model extends BF_Model
         $tahun = date('my-');
         $huruf = "BK-".$kode_bank."-";
         $kodecollect = $huruf . $tahun . sprintf("%04s", $urutan);
+
+        return $kodecollect;   
+    }
+
+    public function generate_id_payment_new() {
+        // Format bulan-tahun saat ini (MMYY)
+        $bulan_tahun = date('m') . date('y'); // 0325 untuk Maret 2025
+        $generate_id = $this->db->query("SELECT MAX(id) AS max_id FROM payment_approve WHERE id LIKE '%BK-".$bulan_tahun."%' order by id DESC ")->row();//version old
+        // Ambil nomor terakhir dari database
+        // $generate_id = $this->db->select('MAX(id) AS max_id');
+        // $this->db->from('payment_approve');
+        // $this->db->like('id', "BK-$bulan_tahun-", 'after'); // Filter sesuai bulan-tahun
+        // $this->db->order_by('id', 'DESC');
+        // $this->db->limit(1);
+        // $query = $this->db->get();
+        $kodeBarang = $generate_id->max_id;
+        $urutan = (int) substr($kodeBarang, 11, 4);
+        $urutan++;
+        $tahun = date('my-');
+        $huruf = "BK-".$bulan_tahun."-";
+        $kodecollect = $huruf . sprintf("%04s", $urutan);
 
         return $kodecollect;   
     }

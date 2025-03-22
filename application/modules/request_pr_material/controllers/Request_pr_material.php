@@ -631,9 +631,9 @@ class Request_pr_material extends Admin_Controller
       'reject_status' => '0', 
       'tgl_dibutuhkan' => $data['tgl_dibutuhkan'],
       'tingkat_pr' => $data['tingkat_pr'],
-      'keterangan_1' => $data['keterangan_1'],
-      'keterangan_2' => $data['keterangan_2'],
-      'keterangan_3' => $data['keterangan_3']
+      'keterangan_1' => $data['keterangan_1']
+      // 'keterangan_2' => $data['keterangan_2'],
+      // 'keterangan_3' => $data['keterangan_3']
     ], ['so_number' => $so_number]);
     if (!empty($ArrUpdate)) {
       $this->db->update_batch('material_planning_base_on_produksi_detail', $ArrUpdate, 'id');
