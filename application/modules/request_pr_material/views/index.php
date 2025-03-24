@@ -73,7 +73,7 @@ $ENABLE_DELETE  = has_permission('PR_Material.Delete');
 					echo '<tr>';
 					$list_barang = [];
 					$list_qty_barang = [];
-					$this->db->select('a.id_material, a.propose_purchase, a.qty_order, b.nama as nm_barang, d.nm_material as nm_material, c.code as satuan, "Kg" as satuan_material');
+					$this->db->select('a.id_material, a.propose_purchase, a.qty_order, b.nama as nm_barang, d.nm_material as nm_material, c.code as satuan, "Kg" as satuan_material, b.konversi, b.id_unit_packing');
 					$this->db->from('material_planning_base_on_produksi_detail a');
 					$this->db->join('new_inventory_4 b', 'b.code_lv4 = a.id_material', 'left');
 					$this->db->join('ms_satuan c', 'c.id = b.id_unit', 'left');
@@ -90,11 +90,25 @@ $ENABLE_DELETE  = has_permission('PR_Material.Delete');
 						}
 
 						// $satuan = $item->satuan.' '.$item->satuan_material;//version old
+						$GET_SATUAN = get_list_satuan();
+						$satuan_new = (!empty($GET_SATUAN[$item->id_unit_packing]['code'])) ? $GET_SATUAN[$item->id_unit_packing]['code'] : '';
 						$satuan = $item->satuan;//version new
+						$satuan_pcs = 'pcs';
+						$konversi = $item->konversi;//version new
+						$qty_order = 0;
+						$propose_purchase = 0;
 						if ($item->propose_purchase == null || $item->propose_purchase <= 0) {
-							$list_qty_barang[] = number_format($item->qty_order, 2) . ' ' . $satuan;
+							if ($konversi > 0 and $item->qty_order > 0) {
+								$qty_order = $item->qty_order / $konversi;
+							}
+							$list_qty_barang[] = number_format($item->qty_order, 2) . ' ' . $satuan_new;//version old
+							// $list_qty_barang[] = number_format($qty_order, 2) . ' ' . $satuan_new;//version new
 						} else {
-							$list_qty_barang[] = number_format($item->propose_purchase, 2) . ' ' . $satuan;
+							if ($konversi > 0 and $item->propose_purchase > 0) {
+								$propose_purchase = $item->propose_purchase / $konversi;
+							}
+							$list_qty_barang[] = number_format($item->propose_purchase, 2) . ' ' . $satuan_new;//version oid
+							// $list_qty_barang[] = number_format($propose_purchase, 2) . ' ' . $satuan_new;//version new
 						}
 					}
 					$list_barang = implode('<br><br>', $list_barang);
