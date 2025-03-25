@@ -368,7 +368,7 @@ class App_pr_material_model extends BF_Model
             )
             GROUP BY a.so_number
             ";
-    // echo $sql; exit;
+    echo $sql; exit;
 
     $data['totalData'] = $this->db->query($sql)->num_rows();
     $data['totalFiltered'] = $this->db->query($sql)->num_rows();
