@@ -60,7 +60,7 @@ class Request_payment extends Admin_Controller
 	}
 	public function payment_list()
 	{
-		$data = $this->Request_payment_model->GetListDataPaymentList();//version old
+		// $data = $this->Request_payment_model->GetListDataPaymentList();//version old
 		$data = $this->Request_payment_model->GetListDataPaymentListNew();//version new
 
 		$list_tgl_pengajuan_pembayaran = [];
