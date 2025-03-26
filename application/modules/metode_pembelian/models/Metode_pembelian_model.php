@@ -681,11 +681,11 @@ class Metode_pembelian_model extends BF_Model
 
 			$nestedData 	= array();
 			$nestedData[]	= "<div align='center'><center><input type='checkbox' name='check[]' class='chk_personal' data-nomor='" . $nomor . "' value='" . $row['no_pr'] . "' ></center><input type='hidden' name='category_" . $row['no_pr'] . "' value='" . $row['category'] . "'></div>";
-			$nestedData[]	= "<div align='center'>" . $row['no_pr'] . "</div>";
+			$nestedData[]	= "<div align='center'>" . $row['no_pr'] . "</div>";//.' '.$row['category']
 			$nestedData[]	= "<div align='center'>" . date('d-M-Y', strtotime($row['tgl_pr'])) . "</div>";
 
 			$list_barang = '';
-			if ($row['category'] == 'material' || $row['category'] == 'stok' || $row['category'] == 'base on production') {
+			if ($row['category'] == 'material' || $row['category'] == 'stok' || $row['category'] == 'base on production' || $row['category'] == 'pr material') {
 				if ($row['category'] == 'stok') {
 					$this->db->select('b.stock_name as nm_barang, a.propose_purchase as qty');
 					$this->db->from('material_planning_base_on_produksi_detail a');
@@ -693,7 +693,8 @@ class Metode_pembelian_model extends BF_Model
 					$this->db->where('a.status_app', 'Y');
 					$this->db->where('a.so_number', $row['so_number']);
 					$get_list_barang = $this->db->get()->result_array();
-				} else {
+				}
+				else {
 					if($row['category'] == 'material') {
 						$this->db->select('b.nama as nm_barang, a.propose_purchase as qty');
 						$this->db->from('material_planning_base_on_produksi_detail a');
@@ -701,7 +702,18 @@ class Metode_pembelian_model extends BF_Model
 						$this->db->where('a.status_app', 'Y');
 						$this->db->where('a.so_number', $row['so_number']);
 						$get_list_barang = $this->db->get()->result_array();
-					} else {
+					}
+					elseif($row['category'] == 'pr material'){
+						// $this->db->select('a.*, b.satuan_lainnya as nominal_kg, c.nama as nm_material, c.max_stok, c.min_stok')
+						$this->db->select('c.nama as nm_barang, a.propose_purchase as qty');
+						$this->db->from('material_planning_base_on_produksi_detail a');
+						$this->db->join('tr_jenis_beton_detail b', 'b.id_material = a.id_material', 'left');
+						$this->db->join('new_inventory_4 c', 'a.id_material = c.code_lv4', 'left');
+						$this->db->where('a.status_app', 'Y');
+						$this->db->where('a.so_number', $row['so_number']);
+						$get_list_barang = $this->db->get()->result_array();
+					}
+					else {
 						$this->db->select('b.nm_material as nm_barang, a.propose_purchase as qty');
 						$this->db->from('material_planning_base_on_produksi_detail a');
 						$this->db->join('tr_jenis_beton_detail b', 'b.id_detail_material = a.id_material', 'left');

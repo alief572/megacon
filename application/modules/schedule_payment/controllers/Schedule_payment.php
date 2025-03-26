@@ -191,7 +191,7 @@ class Schedule_payment extends Admin_Controller
 		$this->template->set('data', $data);
 		$this->template->set('dataNew', $dataNew);
 		$this->template->set('list_no_invoice', $list_no_invoice);
-		$this->template->title('Schedule Payment Approval Checker');
+		$this->template->title('Schedule Payment');
 		$this->template->render('list_approve_checker');
 	}
 

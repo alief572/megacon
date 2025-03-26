@@ -65,7 +65,8 @@ class Purchase_order_payment extends Admin_Controller
 			$this->db->group_by('e.id');
 			$this->db->order_by('a.created_on', 'desc');
 			$get_list_po = $this->db->get()->result_array();
-
+			// echo $this->db->last_query();
+			// die();
 
 
 			$get_supplier = $this->db->get('new_supplier')->result();

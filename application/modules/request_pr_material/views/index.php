@@ -124,6 +124,8 @@ $ENABLE_DELETE  = has_permission('PR_Material.Delete');
 
 					$getCheck = $this->db->get_where('material_planning_base_on_produksi_detail', array('so_number' => $row['so_number'], 'status_app' => 'N'))->result();
 
+					$getCheckReject = $this->db->get_where('material_planning_base_on_produksi_detail', array('so_number' => $row['so_number'], 'status_app' => 'D'))->result();
+
 					if (($row['sts_reject1'] !== null || $row['sts_reject2'] !== null || $row['sts_reject3'] !== null) && $row['rejected'] == 1) {
 						if ($row['sts_reject1'] == "1") :
 							$warna = "red";
@@ -155,10 +157,26 @@ $ENABLE_DELETE  = has_permission('PR_Material.Delete');
 							endif;
 						endif;
 					}
-					if (COUNT($getCheck) <= 0) {
+					// if(COUNT($getCheck) <= 0){
+					// 	$sts = 'Approved';
+					// 	$warna = 'green';
+					// }
+					if (COUNT($getCheck) <= 0 && COUNT($getCheckReject) == 0) {
 						$sts = 'Approved';
 						$warna = 'green';
 					}
+					if(COUNT($getCheck) <= 0 && COUNT($getCheckReject) > 0){
+						$sts = 'Approved Partial';
+						$warna = 'green';
+					}
+					// elseif(COUNT($getCheck) <= 0){
+					// 	$sts = 'Approved';
+					// 	$warna = 'green';
+					// }
+					// else{
+					// 	$sts = 'Approveds';
+					// 	$warna = 'green';
+					// }
 
 					echo "<td align='left'><span class='badge' style='background-color: " . $warna . ";'>" . $sts . "</span></td>";
 					echo "<td align='center'>" . $row['request_by'] . "</td>";
