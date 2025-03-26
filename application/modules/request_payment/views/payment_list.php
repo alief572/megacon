@@ -54,6 +54,7 @@ $ENABLE_VIEW    = has_permission('Payment_List.View');
 					<tr>
 						<th>#</th>
 						<th>No Dokumen</th>
+						<th>No Surat PO</th>
 						<th>Request By</th>
 						<th>Tanggal</th>
 						<th>Keperluan</th>
@@ -84,6 +85,7 @@ $ENABLE_VIEW    = has_permission('Payment_List.View');
 							<tr>
 								<td><?= $numb; ?></td>
 								<td><?= $record->no_doc ?></td>
+								<td><?= $record->no_po ?></td>
 								<td><?= $record->nama ?></td>
 								<td><?= $record->tgl_doc ?></td>
 								<td><?= $record->keperluan ?></td>
