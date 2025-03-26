@@ -426,6 +426,16 @@ class App_pr_material extends Admin_Controller
     //     'app_post' => 4
     //   ];
 
+    //start coding new
+    $totalChecked = count($check);
+    $sql 		  = "SELECT count(id) as max_id FROM material_planning_base_on_produksi_detail where so_number = '$so_number' ";
+		$max_id 	= $this->db->query($sql)->row()->max_id;
+    // print_r($totalChecked);
+    // echo "<br>";
+    // print_r($max_id);
+    // die();
+    //end coding new
+
     //   foreach ($check as $key => $value) {
     //     $ArrUpdate[$key]['id'] = $value;
     //     $ArrUpdate[$key]['propose_rev'] = str_replace(',', '', $data['pr_rev_' . $value]);
@@ -434,12 +444,20 @@ class App_pr_material extends Admin_Controller
     //     $ArrUpdate[$key]['app_date'] = $this->datetime;
     //   }
     // else :
+      if($totalChecked == $max_id){
+        $app_post = ($tingkat_approval == '2') ? 3 : 2;
+        $app_1 = 1;
+      }else{
+        $app_post = '';
+        $app_1 = '';
+      }
       $ArrUpdateHeader = [
-        'app_' . $tingkat_approval => 1,
+        'app_' . $tingkat_approval => $app_1,
         'app_' . $tingkat_approval . '_by' => $this->auth->user_id(),
         'app_' . $tingkat_approval . '_date' => date('Y-m-d H:i:s'),
         'keterangan_' . $tingkat_approval => $data['keterangan_' . $tingkat_approval],
-        'app_post' => ($tingkat_approval == '2') ? 3 : 2
+        // 'app_post' => ($tingkat_approval == '2') ? 3 : 2//version old
+        'app_post' => $app_post
       ];
 
       foreach ($check as $key => $value) {
