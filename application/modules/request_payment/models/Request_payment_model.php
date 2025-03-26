@@ -145,9 +145,9 @@ class Request_payment_model extends BF_Model
         GROUP BY a.no_doc
         union all
         SELECT b.id as ids,a.no_doc,c.nm_lengkap nama,a.tanggal_doc as tgl_doc,b.nama as keperluan, 'periodik' as tipe,b.nilai jumlah,null as tanggal,a.no_doc as id, b.bank_id, b.accnumber, b.accname, b.sts_reject, b.sts_reject_manage, b.reject_reason, '' as no_po FROM tr_pengajuan_rutin a join tr_pengajuan_rutin_detail b on a.no_doc=b.no_doc join users c on a.created_by=c.id_user
-        union all
-        SELECT a.id as ids, a.no_doc, a.nama, a.tgl_doc, a.keperluan, 'expense' as tipe, a.jumlah, null as tanggal, a.no_doc as id, bank_id, accnumber, accname, null as sts_reject, null as sts_reject_manage, null as reject_reason, b.no_po as no_po
-        FROM request_payment a left join tr_invoice_po b ON a.no_doc = b.id where a.status = '2' and a.app_checker = '1'
+        -- union all
+        -- SELECT a.id as ids, a.no_doc, a.nama, a.tgl_doc, a.keperluan, 'expense' as tipe, a.jumlah, null as tanggal, a.no_doc as id, bank_id, accnumber, accname, null as sts_reject, null as sts_reject_manage, null as reject_reason, b.no_po as no_po
+        -- FROM request_payment a left join tr_invoice_po b ON a.no_doc = b.id where a.status = '2' and a.app_checker = '1'
 
         ")->result();
 
