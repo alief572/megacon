@@ -969,7 +969,7 @@ class Schedule_payment extends Admin_Controller
 						// 'app_checker' => null
 					]);
 
-					$header = $this->db->get_where('request_payment', ['no_doc' => $NO_DOC_PI, 'tipe' => 'expense'])->row_array();
+					$header = $this->db->get_where('request_payment', ['no_doc' => $NO_DOC_PI, 'tipe' => 'pembayaran_po'])->row_array();
 					
 					// $Id = $this->Schedule_payment_model->generate_id_payment($kode_bank);
 					$Id = $this->Schedule_payment_model->generate_id_payment_new();
