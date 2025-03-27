@@ -152,6 +152,9 @@ $ENABLE_DELETE  = has_permission('Purchase_Order.Delete');
 								}
 							}
 						} else {
+							// echo $no_materil;
+							// echo "<br>";
+							// echo $no_materil_po;
 							if ($no_materil > $no_materil_po) {
 								$numb++;
 								$stat = 1;

@@ -130,11 +130,48 @@ class Incoming_material extends Admin_Controller
                 $no_pr = '';
             }
 
-            $hasil .= '<tr>';
-            $hasil .= '<td class="text-center">'.$item->no_surat.'</td>'; 
-            $hasil .= '<td class="text-center">'.$no_pr.'</td>';
-            $hasil .= '<td class="text-center"><input type="checkbox" name="check_po[]" class="check_po" value="'.$item->no_po.'"></td>';
-            $hasil .= '</tr>';
+            //start validasi untuk top pakai DP dan harus sudah payment dulu baru bisa muncul
+            $getData_TR_TOP = $this->db->query("SELECT * FROM tr_top_po WHERE no_po = '$item->no_po'")->row();
+            if($getData_TR_TOP){
+                // Jika data ditemukan (sama dengan / lebih dari 1)
+                echo "Data ditemukan";
+                if($getData_TR_TOP->group_top == 76){//jika uang muka atau DP
+                    $getData_TR_INV_TOP = $this->db->query("SELECT * FROM tr_invoice_top WHERE no_po = '$item->no_po'")->row();
+                    if($getData_TR_INV_TOP){//jika ada pembayaran po
+                        //munculkan datanya
+                        $hasil .= '<tr>';
+                        $hasil .= '<td class="text-center">'.$item->no_surat.'</td>'; 
+                        $hasil .= '<td class="text-center">'.$no_pr.'</td>';
+                        $hasil .= '<td class="text-center"><input type="checkbox" name="check_po[]" class="check_po" value="'.$item->no_po.'"></td>';
+                        $hasil .= '</tr>';
+                    }else{
+                        //tidak di munculkan datanya
+                    }
+                }else{
+                    $hasil .= '<tr>';
+                    $hasil .= '<td class="text-center">'.$item->no_surat.'</td>'; 
+                    $hasil .= '<td class="text-center">'.$no_pr.'</td>';
+                    $hasil .= '<td class="text-center"><input type="checkbox" name="check_po[]" class="check_po" value="'.$item->no_po.'"></td>';
+                    $hasil .= '</tr>';
+                }
+            }else{
+                // Jika tidak ada data
+                // echo "Data tidak ditemukan";
+                $hasil .= '<tr>';
+                $hasil .= '<td class="text-center">'.$item->no_surat.'</td>'; 
+                $hasil .= '<td class="text-center">'.$no_pr.'</td>';
+                $hasil .= '<td class="text-center"><input type="checkbox" name="check_po[]" class="check_po" value="'.$item->no_po.'"></td>';
+                $hasil .= '</tr>';
+            }
+            //end validasi untuk top pakai DP dan harus sudah payment dulu baru bisa muncul
+
+            //start version old
+            // $hasil .= '<tr>';
+            // $hasil .= '<td class="text-center">'.$item->no_surat.'</td>'; 
+            // $hasil .= '<td class="text-center">'.$no_pr.'</td>';
+            // $hasil .= '<td class="text-center"><input type="checkbox" name="check_po[]" class="check_po" value="'.$item->no_po.'"></td>';
+            // $hasil .= '</tr>';
+            //end version old
         }
 
         echo $hasil;
