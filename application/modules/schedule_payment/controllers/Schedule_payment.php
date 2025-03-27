@@ -404,7 +404,7 @@ class Schedule_payment extends Admin_Controller
 		// 	$data 			= $this->db->get_where('tr_expense', ['id' => $id])->row();
 			// $data_detail	= $this->db->get_where('tr_expense_detail', ['no_doc' => $no_po])->result();//version old
 			// $data_detail	= $this->db->get_where('dt_trans_po', ['no_po' => $no_po])->result();//version new
-			$data_detail 	= $this->db->query("SELECT a.*, b.* FROM tr_purchase_order a INNER JOIN dt_trans_po b ON a.no_po = b.no_po WHERE a.no_surat = '$No_Surat_PO' order by b.id_dt_po desc")->result();
+			$data_detail 	= $this->db->query("SELECT a.*, b.* FROM tr_purchase_order a INNER JOIN dt_trans_po b ON a.no_po = b.no_po WHERE a.no_surat = '$No_Surat_PO' order by b.id_dt_po desc LIMIT 1")->result();
 		// }
 
 		// /* Kasbon */

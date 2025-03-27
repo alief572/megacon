@@ -136,6 +136,7 @@ if ($type == 'expense') {
 				</thead>
 				<tbody>
 					<?php
+					$list_barang = [];
 					if (!empty($details)) {
 						$n = $gTotal = 0;
 						foreach ($details as $dtl) : $n++;
@@ -492,11 +493,27 @@ if ($type == 'expense') {
 									</td>
 								</tr>
 							<?php elseif ($type == 'pembayaran_po') :
-								$gTotal += ($data_req_payment['jumlah'] + $data_req_payment['admin_bank'] - $data_req_payment['total_pph']); ?>
+								$gTotal += ($data_req_payment['jumlah'] + $data_req_payment['admin_bank'] - $data_req_payment['total_pph']);
+								$getNameSupplier = $this->db->get_where('new_supplier', ['kode_supplier' => $dtl->id_suplier ])->row();
+								$get_barang = $this->db->query("SELECT a.* FROM dt_trans_po as a WHERE a.no_po = '$dtl->no_po' ORDER BY a.id_dt_po ASC ")->result();
+								foreach ($get_barang as $values) {
+									if($values->namamaterial !== '' && $values->namamaterial !== null) {
+										$list_barang[] = $values->namamaterial;
+									} else {
+										$list_barang[] = $values->namamaterial;
+									}
+								}
+								$list_barang = implode('<br><br>', $list_barang);
+								
+							?>
 								<tr>
 									<td><?= $n; ?></td>
 									<td><?= ' - ' ?></td>
-									<td><?= $dtl->namamaterial; ?></td>
+									<!-- <td><?= $dtl->namamaterial; ?></td> -->
+									<td>Pembayaran DP : <?= $dtl->no_surat . ' (' .  $getNameSupplier->nama . ')'?>
+										<br>
+										<?= $list_barang ?>
+									</td>
 									<td><?= $dtl->tanggal; ?></td>
 									<td><?= $dtl->qty; ?></td>
 									<!-- <td><?= $data_req_payment['currency']; ?></td> -->
