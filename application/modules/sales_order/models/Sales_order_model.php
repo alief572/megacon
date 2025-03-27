@@ -370,7 +370,7 @@ class Sales_order_model extends BF_Model
 		$this->db->from('tr_penawaran a');
 		$this->db->join('customer b', 'b.id_customer = a.id_customer', 'left');
 		$this->db->join('tr_sales_order c', 'c.no_penawaran = a.no_penawaran', 'left');
-		$this->db->join('tr_sales_order f', 'f.no_penawaran = a.no_penawaran');
+		$this->db->join('tr_sales_order f', 'f.no_penawaran = a.no_penawaran', 'left');
 		$this->db->group_start();
 		$this->db->where('a.status', 2);
 		$this->db->or_where('a.status', 3);
@@ -392,7 +392,7 @@ class Sales_order_model extends BF_Model
 		$this->db->from('tr_penawaran a');
 		$this->db->join('customer b', 'b.id_customer = a.id_customer', 'left');
 		$this->db->join('tr_sales_order c', 'c.no_penawaran = a.no_penawaran', 'left');
-		$this->db->join('tr_sales_order f', 'f.no_penawaran = a.no_penawaran');
+		$this->db->join('tr_sales_order f', 'f.no_penawaran = a.no_penawaran', 'left');
 		$this->db->group_start();
 		$this->db->where('a.status', 2);
 		$this->db->or_where('a.status', 3);
@@ -507,7 +507,7 @@ class Sales_order_model extends BF_Model
 		$this->db->where('a.status', 2);
 		$this->db->or_where('a.status', 3);
 		$this->db->group_end();
-		if (!empty($search)) {
+		if (!empty($search['value'])) {
 			$this->db->group_start();
 			$this->db->like('DATE_FORMAT(a.tgl_penawaran, "%d %M %Y")', $search['value'], 'both');
 			$this->db->or_like('c.no_so', $search['value'], 'both');
@@ -536,7 +536,7 @@ class Sales_order_model extends BF_Model
 		$this->db->where('a.status', 2);
 		$this->db->or_where('a.status', 3);
 		$this->db->group_end();
-		if (!empty($search)) {
+		if (!empty($search['value'])) {
 			$this->db->group_start();
 			$this->db->like('DATE_FORMAT(a.tgl_penawaran, "%d %M %Y")', $search['value'], 'both');
 			$this->db->or_like('c.no_so', $search['value'], 'both');
