@@ -503,7 +503,7 @@ if ($type == 'expense') {
 										$list_barang[] = $values->namamaterial;
 									}
 								}
-								$list_barang = implode('<br><br>', $list_barang);
+								$list_barang = implode('<br>', $list_barang);
 								
 							?>
 								<tr>
