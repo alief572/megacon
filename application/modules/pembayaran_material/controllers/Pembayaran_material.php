@@ -1945,7 +1945,7 @@ class Pembayaran_material extends Admin_Controller
 				->order_by('a.created_on', 'DESC')
 				->get()
 				->result();
-				echo $this->db->last_query();die();
+				// echo $this->db->last_query();die();
 		} else {
 			$results = $this->db
 				->select('a.id, a.created_on, a.no_doc, a.currency, a.jumlah, a.keperluan')
