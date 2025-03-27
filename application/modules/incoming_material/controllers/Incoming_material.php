@@ -136,7 +136,7 @@ class Incoming_material extends Admin_Controller
                 // Jika data ditemukan (sama dengan / lebih dari 1)
                 // echo "Data ditemukan";
                 if($getData_TR_TOP->group_top == 76){//jika uang muka atau DP
-                    $getData_TR_INV_TOP = $this->db->query("SELECT * FROM tr_invoice_po WHERE no_po = '$item->no_po'")->row();
+                    $getData_TR_INV_TOP = $this->db->query("SELECT * FROM tr_invoice_po a INNER JOIN payment_approve b ON a.id = b.no_doc WHERE a.no_po = '$item->no_po' and b.app_checker = '1' ")->row();
                     if($getData_TR_INV_TOP){//jika ada pembayaran po
                         //munculkan datanya
                         $hasil .= '<tr>';
