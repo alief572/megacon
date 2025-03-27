@@ -377,7 +377,7 @@ class Schedule_payment extends Admin_Controller
 
 	public function approval_payment_checker_new($no_po = null)
 	{
-		// $type 	= $_GET['type'];//version old
+		$type 	= $_GET['type'];//version old
 		$no_po 	= $_GET['no_po'];
 		// $get_id = $this->db->get_where('request_payment', ['id' => $id_exp])->row();
 		// $id = $get_id->ids;
@@ -386,13 +386,25 @@ class Schedule_payment extends Admin_Controller
 		$getDataPO = $this->db->get_where('tr_purchase_order', ['no_po' => $no_po ])->row();
 		// print_r($getDataPO);
 		$No_Surat_PO = $getDataPO->no_surat;
-		$data = $this->db->query("SELECT a.* FROM tr_invoice_po a order by created_date desc")->result();
+		$getData_INVPO = $this->db->get_where('tr_invoice_po', ['no_po' => $No_Surat_PO ])->row();
+		$no_INV = $getData_INVPO->id;
+		// $data = $this->db->query("SELECT a.* FROM tr_invoice_po a order by created_date desc")->result();
+		// $data = $this->db->query("SELECT a.* FROM tr_invoice_po a WHERE no_po = '$No_Surat_PO' order by created_date desc")->result();
+		// $data = $this->db->select('a.*')
+        //          ->from('tr_invoice_po a')
+        //          ->where('no_po', $No_Surat_PO)
+        //          ->order_by('created_date', 'DESC')
+        //          ->get()
+        //          ->result();
+		$data = $this->db->get_where('tr_invoice_po', ['no_po' => $No_Surat_PO])->row();
 		//END CODING YANG DIPAKAI
 
 		// /* Expense */
 		// if (isset($type) && $type == 'expense') {
 		// 	$data 			= $this->db->get_where('tr_expense', ['id' => $id])->row();
-			$data_detail	= $this->db->get_where('tr_expense_detail', ['no_doc' => $no_po])->result();
+			// $data_detail	= $this->db->get_where('tr_expense_detail', ['no_doc' => $no_po])->result();//version old
+			// $data_detail	= $this->db->get_where('dt_trans_po', ['no_po' => $no_po])->result();//version new
+			$data_detail 	= $this->db->query("SELECT a.*, b.* FROM tr_purchase_order a INNER JOIN dt_trans_po b ON a.no_po = b.no_po WHERE a.no_surat = '$No_Surat_PO' order by b.id_dt_po desc")->result();
 		// }
 
 		// /* Kasbon */
@@ -436,6 +448,7 @@ class Schedule_payment extends Admin_Controller
 		// $this->template->set('stsview', 'view');
 
 		// $get_req_payment = $this->db->get_where('request_payment', ['id' => $id_exp])->row_array();
+		$get_req_payment = $this->db->get_where('request_payment', ['no_doc' => $no_INV])->row_array();
 
 
 		$list_coa = [];
@@ -443,15 +456,16 @@ class Schedule_payment extends Admin_Controller
 		foreach ($get_coa as $item_coa) {
 			$list_coa[$item_coa->no_perkiraan] = $item_coa->nama;
 		}
-
+		// print_r($data);
+		// die();
 		$this->template->set([
 			'header'	 => $data,
 			'dataPO' 	=> $getDataPO,
-			'type' => 'expense',
+			'type' => $type,
 			'details' 	=> $data_detail,
 			// 'kasbon_pr' => $kasbon_pr,
 			// 'data_detail_pr_kasbon' => $data_detail_pr_kasbon,
-			// 'data_req_payment' => $get_req_payment,
+			'data_req_payment' => $get_req_payment,
 			'list_coa' => $list_coa
 		]);
 		$this->template->render('detail_approve_checker_new');

@@ -555,13 +555,14 @@ class Purchase_order_payment extends Admin_Controller
 		        'no_doc' => $NO_DOC,
 		        'nama' => $post['currency'],
 		        'tgl_doc' => $post['invoice_date'],
-		        'keperluan' => 'improve schedule payment',
-		        'tipe' => 'expense',
+		        'keperluan' => 'Pembayaran PO',
+		        'tipe' => 'pembayaran_po',
 		        'jumlah' => (!empty($post['nilai_ppn']) ? str_replace(',', '', $post['nilai_ppn']) : 0) 
 		                          + (!empty($post['total_pembelian']) ? str_replace(',', '', $post['total_pembelian']) : 0),
 		        'status' => 2,
 		        'created_by' => $this->auth->user_id(),
-		        'created_on' => date('Y-m-d H:i:s')
+		        'created_on' => date('Y-m-d H:i:s'),
+		        'status_schedule_payment' => '1'
 		    ];
 		    //END BAGIAN INSERT REQUEST PAYMENT
 		    // $this->db->trans_begin();
@@ -660,7 +661,8 @@ class Purchase_order_payment extends Admin_Controller
 					'bank_id' => $post['bank'],
 					'accnumber' => $post['no_bank'],
 					'accname' => $post['nm_acc_bank'],
-					'id_po' => $post['nomor_po']
+					'id_po' => $post['nomor_po'],
+					'status_schedule_payment' => '1'
 				]);
 				if (!$insert_expense) {
 					print_r($this->db->error($insert_expense));

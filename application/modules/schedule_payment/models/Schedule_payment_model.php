@@ -149,7 +149,7 @@ class Schedule_payment_model extends BF_Model
 
     public function GetListDataApprovalNew($where = '')
     {
-        $data    = $this->db->query("SELECT a.*, b.status FROM tr_invoice_po a inner join request_payment b ON a.id = b.no_doc where b.status = '2' and (b.app_checker IS NULL OR b.app_checker = '' ) order by a.created_date desc")->result();
+        $data    = $this->db->query("SELECT a.*, b.status, b.tipe as tipe FROM tr_invoice_po a inner join request_payment b ON a.id = b.no_doc where b.status = '2' and (b.app_checker IS NULL OR b.app_checker = '' ) order by a.created_date desc")->result();
         return $data;
     }
 

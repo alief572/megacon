@@ -3,14 +3,56 @@ $ENABLE_ADD     = has_permission('Request_Payment_Approval.Add');
 $ENABLE_MANAGE  = has_permission('Request_Payment_Approval.Manage');
 $ENABLE_VIEW    = has_permission('Request_Payment_Approval.View');
 $ENABLE_DELETE  = has_permission('Request_Payment_Approval.Delete');
-if ($type == 'expense') {
-	$keterangan = @$header->informasi;
-	$no_doc = @$header->no_doc;
-	$tgl_doc = @$header->tgl_doc;
 
-	$bank_id = @$header->bank_id;
-	$accnumber = @$header->accnumber;
-	$accname = @$header->accname;
+if ($type == 'expense') {
+	$keterangan = $header->informasi;
+	$no_doc = $header->no_doc;
+	$tgl_doc = $header->tgl_doc;
+
+	$bank_id = $header->bank_id;
+	$accnumber = $header->accnumber;
+	$accname = $header->accname;
+} elseif ($type == 'kasbon') {
+	$keterangan = $header->keperluan;
+	$no_doc = $header->no_doc;
+	$tgl_doc = $header->tgl_doc;
+
+	$bank_id = $header->bank_id;
+	$accnumber = $header->accnumber;
+	$accname = $header->accname;
+} elseif ($type == 'transportasi') {
+	$keterangan = 'Transportasi';
+	$no_doc = $header->no_doc;
+	$tgl_doc = $header->tgl_doc;
+
+	$bank_id = $header->bank_id;
+	$accnumber = $header->accnumber;
+	$accname = $header->accname;
+} elseif ($type == 'nonpo') {
+	$keterangan = $header->info;
+	$no_doc = $header->no_doc;
+	$tgl_doc = $header->tanggal_doc;
+
+	$bank_id = $header->bank_id;
+	$accnumber = $header->accnumber;
+	$accname = $header->accname;
+} elseif ($type == 'periodik') {
+	$keterangan = $header->keterangan;
+	$no_doc = $header->no_doc;
+	$tgl_doc = $header->tanggal;
+
+	$bank_id = $header->bank_id;
+	$accnumber = $header->accnumber;
+	$accname = $header->accname;
+} elseif ($type == 'pembayaran_po') {
+	$keterangan = @$header->keterangan;
+	$no_doc = @$header->no_doc;
+	$tgl_doc = @$header->invoice_date;
+
+	// $bank_id = @$header->bank_id;
+	$bank_id = @$header->bank;
+	$accnumber = @$header->no_bank;
+	$accname = @$header->nm_acc_bank;
 }
 ?>
 <!-- <script src="//cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script> -->
@@ -97,7 +139,7 @@ if ($type == 'expense') {
 					if (!empty($details)) {
 						$n = $gTotal = 0;
 						foreach ($details as $dtl) : $n++;
-							$nm_coa = (isset($list_coa[$dtl->coa]) && $dtl->coa !== '') ? $list_coa[$dtl->coa] : '';
+							$nm_coa = (isset($list_coa[@$dtl->coa]) && @$dtl->coa !== '') ? $list_coa[@$dtl->coa] : '';
 							if ($type == 'expense') :
 								$harga  = $dtl->harga;
 								if (isset($dtl->id_kasbon) && $dtl->id_kasbon !== '') {
@@ -441,6 +483,61 @@ if ($type == 'expense') {
 										if (file_exists('./assets/bayar_rutin/' . $dtl->doc_file) && $dtl->doc_file !== '') {
 											echo '<a href="' . base_url('./assets/bayar_rutin/') . $dtl->doc_file . '" target="_blank"><i class="fa fa-download"></i></a>';
 										}
+										?>
+									</td>
+									<td>
+
+										<input type="checkbox" checked value="<?= $dtl->id; ?>" name="item[<?= $n; ?>][id]" class="check_item" id="check_<?= $dtl->id; ?>">
+
+									</td>
+								</tr>
+							<?php elseif ($type == 'pembayaran_po') :
+								$gTotal += ($data_req_payment['jumlah'] + $data_req_payment['admin_bank'] - $data_req_payment['total_pph']); ?>
+								<tr>
+									<td><?= $n; ?></td>
+									<td><?= ' - ' ?></td>
+									<td><?= $dtl->namamaterial; ?></td>
+									<td><?= $dtl->tanggal; ?></td>
+									<td><?= $dtl->qty; ?></td>
+									<!-- <td><?= $data_req_payment['currency']; ?></td> -->
+									<td><?= $dtl->matauang; ?></td>
+									<td class="text-left">
+										<table class="w-100">
+											<tr>
+												<td>Nilai Pengajuan</td>
+												<td class="text-center" style="min-width: 50px;">:</td>
+												<td class="text-right">
+													<input type="text" name="" id="" class="form-control form-control-sm text-right" value="<?= number_format($data_req_payment['jumlah'], 2) ?>" readonly>
+												</td>
+											</tr>
+											<tr>
+												<td>Nilai PPh</td>
+												<td class="text-center" style="min-width: 50px;">:</td>
+												<td class="text-right">
+													<input type="text" name="" id="" class="form-control form-control-sm text-right" value="<?= number_format($data_req_payment['total_pph'], 2) ?>" readonly>
+												</td>
+											</tr>
+											<tr>
+												<td>Bank Charge</td>
+												<td class="text-center" style="min-width: 50px;">:</td>
+												<td class="text-right">
+													<input type="text" name="" id="" class="form-control form-control-sm text-right" value="<?= number_format($data_req_payment['admin_bank'], 2) ?>" readonly>
+												</td>
+											</tr>
+											<tr>
+												<td>Net Payment</td>
+												<td class="text-center" style="min-width: 50px;">:</td>
+												<td class="text-right">
+													<input type="text" name="" id="" class="form-control form-control-sm text-right" value="<?= number_format(($data_req_payment['jumlah'] + $data_req_payment['admin_bank'] - $data_req_payment['total_pph']), 2) ?>" readonly>
+												</td>
+											</tr>
+										</table>
+									</td>
+									<td class="text-center">
+										<?php
+										// if (file_exists('./assets/bayar_rutin/' . $dtl->doc_file) && $dtl->doc_file !== '') {
+										// 	echo '<a href="' . base_url('./assets/bayar_rutin/') . $dtl->doc_file . '" target="_blank"><i class="fa fa-download"></i></a>';
+										// }
 										?>
 									</td>
 									<td>
