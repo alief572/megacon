@@ -58,7 +58,7 @@ $ENABLE_VIEW    = has_permission('Payment_List.View');
 						<th>Request By</th>
 						<th>Tanggal</th>
 						<th>Keperluan</th>
-						<!-- <th>Tipe</th> -->
+						<th>Tipe</th>
 						<th>Nilai Pengajuan</th>
 						<th>Diajukan Oleh</th>
 						<th>Tanggal Pengajuan</th>
@@ -89,7 +89,7 @@ $ENABLE_VIEW    = has_permission('Payment_List.View');
 								<td><?= $record->nama ?></td>
 								<td><?= $record->tgl_doc ?></td>
 								<td><?= $record->keperluan ?></td>
-								<!-- <td><?= $record->tipe ?></td> -->
+								<td><?= $record->tipe ?></td>
 								<td><?= number_format($record->jumlah) ?></td>
 								<td class="text-center"><?= $diajukan_oleh ?></td>
 								<td class="text-center"><?= $tgl_pengajuan ?></td>
