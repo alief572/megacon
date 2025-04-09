@@ -81,7 +81,7 @@ $ENABLE_VIEW    = has_permission('Payment_List.View');
 
 							$dibayar_oleh = (isset($list_tgl_pengajuan_pembayaran[$record->no_doc])) ? $list_tgl_pengajuan_pembayaran[$record->no_doc]['dibayar_oleh'] : '';
 
-							// Cek apakah $diajukan_oleh berisi angka
+							// Cek apakah $diajukan_oleh berisi angka diajukan oleh
 							if (is_numeric($diajukan_oleh)) {
 							    // Jika isinya angka
 							    // echo "Diajukan oleh adalah angka: " . $diajukan_oleh;
@@ -92,6 +92,17 @@ $ENABLE_VIEW    = has_permission('Payment_List.View');
 							    // Jika bukan angka
 							    // echo "Diajukan oleh bukan angka: " . $diajukan_oleh;
 							    $nama_diajukan_oleh = @$diajukan_oleh;
+							}
+
+							// Cek apakah $diajukan_oleh berisi angka dibayar oleh
+							if (is_numeric($diajukan_oleh)) {
+							    // Jika isinya angka
+							    $getData_User = $this->db->query("SELECT * FROM users WHERE id_user = '$dibayar_oleh' ")->row();
+							    $nama_dibayar_oleh = @$getData_User->nm_lengkap;
+
+							} else {
+							    // Jika bukan angka
+							    $nama_dibayar_oleh = @$dibayar_oleh;
 							}
 
 
