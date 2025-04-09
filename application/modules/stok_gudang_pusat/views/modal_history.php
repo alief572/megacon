@@ -36,6 +36,7 @@
             $dari = strtoupper($valx['kd_gudang_dari']);
             $ke   = strtoupper($valx['kd_gudang_ke']);
             $username = get_name('users', 'nm_lengkap', 'id_user', $valx['update_by']);
+            $qty_pack = $valx['jumlah_mat'] / $valx['konversi'];
             echo "<tr>";
             echo "<td>" . $no . "</td>";
             echo "<td align='center'>" . date('d-m-Y H:i:s', strtotime($valx['update_date'])) . "</td>";
@@ -47,8 +48,8 @@
             // echo "<td align='right'>" . number_format($valx['jumlah_mat'], 2) . "</td>";
             // echo "<td align='right'>" . number_format($valx['jumlah_mat'] / $valx['konversi'], 2) . "</td>";
             echo "<td align='right'>" . number_format($valx['jumlah_mat'] / $valx['konversi'], 2) . "</td>";
-            echo "<td align='right'>" . number_format($valx['jumlah_mat'] * $valx['konversi'], 2) . "</td>";
-            
+            // echo "<td align='right'>" . number_format($valx['jumlah_mat'] * $valx['konversi'], 2) . "</td>";
+            echo "<td align='right'>" . number_format($qty_pack * $valx['konversi'], 2) . "</td>";
 
 
             echo "<td align='right'>" . number_format($valx['qty_stock_awal'], 2) . "</td>";
