@@ -367,6 +367,7 @@ class Pr_model extends BF_Model
 		')->result();
 
 		// $query = $this->db->get();
+		// echo $this->db->last_query();die();
 		// print_r($query);
 		// exit;
 		return $query;

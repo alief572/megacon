@@ -259,6 +259,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 													if ($get_po->qty == null || $get_po->qty > $value->propose_purchase) {
 														$status = "<div class='badge bg-red'>Outstanding PO</div>";
 													}
+													if($value->propose_purchase - $get_qty_all_po->qty_all_po > 0){
 													echo "
 													<tr>
 														<td class='text-center'>
@@ -328,6 +329,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 											 </tr>
 													";
 													// }
+													}//kondisi jika QTY PR berisi lebih dari 0
 												}
 												// }
 
