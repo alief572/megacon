@@ -135,7 +135,9 @@ class Request_payment_model extends BF_Model
 
     public function GetListDataPaymentListNew()
     {
-        $data    = $this->db->query("SELECT id as ids,no_doc,nama,tgl_doc,'Transportasi' as keperluan, 'transportasi' as tipe,jumlah_expense as jumlah,null as tanggal,no_doc as id, bank_id, accnumber, accname, sts_reject, sts_reject_manage, reject_reason, '' as no_po FROM tr_transport_req 
+        $data    = $this->db->query("
+        SELECT * FROM (
+        SELECT id as ids,no_doc,nama,tgl_doc,'Transportasi' as keperluan, 'transportasi' as tipe,jumlah_expense as jumlah,null as tanggal,no_doc as id, bank_id, accnumber, accname, sts_reject, sts_reject_manage, reject_reason, '' as no_po FROM tr_transport_req 
         GROUP BY no_doc
         union all
         SELECT id as ids,no_doc,nama,tgl_doc,keperluan, 'kasbon' as tipe,jumlah_kasbon as jumlah,null as tanggal,no_doc as id, bank_id, accnumber, accname, sts_reject, sts_reject_manage, reject_reason, '' as no_po FROM tr_kasbon
@@ -153,7 +155,8 @@ class Request_payment_model extends BF_Model
         -- union all
         -- SELECT a.id as ids, a.no_doc, a.nama, a.tgl_doc, a.keperluan, 'expense' as tipe, a.jumlah, null as tanggal, a.no_doc as id, bank_id, accnumber, accname, null as sts_reject, null as sts_reject_manage, null as reject_reason, b.no_po as no_po
         -- FROM request_payment a left join tr_invoice_po b ON a.no_doc = b.id where a.status = '2' and a.app_checker = '1'
-
+        ) AS gabungan
+        ORDER BY tgl_doc DESC
         ")->result();
         // echo $this->db->last_query();die();
 
