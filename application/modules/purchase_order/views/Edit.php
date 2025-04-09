@@ -912,6 +912,13 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 		}));
 	});
 
+	$(document).on('change', '#subtotal', function () {
+		$('.input_progress').each(function () {
+			var no = $(this).data('no');
+			updateNilaiTop(no);
+		});
+	});
+
 	$(document).on('change', '.nilai_top', function() {
 		var no = $(this).data('no');
 
@@ -1275,7 +1282,61 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 
 	}
 
-	function HitAmmount(id) {
+	// $(document).on('keyup change', '.autoNumeric3', function() {
+	// 	let id = $(this).data('id');
+	// 	let no = $(this).data('no');
+	// 	HitAmmount(id, no);
+	// });
+
+	function updateNilaiTop(no) {
+		console.log("updateNilaiTop running with NO:", no);
+
+		var subtotal = $('#subtotal').val();
+		console.log("Subtotal raw:", subtotal);
+
+		var progress = $('.input_progress_' + no).val();
+		console.log("Progress found:", progress);
+
+		var subtotal = $('#subtotal').val();
+		if (!subtotal) subtotal = 0;
+		else subtotal = parseFloat(subtotal.replace(/,/g, ''));
+
+		var progress = $('.input_progress_' + no).val();
+		if (!progress) progress = 0;
+		else progress = parseFloat(progress.replace(/,/g, ''));
+
+		var nilai_top = (subtotal * progress / 100);
+		$('.nilai_top_' + no).val(nilai_top.toLocaleString('en-US', {
+			maximumFractionDigits: 2
+		}));
+	}
+
+	function updateNilaiTopAll() {
+	    var subtotalRaw = $('#subtotal').val() || "0";
+	    var subtotal = parseFloat(subtotalRaw.split(',').join('')) || 0;
+
+	    $('.input_progress').each(function () {
+	        var progress = $(this).val() || "0";
+	        var cleanProgress = parseFloat(progress.split(',').join('')) || 0;
+
+	        var nilai_top = (subtotal * cleanProgress / 100);
+	        var no = $(this).data('no'); // Ambil no dari data-no (jika ada)
+	        
+	        // Update field value berdasarkan class nilai_top_NO
+	        if (no !== undefined) {
+	            $('.nilai_top_' + no).val(nilai_top.toLocaleString('en-US', {
+	                maximumFractionDigits: 2
+	            }));
+	        } else {
+	            // Jika tidak ada .data('no'), cari .nilai_top di baris yang sama
+	            $(this).closest('tr').find('.nilai_top').val(nilai_top.toLocaleString('en-US', {
+	                maximumFractionDigits: 2
+	            }));
+	        }
+	    });
+	}
+
+	function HitAmmount(id, no) {
 		var alloyprice = getNum($("#dt_alloyprice_" + id).val().split(",").join(""));
 		var fabcost = getNum($("#dt_fabcost_" + id).val().split(",").join(""));
 		var diskon = getNum($("#dt_diskon_" + id).val().split(",").join(""));
@@ -1367,7 +1428,8 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 		$("#taxtotal").val(number_format(SUM_PJK));
 		$("#subtotal").val(number_format(SUM_JML, 2));
 
-
+		// updateNilaiTop(no);
+		updateNilaiTopAll(); // <-- update semua progress TOP
 	}
 
 
