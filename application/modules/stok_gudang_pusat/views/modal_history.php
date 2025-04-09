@@ -44,9 +44,12 @@
             echo "<td>" . $ke . "</td>";
             echo "<td align='right'>" . number_format($valx['qty_ng'], 2) . "</td>";
 
-            // echo "<td align='right'>" . number_format($valx['jumlah_mat'] / $valx['konversi'], 2) . "</td>";//version old
+            // echo "<td align='right'>" . number_format($valx['jumlah_mat'], 2) . "</td>";
+            // echo "<td align='right'>" . number_format($valx['jumlah_mat'] / $valx['konversi'], 2) . "</td>";
+            echo "<td align='right'>" . number_format($valx['jumlah_mat'] / $valx['konversi'], 2) . "</td>";
             echo "<td align='right'>" . number_format($valx['jumlah_mat'] * $valx['konversi'], 2) . "</td>";
-            echo "<td align='right'>" . number_format($valx['jumlah_mat'], 2) . "</td>";
+            
+
 
             echo "<td align='right'>" . number_format($valx['qty_stock_awal'], 2) . "</td>";
             echo "<td align='right'>" . number_format($valx['qty_stock_akhir'], 2) . "</td>";
