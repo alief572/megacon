@@ -530,7 +530,7 @@ class Approval_po extends Admin_Controller
 
     $this->db->trans_begin();
 
-    $this->db->update('tr_purchase_order', ['status' => 1, 'reject_reason' => $post['reject_reason']], ['no_po' => $post['no_po']]);
+    $this->db->update('tr_purchase_order', ['status' => 3, 'reject_reason' => $post['reject_reason']], ['no_po' => $post['no_po']]);
 
     if ($this->db->trans_status() === FALSE) {
       $this->db->trans_rollback();

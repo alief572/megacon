@@ -138,7 +138,10 @@ class Approval_po_model extends BF_Model
               LEFT JOIN material_planning_base_on_produksi b ON b.po_number = a.no_po
               LEFT JOIN customer c ON c.id_customer = b.id_customer
               LEFT JOIN users d ON d.id_user = a.created_by
-            WHERE 1=1 AND a.status = '1' AND (
+            WHERE 1=1 AND
+            -- a.status = '1'
+            a.status NOT IN ('2', '3')
+            AND (
               a.no_po LIKE '%" . $this->db->escape_like_str($like_value) . "%' OR
               a.no_surat LIKE '%" . $this->db->escape_like_str($like_value) . "%' OR
               b.po_date LIKE '%" . $this->db->escape_like_str($like_value) . "%' OR

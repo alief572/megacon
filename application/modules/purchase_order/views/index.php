@@ -102,13 +102,15 @@ $ENABLE_DELETE  = has_permission('Purchase_Order.Delete');
 							<?php
 							$ttl_qty_incoming = 0;
 							if ($record->status == '1') {
-								if ($record->reject_reason !== null && $record->reject_reason !== '') {
-									echo "<td class='text-center'><span class='badge bg-red'>Reject</span></td>";
-								} else {
+								// if ($record->reject_reason !== null && $record->reject_reason !== '') {
+									// echo "<td class='text-center'><span class='badge bg-red'>Reject</span></td>";
+								// } else {
 									echo "<td class='text-center'><span class='badge bg-blue'>Waiting</span></td>";
-								}
+								// }
 							} elseif ($record->status == '2') {
 								echo "<td class='text-center'><span class='badge bg-green'>Approved</span></td>";
+							} elseif ($record->status == '3') {
+								echo "<td class='text-center'><span class='badge bg-red'>Reject</span></td>";
 							} else {
 								echo "<td class='text-center'><span class='badge bg-red'>Closed</span></td>";
 							}
