@@ -94,10 +94,12 @@
 					<th class="text-center">No. PO</th>
 					<th class="text-center">Material</th>
 					<th class="text-center">Incoming</th>
-					<th class="text-center">Unit</th>
+					<!-- <th class="text-center">Unit</th> -->
+					<th class="text-center">Pack</th>
 					<th class="text-center">Konversi</th>
-					<th class="text-center">Qty Pack</th>
-					<th class="text-center">Packing</th>
+					<th class="text-center">Qty Unit</th>
+					<!-- <th class="text-center">Packing</th> -->
+					<th class="text-center">Unit</th>
 					<th class="text-center">Qty NG</th>
 					<th class="text-center">Qty Oke</th>
 					<th class="text-center">Qty Pack</th>
@@ -131,10 +133,17 @@
 					echo '<td class="text-center">' . $get_no_surat->no_surat . '</td>';
 					echo '<td class="">' . $item['nm_material'] . '</td>';
 					echo '<td class="text-center">' . number_format($item['qty_order'], 2) . ' <input type="hidden" name="qty_order_' . $item['id'] . '" value="' . $item['qty_order'] . '"> </td>';
-					echo '<td class="text-center">' . $item['satuan'] . '</td>';
-					echo '<td class="text-center">' . $konversi . ' <input type="hidden" name="konversi_' . $konversi . '" class="konversi_' . $item['id'] . '" value="' . $konversi . '"></td>';
-					echo '<td class="text-center">' . number_format(($item['qty_order'] / $konversi), 2) . '</td>';
+					//start bagian pack
 					echo '<td class="text-center">' . $item['packing'] . '</td>';
+					//end bagian pack
+					echo '<td class="text-center">' . $konversi . ' <input type="hidden" name="konversi_' . $konversi . '" class="konversi_' . $item['id'] . '" value="' . $konversi . '"></td>';
+					//start bagian qty unit
+					// echo '<td class="text-center">' . number_format(($item['qty_order'] / $konversi), 2) . '</td>';//version old
+					echo '<td class="text-center">' . number_format(($item['qty_order'] * $konversi), 2) . '</td>';//versuib new
+					//end bagian qty unit
+					//start bagian unit
+					echo '<td class="text-center">' . $item['satuan'] . '</td>';
+					//end bagian unit
 					echo '<td class="">
 					<input type="text" name="qty_ng_' . $item['id'] . '" id="" class="form-control form-control-sm input_hid maskM qty_ng qty_ng_' . $item['id'] . '" data-id="' . $item['id'] . '" data-incoming="' . $item['qty_order'] . '" data-konversi="' . $konversi . '" required>
 				</td>';
