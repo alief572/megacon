@@ -48,10 +48,13 @@
 					<th class="text-center">No. PO</th>
 					<th class="text-center">Material</th>
 					<th class="text-center">Incoming</th>
-					<th class="text-center">Unit</th>
+					<!-- <th class="text-center">Unit</th> -->
+					<th class="text-center">Pack</th>
 					<th class="text-center">Konversi</th>
-					<th class="text-center">Packing</th>
-					<th class="text-center">Qty Pack</th>
+					<th class="text-center">Qty Unit</th>
+					<!-- <th class="text-center">Packing</th> -->
+					<!-- <th class="text-center">Qty Pack</th> -->
+					<th class="text-center">Unit</th>
 					<th class="text-center">Qty NG</th>
 					<th class="text-center">Qty Oke</th>
 					<th class="text-center">Qty Pack</th>
@@ -69,6 +72,11 @@
 					$packing = $valx['qty_order'];
 					if ($valx['konversi'] > 0) {
 						$packing = ($valx['qty_order'] / $valx['konversi']);
+					}
+
+					$konversi = 1;
+					if ($valx['konversi'] > 0) {
+						$konversi = $valx['konversi'];
 					}
 
 					// echo '<tr>';
@@ -91,10 +99,20 @@
 					echo '<td class="text-center">' . $get_no_surat->no_surat . '</td>';
 					echo '<td class="text-center">' . $valx['nm_material'] . '</td>';
 					echo '<td class="text-center">' . number_format($valx['qty_order'], 2) . '</td>';
-					echo '<td class="text-center">' . strtoupper($valx['satuan']) . '</td>';
+					//start bagian pack
+					echo '<td class="text-center">' . strtoupper($valx['packing']) . '</td>';
+					//end bagian pack
+
 					echo '<td class="text-center">' . number_format($valx['konversi'], 2) . '</td>';
-					echo '<td class="text-center">' . number_format($packing, 2) . '</td>';
-					echo '<td class="text-center">' . $valx['packing'] . '</td>';
+					//start bagian qty unit
+					echo '<td class="text-center">' . number_format($valx['qty_order'] * $konversi, 2) . '</td>';
+					//end bagian qty unit
+
+					// echo '<td class="text-center">' . number_format($packing, 2) . '</td>';//version old not used
+
+					//start bagian satuan
+					echo '<td class="text-center">' . $valx['satuan'] . '</td>';
+					//end bagian satuan
 					echo '<td class="text-center">-</td>';
 					echo '<td class="text-center">-</td>';
 					echo '<td class="text-center">-</td>';
