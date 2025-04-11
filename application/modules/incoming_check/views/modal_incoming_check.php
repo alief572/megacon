@@ -148,7 +148,7 @@
 					<input type="text" name="qty_ng_' . $item['id'] . '" id="" class="form-control form-control-sm input_hid maskM qty_ng qty_ng_' . $item['id'] . '" data-id="' . $item['id'] . '" data-incoming="' . $item['qty_order'] . '" data-konversi="' . $konversi . '" required>
 				</td>';
 					echo '<td class="">
-					<input type="text" name="qty_oke_' . $item['id'] . '" id="" class="form-control form-control-sm maskM input_hid qty_oke qty_oke_' . $item['id'] . '" data-id="' . $item['id'] . '" data-id_material="' . $item['id_material'] . '">dd
+					<input type="text" name="qty_oke_' . $item['id'] . '" id="" class="form-control form-control-sm maskM input_hid qty_oke qty_oke_' . $item['id'] . '" data-id="' . $item['id'] . '" data-id_material="' . $item['id_material'] . '">
 				</td>';
 					echo '<td class="">
 					<input type="text" name="qty_pack_' . $item['id'] . '" id="" class="form-control form-control-sm maskM qty_pack_' . $item['id'] . '" readonly>
@@ -383,17 +383,63 @@
 		}
 		var konversi = $('.konversi_' + id).val();
 
-		var qty_pack = parseFloat(qty_oke / konversi);
+		// var qty_pack = parseFloat(qty_oke / konversi);//version old
+		var qty_pack = parseFloat(qty_oke * konversi);//version new
 		$('.qty_pack_' + id).val(qty_pack.toFixed(2));
 	});
 
-	$(document).on('click', '.add_lot', function(e) {
-		$(this).attr('disabled', true);
-		var id = $(this).data('id');
-		var no_ipp = $(this).data('no_ipp');
+	// $(document).on('click', '.add_lot', function(e) {//version old
+	// 	$(this).attr('disabled', true);
+	// 	var id = $(this).data('id');
+	// 	var no_ipp = $(this).data('no_ipp');
 
+	// 	var formm = new FormData($('#form_' + id)[0]);
+	// 	formm.append('upload_file', $('.upload_file_' + id)[0].files[0])
+	// 	$.ajax({
+	// 		url: siteurl + active_controller + '/add_lot',
+	// 		type: "POST",
+	// 		data: formm,
+	// 		cache: true,
+	// 		processData: false,
+	// 		contentType: false,
+	// 		dataType: 'json',
+	// 		success: function(result) {
+	// 			if (result.hasil == '1') {
+	// 				refresh_incoming_check(result.kode_trans, no_ipp);
+	// 			} else {
+	// 				swal({
+	// 					title: 'Error !',
+	// 					text: 'Please, try again !',
+	// 					type: 'error'
+	// 				});
+	// 			}
+	// 		},
+	// 		error: function(result) {
+	// 			swal({
+	// 				title: 'Error',
+	// 				text: 'Please try again later !',
+	// 				type: 'error'
+	// 			});
+	// 		}
+	// 	});
+
+	// 	$(this).attr('disabled', true);
+	// });
+
+	$(document).on('click', '.add_lot', function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+
+		var $btn = $(this);
+		if ($btn.prop('disabled')) return;
+
+		$btn.prop('disabled', true);
+
+		var id = $btn.data('id');
+		var no_ipp = $btn.data('no_ipp');
 		var formm = new FormData($('#form_' + id)[0]);
-		formm.append('upload_file', $('.upload_file_' + id)[0].files[0])
+		formm.append('upload_file', $('.upload_file_' + id)[0].files[0]);
+
 		$.ajax({
 			url: siteurl + active_controller + '/add_lot',
 			type: "POST",
@@ -411,6 +457,7 @@
 						text: 'Please, try again !',
 						type: 'error'
 					});
+					$btn.prop('disabled', false);
 				}
 			},
 			error: function(result) {
@@ -419,10 +466,9 @@
 					text: 'Please try again later !',
 					type: 'error'
 				});
+				$btn.prop('disabled', false);
 			}
 		});
-
-		$(this).attr('disabled', true);
 	});
 
 	$(document).on('change', '.input_hid', function() {
