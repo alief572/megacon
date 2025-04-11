@@ -57,7 +57,7 @@
 					<th class="text-center">Unit</th>
 					<th class="text-center">Qty NG</th>
 					<th class="text-center">Qty Oke</th>
-					<th class="text-center">Qty Pack</th>
+					<th class="text-center">Qty Unit</th>
 					<th class="text-center">Expired Date</th>
 					<th class="text-center">Document</th>
 					<th class="text-center">Lot Description</th>
