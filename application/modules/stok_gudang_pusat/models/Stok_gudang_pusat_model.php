@@ -70,7 +70,7 @@ class Stok_gudang_pusat_model extends BF_Model
 			$nestedData[]	= "<div align='right'>" . number_format($row['konversi'], 2) . "</div>";
 			$nestedData[]	= "<div align='right'>" . number_format($stock, 2) . "</div>";
 			// $nestedData[]	= "<div align='right'>" . number_format($booking, 2) . "s</div>";//version old
-			$nestedData[]	= "<div align='right'>" . number_format($row['max_stok'], 2) . "s</div>";
+			$nestedData[]	= "<div align='right'>" . number_format($row['max_stok'], 2) . "</div>";
 			// $nestedData[]	= "<div align='right'>" . number_format($available, 2) . "</div>";//version old
 			$nestedData[]	= "<div align='right'>" . number_format($sisa_kecukupan, 2) . "</div>";
 			$nestedData[]	= "<div align='center'></div>";

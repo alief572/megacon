@@ -1444,15 +1444,23 @@ class Incoming_check_model extends BF_Model
 
         // Jurnal
         $data_po = $this->db->query("SELECT * FROM tr_purchase_order WHERE no_po='$no_po'")->row();
-        $datakurs = $this->db->query("SELECT * FROM tr_ros WHERE no_po IN ('$no_surat')")->row();
-        $kurs_ros = $datakurs->kurs_pib;
-        if ($kurs_ros > 0) {
-            $kurs = $kurs_ros;
-            $jenis_jurnal = 'JV005';
-        } else {
+        //start kondisi ROS
+        if($data_po->loi == 'Lokal'){
             $kurs = 1;
             $jenis_jurnal = 'JV002';
+        }else{
+            $datakurs = $this->db->query("SELECT * FROM tr_ros WHERE no_po IN ('$no_surat')")->row();
+            $kurs_ros = $datakurs->kurs_pib;
+            if ($kurs_ros > 0) {
+                $kurs = $kurs_ros;
+                $jenis_jurnal = 'JV005';
+            } else {
+                $kurs = 1;
+                $jenis_jurnal = 'JV002';
+            }
         }
+        //end kondisi ROS
+        
         $nomor_jurnal = $jenis_jurnal . $no_ros . rand(100, 999);
         $datajurnal1 = $this->db->query("select * from " . DBACC . ".master_oto_jurnal_detail where kode_master_jurnal='" . $jenis_jurnal . "' order by parameter_no")->result();
         $payment_date = $get_incoming->tanggal;

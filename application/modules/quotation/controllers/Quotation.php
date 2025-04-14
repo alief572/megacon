@@ -1931,10 +1931,14 @@ class Quotation extends Admin_Controller
 
 		$this->db->trans_begin();
 
-		for($i = 1; $i <= $tingkatan; $i++) {
-			$update_sts = $this->db->update('tr_penawaran', ['req_app'.$i.'' => 1, 'status' => 1], ['no_penawaran' => $id]);
+		for ($i = 1; $i <= $tingkatan; $i++) {
+			if ($i < $tingkatan) {
+				$update_sts = $this->db->update('tr_penawaran', ['req_app' . $i . '' => 1, 'app_' . $i . '' => 1, 'status' => 1], ['no_penawaran' => $id]);
+			} else {
+				$update_sts = $this->db->update('tr_penawaran', ['req_app' . $i . '' => 1, 'status' => 1], ['no_penawaran' => $id]);
+			}
 		}
-		
+
 
 		if ($this->db->trans_status() === FALSE) {
 			$this->db->trans_rollback();
@@ -3473,7 +3477,8 @@ class Quotation extends Admin_Controller
 		]);
 	}
 
-	public function get_quotation() {
+	public function get_quotation()
+	{
 		$this->quotation_model->get_quotation();
 	}
 }

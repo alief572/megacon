@@ -54,6 +54,7 @@ $ENABLE_VIEW    = has_permission('Payment_List.View');
 					<tr>
 						<th>#</th>
 						<th>No Dokumen</th>
+						<th>No Surat PO</th>
 						<th>Request By</th>
 						<th>Tanggal</th>
 						<th>Keperluan</th>
@@ -80,16 +81,42 @@ $ENABLE_VIEW    = has_permission('Payment_List.View');
 
 							$dibayar_oleh = (isset($list_tgl_pengajuan_pembayaran[$record->no_doc])) ? $list_tgl_pengajuan_pembayaran[$record->no_doc]['dibayar_oleh'] : '';
 
+							// Cek apakah $diajukan_oleh berisi angka diajukan oleh
+							if (is_numeric($diajukan_oleh)) {
+							    // Jika isinya angka
+							    // echo "Diajukan oleh adalah angka: " . $diajukan_oleh;
+							    $getData_User = $this->db->query("SELECT * FROM users WHERE id_user = '$diajukan_oleh' ")->row();
+							    $nama_diajukan_oleh = @$getData_User->nm_lengkap;
+
+							} else {
+							    // Jika bukan angka
+							    // echo "Diajukan oleh bukan angka: " . $diajukan_oleh;
+							    $nama_diajukan_oleh = @$diajukan_oleh;
+							}
+
+							// Cek apakah $diajukan_oleh berisi angka dibayar oleh
+							if (is_numeric($diajukan_oleh)) {
+							    // Jika isinya angka
+							    $getData_User = $this->db->query("SELECT * FROM users WHERE id_user = '$dibayar_oleh' ")->row();
+							    $nama_dibayar_oleh = @$getData_User->nm_lengkap;
+
+							} else {
+							    // Jika bukan angka
+							    $nama_dibayar_oleh = @$dibayar_oleh;
+							}
+
+
 							$numb++; ?>
 							<tr>
 								<td><?= $numb; ?></td>
 								<td><?= $record->no_doc ?></td>
+								<td><?= @$record->no_po ?></td>
 								<td><?= $record->nama ?></td>
 								<td><?= $record->tgl_doc ?></td>
 								<td><?= $record->keperluan ?></td>
 								<td><?= $record->tipe ?></td>
 								<td><?= number_format($record->jumlah) ?></td>
-								<td class="text-center"><?= $diajukan_oleh ?></td>
+								<td class="text-center"><?= $nama_diajukan_oleh ?></td>
 								<td class="text-center"><?= $tgl_pengajuan ?></td>
 								<td class="text-center"><?= $dibayar_oleh ?></td>
 								<td class="text-center"><?= $tgl_pembayaran ?></td>
@@ -102,8 +129,8 @@ $ENABLE_VIEW    = has_permission('Payment_List.View');
 												echo '<div class="badge bg-yellow text-light">Process</div>';
 											}
 											if ($get_request_payment->status == '1' || $get_request_payment->status == '2') {
-												$get_payment_approve = $this->db->get_where('payment_approve', ['no_doc' => $record->no_doc])->row();
-												if ($get_payment_approve->status == '2') {
+												@$get_payment_approve = $this->db->get_where('payment_approve', ['no_doc' => $record->no_doc])->row();
+												if (@$get_payment_approve->status == '2') {
 													echo '<div class="badge bg-green text-light">Paid</div>';
 												} else {
 													echo '<div class="badge bg-yellow text-light">Approved</div>';

@@ -508,7 +508,7 @@ endforeach;
                                     echo '<td class="text-center">';
                                     ?>
                                     <!-- <a href="<?= base_url($this->uri->segment(1) . '/approval_payment_checker/?type=' . $item_expense->tipe . '&id=' . $item_expense_new->id . '&nilai=' . $item_expense->jumlah); ?>" name="save" class="btn btn-primary btn-sm"><i class="fa fa-check-square-o"></i></a> -->
-                                    <a href="<?= base_url($this->uri->segment(1) . '/approval_payment_checker/?id=' . $item_expense_new->id . '&nilai=' . $item_expense_new->total_invoice); ?>" name="save" class="btn btn-primary btn-sm"><i class="fa fa-check-square-o"></i></a>
+                                    <a href="<?= base_url($this->uri->segment(1) . '/approval_payment_checker_new/?type=' . $item_expense_new->tipe . '&no_po=' . $NO_PO); ?>" name="save" class="btn btn-primary btn-sm"><i class="fa fa-check-square-o"></i></a>
                                     <a href="javascript:void(0);" class="btn btn-sm btn-info view_receive_invoice" data-id_invoice="<?= $item_expense_new->id ?>"><i class="fa fa-eye"></i></a>
                                     <?php
                                     echo '</td>';

@@ -17,8 +17,10 @@
           <th class="text-left">Dari Gudang</th>
           <th class="text-left">Ke Gudang</th>
           <th class="text-right" width='7%'>Qty NG</th>
-          <th class="text-right" width='7%'>Qty</th>
+
           <th class="text-right" width='7%'>Qty Pack</th>
+          <th class="text-right" width='7%'>Qty Unit</th>
+          
           <th class="text-right" width='7%'>Stock Awal</th>
           <th class="text-right" width='7%'>Stock Akhir</th>
           <th class="text-left">No Trans</th>
@@ -34,6 +36,7 @@
             $dari = strtoupper($valx['kd_gudang_dari']);
             $ke   = strtoupper($valx['kd_gudang_ke']);
             $username = get_name('users', 'nm_lengkap', 'id_user', $valx['update_by']);
+            $qty_pack = $valx['jumlah_mat'] / $valx['konversi'];
             echo "<tr>";
             echo "<td>" . $no . "</td>";
             echo "<td align='center'>" . date('d-m-Y H:i:s', strtotime($valx['update_date'])) . "</td>";
@@ -41,10 +44,25 @@
             echo "<td>" . $dari . "</td>";
             echo "<td>" . $ke . "</td>";
             echo "<td align='right'>" . number_format($valx['qty_ng'], 2) . "</td>";
+
             echo "<td align='right'>" . number_format($valx['jumlah_mat'], 2) . "</td>";
-            echo "<td align='right'>" . number_format($valx['jumlah_mat'] / $valx['konversi'], 2) . "</td>";
+            // echo "<td align='right'>" . number_format($valx['jumlah_mat'] / $valx['konversi'], 2) . "</td>";
+            // echo "<td align='right'>" . number_format($valx['jumlah_mat'] / $valx['konversi'], 2) . "</td>";
+            echo "<td align='right'>" . number_format($valx['jumlah_mat'] * $valx['konversi'], 2) . "</td>";
+            // echo "<td align='right'>" . number_format($qty_pack * $valx['konversi'], 2) . "</td>";
+
+
+            // echo "<td align='right'>" . number_format($valx['qty_stock_awal'], 2) . "</td>";//version old
+            // echo "<td align='right'>" . number_format($valx['qty_stock_akhir'], 2) . "</td>";//version old
+
+            //START VERSION OLD
+            // echo "<td align='right'>" . number_format($valx['qty_stock_awal'] / $valx['konversi'], 2) . "</td>";
+            // echo "<td align='right'>" . number_format($valx['qty_stock_akhir'] / $valx['konversi'], 2) . "</td>";
+            //END VERSION OLD
+            //START VERSION NEW
             echo "<td align='right'>" . number_format($valx['qty_stock_awal'], 2) . "</td>";
-            echo "<td align='right'>" . number_format($valx['qty_stock_akhir'], 2) . "</td>";
+            echo "<td al ign='right'>" . number_format($valx['qty_stock_akhir'], 2) . "</td>";
+            //END VERSION NEW
             echo "<td>" . $valx['no_ipp'] . "</td>";
             echo "<td>" . strtolower($valx['ket']) . "</td>";
             echo "</tr>";

@@ -88,7 +88,8 @@ class Incoming_material extends Admin_Controller
             SELECT a.no_po, a.no_surat, a.status, 'PO' as ket_,b.nama AS nm_supplier FROM tr_purchase_order a LEFT JOIN new_supplier b ON b.kode_supplier = a.id_suplier WHERE a.status = '2' AND a.tipe IS NULL AND a.id_suplier = '".$kode_supplier."' AND (SELECT IF(SUM(aa.qty_oke + aa.qty_ng) IS NULL, 0, SUM(aa.qty_oke + aa.qty_ng)) FROM tr_checked_incoming_detail aa WHERE aa.no_ipp = a.no_po) < (SELECT SUM(ab.qty) FROM dt_trans_po ab WHERE ab.no_po = a.no_po) AND (SELECT COUNT(ac.id) FROM dt_trans_po ac JOIN new_inventory_4 ca ON ca.code_lv4 = ac.idmaterial WHERE ac.no_po = a.no_po AND ac.idmaterial <> '') > 0 AND a.close_po IS NULL ORDER BY a.no_po ASC
             ")
             ->result();
-        
+            // echo $this->db->last_query();die();
+            // echo $no_po;
         $hasil = '';
         foreach($no_po as $item) {
 
@@ -120,6 +121,7 @@ class Incoming_material extends Admin_Controller
                 GROUP BY c.no_pr
 
             ")->result();
+            // echo $this->db->last_query();die();
             foreach($get_no_pr as $item_no_pr) {
                 $no_pr[] = $item_no_pr->no_pr;
             }
@@ -130,12 +132,50 @@ class Incoming_material extends Admin_Controller
                 $no_pr = '';
             }
 
-            $hasil .= '<tr>';
-            $hasil .= '<td class="text-center">'.$item->no_surat.'</td>'; 
-            $hasil .= '<td class="text-center">'.$no_pr.'</td>';
-            $hasil .= '<td class="text-center"><input type="checkbox" name="check_po[]" class="check_po" value="'.$item->no_po.'"></td>';
-            $hasil .= '</tr>';
+            //start validasi untuk top pakai DP dan harus sudah payment dulu baru bisa muncul
+            $getData_TR_TOP = $this->db->query("SELECT * FROM tr_top_po WHERE no_po = '$item->no_po'")->row();
+            if($getData_TR_TOP){
+                // Jika data ditemukan (sama dengan / lebih dari 1)
+                // echo "Data ditemukan";
+                if($getData_TR_TOP->group_top == 76){//jika uang muka atau DP
+                    $getData_TR_INV_TOP = $this->db->query("SELECT * FROM tr_invoice_po a INNER JOIN payment_approve b ON a.id = b.no_doc WHERE a.no_po = '$item->no_surat' and b.app_checker = '1' ")->row();
+                    if($getData_TR_INV_TOP){//jika ada pembayaran po
+                        //munculkan datanya
+                        $hasil .= '<tr>';
+                        $hasil .= '<td class="text-center">'.$item->no_surat.'</td>'; 
+                        $hasil .= '<td class="text-center">'.$no_pr.'</td>';
+                        $hasil .= '<td class="text-center"><input type="checkbox" name="check_po[]" class="check_po" value="'.$item->no_po.'"></td>';
+                        $hasil .= '</tr>';
+                    }else{
+                        //tidak di munculkan datanya
+                    }
+                }else{
+                    $hasil .= '<tr>';
+                    $hasil .= '<td class="text-center">'.$item->no_surat.'</td>'; 
+                    $hasil .= '<td class="text-center">'.$no_pr.'</td>';
+                    $hasil .= '<td class="text-center"><input type="checkbox" name="check_po[]" class="check_po" value="'.$item->no_po.'"></td>';
+                    $hasil .= '</tr>';
+                }
+            }else{
+                // Jika tidak ada data
+                // echo "Data tidak ditemukan";
+                $hasil .= '<tr>';
+                $hasil .= '<td class="text-center">'.$item->no_surat.'</td>'; 
+                $hasil .= '<td class="text-center">'.$no_pr.'</td>';
+                $hasil .= '<td class="text-center"><input type="checkbox" name="check_po[]" class="check_po" value="'.$item->no_po.'"></td>';
+                $hasil .= '</tr>';
+            }
+            //end validasi untuk top pakai DP dan harus sudah payment dulu baru bisa muncul
+
+            //start version old
+            // $hasil .= '<tr>';
+            // $hasil .= '<td class="text-center">'.$item->no_surat.'</td>'; 
+            // $hasil .= '<td class="text-center">'.$no_pr.'</td>';
+            // $hasil .= '<td class="text-center"><input type="checkbox" name="check_po[]" class="check_po" value="'.$item->no_po.'"></td>';
+            // $hasil .= '</tr>';
+            //end version old
         }
+        // echo "error 1";die();
 
         echo $hasil;
     }

@@ -254,6 +254,34 @@ $ENABLE_DELETE  = has_permission('Purchase_Order.Delete');
 
 	$(document).on('submit', '#frm-data', function(e) {
 		e.preventDefault();
+		// var bank = $('#bank').val();//panggil dengan ID
+		// var bank = $('input').val(); 
+		// var bank = $('[name="bank"]').val();
+		// var no_bank = $('[name="no_bank"]').val();
+		// var nm_acc_bank = $('[name="nm_acc_bank"]').val();
+
+		// if(bank == ''){
+		// 	swal({
+		// 		  title	: "Error Message!",
+		// 		  text	: 'Bank is Empty, please input first ...',
+		// 		  type	: "warning"
+		// 		});
+		// }
+		// if(no_bank == ''){
+		// 	swal({
+		// 		  title	: "Error Message!",
+		// 		  text	: 'No Bank is Empty, please input first ...',
+		// 		  type	: "warning"
+		// 		});
+		// }
+		// if(nm_acc_bank == ''){
+		// 	swal({
+		// 		  title	: "Error Message!",
+		// 		  text	: 'Nama Acc Bank is Empty, please input first ...',
+		// 		  type	: "warning"
+		// 		});
+		// }
+		
 
 		swal({
 				title: "Warning !",

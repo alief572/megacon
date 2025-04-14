@@ -1936,15 +1936,17 @@ class Pembayaran_material extends Admin_Controller
 	{
 		if ($jenis_payment == 1) {
 			$results = $this->db
-				->select('a.id, a.created_on, a.no_doc, a.currency, a.jumlah, a.keperluan')
+				// ->select('a.id, a.created_on, a.no_doc, a.currency, a.jumlah, a.keperluan')//version old
+				->select('a.id, a.created_on, a.no_doc, a.currency, a.jumlah, b.informasi as keperluan')//version new
 				->from('payment_approve a')
-				->join('tr_expense b', 'b.no_doc = a.no_doc')
+				->join('tr_expense b', 'b.no_doc = a.no_doc','left')
 				->where('a.status <>', 2)
 				->where('b.exp_inv_po', 1)
 				->group_by('a.id')
 				->order_by('a.created_on', 'DESC')
 				->get()
 				->result();
+				// echo $this->db->last_query();die();
 		} else {
 			$results = $this->db
 				->select('a.id, a.created_on, a.no_doc, a.currency, a.jumlah, a.keperluan')

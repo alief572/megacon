@@ -133,6 +133,36 @@ class Request_payment_model extends BF_Model
         return $data;
     }
 
+    public function GetListDataPaymentListNew()
+    {
+        $data    = $this->db->query("
+        SELECT * FROM (
+        SELECT id as ids,no_doc,nama,tgl_doc,'Transportasi' as keperluan, 'transportasi' as tipe,jumlah_expense as jumlah,null as tanggal,no_doc as id, bank_id, accnumber, accname, sts_reject, sts_reject_manage, reject_reason, '' as no_po FROM tr_transport_req 
+        GROUP BY no_doc
+        union all
+        SELECT id as ids,no_doc,nama,tgl_doc,keperluan, 'kasbon' as tipe,jumlah_kasbon as jumlah,null as tanggal,no_doc as id, bank_id, accnumber, accname, sts_reject, sts_reject_manage, reject_reason, '' as no_po FROM tr_kasbon
+        GROUP BY no_doc
+        union all
+        SELECT a.id as ids,a.no_doc,a.nama,a.tgl_doc,a.informasi as keperluan, 'expense' as tipe,a.jumlah,null as tanggal,a.no_doc as id, bank_id, accnumber, accname, a.sts_reject, a.sts_reject_manage, a.reject_reason, a.id_po as no_po FROM tr_expense a left join " . DBACC . ".coa_master as b on a.coa=b.no_perkiraan WHERE a.jumlah >= 0 and status_schedule_payment is null
+        GROUP BY a.no_doc
+        -- start pembayaran po
+        union all
+        SELECT a.id as ids,a.no_doc,a.nama,a.tgl_doc,a.informasi as keperluan, 'pembayaran po' as tipe,a.jumlah,null as tanggal,a.no_doc as id, bank_id, accnumber, accname, a.sts_reject, a.sts_reject_manage, a.reject_reason, a.id_po as no_po FROM tr_expense a left join " . DBACC . ".coa_master as b on a.coa=b.no_perkiraan WHERE a.jumlah >= 0 and status_schedule_payment = 1
+        GROUP BY a.no_doc
+        -- end pembayaran po
+        union all
+        SELECT b.id as ids,a.no_doc,c.nm_lengkap nama,a.tanggal_doc as tgl_doc,b.nama as keperluan, 'periodik' as tipe,b.nilai jumlah,null as tanggal,a.no_doc as id, b.bank_id, b.accnumber, b.accname, b.sts_reject, b.sts_reject_manage, b.reject_reason, '' as no_po FROM tr_pengajuan_rutin a join tr_pengajuan_rutin_detail b on a.no_doc=b.no_doc join users c on a.created_by=c.id_user
+        -- union all
+        -- SELECT a.id as ids, a.no_doc, a.nama, a.tgl_doc, a.keperluan, 'expense' as tipe, a.jumlah, null as tanggal, a.no_doc as id, bank_id, accnumber, accname, null as sts_reject, null as sts_reject_manage, null as reject_reason, b.no_po as no_po
+        -- FROM request_payment a left join tr_invoice_po b ON a.no_doc = b.id where a.status = '2' and a.app_checker = '1'
+        ) AS gabungan
+        ORDER BY tgl_doc DESC
+        ")->result();
+        // echo $this->db->last_query();die();
+
+        return $data;
+    }
+
     // list data payment
     // public function GetListDataPayment($where = '')
     // {

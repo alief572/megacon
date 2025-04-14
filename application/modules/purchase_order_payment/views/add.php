@@ -85,7 +85,7 @@
         <b>Informasi Bank :</b>
         <div class="form-group">
             <label for="">Bank</label>
-            <input type="text" name="bank" id="" class="form-control form-control-sm" placeholder="- Bank -">
+            <input type="text" name="bank" id="" class="form-control form-control-sm" placeholder="- Bank -" required>
         </div>
     </div>
     <div class="col-md-6">
@@ -97,7 +97,7 @@
     <div class="col-md-6">
         <div class="form-group">
             <label for="">No. Bank</label>
-            <input type="text" name="no_bank" id="" class="form-control form-control-sm" placeholder="- No. Bank -">
+            <input type="text" name="no_bank" id="" class="form-control form-control-sm" placeholder="- No. Bank -" required>
         </div>
     </div>
     <div class="col-md-6">
@@ -110,7 +110,7 @@
     <div class="col-md-6">
         <div class="form-group">
             <label for="">Nama</label>
-            <input type="text" name="nm_acc_bank" id="" class="form-control form-control-sm" placeholder="- Nama Acc Bank -">
+            <input type="text" name="nm_acc_bank" id="" class="form-control form-control-sm" placeholder="- Nama Acc Bank -" required>
         </div>
     </div>
 </div>

@@ -232,6 +232,7 @@ if (!empty($header)) {
 			<div class="form-group row">
 				<div class="col-md-12">
 					<button type="button" class="btn btn-primary" name="save" id="save">Approve</button>
+					<!-- <button type="button" class="btn btn-primary" name="save2" id="save2">Approve 2</button> -->
 					<button type="button" class="btn btn-danger" name="reject" id="reject">Reject</button>
 					<button type="button" class="btn btn-default" name="back" id="back">Back</button>
 				</div>
@@ -273,6 +274,33 @@ if (!empty($header)) {
 		var tingkat_approval = $("#tingkat_approval").val();
 
 		$(document).ready(function() {
+			// function updateButtons() {
+			// 	if ($('.chk_personal:checked').length === $('.chk_personal').length) {
+			// 		$('#chk_all').prop('checked', true);
+			// 		$('#save').show();
+			// 		$('#save2').hide();
+			// 	} else if ($('.chk_personal:checked').length > 0) {
+			// 		$('#chk_all').prop('checked', false);
+			// 		$('#save').hide();
+			// 		$('#save2').show();
+			// 	} else {
+			// 		$('#chk_all').prop('checked', false);
+			// 		$('#save').show(); // Default button 1 muncul
+			// 		$('#save2').hide();
+			// 	}
+			// }
+
+			// $('#chk_all').change(function() {
+			// 	$('.chk_personal').prop('checked', this.checked);
+			// 	updateButtons();
+			// });
+
+			// $('.chk_personal').change(function() {
+			// 	updateButtons();
+			// });
+
+    		// updateButtons(); // Set default saat halaman dimuat
+
 			$('.datepicker').datepicker({
 				dateFormat: 'dd-M-yy'
 			});

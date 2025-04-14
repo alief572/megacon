@@ -3213,6 +3213,8 @@ class Incoming_check extends Admin_Controller
 		$this->db->trans_begin();
 
 		$get_detail = $this->db->get_where('tr_incoming_check_detail', ['id' => $data['id']])->row();
+		// echo $this->db->last_query();die();
+		// print_r($get_detail);die();
 
 		$this->db->select('a.*, b.code as satuan, c.code as packing');
 		$this->db->from('new_inventory_4 a');
@@ -3220,8 +3222,37 @@ class Incoming_check extends Admin_Controller
 		$this->db->join('ms_satuan c', 'c.id = a.id_unit_packing', 'left');
 		$this->db->where('a.code_lv4', $get_detail->id_material);
 		$get_material = $this->db->get()->row();
+		// echo $this->db->last_query();die();
 
-		$config['upload_path'] = './uploads/incoming_check/';
+		$konversi = 1;
+		if ($get_material->konversi > 0) {
+			$konversi = $get_material->konversi;
+		}
+		$filename = './uploads/incoming_check/';
+
+		
+		// if(is_dir($filename)){//jika ada tidak usah bikin
+		// 	// chmod('./uploads/incoming_check/', 777);
+		// }else{
+		// 	mkdir($filename);
+		// 	chmod('./uploads/incoming_check/', 777);
+		// }
+
+		$uploadDir =  './uploads/incoming_check/';
+
+		if (!is_dir($uploadDir)) {
+		    mkdir($uploadDir, 0777, true);
+		    chmod($uploadDir, 0777);
+		}
+
+		// cek ulang apakah writable
+		if (!is_writable($uploadDir)) {
+		    die("Folder $uploadDir tidak writable oleh PHP.");
+		}
+
+		// $config['upload_path'] = './uploads/incoming_check/';
+		// $config['upload_path'] = FCPATH . 'uploads/incoming_check/';
+		$config['upload_path'] = realpath(FCPATH . 'uploads/incoming_check/');
 		$config['allowed_types'] = '*';
 		$config['remove_spaces'] = FALSE;
 		$config['encrypt_name'] = TRUE;
@@ -3257,7 +3288,8 @@ class Incoming_check extends Admin_Controller
 			'unit' => $get_material->satuan,
 			'packing' => $get_material->packing,
 			'qty_ng' => $data['qty_ng'],
-			'qty_oke' => $data['qty_oke'],
+			'qty_oke' => $data['qty_oke'],//version old
+			// 'qty_oke' => number_format(($data['qty_oke'] * $konversi), 2),//version new
 			'qty_pack' => $data['qty_pack'],
 			'expired_date' => $data['expired_date'],
 			'uploaded_file' => $file_name,
@@ -3275,7 +3307,7 @@ class Incoming_check extends Admin_Controller
 			$this->db->trans_commit();
 			$valid = 1;
 		}
-
+		// die();
 		echo json_encode(['hasil' => $valid, 'kode_trans' => $data['kode_trans']]);
 	}
 
@@ -3305,7 +3337,7 @@ class Incoming_check extends Admin_Controller
 				WHERE 	
 					a.kode_trans = "' . $kode_trans . '" AND
 					g.no_po = "' . $no_ipp . '"
-				GROUP BY a.id_material, a.id
+				GROUP BY a.id
 			';
 		$result = $this->db->query($sql)->result_array();
 

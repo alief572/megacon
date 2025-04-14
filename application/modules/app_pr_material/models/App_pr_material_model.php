@@ -351,6 +351,12 @@ class App_pr_material_model extends BF_Model
     // $product_where = " AND b.code_lv1 = '".$product."'";
     // }
 
+    if (!empty($like_value)) {
+        $like_value = $this->db->escape_like_str($like_value);
+    } else {
+        $like_value = ''; // atau bisa dihapus dari query
+    }
+
     $sql = "SELECT
               (@row:=@row+1) AS nomor,
               a.*,
@@ -360,15 +366,22 @@ class App_pr_material_model extends BF_Model
               INNER JOIN material_planning_base_on_produksi_detail z ON a.so_number=z.so_number
               LEFT JOIN customer b ON a.id_customer=b.id_customer,
               (SELECT @row:=0) r
-            WHERE 1=1 AND a.category in ('pr material','base on production') AND a.reject_status = '0' AND a.booking_date IS NOT NULL AND z.status_app = 'N' AND a.app_post IS NULL AND a.close_pr IS NULL " . $costcenter_where . " " . $product_where . " AND (
-              b.nm_customer LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-              OR a.so_number LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-              OR a.project LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-              OR a.no_pr LIKE '%" . $this->db->escape_like_str($like_value) . "%'
+            WHERE 1=1 AND a.category in ('pr material','base on production') AND a.reject_status = '0' AND a.booking_date IS NOT NULL AND z.status_app = 'N' AND
+            -- a.app_post IS NULL
+            (a.app_post IS NULL OR a.app_post = '')
+            AND a.close_pr IS NULL " . $costcenter_where . " " . $product_where . " AND (
+              b.nm_customer LIKE CONCAT('%', " . $this->db->escape($like_value) . ", '%')
+              OR a.so_number LIKE CONCAT('%', " . $this->db->escape($like_value) . ", '%')
+              OR a.project LIKE CONCAT('%', " . $this->db->escape($like_value) . ", '%')
+              OR a.no_pr LIKE CONCAT('%', " . $this->db->escape($like_value) . ", '%')
             )
             GROUP BY a.so_number
             ";
     // echo $sql; exit;
+    // b.nm_customer LIKE '%" . $this->db->escape_like_str($like_value) . "%'
+    // OR a.so_number LIKE '%" . $this->db->escape_like_str($like_value) . "%'
+    // OR a.project LIKE '%" . $this->db->escape_like_str($like_value) . "%'
+    // OR a.no_pr LIKE '%" . $this->db->escape_like_str($like_value) . "%'
 
     $data['totalData'] = $this->db->query($sql)->num_rows();
     $data['totalFiltered'] = $this->db->query($sql)->num_rows();

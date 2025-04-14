@@ -441,9 +441,33 @@ class Request_pr_material_model extends BF_Model
       // $nestedData[]  = "<div align='right'>" . number_format($outanding_pr, 2) . "</div>";
 
       $QTY_PR = '';
+      //START BAGIAN SET UTO PROPOSE NEW
+      $ID_Material = $row['code_lv4'];
+      // $get_qty_stok = $this->db->get_where('warehouse_stock', ['id_material' => $ID_Material])->row();
+      // $Qty_Stok = $get_qty_stok->qty_stock;
+      // $Max_Stok = $row['max_stok'];
+      // $Get_Propose = $Max_Stok - $Qty_Stok;
+      // Mengambil data stok dari database
+      $get_qty_stok = $this->db->get_where('warehouse_stock', ['id_material' => $ID_Material])->row();
+      // Mengatur nilai default jika qty_stock bernilai null atau kosong
+      $Qty_Stok = isset($get_qty_stok->qty_stock) && $get_qty_stok->qty_stock !== '' ? $get_qty_stok->qty_stock : 0;
+      // Mengatur nilai default jika max_stok bernilai null atau kosong
+      $Max_Stok = isset($row['max_stok']) && $row['max_stok'] !== '' ? $row['max_stok'] : 0;
+      // Menghitung jumlah yang bisa diajukan
+      $Get_Propose = $Max_Stok - $Qty_Stok;
+      // if ($Get_Propose >= 1000) {
+      //     $Get_Propose_fix = number_format($Get_Propose, 0, '.', ','); // Format ribuan dengan koma
+      // } else {
+      //     $Get_Propose_fix = number_format($Get_Propose, 0, '.', ''); // Format biasa tanpa koma
+      // }
+      //END BAGIAN SET AUTO PROPOSE NEW
       if ($row['qty_stock'] < $row['min_stok']) {
         $QTY_PR = ($row['max_stok'] - ($row['qty_stock'] + $outanding_pr));
-        $QTY_PR = ($QTY_PR < 0) ? 0 : $QTY_PR;
+        //start version new
+        $Get_Propose = $Max_Stok - $Qty_Stok;
+        //end version new
+        // $QTY_PR = ($QTY_PR < 0) ? 0 : $QTY_PR;//version old
+        $QTY_PR = ($Get_Propose < 0) ? 0 : $Get_Propose;
       }
       // else{
       //   $QTY_PR = 1;
@@ -463,7 +487,8 @@ class Request_pr_material_model extends BF_Model
       // exit();
       $request_input = $this->input->post('request');
       $row['request'] = (!empty($request_input) || $request_input === "0") ? $request_input : $row['request'];
-      $purchase2 = (!empty($row['request'])) ? $row['request'] : $QTY_PR;
+      $purchase2 = (!empty($row['request'])) ? $row['request'] : $QTY_PR;//version old
+      // $purchase2 = (!empty($row['request'])) ? $row['request'] : $Get_Propose_fix;
       // Pastikan nilai $purchase2 adalah angka
       $purchase2 = is_numeric($purchase2) ? (float) $purchase2 : 0;
       if ($purchase2 >= 1000) {
@@ -478,6 +503,7 @@ class Request_pr_material_model extends BF_Model
       if ($konversi > 0 and $purchase2 > 0) {
         $purchase_packing = $purchase2 / $konversi;
       }
+      
 
       $nestedData[]  = " <div align='left'>
                           <input type='text' name='purchase' id='purchase_" . $nomor . "' data-id_material='" . $row['code_lv4'] . "' data-no='" . $nomor . "' class='form-control input-sm text-right maskM changeSave' style='width:100px;' value='" . $purchase2_fix . "'>
