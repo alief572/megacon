@@ -3231,11 +3231,23 @@ class Incoming_check extends Admin_Controller
 		$filename = './uploads/incoming_check/';
 
 		
-		if(is_dir($filename)){//jika ada tidak usah bikin
-			// chmod('./uploads/incoming_check/', 777);
-		}else{
-			mkdir($filename);
-			chmod('./uploads/incoming_check/', 777);
+		// if(is_dir($filename)){//jika ada tidak usah bikin
+		// 	// chmod('./uploads/incoming_check/', 777);
+		// }else{
+		// 	mkdir($filename);
+		// 	chmod('./uploads/incoming_check/', 777);
+		// }
+
+		$uploadDir = __DIR__ . '/uploads/incoming_check/';
+
+		if (!is_dir($uploadDir)) {
+		    mkdir($uploadDir, 0777, true);
+		    chmod($uploadDir, 0777);
+		}
+
+		// cek ulang apakah writable
+		if (!is_writable($uploadDir)) {
+		    die("Folder $uploadDir tidak writable oleh PHP.");
 		}
 
 		$config['upload_path'] = './uploads/incoming_check/';
