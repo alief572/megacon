@@ -3232,7 +3232,7 @@ class Incoming_check extends Admin_Controller
 
 		
 		if(is_dir($filename)){//jika ada tidak usah bikin
-			chmod('./uploads/incoming_check/', 777);
+			// chmod('./uploads/incoming_check/', 777);
 		}else{
 			mkdir($filename);
 			chmod('./uploads/incoming_check/', 777);
