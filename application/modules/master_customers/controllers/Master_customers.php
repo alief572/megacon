@@ -60,8 +60,8 @@ class Master_customers extends Admin_Controller
 		$cate = $this->db->get_where('child_category_customer', array('id_customer' => $id))->result();
 		$category = $this->Customer_model->get_data('child_customer_category', 'activation', $aktif);
 		$prof = $this->Customer_model->get_data('provinsi');
-		$kota = $this->Customer_model->get_data('kota');
-		$karyawan = $this->db->get_where('ms_karyawan', array('divisi' => 12, 'deleted' => 0))->result();
+		$kota = $this->Customer_model->get_data('kabupaten');
+		$karyawan = $this->db->get_where('employee', array('department' => 4, 'deleted' => 'N'))->result();
 		$data = [
 			'cus'	=> $cus,
 			'category' => $category,
@@ -86,8 +86,8 @@ class Master_customers extends Admin_Controller
 		$cate = $this->db->get_where('child_category_customer', array('id_customer' => $id))->result();
 		$category = $this->Customer_model->get_data('child_customer_category', 'activation', $aktif);
 		$prof = $this->Customer_model->get_data('provinsi');
-		$kota = $this->Customer_model->get_data('kota');
-		$karyawan = $this->db->get_where('ms_karyawan', array('divisi' => 12, 'deleted' => 0))->result();
+		$kota = $this->Customer_model->get_data('kabupaten');
+		$karyawan = $this->db->get_where('employee', array('department' => 4, 'deleted' => 'N'))->result();
 		$data = [
 			'cus'	=> $cus,
 			'category' => $category,
@@ -98,7 +98,7 @@ class Master_customers extends Admin_Controller
 			'karyawan' => $karyawan
 		];
 		$this->template->set('results', $data);
-		$this->template->title('Edit Suplier');
+		$this->template->title('Edit Customer');
 		$this->template->render('edit_customer');
 	}
 	public function EditCategory($id)
@@ -151,7 +151,7 @@ class Master_customers extends Admin_Controller
 		$aktif = 'active';
 		$category = $this->Customer_model->get_data('child_customer_category', 'activation', $aktif);
 		$prof = $this->Customer_model->get_data('provinsi');
-		$karyawan = $this->db->get_where('ms_karyawan', array('divisi' => 12, 'deleted' => 0))->result();
+		$karyawan = $this->db->get_where('employee', array('department' => 4, 'deleted' => 'N'))->result();
 		$data = [
 			'category' => $category,
 			'prof' => $prof,
@@ -491,27 +491,32 @@ class Master_customers extends Admin_Controller
 		//Add Data
 		$this->db->insert('master_customers', $header1);
 		$numb2 = 0;
-		foreach ($_POST['data1'] as $d1) {
-			$numb2++;
-			$data =  array(
-				'id_customer'	=> $code,
-				'name_pic'		=> $d1[name_pic],
-				'phone_pic'		=> $d1[phone_pic],
-				'email_pic'		=> $d1[email_pic],
-				'position_pic'	=> $d1[position_pic]
-			);
-			//Add Data
-			$this->db->insert('child_customer_pic', $data);
+		if (isset($_POST['data1']) && is_array($_POST['data1'])) {
+			foreach ($_POST['data1'] as $d1) {
+				$numb2++;
+				$data =  array(
+					'id_customer'	=> $code,
+					'name_pic'		=> $d1['name_pic'],
+					'phone_pic'		=> $d1['phone_pic'],
+					'email_pic'		=> $d1['email_pic'],
+					'position_pic'	=> $d1['position_pic']
+				);
+				//Add Data
+				$this->db->insert('child_customer_pic', $data);
+			}
 		}
+
 		$numb2 = 0;
-		foreach ($_POST['data2'] as $d2) {
-			$numb2++;
-			$data =  array(
-				'id_customer'				=> $code,
-				'name_category_customer'	=> $d2[id_category_customer],
-			);
-			//Add Data
-			$this->db->insert('child_category_customer', $data);
+		if (isset($_POST['data2']) && is_array($_POST['data2'])) {
+			foreach ($_POST['data2'] as $d2) {
+				$numb2++;
+				$data =  array(
+					'id_customer'				=> $code,
+					'name_category_customer'	=> $d2['id_category_customer'],
+				);
+				//Add Data
+				$this->db->insert('child_category_customer', $data);
+			}
 		}
 
 		if ($this->db->trans_status() === FALSE) {
@@ -681,32 +686,40 @@ class Master_customers extends Admin_Controller
 		);
 		//Add Data
 		$this->db->where('id_customer', $post['id_customer'])->update("master_customers", $header1);
+
+		$code = $post['id_customer'];
+
 		$this->db->delete('child_customer_pic', array('id_customer' => $post['id_customer']));
 		$numb2 = 0;
-		foreach ($_POST['data1'] as $d1) {
-			$numb2++;
-			$code = $post['id_customer'];
-			$data =  array(
-				'id_customer'	=> $code,
-				'name_pic'		=> $d1[name_pic],
-				'phone_pic'		=> $d1[phone_pic],
-				'email_pic'		=> $d1[email_pic],
-				'position_pic'	=> $d1[position_pic]
-			);
-			//Add Data
-			$this->db->insert('child_customer_pic', $data);
+		if (isset($_POST['data1']) && is_array($_POST['data1'])) {
+			foreach ($_POST['data1'] as $d1) {
+				$numb2++;
+				$data =  array(
+					'id_customer'	=> $code,
+					'name_pic'		=> $d1['name_pic'],
+					'phone_pic'		=> $d1['phone_pic'],
+					'email_pic'		=> $d1['email_pic'],
+					'position_pic'	=> $d1['position_pic']
+				);
+				//Add Data
+				$this->db->insert('child_customer_pic', $data);
+			}
 		}
+
 		$this->db->delete('child_category_customer', array('id_customer' => $post['id_customer']));
 		$numb2 = 0;
-		foreach ($_POST['data2'] as $d2) {
-			$numb2++;
-			$data =  array(
-				'id_customer'	=> $code,
-				'name_category_customer'		=> $d2[id_category_customer],
-			);
-			//Add Data
-			$this->db->insert('child_category_customer', $data);
+		if (isset($_POST['data2']) && is_array(($_POST['data2']))) {
+			foreach ($_POST['data2'] as $d2) {
+				$numb2++;
+				$data =  array(
+					'id_customer'				=> $code,
+					'name_category_customer'	=> $d2['id_category_customer'],
+				);
+				//Add Data
+				$this->db->insert('child_category_customer', $data);
+			}
 		}
+
 		if ($this->db->trans_status() === FALSE) {
 			$this->db->trans_rollback();
 			$status	= array(
@@ -1039,7 +1052,7 @@ class Master_customers extends Admin_Controller
 		echo "<select id='id_kota' name='id_kota' class='form-control input-sm select2'>";
 		echo "<option value=''>--Pilih--</option>";
 		foreach ($data as $key => $st) :
-			echo "<option value='$st->id_prov' set_select('id_kota', $st->id_prov, isset($data->id_prov) && $data->id_prov == $st->id_prov)>$st->nama_kota
+			echo "<option value='$st->id_kab' set_select('id_kota', $st->id_prov, isset($data->id_prov) && $data->id_prov == $st->id_prov)>$st->nama
                     </option>";
 		endforeach;
 		echo "</select>";

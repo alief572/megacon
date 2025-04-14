@@ -131,9 +131,9 @@ foreach ($results['cus'] as $cus) {
 										<select id="id_kota" name="id_kota" class="form-control select" required>
 											<option value="">--Pilih--</option>
 											<?php foreach ($results['kota'] as $kota) {
-												$select = $cus->id_kota == $kota->id_kota ? 'selected' : '';
+												$select = $cus->id_kota == $kota->id_kab ? 'selected' : '';
 											?>
-												<option value="<?= $kota->id_kota ?>" <?= $select ?>><?= ucfirst(strtolower($kota->nama_kota)) ?></option>
+												<option value="<?= $kota->id_kab ?>" <?= $select ?>><?= ucfirst(strtolower($kota->nama)) ?></option>
 											<?php } ?>
 										</select>
 									</div>

@@ -149,7 +149,7 @@ class Customer_model extends BF_Model
     function carikota($id_prov)
     {
         $this->db->where('id_prov', $id_prov);
-        return $this->db->from('kota')
+        return $this->db->from('kabupaten')
             ->get()
             ->result();
     }
