@@ -3250,7 +3250,8 @@ class Incoming_check extends Admin_Controller
 		    die("Folder $uploadDir tidak writable oleh PHP.");
 		}
 
-		$config['upload_path'] = './uploads/incoming_check/';
+		// $config['upload_path'] = './uploads/incoming_check/';
+		$config['upload_path'] = FCPATH . 'uploads/incoming_check/';
 		$config['allowed_types'] = '*';
 		$config['remove_spaces'] = FALSE;
 		$config['encrypt_name'] = TRUE;
