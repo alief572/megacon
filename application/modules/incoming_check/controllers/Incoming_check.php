@@ -3238,7 +3238,7 @@ class Incoming_check extends Admin_Controller
 		// 	chmod('./uploads/incoming_check/', 777);
 		// }
 
-		$uploadDir = __DIR__ . '/uploads/incoming_check/';
+		$uploadDir =  './uploads/incoming_check/';
 
 		if (!is_dir($uploadDir)) {
 		    mkdir($uploadDir, 0777, true);
@@ -3251,7 +3251,8 @@ class Incoming_check extends Admin_Controller
 		}
 
 		// $config['upload_path'] = './uploads/incoming_check/';
-		$config['upload_path'] = FCPATH . 'uploads/incoming_check/';
+		// $config['upload_path'] = FCPATH . 'uploads/incoming_check/';
+		$config['upload_path'] = realpath(FCPATH . 'uploads/incoming_check/');
 		$config['allowed_types'] = '*';
 		$config['remove_spaces'] = FALSE;
 		$config['encrypt_name'] = TRUE;
