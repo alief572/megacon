@@ -55,10 +55,14 @@
             // echo "<td align='right'>" . number_format($valx['qty_stock_awal'], 2) . "</td>";//version old
             // echo "<td align='right'>" . number_format($valx['qty_stock_akhir'], 2) . "</td>";//version old
 
-            echo "<td align='right'>" . number_format($valx['qty_stock_awal'] / $valx['konversi'], 2) . "</td>";
-            echo "<td align='right'>" . number_format($valx['qty_stock_akhir'] / $valx['konversi'], 2) . "</td>";
-
-
+            //START VERSION OLD
+            // echo "<td align='right'>" . number_format($valx['qty_stock_awal'] / $valx['konversi'], 2) . "</td>";
+            // echo "<td align='right'>" . number_format($valx['qty_stock_akhir'] / $valx['konversi'], 2) . "</td>";
+            //END VERSION OLD
+            //START VERSION NEW
+            echo "<td align='right'>" . number_format($valx['qty_stock_awal'], 2) . "</td>";
+            echo "<td al ign='right'>" . number_format($valx['qty_stock_akhir'], 2) . "</td>";
+            //END VERSION NEW
             echo "<td>" . $valx['no_ipp'] . "</td>";
             echo "<td>" . strtolower($valx['ket']) . "</td>";
             echo "</tr>";
