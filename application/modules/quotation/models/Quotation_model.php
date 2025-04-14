@@ -1257,7 +1257,7 @@ class Quotation_model extends BF_Model
 		$start = $this->input->post('start');
 		$search = $this->input->post('search');
 
-		$this->db->select('a.no_penawaran, a.tgl_penawaran, a.project, a.status, a.req_app1, a.app_1, b.nm_customer');
+		$this->db->select('a.no_penawaran, a.tgl_penawaran, a.project, a.status, a.req_app1, a.app_1, a.req_app2, a.app_2, a.req_app3, a.app_3, b.nm_customer');
 		$this->db->from('tr_penawaran a');
 		$this->db->join('customer b', 'b.id_Customer = a.id_customer', 'left');
 		if (!empty($search)) {
@@ -1271,7 +1271,7 @@ class Quotation_model extends BF_Model
 		$this->db->limit($length, $start);
 		$get_data = $this->db->get();
 
-		$this->db->select('a.no_penawaran, a.tgl_penawaran, a.status, a.project, a.req_app1, a.app_1, b.nm_customer');
+		$this->db->select('a.no_penawaran, a.tgl_penawaran, a.status, a.project, a.req_app1, a.app_1, a.req_app2, a.app_2, a.req_app3, a.app_3, b.nm_customer');
 		$this->db->from('tr_penawaran a');
 		$this->db->join('customer b', 'b.id_Customer = a.id_customer', 'left');
 		if (!empty($search)) {
@@ -1290,17 +1290,18 @@ class Quotation_model extends BF_Model
 		foreach ($get_data->result_array() as $item) {
 			$no++;
 
-			$Status = '';
+			$$Status = '';
 
 			if ($item['status'] == 0) {
 				$Status = "<span class='badge bg-yellow'>Draft</span>";
 			} elseif ($item['status'] == 1) {
 
+
+
 				$num_approval = 'Staff Sales';
 				if ($item['req_app2'] == '1' && $item['app_1'] == '1') {
 					$num_approval = 'Manager Sales';
-				}
-				if ($item['req_app3'] == '1' && $item['app_2'] == '1') {
+				} if ($item['req_app3'] == '1' && $item['app_2'] == '1') {
 					$num_approval = 'Direktur';
 				}
 
@@ -1398,7 +1399,7 @@ class Quotation_model extends BF_Model
 
 			$buttons = $btn_edit . ' ' . $btn_view . ' ' . $btn_ajukan . ' ' . $btn_approve . ' ' . $btn_print . ' ' . $btn_loss;
 			if ($item['status'] == '1') {
-				$buttons = $btn_view . ' ' . $btn_print.' '.$btn_approve2;
+				$buttons = $btn_view . ' ' . $btn_print . ' ' . $btn_approve2;
 			}
 			if ($item['status'] == '2') {
 				$buttons = $btn_edit . ' ' . $btn_view . ' ' . $btn_print;

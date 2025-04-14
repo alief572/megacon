@@ -3228,8 +3228,31 @@ class Incoming_check extends Admin_Controller
 		if ($get_material->konversi > 0) {
 			$konversi = $get_material->konversi;
 		}
+		$filename = './uploads/incoming_check/';
 
-		$config['upload_path'] = './uploads/incoming_check/';
+		
+		// if(is_dir($filename)){//jika ada tidak usah bikin
+		// 	// chmod('./uploads/incoming_check/', 777);
+		// }else{
+		// 	mkdir($filename);
+		// 	chmod('./uploads/incoming_check/', 777);
+		// }
+
+		$uploadDir =  './uploads/incoming_check/';
+
+		if (!is_dir($uploadDir)) {
+		    mkdir($uploadDir, 0777, true);
+		    chmod($uploadDir, 0777);
+		}
+
+		// cek ulang apakah writable
+		if (!is_writable($uploadDir)) {
+		    die("Folder $uploadDir tidak writable oleh PHP.");
+		}
+
+		// $config['upload_path'] = './uploads/incoming_check/';
+		// $config['upload_path'] = FCPATH . 'uploads/incoming_check/';
+		$config['upload_path'] = realpath(FCPATH . 'uploads/incoming_check/');
 		$config['allowed_types'] = '*';
 		$config['remove_spaces'] = FALSE;
 		$config['encrypt_name'] = TRUE;
