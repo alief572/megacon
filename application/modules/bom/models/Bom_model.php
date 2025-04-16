@@ -78,6 +78,7 @@ class Bom_model extends BF_Model
 
 			$nestedData 	= array();
 			$nestedData[]	= "<div align='center'>" . $nomor . "</div>";
+			$nestedData[]	= "<div align='center'>" . $row['no_bom'] . "</div>";
 			$nestedData[]	= "<div align='left'>" . strtoupper(strtolower($row['nama'])) . "</div>";
 			$nestedData[]   = "<div align='center'>" . number_format($row['volume_m3'], 2) . "</div>";
 			$nestedData[]	= "<div align='left'>" . $row['keterangan'] . "</div>";
