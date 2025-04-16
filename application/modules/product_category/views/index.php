@@ -27,8 +27,8 @@ $ENABLE_DELETE  = has_permission('Product_Category.Delete');
 			<thead>
 				<tr>
 					<th>#</th>
-					<th>Product Type</th>
-					<th>Product Category</th>
+					<th>Kategori Produk</th>
+					<th>Tipe Ukuran</th>
 					<th>Category Code</th>
 					<th>Status</th>
 					<th>Action</th>

@@ -27,9 +27,9 @@ $ENABLE_DELETE  = has_permission('Product_Jenis.Delete');
 			<thead>
 				<tr>
 					<th>#</th>
-					<th>Product Type</th>
-					<th>Product Category</th>
-					<th>Product Jenis</th>
+					<th>Kategori Produk</th>
+					<th>Tipe Ukuran</th>
+					<th>Varian</th>
 					<th>Jenis Code</th>
 					<th>Status</th>
 					<th>Action</th>
