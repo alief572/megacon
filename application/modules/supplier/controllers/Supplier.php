@@ -15,7 +15,7 @@ class Supplier extends Admin_Controller
 	{
 		parent::__construct();
 
-		// $this->load->library(array('Mpdf'));
+		$this->load->library(array('Mpdf'));
 		$this->load->model(array(
 			'Supplier/supplier_model'
 		));
@@ -32,6 +32,7 @@ class Supplier extends Admin_Controller
 
 		history("View index master supplier");
 
+		$this->template->page_icon('fa fa-users');
 		$this->template->title('Supplier');
 		$this->template->render('index');
 	}
@@ -55,6 +56,7 @@ class Supplier extends Admin_Controller
 			$nama    = $data['nama'];
 			$id_country    = $data['id_country'];
 			$id_provinsi    = $data['id_provinsi'];
+			$id_currency    = $data['id_currency'];
 			$telp    = $data['telp'];
 			$telp2    = $data['telp2'];
 			$fax    = $data['fax'];
@@ -67,7 +69,6 @@ class Supplier extends Admin_Controller
 			$address    = $data['address'];
 			$tax_address    = $data['tax_address'];
 			$note    = $data['note'];
-			$bank    = $data['bank'];
 			$bank_account    = $data['bank_account'];
 
 			$created_by   = 'updated_by';
@@ -96,6 +97,7 @@ class Supplier extends Admin_Controller
 				'nama'			    => $nama,
 				'id_country'		=> $id_country,
 				'id_provinsi'		=> $id_provinsi,
+				'id_currency'		=> $id_currency,
 				'telp'			    => $telp,
 				'telp2'			    => $telp2,
 				'fax'			    => $fax,
@@ -108,7 +110,6 @@ class Supplier extends Admin_Controller
 				'address'			=> $address,
 				'tax_address'		=> $tax_address,
 				'note'			    => $note,
-				'bank'		=> $bank,
 				'bank_account'		=> $bank_account,
 				$created_by	    	=> $session['id_user'],
 				$created_date	  	=> date('Y-m-d H:i:s')
@@ -145,8 +146,7 @@ class Supplier extends Admin_Controller
 			$header   	= $this->db->get_where('new_supplier', array('id' => $id))->result();
 			$country    = $this->db->order_by('name', 'asc')->get_where('country_all', array('iso3 !=' => NULL))->result_array();
 			$provinsi   = $this->db->order_by('urut', 'asc')->get('provinsi')->result_array();
-			$currency   = $this->db->order_by('negara', 'asc')->get('master_currency')->result_array();
-			$bank       = $this->db->order_by('name', 'asc')->get('bank')->result_array();
+			$currency   = $this->db->order_by('negara', 'asc')->get('mata_uang')->result_array();
 
 			// print_r($header);
 			// exit;
@@ -155,12 +155,36 @@ class Supplier extends Admin_Controller
 				'country' => $country,
 				'provinsi' => $provinsi,
 				'currency' => $currency,
-				'bank_list' => $bank
 			];
 			$this->template->title('Add Supplier');
 			$this->template->page_icon('fa fa-edit');
 			$this->template->render('add', $data);
 		}
+	}
+
+	public function edit()
+	{
+		$id = $this->input->post('id');
+
+		if (!$id) {
+			show_error("ID tidak ditemukan", 400);
+		}
+
+		$header   	= $this->db->get_where('new_supplier', array('id' => $id))->result();
+		$country    = $this->db->order_by('name', 'asc')->get_where('country_all', array('iso3 !=' => NULL))->result_array();
+		$provinsi   = $this->db->order_by('urut', 'asc')->get('provinsi')->result_array();
+		$currency   = $this->db->order_by('negara', 'asc')->get('mata_uang')->result_array();
+
+		$data = [
+			'header' => $header,
+			'country' => $country,
+			'provinsi' => $provinsi,
+			'currency' => $currency,
+		];
+
+		$this->template->title('Edit Supplier');
+		$this->template->page_icon('fa fa-edit');
+		$this->template->render('add', $data);
 	}
 
 	public function detail()
@@ -239,7 +263,7 @@ class Supplier extends Admin_Controller
 
 		$Row		= 1;
 		$NewRow		= $Row + 1;
-		$Col_Akhir	= $Cols	= getColsChar(6);
+		$Col_Akhir	= $Cols	= getColsChar(12);
 		$sheet->setCellValue('A' . $Row, 'SUPPLIER');
 		$sheet->getStyle('A' . $Row . ':' . $Col_Akhir . $NewRow)->applyFromArray($mainTitle);
 		$sheet->mergeCells('A' . $Row . ':' . $Col_Akhir . $NewRow);
@@ -262,20 +286,50 @@ class Supplier extends Admin_Controller
 		$sheet->mergeCells('C' . $NewRow . ':C' . $NextRow);
 		$sheet->getColumnDimension('C')->setAutoSize(true);
 
-		$sheet->setCellValue('D' . $NewRow, 'Telephone');
+		$sheet->setCellValue('D' . $NewRow, 'Address');
 		$sheet->getStyle('D' . $NewRow . ':D' . $NextRow)->applyFromArray($tableHeader);
 		$sheet->mergeCells('D' . $NewRow . ':D' . $NextRow);
 		$sheet->getColumnDimension('D')->setAutoSize(true);
 
-		$sheet->setCellValue('E' . $NewRow, 'Fax');
+		$sheet->setCellValue('E' . $NewRow, 'Telephone');
 		$sheet->getStyle('E' . $NewRow . ':E' . $NextRow)->applyFromArray($tableHeader);
 		$sheet->mergeCells('E' . $NewRow . ':E' . $NextRow);
 		$sheet->getColumnDimension('E')->setAutoSize(true);
 
-		$sheet->setCellValue('F' . $NewRow, 'Email');
+		$sheet->setCellValue('F' . $NewRow, 'Fax');
 		$sheet->getStyle('F' . $NewRow . ':F' . $NextRow)->applyFromArray($tableHeader);
 		$sheet->mergeCells('F' . $NewRow . ':F' . $NextRow);
 		$sheet->getColumnDimension('F')->setAutoSize(true);
+
+		$sheet->setCellValue('G' . $NewRow, 'Email');
+		$sheet->getStyle('G' . $NewRow . ':G' . $NextRow)->applyFromArray($tableHeader);
+		$sheet->mergeCells('G' . $NewRow . ':G' . $NextRow);
+		$sheet->getColumnDimension('G')->setAutoSize(true);
+
+		$sheet->setCellValue('H' . $NewRow, 'Tax Number');
+		$sheet->getStyle('H' . $NewRow . ':H' . $NextRow)->applyFromArray($tableHeader);
+		$sheet->mergeCells('H' . $NewRow . ':H' . $NextRow);
+		$sheet->getColumnDimension('H')->setAutoSize(true);
+
+		$sheet->setCellValue('I' . $NewRow, 'Tax Address');
+		$sheet->getStyle('I' . $NewRow . ':I' . $NextRow)->applyFromArray($tableHeader);
+		$sheet->mergeCells('I' . $NewRow . ':I' . $NextRow);
+		$sheet->getColumnDimension('I')->setAutoSize(true);
+
+		$sheet->setCellValue('J' . $NewRow, 'Bank Account');
+		$sheet->getStyle('J' . $NewRow . ':J' . $NextRow)->applyFromArray($tableHeader);
+		$sheet->mergeCells('J' . $NewRow . ':J' . $NextRow);
+		$sheet->getColumnDimension('J')->setAutoSize(true);
+
+		$sheet->setCellValue('K' . $NewRow, 'Contact Person');
+		$sheet->getStyle('K' . $NewRow . ':K' . $NextRow)->applyFromArray($tableHeader);
+		$sheet->mergeCells('K' . $NewRow . ':K' . $NextRow);
+		$sheet->getColumnDimension('K')->setAutoSize(true);
+
+		$sheet->setCellValue('L' . $NewRow, 'Contact');
+		$sheet->getStyle('L' . $NewRow . ':L' . $NextRow)->applyFromArray($tableHeader);
+		$sheet->mergeCells('L' . $NewRow . ':L' . $NextRow);
+		$sheet->getColumnDimension('L')->setAutoSize(true);
 
 		if ($product) {
 			$awal_row	= $NextRow;
@@ -304,6 +358,12 @@ class Supplier extends Admin_Controller
 				$sheet->getStyle($Cols . $awal_row)->applyFromArray($tableBodyLeft);
 
 				$awal_col++;
+				$telp	= $row_Cek['address'];
+				$Cols			= getColsChar($awal_col);
+				$sheet->setCellValue($Cols . $awal_row, $telp);
+				$sheet->getStyle($Cols . $awal_row)->applyFromArray($tableBodyLeft);
+
+				$awal_col++;
 				$telp	= $row_Cek['telp'];
 				$Cols			= getColsChar($awal_col);
 				$sheet->setCellValue($Cols . $awal_row, $telp);
@@ -317,6 +377,36 @@ class Supplier extends Admin_Controller
 
 				$awal_col++;
 				$email	= $row_Cek['email'];
+				$Cols			= getColsChar($awal_col);
+				$sheet->setCellValue($Cols . $awal_row, $email);
+				$sheet->getStyle($Cols . $awal_row)->applyFromArray($tableBodyLeft);
+
+				$awal_col++;
+				$email	= $row_Cek['tax_number'];
+				$Cols			= getColsChar($awal_col);
+				$sheet->setCellValue($Cols . $awal_row, $email);
+				$sheet->getStyle($Cols . $awal_row)->applyFromArray($tableBodyLeft);
+
+				$awal_col++;
+				$email	= $row_Cek['tax_address'];
+				$Cols			= getColsChar($awal_col);
+				$sheet->setCellValue($Cols . $awal_row, $email);
+				$sheet->getStyle($Cols . $awal_row)->applyFromArray($tableBodyLeft);
+
+				$awal_col++;
+				$email	= $row_Cek['bank_account'];
+				$Cols			= getColsChar($awal_col);
+				$sheet->setCellValue($Cols . $awal_row, $email);
+				$sheet->getStyle($Cols . $awal_row)->applyFromArray($tableBodyLeft);
+
+				$awal_col++;
+				$email	= $row_Cek['contact_person'];
+				$Cols			= getColsChar($awal_col);
+				$sheet->setCellValue($Cols . $awal_row, $email);
+				$sheet->getStyle($Cols . $awal_row)->applyFromArray($tableBodyLeft);
+
+				$awal_col++;
+				$email	= $row_Cek['contact'];
 				$Cols			= getColsChar($awal_col);
 				$sheet->setCellValue($Cols . $awal_row, $email);
 				$sheet->getStyle($Cols . $awal_row)->applyFromArray($tableBodyLeft);
