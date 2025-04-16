@@ -95,8 +95,8 @@ class Cycletime extends Admin_Controller
     $material    = $this->Cycletime_model->get_data_where_array('new_inventory_4', array('deleted_date' => NULL, 'category' => 'product'));
     $header  = $this->db->query("SELECT * FROM cycletime_header WHERE id_time='" . $id_time . "' LIMIT 1 ")->result();
     $costcenter  = $this->db->query("SELECT * FROM ms_costcenter WHERE deleted='0' ORDER BY nama_costcenter ASC ")->result_array();
-    $machine  = $this->db->query("SELECT a.* FROM asset a JOIN rate_machine b ON b.kd_mesin = a.kd_asset WHERE a.category='2' AND a.deleted_date IS NULL ORDER BY a.nm_asset ASC ")->result_array();
-    $mould  = $this->db->query("SELECT a.* FROM asset a JOIN rate_mold b ON b.kd_mesin = a.kd_asset WHERE a.category='1' AND a.deleted_date IS NULL ORDER BY a.nm_asset ASC ")->result_array();
+    $machine  = $this->db->query("SELECT a.* FROM asset a JOIN rate_machine b ON b.kd_mesin = a.kd_asset WHERE a.category='2' AND a.deleted_date IS NULL AND b.deleted_by IS NULL ORDER BY a.nm_asset ASC ")->result_array();
+    $mould  = $this->db->query("SELECT a.* FROM asset a JOIN rate_mold b ON b.kd_mesin = a.kd_asset WHERE a.category='1' AND a.deleted_date IS NULL AND b.deleted_by IS NULL ORDER BY a.nm_asset ASC ")->result_array();
 
     $ArrlistCT = $this->db->group_by('no_bom')->get_where('cycletime_header', array('deleted_date' => NULL, 'no_bom !=' => $header[0]->no_bom))->result_array();
     $ArrProductCT = [];
@@ -211,8 +211,8 @@ class Cycletime extends Admin_Controller
     $id   = $this->uri->segment(3);
     $no   = $this->uri->segment(4);
 
-    $machine  = $this->db->query("SELECT a.* FROM asset a JOIN rate_machine b ON b.kd_mesin = a.kd_asset WHERE a.category='2' AND a.deleted_date IS NULL ORDER BY a.nm_asset ASC ")->result_array();
-    $mould  = $this->db->query("SELECT a.* FROM asset a JOIN rate_mold b ON b.kd_mesin = a.kd_asset WHERE a.category='1' AND a.deleted_date IS NULL ORDER BY a.nm_asset ASC ")->result_array();
+    $machine  = $this->db->query("SELECT a.* FROM asset a JOIN rate_machine b ON b.kd_mesin = a.kd_asset WHERE a.category='2' AND a.deleted_date IS NULL AND b.deleted_by IS NULL ORDER BY a.nm_asset ASC ")->result_array();
+    $mould  = $this->db->query("SELECT a.* FROM asset a JOIN rate_mold b ON b.kd_mesin = a.kd_asset WHERE a.category='1' AND a.deleted_date IS NULL AND b.deleted_by IS NULL ORDER BY a.nm_asset ASC ")->result_array();
 
 
     // $process	= $this->db->query("SELECT * FROM ms_process ORDER BY nm_process ASC ")->result_array();
