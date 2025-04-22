@@ -15,6 +15,7 @@
 	$trade_name = (!empty($listData[0]->trade_name))?$listData[0]->trade_name:'';
 	$max_stok = (!empty($listData[0]->max_stok))?$listData[0]->max_stok:'';
 	$min_stok = (!empty($listData[0]->min_stok))?$listData[0]->min_stok:'';
+	$berat_produk = (!empty($listData[0]->berat_produk))?$listData[0]->berat_produk:'';
 
 	$id_unit_packing = (!empty($listData[0]->id_unit_packing))?$listData[0]->id_unit_packing:'';
 	$konversi = (!empty($listData[0]->konversi))?$listData[0]->konversi:'';
@@ -26,6 +27,7 @@
 	$cub 	= (!empty($listData[0]->cub))?$listData[0]->cub:'';
 
 	$file_msds 	= (!empty($listData[0]->file_msds))?$listData[0]->file_msds:'';
+	$file_drawing 	= (!empty($listData[0]->file_drawing))?$listData[0]->file_drawing:'';
 
 	$status1 = (!empty($listData[0]->status) AND $listData[0]->status == '1')?'checked':'';
 	$status2 = (!empty($listData[0]->status) AND $listData[0]->status == '2')?'checked':'';
@@ -162,7 +164,7 @@
 					<input type="text" class="form-control maskM" id="min_stok" name="min_stok" value='<?=$min_stok;?>' placeholder="Minimum Stok">
 				</div>
 			</div>
-			<div class="form-group row">
+			<!-- <div class="form-group row">
 				<div class="col-md-2">
 					<label>Upload MSDS</label>
 				</div>
@@ -173,6 +175,25 @@
 					<?php if(!empty($file_msds)){ ?>
 						<a href='<?=base_url().$file_msds;?>' target='_blank' class="help-block" title='Download'>Download File</a>
 					<?php } ?>
+				</div>
+			</div> -->
+			<div class="form-group row">
+				<div class="col-md-2">
+					<label>Upload Drawing</label>
+				</div>
+				<div class="col-md-4">
+					<div class="form-group">
+						<input type="file" name='drawing' id="drawing">	
+					</div>
+					<?php if(!empty($file_drawing)){ ?>
+						<a href='<?=base_url().$file_drawing;?>' target='_blank' class="help-block" title='Download'>Download File</a>
+					<?php } ?>
+				</div>
+				<div class="col-md-2">
+					<label>Berat Produk</label>
+				</div>
+				<div class="col-md-4">
+					<input type="text" class="form-control maskM" id="berat_produk" name="berat_produk" value='<?=$berat_produk;?>' placeholder="Berat Produk">
 				</div>
 			</div>
 			<hr>

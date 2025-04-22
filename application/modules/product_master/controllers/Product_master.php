@@ -226,6 +226,7 @@ class Product_master extends Admin_Controller
 
       $max_stok     = str_replace(',', '', $post['max_stok']);
       $min_stok     = str_replace(',', '', $post['min_stok']);
+      $berat_produk = str_replace(',', '', $post['berat_produk']);
 
       $length     = str_replace(',', '', $post['length']);
       $wide       = str_replace(',', '', $post['wide']);
@@ -255,27 +256,46 @@ class Product_master extends Admin_Controller
         'high'      => $high,
         'cub'      => $cub,
         'status'    => $status,
+        'berat_produk' => $berat_produk,
         $last_by    => $this->id_user,
         $last_date  => $this->datetime
       ];
 
       //UPLOAD DOCUMENT
       $dataProcess2 = [];
-      if (!empty($_FILES['photo']["tmp_name"])) {
+      // if (!empty($_FILES['photo']["tmp_name"])) {//bagian file upload msds || tidak dipakai
+      //   $target_dir     = "assets/files/";
+      //   $target_dir_u   = get_root3() . "/assets/files/";
+      //   $name_file      = 'msds-' . $code_lv4 . "-" . date('Ymdhis');
+      //   $target_file    = $target_dir . basename($_FILES['photo']["name"]);
+      //   $name_file_ori  = basename($_FILES['photo']["name"]);
+      //   $imageFileType  = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+      //   $nama_upload    = $target_dir_u . $name_file . "." . $imageFileType;
+
+      //   // if($imageFileType == 'pdf' OR $imageFileType == 'jpeg' OR $imageFileType == 'jpg'){
+
+      //   $terupload = move_uploaded_file($_FILES['photo']["tmp_name"], $nama_upload);
+      //   $link_url      = $target_dir . $name_file . "." . $imageFileType;
+
+      //   $dataProcess2  = array('file_msds' => $link_url);
+      //   // }
+      // }
+
+      if (!empty($_FILES['drawing']["tmp_name"])) {//bagian file upload drawing
         $target_dir     = "assets/files/";
         $target_dir_u   = get_root3() . "/assets/files/";
-        $name_file      = 'msds-' . $code_lv4 . "-" . date('Ymdhis');
-        $target_file    = $target_dir . basename($_FILES['photo']["name"]);
-        $name_file_ori  = basename($_FILES['photo']["name"]);
+        $name_file      = 'drawing-' . $code_lv4 . "-" . date('Ymdhis');
+        $target_file    = $target_dir . basename($_FILES['drawing']["name"]);
+        $name_file_ori  = basename($_FILES['drawing']["name"]);
         $imageFileType  = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
         $nama_upload    = $target_dir_u . $name_file . "." . $imageFileType;
 
         // if($imageFileType == 'pdf' OR $imageFileType == 'jpeg' OR $imageFileType == 'jpg'){
 
-        $terupload = move_uploaded_file($_FILES['photo']["tmp_name"], $nama_upload);
-        $link_url      = $target_dir . $name_file . "." . $imageFileType;
+        $terupload = move_uploaded_file($_FILES['drawing']["tmp_name"], $nama_upload);
+        $link_url_drawing      = $target_dir . $name_file . "." . $imageFileType;
 
-        $dataProcess2  = array('file_msds' => $link_url);
+        $dataProcess2  = array('file_drawing' => $link_url_drawing);
         // }
       }
 
@@ -338,6 +358,23 @@ class Product_master extends Admin_Controller
       'deleted_by'     => $this->id_user,
       'deleted_date'   => $this->datetime
     ];
+
+    // // Path lengkap ke file yang akan dihapus
+    // $file_path = FCPATH . 'assets/files/' . $filename;
+
+    // // Cek apakah file ada
+    // if (file_exists($file_path)) {
+    //     if (unlink($file_path)) {
+    //         // File berhasil dihapus
+    //         echo "File berhasil dihapus.";
+    //     } else {
+    //         // Gagal menghapus file
+    //         echo "Gagal menghapus file.";
+    //     }
+    // } else {
+    //     // File tidak ditemukan
+    //     echo "File tidak ditemukan.";
+    // }
 
     $this->db->trans_begin();
     $this->db->where('id', $id)->update("new_inventory_4", $data);
