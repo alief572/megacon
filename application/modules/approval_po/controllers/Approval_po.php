@@ -446,7 +446,7 @@ class Approval_po extends Admin_Controller
 
     // $comp	= $this->db->query("select a.*, b.nominal as nominal_harga FROM ms_compotition as a inner join child_history_lme as b on b.id_compotition=a.id_compotition where a.deleted='0' and b.status='0' ")->result();
     // $customers = $this->db->get_where('customer', ['deleted_by' => null])->result();//version old
-    $customers = $this->db->get_where('ms_customers', ['deleted_by' => null])->result();//version new
+    $customers = $this->db->get_where('master_customers', ['deleted_by' => null])->result();//version new
     $karyawan = $this->db->get_where('ms_karyawan', ['deleted_by' => null])->result();
     $mata_uang = $this->db->get_where('mata_uang', ['deleted' => null])->result();
     $list_supplier = $this->db->get_where('new_supplier', ['deleted_by' => null])->result();
