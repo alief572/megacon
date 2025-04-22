@@ -124,7 +124,7 @@ class Mold_rate extends Admin_Controller
     } else {
       $listData   = $this->db->get_where('rate_mold', array('id' => $id))->result();
       $satuan     = $this->db->get_where('ms_satuan', array('deleted_date' => NULL, 'category' => 'unit'))->result();
-      $list_asset = $this->db->group_by('SUBSTR(kd_asset, 1, 20)')->get_where('asset', array('deleted_date' => NULL, 'category' => '1'))->result_array();
+      $list_asset = $this->db->get_where('asset', array('deleted_date' => NULL, 'category' => '1'))->result_array();
 
       $ArrlistCT = $this->db->get_where('rate_mold', array('deleted_date' => NULL))->result_array();
       $ArrProductCT = [];

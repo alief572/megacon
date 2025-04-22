@@ -19,11 +19,11 @@
 		<form id="data_form" autocomplete="off">
 			<div class="form-group row">
 				<div class="col-md-3">
-				<label for="">Product Type <span class='text-danger'>*</span></label>
+				<label for="">Kategori Produk <span class='text-danger'>*</span></label>
 				</div>
 				<div class="col-md-9">
 				<select name="code_lv1" id="code_lv1" class='chosen-select'>
-					<option value="0">Select Product Type</option>
+					<option value="0">Select Kategori Produk</option>
 					<?php
 					foreach ($listLevel1 as $key => $value) {
 						$selected = ($code_lv1 == $value['code_lv1'])?'selected':'';
@@ -35,13 +35,13 @@
 			</div>
 			<div class="form-group row">
 				<div class="col-md-3">
-				<label for="">Product Category <span class='text-danger'>*</span></label>
+				<label for="">Tipe Ukuran <span class='text-danger'>*</span></label>
 				</div>
 				<div class="col-md-9">
 				<select name="code_lv2" id="code_lv2" class='chosen-select'>
 					<?php
 					if(!empty($id) AND !empty($listLevel2)){
-						echo "<option value='0'>Select Product Category</option>";
+						echo "<option value='0'>Select Tipe Ukuran</option>";
 						foreach ($listLevel2 as $key => $value) {
 							$selected = ($code_lv2 == $value['code_lv2'])?'selected':'';
 							echo "<option value='".$value['code_lv2']."' ".$selected.">".strtoupper($value['nama'])."</option>";
@@ -56,7 +56,7 @@
 			</div>
 			<div class="form-group row">
 				<div class="col-md-3">
-				<label for="">Product Jenis <span class='text-danger'>*</span></label>
+				<label for="">Varian <span class='text-danger'>*</span></label>
 				</div>
 				<div class="col-md-9">
 				<input type="hidden" class="form-control" id="id" name="id" value='<?=$id;?>'>
