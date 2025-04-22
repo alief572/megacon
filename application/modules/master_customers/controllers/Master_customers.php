@@ -43,6 +43,9 @@ class Master_customers extends Admin_Controller
 		$category = $this->Customer_model->get_data('child_customer_category', 'activation', $deleted);
 		// buat manggil customer
 		$customer 			= $this->Customer_model->getCustomer();
+		// echo $this->db->last_query();
+		// print_r($$customer);
+		// die();
 		$data = [
 			'customer' => $customer,
 			'category' => $category
