@@ -35,7 +35,8 @@ class Product_master extends Admin_Controller
     $this->template->page_icon('fa fa-users');
 
     $where = [
-      'deleted_date' => NULL,
+      // 'deleted_date' => NULL,
+      'deleted_by' => NULL,
       'category' => 'product'
     ];
     $listData = $this->Product_master_model->get_data($where);
