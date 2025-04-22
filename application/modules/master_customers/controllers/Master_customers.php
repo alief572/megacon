@@ -41,6 +41,7 @@ class Master_customers extends Admin_Controller
 		$this->template->page_icon('fa fa-users');
 		$deleted = 'active';
 		$category = $this->Customer_model->get_data('child_customer_category', 'activation', $deleted);
+		// buat manggil customer
 		$customer 			= $this->Customer_model->getCustomer();
 		$data = [
 			'customer' => $customer,
