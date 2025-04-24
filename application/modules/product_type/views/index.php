@@ -27,7 +27,7 @@ thead input {
 		<thead>
 		<tr>
 			<th>#</th>
-			<th>Product Type</th>
+			<th>Kategori Produk</th>
 			<th>Type Code</th>
 			<th>Status</th>
 			<th>Action</th>

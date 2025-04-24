@@ -61,12 +61,37 @@ $ENABLE_DELETE  = has_permission('Master_customers.Delete');
 										<td hidden><?= $customer->id_customer ?></td>
 										<td><?= $customer->name_customer ?></td>
 										<td><?= $customer->nama_karyawan ?></td>
-										<td hidden><?php
-													$id = $customer->id_customer;
-													$cate  = $this->db->get_where('child_category_customer', array('id_customer' => $id))->result();
-													foreach ($cate as $vp) {  ?>
-												<?= $vp->name_category_customer ?>
-											<?php }; ?>
+										<td hidden>
+											<?php
+											if (isset($customer->id_customer)) {
+											    $id = $customer->id_customer;
+
+											    // Coba tangani error query dengan try-catch
+											    try {
+											        $cate = $this->db->get_where('child_category_customer', array('id_customer' => $id));
+
+											        // Cek jika query tidak berhasil
+											        if (!$cate) {
+											            echo '<span class="text-danger">Query gagal</span>';
+											        } else {
+											            $results = $cate->result();
+											            if (!empty($results)) {
+											                foreach ($results as $vp) {
+											                    echo htmlspecialchars($vp->name_category_customer, ENT_QUOTES, 'UTF-8') . '<br>';
+											                }
+											            } else {
+											                echo '<span class="text-muted">Belum ada kategori</span>';
+											            }
+											        }
+											    } catch (Exception $e) {
+											        echo '<span class="text-danger">DB Error: ' . $e->getMessage() . '</span>';
+											    }
+
+											} else {
+											    echo '<span class="text-muted">ID customer tidak ditemukan</span>';
+											}
+											?>
+
 										</td>
 
 
