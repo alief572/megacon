@@ -20,7 +20,10 @@ $ENABLE_DELETE  = has_permission('Quotation.Delete');
 			<!-- <button class="btn btn-success" type="button" onclick="add_inv()">
 				<i class="fa fa-plus"></i>Add Penawaran
 			</button> -->
-			<button class="btn btn-success" type="button" onclick="add_quote()">
+			<!-- <button class="btn btn-success" type="button" onclick="add_quote()">
+				<i class="fa fa-plus"></i> Add Penawaran
+			</button> -->
+			<button class="btn btn-success" type="button" onclick="openAddInvoice()">
 				<i class="fa fa-plus"></i> Add Penawaran
 			</button>
 		<?php endif; ?>
@@ -593,6 +596,14 @@ $ENABLE_DELETE  = has_permission('Quotation.Delete');
 	function add_quote() {
 		$("#ModalAddQuote").modal('show');
 		$(".currency").val('');
+	}
+
+	function openAddInvoice() {
+		const siteurl = '<?php echo site_url(); ?>';
+		// const active_controller = '<?php echo $this->uri->segment(1); ?>/';
+		const curr = 'IDR'; // Ganti ini sesuai nilai dinamis yang kamu butuhkan
+
+		window.open(siteurl + active_controller + 'modal_add_invoice/' + curr, '_blank');
 	}
 
 	//Delete
