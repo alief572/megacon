@@ -25,15 +25,16 @@ class Truck_rate_model extends BF_Model
         $length = $this->input->post('length');
         $search = $this->input->post('search');
 
-        $this->db->select('a.*, IF(b.nm_lengkap IS NULL, "", b.nm_lengkap) as nama_lengkap, c.nm_lengkap as nama_created');
+        $this->db->select('a.*, IF(b.nm_lengkap IS NULL, "", b.nm_lengkap) as nama_lengkap, c.nm_lengkap as nama_created, d.nm_asset');
         $this->db->from('tr_truck_rate a');
         $this->db->join('users b', 'b.id_user = a.updated_by', 'left');
-        $this->db->join('users c', 'b.id_user = a.created_by', 'left');
+        $this->db->join('users c', 'c.id_user = a.created_by', 'left');
+        $this->db->join('asset d', 'd.kd_asset = a.kd_asset', 'left');
         // $this->db->where('a.deleted_by', null);
         $this->db->where('(a.deleted_by IS NULL OR a.deleted_by = "")');
         if (!empty($search)) {
             $this->db->group_start();
-            $this->db->like('a.kd_asset', $search['value'], 'both');
+            $this->db->like('d.nm_asset', $search['value'], 'both');
             $this->db->or_like('a.maksimal_muatan', $search['value'], 'both');
             $this->db->or_like('a.rate_truck', $search['value'], 'both');
             // $this->db->or_like('c.nm_lengkap', $search['value'], 'both');
@@ -46,15 +47,16 @@ class Truck_rate_model extends BF_Model
 
         $get_data = $this->db->get();
 
-        $this->db->select('a.*, IF(b.nm_lengkap IS NULL, "", b.nm_lengkap) as nama_lengkap, c.nm_lengkap as nama_created');
+        $this->db->select('a.*, IF(b.nm_lengkap IS NULL, "", b.nm_lengkap) as nama_lengkap, c.nm_lengkap as nama_created, d.nm_asset');
         $this->db->from('tr_truck_rate a');
         $this->db->join('users b', 'b.id_user = a.updated_by', 'left');
-        $this->db->join('users c', 'b.id_user = a.created_by', 'left');
+        $this->db->join('users c', 'c.id_user = a.created_by', 'left');
+        $this->db->join('asset d', 'd.kd_asset = a.kd_asset', 'left');
         // $this->db->where('a.deleted_by', null);
         $this->db->where('(a.deleted_by IS NULL OR a.deleted_by = "")');
         if (!empty($search)) {
             $this->db->group_start();
-            $this->db->like('a.kd_asset', $search['value'], 'both');
+            $this->db->like('d.nm_asset', $search['value'], 'both');
             $this->db->or_like('a.maksimal_muatan', $search['value'], 'both');
             $this->db->or_like('a.rate_truck', $search['value'], 'both');
             // $this->db->or_like('c.nm_lengkap', $search['value'], 'both');
@@ -102,7 +104,7 @@ class Truck_rate_model extends BF_Model
 
             $hasil[] = [
                 'no' => $no,
-                'kd_asset' => $item->kd_asset,
+                'kd_asset' => $item->nm_asset,
                 'truck_rate' => number_format($item->rate_truck, 2),
                 'last_update_by' => $last_update_by,
                 'last_update' => $last_update,

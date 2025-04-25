@@ -80,7 +80,8 @@ class Quotation_model extends BF_Model
 	{
 		$session = $this->session->userdata('app_session');
 
-		$Cust = $this->db->query("SELECT a.* FROM customer a")->result();
+		$Cust = $this->db->query("SELECT a.* FROM customer a")->result();//version old
+		// $Cust = $this->db->query("SELECT a.* FROM master_customers a")->result();
 		$User = $this->db->query("SELECT a.* FROM users a")->result();
 		$pic_cust = $this->db->query("SELECT a.* FROM customer_pic a WHERE a.nm_pic <> ''")->result();
 
