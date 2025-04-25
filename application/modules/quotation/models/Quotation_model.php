@@ -80,10 +80,11 @@ class Quotation_model extends BF_Model
 	{
 		$session = $this->session->userdata('app_session');
 
-		$Cust = $this->db->query("SELECT a.* FROM customer a")->result();//version old
-		// $Cust = $this->db->query("SELECT a.* FROM master_customers a")->result();
+		// $Cust = $this->db->query("SELECT a.* FROM customer a")->result();//version old
+		$Cust = $this->db->query("SELECT a.* FROM master_customers a")->result();
 		$User = $this->db->query("SELECT a.* FROM users a")->result();
-		$pic_cust = $this->db->query("SELECT a.* FROM customer_pic a WHERE a.nm_pic <> ''")->result();
+		// $pic_cust = $this->db->query("SELECT a.* FROM customer_pic a WHERE a.nm_pic <> ''")->result();//version old
+		$pic_cust = $this->db->query("SELECT a.* FROM child_customer_pic a WHERE a.name_pic <> '' and position_pic = 'PIC' ")->result();
 
 		$get_penawaran_detail = $this->db->get_where('tr_penawaran_detail', ['no_penawaran' => $session['id_user'], 'curr' => $curr])->result();
 
@@ -1258,12 +1259,13 @@ class Quotation_model extends BF_Model
 		$start = $this->input->post('start');
 		$search = $this->input->post('search');
 
-		$this->db->select('a.no_penawaran, a.tgl_penawaran, a.project, a.status, a.req_app1, a.app_1, a.req_app2, a.app_2, a.req_app3, a.app_3, b.nm_customer');
+		$this->db->select('a.no_penawaran, a.tgl_penawaran, a.project, a.status, a.req_app1, a.app_1, a.req_app2, a.app_2, a.req_app3, a.app_3, b.name_customer as nm_customer');
 		$this->db->from('tr_penawaran a');
-		$this->db->join('customer b', 'b.id_Customer = a.id_customer', 'left');
+		// $this->db->join('customer b', 'b.id_Customer = a.id_customer', 'left');
+		$this->db->join('master_customers b', 'b.id_Customer = a.id_customer', 'left');
 		if (!empty($search)) {
 			$this->db->like('DATE_FORMAT(a.tgl_penawaran, "%d-%M-%Y")', $search['value'], 'both');
-			$this->db->or_like('b.nm_customer', $search['value'], 'both');
+			$this->db->or_like('b.name_customer', $search['value'], 'both');
 			$this->db->or_like('a.no_penawaran', $search['value'], 'both');
 			$this->db->or_like('a.project', $search['value'], 'both');
 			$this->db->or_like('a.no_revisi', $search['value'], 'both');
@@ -1272,12 +1274,13 @@ class Quotation_model extends BF_Model
 		$this->db->limit($length, $start);
 		$get_data = $this->db->get();
 
-		$this->db->select('a.no_penawaran, a.tgl_penawaran, a.status, a.project, a.req_app1, a.app_1, a.req_app2, a.app_2, a.req_app3, a.app_3, b.nm_customer');
+		$this->db->select('a.no_penawaran, a.tgl_penawaran, a.status, a.project, a.req_app1, a.app_1, a.req_app2, a.app_2, a.req_app3, a.app_3, b.name_customer as nm_customer');
 		$this->db->from('tr_penawaran a');
-		$this->db->join('customer b', 'b.id_Customer = a.id_customer', 'left');
+		// $this->db->join('customer b', 'b.id_Customer = a.id_customer', 'left');
+		$this->db->join('master_customers b', 'b.id_Customer = a.id_customer', 'left');
 		if (!empty($search)) {
 			$this->db->like('DATE_FORMAT(a.tgl_penawaran, "%d-%M-%Y")', $search['value'], 'both');
-			$this->db->or_like('b.nm_customer', $search['value'], 'both');
+			$this->db->or_like('b.name_customer', $search['value'], 'both');
 			$this->db->or_like('a.no_penawaran', $search['value'], 'both');
 			$this->db->or_like('a.project', $search['value'], 'both');
 			$this->db->or_like('a.no_revisi', $search['value'], 'both');

@@ -35,7 +35,7 @@ $tandas = $this->uri->segment(4);
 								</select>
 							</td>
 							<td width='10%'></td>
-							<td width='10%'>Maksimal Muatan</td>
+							<td width='10%'>Maksimal Muatan (Kg)</td>
 							<td width='1%'>:</td>
 							<td width='29%'>
 								<?php
@@ -44,7 +44,7 @@ $tandas = $this->uri->segment(4);
 							</td>
 						</tr>
 						<tr>
-							<td width='10%'>Bahan Bakar</td>
+							<td width='10%'>Harga Bahan Bakar (Rp)</td>
 							<td width='1%'>:</td>
 							<td width='29%'>
 								<?php
@@ -52,7 +52,7 @@ $tandas = $this->uri->segment(4);
 								?>
 							</td>
 							<td width='10%'></td>
-							<td width='10%'>Konsumsi Bahan Bakar</td>
+							<td width='10%'>Konsumsi Bahan Bakar (Km/Ltr)</td>
 							<td width='1%'>:</td>
 							<td width='29%'>
 								<?php

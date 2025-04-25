@@ -1653,6 +1653,28 @@ class Quotation extends Admin_Controller
 		$get_penawaran_detail = $this->db->get_where('tr_penawaran_detail', ['no_penawaran' => $id, 'curr' => $curr])->result();
 		foreach ($get_penawaran_detail as $penawaran_detail) {
 
+			//start get stok
+			$id_category3 = (int) $penawaran_detail->id_category3;
+			$sql = "
+					SELECT
+						a.code_lv4,
+						MAX(a.actual_stock) AS stock_akhir
+					FROM
+						stock_product a
+					LEFT JOIN
+						new_inventory_4 b ON a.code_lv4 = b.code_lv4
+					WHERE
+						b.code_lv4 = ?
+						AND a.deleted_date IS NULL
+					GROUP BY
+						a.code_lv4
+				";
+
+			// Eksekusi query dengan parameter binding
+			@$query = $this->db->query(@$sql, array($id_category3));
+			@$result_stok = $query->row(); // ambil satu baris hasil
+			//end get stok
+
 			$harga_x_qty = ($penawaran_detail->harga_satuan * $penawaran_detail->qty);
 			$price_after_disc = ($penawaran_detail->harga_satuan + $penawaran_detail->cutting_fee + $penawaran_detail->delivery_fee - $penawaran_detail->diskon_nilai);
 			$total_harga = ($penawaran_detail->total_harga);
@@ -1675,6 +1697,9 @@ class Quotation extends Admin_Controller
 					<td>
 						<span>' . $penawaran_detail->nama_produk . '</span> <br><br>
 
+					</td>
+					<td>
+						' . @$result_stok->stock_akhir . '<br><br>
 					</td>
 					<td>
 						<input type="number" name="qty_' . $penawaran_detail->id_penawaran_detail . '" value="' . $penawaran_detail->qty . '" class="form-control text-right qty qty_' . $penawaran_detail->id_penawaran_detail . '" onchange="hitung_all(' . $penawaran_detail->id_penawaran_detail . ')">
@@ -2018,10 +2043,11 @@ class Quotation extends Admin_Controller
 	public function get_data_customer()
 	{
 		$id_customer = $this->input->post('id_customer');
+		$PIC = 'PIC';
+		// $get_data_pic = $this->db->query('SELECT a.nm_pic, a.id_pic, a.email_pic FROM customer_pic a JOIN customer b ON b.id_pic = a.id_pic WHERE b.id_customer = "' . $id_customer . '"')->row();//version old
+		$get_data_pic = $this->db->query('SELECT a.name_pic, a.id_pic, a.email_pic FROM child_customer_pic a JOIN master_customers b ON b.id_customer = a.id_customer WHERE position_pic = "' . $PIC . '" AND b.id_customer = "' . $id_customer . '" LIMIT 1 ')->row();
 
-		$get_data_pic = $this->db->query('SELECT a.nm_pic, a.id_pic, a.email_pic FROM customer_pic a JOIN customer b ON b.id_pic = a.id_pic WHERE b.id_customer = "' . $id_customer . '"')->row();
-
-		$list_pic = '<option value="' . $get_data_pic->id_pic . '">' . $get_data_pic->nm_pic . '</option>';
+		$list_pic = '<option value="' . $get_data_pic->id_pic . '">' . $get_data_pic->name_pic . '</option>';
 
 		echo json_encode([
 			'list_pic' => $list_pic,
