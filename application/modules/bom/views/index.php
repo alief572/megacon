@@ -17,7 +17,7 @@ $ENABLE_DELETE  = has_permission('BOM.Delete');
 		<span class="pull-right">
 			<?php if ($ENABLE_ADD) : ?>
 				<a class="btn btn-success btn-md" href="<?= base_url('bom/add') ?>" title="Add"> <i class="fa fa-plus">&nbsp;</i>Add</a>
-				<button type="button" class="btn btn-sm btn-success update_satuan"><i class="fa fa-plus"></i> Update Material Lain</button>
+				<!-- <button type="button" class="btn btn-sm btn-success update_satuan"><i class="fa fa-plus"></i> Update Material Lain</button> -->
 			<?php endif; ?>
 			<!-- <a class="btn btn-success btn-md" href="<?= base_url('bom/excel_report_all_bom') ?>" target='_blank' title="Download Excel"> <i class="fa fa-file-excel-o">&nbsp;</i>&nbsp;Download Excel</a> -->
 
