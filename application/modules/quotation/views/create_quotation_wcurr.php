@@ -2424,7 +2424,7 @@ function formatRupiahTanpaSimbol(angka) {
 
                             // Ubah warna latar belakang inputan berat_aktual_truck_dc berdasarkan kondisi
                             // if (berat_aktual > kapasitas) {//version old
-                            if (total_berat_all >= kapasitas) {
+                            if (total_berat_all > kapasitas) {
                                 $('#berat_aktual_truck_dc').css('background-color', 'red'); // Merah jika lebih dari kapasitas
                                 $('#berat_aktual_truck_dc').css('color', 'white'); // Teks putih untuk kontras
                             } else {
@@ -2510,7 +2510,7 @@ function hitungTruckDanDelivery() {
     $('#berat_aktual_truck_dc').val(total_berat_all);
     // console.log(total_berat_all);
     // if (kapasitas > berat_aktual) {
-    if (total_berat_all >= kapasitas) {
+    if (total_berat_all > kapasitas) {
         // console.log(total_berat_all);
         $('#berat_aktual_truck_dc').css({'background-color': 'red', 'color': 'white'});
     } else {
