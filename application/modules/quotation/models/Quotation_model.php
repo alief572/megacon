@@ -12,6 +12,7 @@ class Quotation_model extends BF_Model
 		$session = $this->session->userdata('app_session');
 
 		$Cust = $this->db->query("SELECT a.* FROM customer a")->result();
+		$jenis_truck = $this->db->query("SELECT a.*, b.nm_asset FROM tr_truck_rate a LEFT JOIN asset b ON a.kd_asset = b.kd_asset where (a.deleted_by IS NULL OR a.deleted_by = '') ")->result();
 		$User = $this->db->query("SELECT a.* FROM users a")->result();
 		$pic_cust = $this->db->query("SELECT a.* FROM customer_pic a WHERE a.nm_pic <> ''")->result();
 
@@ -61,7 +62,8 @@ class Quotation_model extends BF_Model
 				'curr' => $get_penawaran->currency,
 				'list_other_cost' => $get_other_cost,
 				'list_other_item' => $get_other_item,
-				'list_another_item' => $get_list_item_others
+				'list_another_item' => $get_list_item_others,
+				'jenis_truck' => $jenis_truck
 			]);
 		} else {
 			$this->template->set('results', [
@@ -70,9 +72,11 @@ class Quotation_model extends BF_Model
 				'pic_cust' => $pic_cust,
 				'list_penawaran_detail' => $get_penawaran_detail,
 				'nm_sales' => $session['nm_lengkap'],
-				'list_top' => $get_top
+				'list_top' => $get_top,
+				'jenis_truck' => $jenis_truck
 			]);
 		}
+		// print_r($jenis_truck);die();
 		$this->template->render('create_quotation');
 	}
 
@@ -82,6 +86,7 @@ class Quotation_model extends BF_Model
 
 		// $Cust = $this->db->query("SELECT a.* FROM customer a")->result();//version old
 		$Cust = $this->db->query("SELECT a.* FROM master_customers a")->result();
+		$jenis_truck = $this->db->query("SELECT a.*, b.nm_asset FROM tr_truck_rate a LEFT JOIN asset b ON a.kd_asset = b.kd_asset where (a.deleted_by IS NULL OR a.deleted_by = '') ")->result();
 		$User = $this->db->query("SELECT a.* FROM users a")->result();
 		// $pic_cust = $this->db->query("SELECT a.* FROM customer_pic a WHERE a.nm_pic <> ''")->result();//version old
 		$pic_cust = $this->db->query("SELECT a.* FROM child_customer_pic a WHERE a.name_pic <> '' and position_pic = 'PIC' ")->result();
@@ -127,7 +132,8 @@ class Quotation_model extends BF_Model
 			'curr' => $curr,
 			'list_other_cost' => $get_other_cost,
 			'list_other_item' => $get_other_item,
-			'list_another_item' => $get_list_item_others
+			'list_another_item' => $get_list_item_others,
+			'jenis_truck' => $jenis_truck
 		]);
 		$this->template->render('create_quotation_wcurr');
 	}

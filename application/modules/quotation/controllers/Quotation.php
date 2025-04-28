@@ -1649,6 +1649,7 @@ class Quotation extends Admin_Controller
 
 
 		$hasil = '';
+		$hasil_delivery_cost = '';
 
 		$get_penawaran_detail = $this->db->get_where('tr_penawaran_detail', ['no_penawaran' => $id, 'curr' => $curr])->result();
 		foreach ($get_penawaran_detail as $penawaran_detail) {
@@ -1753,6 +1754,76 @@ class Quotation extends Admin_Controller
 					</td>
 				</tr>
 			';
+
+			//start get stok
+			$id_category3 = $penawaran_detail->id_category3;
+			$no_penawaran = $penawaran_detail->no_penawaran;
+			$sql = "
+					SELECT
+						a.code_lv4,
+						MAX(a.actual_stock) AS stock_akhir,
+						b.berat_produk,
+						c.qty,
+						(IFNULL(b.berat_produk,0) * c.qty) total_berat
+					FROM
+						stock_product a
+					LEFT JOIN
+						new_inventory_4 b ON a.code_lv4 = b.code_lv4
+					LEFT JOIN tr_penawaran_detail as c 
+					ON c.id_category3 = a.code_lv4
+					WHERE
+						b.code_lv4 = ?
+						AND c.no_penawaran = ?
+						AND a.deleted_date IS NULL
+					GROUP BY
+						a.code_lv4
+				";
+
+			// Eksekusi query dengan parameter binding
+			@$query = $this->db->query(@$sql, array($id_category3, $no_penawaran));
+			@$result_stok = $query->row(); // ambil satu baris hasil
+			//end get stok
+
+//START GET DATA INVENTORY
+$sql_berat = "
+SELECT
+berat_produk
+FROM
+new_inventory_4
+WHERE
+code_lv4 = ?
+";
+$query_berat = $this->db->query($sql_berat, array($id_category3));
+$result_berat = $query_berat->row();
+// $berat_produk = $result_berat ? $result_berat->berat_produk : 0;
+$berat_produk = ($result_berat && !empty($result_berat->berat_produk)) ? $result_berat->berat_produk : 0;
+
+$sql_qty = "
+    SELECT
+        qty
+    FROM
+        tr_penawaran_detail
+    WHERE
+        id_category3 = ?
+        AND no_penawaran = ?
+";
+$query_qty = $this->db->query($sql_qty, array($id_category3, $no_penawaran));
+$result_qty = $query_qty->row();
+$qty = $result_qty ? $result_qty->qty : 0;
+
+$total_berat = $berat_produk * $qty;
+//END GET DATA INVENTORY
+
+			$hasil_delivery_cost = $hasil_delivery_cost . '
+				<tr>
+					<td>
+					<span>' . htmlspecialchars($penawaran_detail->nama_produk) . '</span><br><br>
+					</td>
+					<td>' . $berat_produk . '</td>
+					<td>' . $qty . '</td>
+					<td>' . $total_berat . '</td>
+				</tr>
+			';
 		}
 
 		$nilai_ppn = 0;
@@ -1793,6 +1864,7 @@ class Quotation extends Admin_Controller
 
 		echo json_encode([
 			'hasil' => $hasil,
+			'hasil_delivery_cost' => $hasil_delivery_cost,
 			'total' => $get_ttl_detail->ttl_harga,
 			'total_other_cost' => $total_other_cost,
 			'grand_total_other_item' => $ttl_other_item,
@@ -2045,13 +2117,33 @@ class Quotation extends Admin_Controller
 		$id_customer = $this->input->post('id_customer');
 		$PIC = 'PIC';
 		// $get_data_pic = $this->db->query('SELECT a.nm_pic, a.id_pic, a.email_pic FROM customer_pic a JOIN customer b ON b.id_pic = a.id_pic WHERE b.id_customer = "' . $id_customer . '"')->row();//version old
-		$get_data_pic = $this->db->query('SELECT a.name_pic, a.id_pic, a.email_pic FROM child_customer_pic a JOIN master_customers b ON b.id_customer = a.id_customer WHERE position_pic = "' . $PIC . '" AND b.id_customer = "' . $id_customer . '" LIMIT 1 ')->row();
+		$get_data_pic = $this->db->query('SELECT a.name_pic, a.id_pic, a.email_pic, b.name_customer FROM child_customer_pic a JOIN master_customers b ON b.id_customer = a.id_customer WHERE position_pic = "' . $PIC . '" AND b.id_customer = "' . $id_customer . '" LIMIT 1 ')->row();
 
 		$list_pic = '<option value="' . $get_data_pic->id_pic . '">' . $get_data_pic->name_pic . '</option>';
 
 		echo json_encode([
 			'list_pic' => $list_pic,
+			'name_customer' => $get_data_pic->name_customer,
 			'email_pic' => $get_data_pic->email_pic
+		]);
+	}
+
+	public function get_data_truck()
+	{
+		$id_truck = $this->input->post('id_truck');
+		// print_r($id_truck);
+		// $PIC = 'PIC';
+		// $get_data_pic = $this->db->query('SELECT a.nm_pic, a.id_pic, a.email_pic FROM customer_pic a JOIN customer b ON b.id_pic = a.id_pic WHERE b.id_customer = "' . $id_customer . '"')->row();//version old
+		// $get_data_truck = $this->db->query('SELECT a.name_pic, a.id_pic, a.email_pic, b.name_customer FROM child_customer_pic a JOIN master_customers b ON b.id_customer = a.id_customer WHERE position_pic = "' . $PIC . '" AND b.id_customer = "' . $id_customer . '" LIMIT 1 ')->row();
+		$get_data_truck = $this->db->query('SELECT a.id_truck_rate, a.maksimal_muatan, a.rate_truck, b.nm_asset FROM tr_truck_rate a LEFT JOIN asset b ON a.kd_asset = b.kd_asset where a.id_truck_rate = "' . $id_truck . '" ')->row();
+		// echo $this->db->last_query();
+		// echo $get_data_truck->maksimal_muatan;
+		$list_truck = '<option value="' . $get_data_truck->id_truck_rate . '">' . $get_data_truck->nm_asset . '</option>';
+
+		echo json_encode([
+			'list_truck' => $list_truck,
+			'kapasitas' => $get_data_truck->maksimal_muatan,
+			'rate_truck' => $get_data_truck->rate_truck
 		]);
 	}
 

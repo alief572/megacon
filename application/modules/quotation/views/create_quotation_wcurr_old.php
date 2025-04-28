@@ -46,18 +46,6 @@
                                                             <option value="<?= $customers->id_customer ?>" <?= (isset($results['data_penawaran']) && $customers->id_customer == $results['data_penawaran']->id_customer) ? 'selected' : null ?>><?= ucfirst($customers->name_customer) ?></option>
                                                         <?php } ?>
                                                     </select>
-                                                    <!-- <select id="id_customer" name="id_customer" class="form-control select2 get_data_customer" required>
-                                                        <option value="">-- Choose Customer --</option>
-                                                        <?php foreach ($results['customers'] as $customers) { ?>
-                                                            <option 
-                                                                value="<?= $customers->id_customer ?>" 
-                                                                data-dc="<?= $customers->kode_dc ?>" 
-                                                                <?= (isset($results['data_penawaran']) && $customers->id_customer == $results['data_penawaran']->id_customer) ? 'selected' : '' ?>
-                                                            >
-                                                                <?= ucfirst($customers->name_customer) ?>
-                                                            </option>
-                                                        <?php } ?>
-                                                    </select> -->
                                                 </div>
                                             </div>
                                         </div>
@@ -309,6 +297,17 @@
                             </div>
                         </div>
                     </div>
+                    <!--<div class="box-tools">
+			<button class="btn btn-sm btn-success add" id="tambah2" type="button" style="width: 100%;">
+				<i class="fa fa-plus"></i> Add Invoice
+			</button>
+			<button class="btn btn-sm btn-success createunlocated " id="createunlocated" type="button" style="width: 100%;">
+				<i class="fa fa-plus"></i> Create Unlocated
+			</button>
+			<button class="btn btn-sm btn-success lebih " id="lebih" type="button" style="width: 100%;">
+				<i class="fa fa-plus"></i> Lebih Bayar
+			</button>
+		</div>-->
                 </div>
                 <div class="box-body">
                     <table class="table table-bordered" width="100%" id="tabel-detail-mutasi">
@@ -749,8 +748,7 @@
                                 <div class="form-group " style="padding-top:15px;">
                                     <label class="col-sm-4 control-label">Total price before discount (<?= $results['curr']; ?>)</label>
                                     <div class="col-sm-6">
-                                        <input type="text" name="total_price_before_discount" class="form-control input-sm text-right total_price_before_discount" id="total_price_before_discount" value="<?= number_format($total_price_before_discount, 2) ?>" readonly>
-                                        <input type="text" name="total_price_before_discount_new" class="form-control input-sm text-right" id="total_price_before_discount_new" value="<?= $total_price_before_discount ?>" readonly>
+                                        <input type="text" name="total_price_before_discount" class="form-control input-sm text-right total_price_before_discount" id="" value="<?= number_format($total_price_before_discount, 2) ?>" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -772,24 +770,13 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-lg-12"></div>
-                            <div class="col-lg-7">
-                                <div class="form-group " style="padding-top:15px;">
-                                    &nbsp;
-                                </div>
-                            </div>
+
                             <div class="col-lg-5">
                                 <div class="form-group " style="padding-top:15px;">
                                     <label class="col-sm-4 control-label">Total price after discount (<?= $results['curr']; ?>)</label>
                                     <div class="col-sm-6">
                                         <input type="text" name="total" class="form-control input-sm text-right" id="total" value="<?= number_format($total_all, 2) ?>" readonly tabindex="-1">
                                     </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-12"></div>
-                            <div class="col-lg-7">
-                            <div class="form-group " style="padding-top:15px;">
-                                    &nbsp;
                                 </div>
                             </div>
                             <div class="col-lg-5">
@@ -859,378 +846,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- START BAGIAN DELIVERY COST -->
-            <div class="box box-default ">
-                <div class="box-header">
-                    <h3>Biaya Pengiriman</h3>
-                </div>
-                <div class="box-body">
-                    <table class="table table-bordered" width="100%" id="tabel-detail-mutasi-delivery-cost">
-                        <thead>
-                            <tr class="bg-blue">
-                                <th class="text-center">Product</th>
-                                <th class="text-center">Berat</th>
-                                <th class="text-center">Qty</th>
-                                <th class="text-center">Total Berat</th>
-                                <!-- <th class="text-center">Discount (%)</th>
-                                <th class="text-center">Price Unit After Discount</th>
-                                <th class="text-center">Total Price</th>
-                                <th class="text-center">Action</th> -->
-                            </tr>
-                        </thead>
-                        <tbody id="list_item_mutasi_delivery_cost">
-                            <?php
-                            $total_all = 0;
-                            $total_price_before_discount = 0;
-                            $total_nilai_discount = 0;
-                            $total_berat_all = 0;
-                            if (isset($results['data_penawaran_detail'])) {
-                                foreach ($results['data_penawaran_detail'] as $penawaran_detail) {
-
-                                    //start get stok
-                                    $id_category3 = (int) $penawaran_detail->id_category3;
-                                    $no_penawaran = $penawaran_detail->no_penawaran;
-                                    $sql = "
-                                            SELECT
-                                                a.code_lv4,
-                                                MAX(a.actual_stock) AS stock_akhir,
-                                                b.berat_produk,
-                                                c.qty,
-                                                (IFNULL(b.berat_produk,0) * c.qty) total_berat
-                                            FROM
-                                                stock_product a
-                                            LEFT JOIN
-                                                new_inventory_4 b ON a.code_lv4 = b.code_lv4
-                                            LEFT JOIN tr_penawaran_detail as c 
-                                            ON c.id_category3 = a.code_lv4
-                                            WHERE
-                                                b.code_lv4 = ?
-                                                AND c.no_penawaran = ?
-                                                AND a.deleted_date IS NULL
-                                            GROUP BY
-                                                a.code_lv4
-                                        ";
-
-                                    // Eksekusi query dengan parameter binding
-                                    @$query = $this->db->query(@$sql, array($id_category3, $no_penawaran));
-                                    @$result_stok = $query->row(); // ambil satu baris hasil
-                                    //end get stok
-
-//START GET DATA INVENTORY
-$sql_berat = "
-SELECT
-berat_produk
-FROM
-new_inventory_4
-WHERE
-code_lv4 = ?
-";
-$query_berat = $this->db->query($sql_berat, array($id_category3));
-$result_berat = $query_berat->row();
-// $berat_produk = $result_berat ? $result_berat->berat_produk : 0;
-$berat_produk = ($result_berat && !empty($result_berat->berat_produk)) ? $result_berat->berat_produk : 0;
-
-$sql_qty = "
-    SELECT
-        qty
-    FROM
-        tr_penawaran_detail
-    WHERE
-        id_category3 = ?
-        AND no_penawaran = ?
-";
-$query_qty = $this->db->query($sql_qty, array($id_category3, $no_penawaran));
-$result_qty = $query_qty->row();
-$qty = $result_qty ? $result_qty->qty : 0;
-
-$total_berat = $berat_produk * $qty;
-$total_berat_all += $total_berat;
-$total_all_qty += $qty;
-//END GET DATA INVENTORY
-
-                                    echo '
-                                            <tr>
-                                            <td>
-                                            <span>' . htmlspecialchars($penawaran_detail->nama_produk) . '</span><br><br>
-                                            </td>
-                                            <td>' . $berat_produk . '</td>
-                                            <td>' . $qty . '</td>
-                                            <td>' . $total_berat . '</td>
-                                            </tr>
-                                        ';
-                                }
-                            } else {
-                                foreach ($results['list_penawaran_detail'] as $penawaran_detail) {
-
-                                //start get stok
-                                $id_category3 = $penawaran_detail->id_category3;
-                                $no_penawaran = $penawaran_detail->no_penawaran;
-                                $sql = "
-                                        SELECT
-                                            a.code_lv4,
-                                            MAX(a.actual_stock) AS stock_akhir,
-                                            b.berat_produk,
-                                            c.qty,
-                                            (IFNULL(b.berat_produk,0) * c.qty) total_berat
-                                        FROM
-                                            stock_product a
-                                        LEFT JOIN
-                                            new_inventory_4 b ON a.code_lv4 = b.code_lv4
-                                        LEFT JOIN tr_penawaran_detail as c 
-                                        ON c.id_category3 = a.code_lv4
-                                        WHERE
-                                            b.code_lv4 = ?
-                                            AND c.no_penawaran = ?
-                                            AND a.deleted_date IS NULL
-                                        GROUP BY
-                                            a.code_lv4
-                                    ";
-                                // echo $this->db->last_query();die();
-                                // Eksekusi query dengan parameter binding
-                                @$query = $this->db->query(@$sql, array($id_category3, $no_penawaran));
-                                @$result_stok = $query->row(); // ambil satu baris hasil
-                                //end get stok
-
-//START GET DATA INVENTORY
-$sql_berat = "
-SELECT
-berat_produk
-FROM
-new_inventory_4
-WHERE
-code_lv4 = ?
-";
-$query_berat = $this->db->query($sql_berat, array($id_category3));
-$result_berat = $query_berat->row();
-// $berat_produk = $result_berat ? $result_berat->berat_produk : 0;
-$berat_produk = ($result_berat && !empty($result_berat->berat_produk)) ? $result_berat->berat_produk : 0;
-
-$sql_qty = "
-    SELECT
-        qty
-    FROM
-        tr_penawaran_detail
-    WHERE
-        id_category3 = ?
-        AND no_penawaran = ?
-";
-$query_qty = $this->db->query($sql_qty, array($id_category3, $no_penawaran));
-$result_qty = $query_qty->row();
-$qty = $result_qty ? $result_qty->qty : 0;
-
-$total_berat = $berat_produk * $qty;
-$total_berat_all += $total_berat;
-$total_all_qty += $qty;
-//END GET DATA INVENTORY
-                                echo '
-                                    <tr>
-                                        <td>
-                                        <span>' . htmlspecialchars($penawaran_detail->nama_produk) . '</span><br><br>
-                                        </td>
-                                        <td>' . $berat_produk . '</td>
-                                        <td>' . $qty . '</td>
-                                        <td>' . $total_berat . '</td>
-                                    </tr>
-                                ';
-                                }
-                            }
-                            ?>
-                        </tbody>
-                    </table>
-                    <div>
-                    <div class="col-lg-8"></div>
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Total Berat</label>
-                            <div class="col-sm-6">
-                            <!-- number_format($total_berat_all, 2) -->
-                                <input type="text" name="total_berat_all" class="form-control input-sm text-right grand_total" id="total_berat_all" value="<?= number_format($total_berat_all, 2) ?>" readonly>
-                                <input type="hidden" name="total_all_qty" class="form-control input-sm text-right grand_total" id="total_all_qty" value="<?= number_format($total_all_qty, 2) ?>" readonly>
-
-                            </div>
-                        </div>
-                    </div>
-                    <br>
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Customer</label>
-                            <div class="col-sm-6">
-                            <!-- number_format($total_berat_all, 2) -->
-                                <input type="text" name="customer_dc" class="form-control input-sm text-right" id="customer_dc" readonly>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-8">
-                        <div class="form-group " style="padding-top:15px;">&nbsp;</div>
-                    </div>
-                    <br>
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Jenis Truck</label>
-                            <div class="col-sm-6">
-                                <select id="jenis_truck" name="jenis_truck" class="form-control select2 get_data_truck" required>
-                                    <option value="">-- Choose Option --</option>
-                                    <?php foreach ($results['jenis_truck'] as $jenis_trucks) { ?>
-                                        <!-- <option value="<?= $jenis_trucks->id_truck_rate ?>" <?= (isset($results['data_penawaran']) && $jenis_trucks->id_truck_rate == $results['data_penawaran']->id_truck_rate) ? 'selected' : null ?>><?= ucfirst($jenis_trucks->nm_asset) ?></option> -->
-                                        <option value="<?= $jenis_trucks->id_truck_rate ?>" ><?= ucfirst($jenis_trucks->nm_asset) ?></option>
-                                    <?php } ?>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Kapasitas</label>
-                            <div class="col-sm-6">
-                            <input type="text" name="kapasitas_truck_dc" class="form-control text-right" id="kapasitas_truck_dc" readonly>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Berat Aktual</label>
-                            <div class="col-sm-6">
-                                <input type="text" name="berat_aktual_truck_dc" class="form-control input-sm text-right" id="berat_aktual_truck_dc" readonly>
-                            </div>
-                        </div>
-                    </div>
-                    <br>
-                    <div class="col-lg-8"></div>
-                    <div class="col-lg-4">
-                        <!-- <div class="form-group " style="padding-top:15px;"> -->
-                            <!-- <label class="col-sm-4 control-label">&nbsp;</label> -->
-                            <!-- <div class="col-sm-6"> -->
-                            <!-- number_format($total_berat_all, 2) -->
-                                <!-- <input type="text" name="total_berat_all" class="form-control input-sm text-right grand_total" id="total_berat_all" value="<?= number_format($total_berat_all, 2) ?>" readonly> -->
-                            <!-- </div> -->
-                        <!-- </div> -->
-                    </div>
-                    <br>
-                    <!-- <div class="col-lg-7"></div> -->
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Jarak Pengiriman (PP) (Km)</label>
-                            <div class="col-sm-6">
-                            <input type="text" name="jarak_pengiriman_truck_dc" class="form-control text-right" id="jarak_pengiriman_truck_dc">
-                            </div>
-                        </div>
-                    </div>
-                    <!-- <div class="col-lg-8">
-                        <div class="form-group " style="padding-top:15px;">&nbsp;</div>
-                    </div> -->
-                    <br>
-                    <div class="col-lg-8"></div>
-                    <div class="col-lg-4">
-                        <!-- <div class="form-group " style="padding-top:15px;"> -->
-                            <!-- <label class="col-sm-4 control-label">&nbsp;</label> -->
-                            <!-- <div class="col-sm-6"> -->
-                            <!-- number_format($total_berat_all, 2) -->
-                                <!-- <input type="text" name="total_berat_all" class="form-control input-sm text-right grand_total" id="total_berat_all" value="<?= number_format($total_berat_all, 2) ?>" readonly> -->
-                            <!-- </div> -->
-                        <!-- </div> -->
-                    </div>
-                    <br>
-                    <!-- <hr> -->
-                    <div class="col-lg-12"></div>
-                    <div class="col-lg-12">
-                        <h3>Biaya Angkut</h3>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Rate Truck</label>
-                            <div class="col-sm-6">
-                            <input type="text" name="rate_truck_ba" class="form-control text-right" id="rate_truck_ba" readonly>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-12"></div>
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Total Pengiriman (Qty)</label>
-                            <div class="col-sm-6">
-                            <input type="text" name="total_pengiriman_ba" class="form-control text-right" id="total_pengiriman_ba" readonly>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-12"></div>
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Rate Biaya Angkut (Rp/Km)</label>
-                            <div class="col-sm-6">
-                                <input type="text" name="rate_biaya_angkut_ba" class="form-control input-sm text-right" id="rate_biaya_angkut_ba" readonly>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-12"></div>
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Biaya Angkut (Rp)</label>
-                            <div class="col-sm-6">
-                                <input type="text" name="biaya_angkut_ba" class="form-control input-sm text-right" id="biaya_angkut_ba" readonly>
-                            </div>
-                        </div>
-                    </div>
-                    <br>
-                    <div class="col-lg-12"></div>
-                    <div class="col-lg-12">
-                        <h3>Biaya Tol (PP)</h3>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Estimasi Tol (PP) (Rp)</label>
-                            <div class="col-sm-6">
-                            <input type="text" name="estimasi_tol_bt" class="form-control text-right" id="estimasi_tol_bt" >
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-12"></div>
-                    <div class="col-lg-12">
-                        <h3>Charger Biaya Lain-Lain (Supir, Kenek, Uang Makan, Maintenance)</h3>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Charger Biaya Lain-Lain (%)</label>
-                            <div class="col-sm-6">
-                            <input type="text" name="charger_biaya_cbl" class="form-control text-right" id="charger_biaya_cbl" >
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-12"></div>
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Biaya Charger (RP)</label>
-                            <div class="col-sm-6">
-                            <input type="text" name="biaya_cbl" class="form-control text-right" id="biaya_cbl" readonly>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-12"></div>
-                    <div class="col-lg-12">
-                        <h3>Total Biaya Pengiriman</h3>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Total Biaya Delivery (Rp)</label>
-                            <div class="col-sm-6">
-                            <input type="text" name="total_biaya_delivery_tbp" class="form-control text-right" id="total_biaya_delivery_tbp" readonly>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-12"></div>
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Grand Total (RP)</label>
-                            <div class="col-sm-6">
-                            <input type="text" name="grand_total_tbp" class="form-control text-right" id="grand_total_tbp" readonly>
-                            </div>
-                        </div>
-                    </div>
-
-                    </div>
-                </div>
-            </div>
-            <!-- END BAGIAN DELIVERY COST -->
 
             <div class="modal modal-primary" id="dialog-data-stok" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
@@ -1362,10 +977,6 @@ $total_all_qty += $qty;
             <script src="<?= base_url('assets/js/number-divider.min.js') ?>"></script>
             <script src="<?= base_url('assets/js/autoNumeric.js') ?>"></script>
             <script>
-function formatRupiahTanpaSimbol(angka) {
-    return new Intl.NumberFormat('id-ID').format(angka);
-}
-
                 $(document).ready(function() {
                     $('.select2').select2();
                     swal.close();
@@ -1869,7 +1480,7 @@ function formatRupiahTanpaSimbol(angka) {
                         dataType: 'JSON',
                         success: function(result) {
                             $('#list_item_mutasi').html(result.hasil);
-                            $('#list_item_mutasi_delivery_cost').html(result.hasil_delivery_cost);
+
 
                             $('.total_price_before_discount').val(number_format(result.total_price_before_discount, 2));
                             $('.ttl_discount').val(number_format(result.total_nilai_discount, 2));
@@ -2227,9 +1838,7 @@ function formatRupiahTanpaSimbol(angka) {
 
                 $(document).on('change', '#customer', function() {
                     var id_customer = $("#customer").val();
-                    var jenis_truck = $("#jenis_truck").val();
                     $("#id_customer").val(id_customer);
-                    $("#jenis_truck").val(jenis_truck);
                 });
 
                 function totalterima() {
@@ -2316,66 +1925,6 @@ function formatRupiahTanpaSimbol(angka) {
                         success: function(result) {
                             $('#pic_customer').html(result.list_pic);
                             $('#email_customer').val(result.email_pic);
-                            $('#customer_dc').val(result.name_customer);
-                        }
-                    });
-                });
-                
-                $(document).on('change', '.get_data_truck', function() {
-                    var id_truck = $(this).val();
-                    // var total_berat_all = $('#total_berat_all').val();
-                    var total_berat_all = parseFloat($('#total_berat_all').val()) || 0;  // Ambil nilai total berat all
-                    var total_all_qty = parseFloat($('#total_all_qty').val()) || 0;
-                    var jarak_pengiriman = parseFloat($('#jarak_pengiriman_truck_dc').val()) || 0;
-                    var estimasi_tol = parseFloat($('#estimasi_tol_bt').val()) || 0;
-                    var charger_biaya = parseFloat($('#charger_biaya_cbl').val()) || 0;
-                    var total_price_before_discount = parseFloat($('#total_price_before_discount_new').val()) || 0;
-
-                    $.ajax({
-                        type: 'post',
-                        url: siteurl + active_controller + 'get_data_truck',
-                        data: {
-                            'id_truck': id_truck
-                        },
-                        cache: false,
-                        dataType: 'json',
-                        success: function(result) {
-                            // $('#kapasitas_truck_dc').html(result.kapasitas);
-                            // Mengambil kapasitas dari response dan menghitung berat aktual
-                            var kapasitas = parseFloat(result.kapasitas) || 0; // Kapasitas truck
-                            var berat_aktual = total_berat_all - kapasitas; // Hitung berat aktual
-                            var rate_truck = parseFloat(result.rate_truck) || 0; // Kapasitas truck
-                            var rate_biaya_angkut = rate_truck / total_all_qty;
-                            var biaya_angkut = rate_biaya_angkut * total_all_qty * jarak_pengiriman;
-                            var biaya_charger = biaya_angkut + estimasi_tol;
-                            var biaya_charger_final = biaya_charger * (charger_biaya / 100);
-                            var total_biaya_delivery = biaya_angkut + estimasi_tol + biaya_charger_final;
-                            var grand_total_delivery = total_price_before_discount + total_biaya_delivery;
-                            // console.log(total_price_before_discount);
-                            // Set nilai input
-                            $('#kapasitas_truck_dc').val(kapasitas); // Set kapasitas truck
-                            $('#berat_aktual_truck_dc').val(total_berat_all); // Set berat aktual truck
-                            $('#rate_truck_ba').val(rate_truck);
-                            $('#total_pengiriman_ba').val(total_all_qty);
-                            $('#rate_biaya_angkut_ba').val(rate_biaya_angkut);
-                            $('#biaya_angkut_ba').val(biaya_angkut);
-                            // $('#biaya_cbl').val(number_format($biaya_charger_final, 2));
-                            // $('#biaya_cbl').val(number_format($biaya_charger_final));
-                            $('#biaya_cbl').val(formatRupiahTanpaSimbol(biaya_charger_final));
-                            $('#total_biaya_delivery_tbp').val(formatRupiahTanpaSimbol(total_biaya_delivery));
-                            $('#grand_total_tbp').val(formatRupiahTanpaSimbol(grand_total_delivery));
-
-                            // Ubah warna latar belakang inputan berat_aktual_truck_dc berdasarkan kondisi
-                            if (berat_aktual > kapasitas) {
-                                $('#berat_aktual_truck_dc').css('background-color', 'red'); // Merah jika lebih dari kapasitas
-                                $('#berat_aktual_truck_dc').css('color', 'white'); // Teks putih untuk kontras
-                            } else {
-                                $('#berat_aktual_truck_dc').css('background-color', '#90EE90'); // Hijau jika kurang atau sama dengan kapasitas
-                                $('#berat_aktual_truck_dc').css('color', 'white'); // Teks putih untuk kontras
-                            }
-
-                            // Jika diperlukan, bisa juga menampilkan hasilnya di elemen lain
-                            // $('#result_display').html('Berat Aktual: ' + berat_aktual);
                         }
                     });
                 });
@@ -2846,11 +2395,3 @@ function formatRupiahTanpaSimbol(angka) {
                 // todayHighlight: true
                 // });
             </script>
-
-<!-- <script>
-document.getElementById('id_customer').addEventListener('change', function() {
-    var selectedOption = this.options[this.selectedIndex];
-    var dcCode = selectedOption.getAttribute('data-dc') || ''; // kalau tidak ada, kosongin saja
-    document.getElementById('customer_dc').value = dcCode;
-});
-</script> -->
