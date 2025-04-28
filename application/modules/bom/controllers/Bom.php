@@ -555,7 +555,7 @@ class Bom extends Admin_Controller
 
 	public function excel_report_all_bom_detail($no_bom)
 	{
-		
+
 		$this->db->select('a.*, b.nm_jenis_beton');
 		$this->db->from('bom_header a');
 		$this->db->join('tr_jenis_beton_header b', 'b.id_komposisi_beton = a.id_jenis_beton', 'left');
@@ -675,7 +675,7 @@ class Bom extends Admin_Controller
 			$satuan_lainnya = (!empty($get_material)) ? ($volume_m3 * $get_material->konversi) : 0;
 			$satuan = (!empty($get_material)) ? $get_material->satuan : '';
 
-			
+
 
 			$hasil .= '<tr>';
 
@@ -746,6 +746,49 @@ class Bom extends Admin_Controller
 			'nm_material' => $nm_material,
 			'satuan' => ucfirst($satuan),
 			'id_satuan' => $id_satuan
+		]);
+	}
+
+	public function update_satuan()
+	{
+		// $get_material_kosong = $this->db->get_where('bom_material_lain', array('id_satuan' => 0))->group_by('id_material')->result_array();
+
+		$this->db->select('a.*');
+		$this->db->from('bom_material_lain a');
+		$this->db->where('a.id_satuan', 0);
+		$this->db->or_where('a.id_satuan', null);
+		$this->db->group_by('a.id_material');
+		$get_material_kosong = $this->db->get()->result_array();
+
+		$this->db->trans_begin();
+
+		// $arr_update = [];
+		foreach ($get_material_kosong as $item) :
+			$get_material = $this->db->get_where('new_inventory_4', array('code_lv4' => $item['id_material']))->row_array();
+			$get_satuan = $this->db->get_where('ms_satuan', array('id' => $get_material['id_unit']))->row_array();
+
+			$arr_update = [
+				'id_satuan' => $get_satuan['id'],
+				'nm_satuan' => ucfirst($get_satuan['code'])
+			];
+
+			$update_material_lain = $this->db->update('bom_material_lain', $arr_update, array('id_material' => $item['id_material']));
+		endforeach;
+
+
+		if ($this->db->trans_status() === false) {
+			$this->db->trans_rollback();
+			$valid = 0;
+			$msg = 'Please try again later !';
+		} else {
+			$this->db->trans_commit();
+			$valid = 1;
+			$msg = 'Update has been success !';
+		}
+
+		echo json_encode([
+			'status' => $valid,
+			'msg' => $msg
 		]);
 	}
 }
