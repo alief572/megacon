@@ -218,7 +218,9 @@ class Quotation extends Admin_Controller
 		// exit;
 		$session = $this->session->userdata('app_session');
 
-		$post = $this->input->post();
+		$post = $this->input->post();//version old
+		// $post = $this->input->post('form_header')
+		// $list_detail = $this->input->post('list_detail');
 
 		$no_surat = $post['no_surat'];
 
@@ -239,6 +241,487 @@ class Quotation extends Admin_Controller
 			}
 
 			$nilai_ppn = (($get_ttl_detail->ttl_harga_after_disc + $get_ttl_other_cost->ttl_other_cost + $get_ttl_other_item->ttl_other_item) * $persen_ppn / 100);
+
+			$data_header = [
+				'no_penawaran' => $no_penawaran,
+				'tgl_penawaran' => $post['tanggal'],
+				'id_customer' => $post['id_customer'],
+				'pic_customer' => $post['pic_customer'],
+				'top' => $post['term_of_payment'],
+				'notes' => $post['notes'],
+				'project' => $post['project'],
+				'email_customer' => $post['email_customer'],
+				'id_sales' => $session['id_user'],
+				'nama_sales' => $session['nm_lengkap'],
+				'nilai_ppn' => $nilai_ppn,
+				'ppn' => $persen_ppn,
+				'nilai_penawaran' => $get_ttl_detail->ttl_harga,
+				'created_by' => $session['id_user'],
+				'created_on' => date('Y-m-d H:i:s'),
+				'time_delivery' => $post['time_delivery'],
+				'delivery_term' => $post['delivery_term'],
+				'warranty' => $post['warranty'],
+				'currency' => $post['curr']
+			];
+			$this->db->insert('tr_penawaran', $data_header);
+
+
+
+			$get_penawaran_detail = $this->db->get_where('tr_penawaran_detail', ['no_penawaran' => $session['id_user']])->result_array();
+			foreach ($get_penawaran_detail as $penawaran_detail) :
+				$this->db->update('tr_penawaran_detail', ['ukuran_potongan' => $post['ukuran_potong_' . $penawaran_detail['id_penawaran_detail']]], ['id_penawaran_detail' => $penawaran_detail['id_penawaran_detail']]);
+			endforeach;
+
+			$this->db->update('tr_penawaran_detail', [
+				'no_penawaran' => $no_penawaran,
+			], [
+				'no_penawaran' => $session['id_user']
+			]);
+
+			$this->db->update('tr_penawaran_other_cost', [
+				'id_penawaran' => $no_penawaran
+			], [
+				'id_penawaran' => $session['id_user']
+			]);
+
+			$this->db->update('tr_penawaran_other_item', [
+				'id_penawaran' => $no_penawaran
+			], [
+				'id_penawaran' => $session['id_user']
+			]);
+
+			// print_r($session);
+		} else {
+
+			$get_ttl_detail = $this->db->query("SELECT SUM(a.harga_satuan * a.qty) AS ttl_harga, SUM(a.total_harga) AS ttl_harga_after_disc FROM tr_penawaran_detail a WHERE a.no_penawaran = '" . $no_surat . "'")->row();
+
+			$get_ttl_other_cost = $this->db->select('SUM(a.total_nilai) AS ttl_other_cost')->get_where('tr_penawaran_other_cost a', ['a.id_penawaran' => $no_surat])->row();
+			$get_ttl_other_item = $this->db->select('SUM(a.total) AS ttl_other_item')->get_where('tr_penawaran_other_item a', ['a.id_penawaran' => $no_surat])->row();
+
+			$get_penawaran = $this->db->get_where('tr_penawaran', ['no_penawaran' => $no_surat])->row();
+
+			$persen_ppn = 11;
+			if ($post['ppn_check'] !== '11') {
+				$persen_ppn = 0;
+			}
+
+			$nilai_ppn = (($get_ttl_detail->ttl_harga_after_disc + $get_ttl_other_cost->ttl_other_cost + $get_ttl_other_item->ttl_other_item) * $persen_ppn / 100);
+
+			if (isset($post['select_action'])) {
+				if ($get_penawaran->status == '2') {
+					$sts = 1;
+				} else {
+					$sts = ($get_penawaran->status + 1);
+				}
+				$this->db->update('tr_penawaran', [
+					'tgl_penawaran' => $post['tanggal'],
+					'id_customer' => $post['id_customer'],
+					'pic_customer' => $post['pic_customer'],
+					'top' => $post['term_of_payment'],
+					'notes' => $post['notes'],
+					'project' => $post['project'],
+					'email_customer' => $post['email_customer'],
+					'id_sales' => $session['id_user'],
+					'nama_sales' => $session['nm_lengkap'],
+					'nilai_ppn' => $nilai_ppn,
+					'ppn' => $persen_ppn,
+					'nilai_penawaran' => $get_ttl_detail->ttl_harga,
+					'status' => $sts,
+					'no_revisi' => ($get_penawaran->no_revisi + 1),
+					'approved_by' => $session['id_user'],
+					'approved_on' => date('Y-m-d H:i:s'),
+					'time_delivery' => $post['time_delivery'],
+					'delivery_term' => $post['delivery_term'],
+					'warranty' => $post['warranty']
+				], [
+					'no_penawaran' => $no_surat
+				]);
+			} else {
+				if ($get_penawaran->req_app1 !== null || $get_penawaran->req_app2 !== null || $get_penawaran->req_app3 !== null) {
+
+					$get_ttl_detail = $this->db->query("SELECT SUM(a.harga_satuan * a.qty) AS ttl_harga, SUM(a.total_harga) AS ttl_harga_after_disc FROM tr_penawaran_detail a WHERE a.no_penawaran = '" . $no_surat . "'")->row();
+
+					$get_ttl_other_cost = $this->db->select('SUM(a.total_nilai) AS ttl_other_cost')->get_where('tr_penawaran_other_cost a', ['a.id_penawaran' => $no_surat])->row();
+					$get_ttl_other_item = $this->db->select('SUM(a.total) AS ttl_other_item')->get_where('tr_penawaran_other_item a', ['a.id_penawaran' => $no_surat])->row();
+
+					$get_penawaran = $this->db->get_where('tr_penawaran', ['no_penawaran' => $no_surat])->row();
+
+					if ($get_penawaran->status == '2') {
+						$sts = 1;
+					} else {
+						$sts = ($get_penawaran->status + 1);
+					}
+
+					$persen_ppn = 11;
+					if ($post['ppn_check'] !== '11') {
+						$persen_ppn = 0;
+					}
+
+					$nilai_ppn = (($get_ttl_detail->ttl_harga_after_disc + $get_ttl_other_cost->ttl_other_cost + $get_ttl_other_item->ttl_other_item) * $persen_ppn / 100);
+
+
+					$no_revisi = ($get_penawaran->no_revisi + 1);
+					if ($get_penawaran->status == '2') {
+						$update_quote = $this->db->update('tr_penawaran', [
+							'tgl_penawaran' => $post['tanggal'],
+							'id_customer' => $post['id_customer'],
+							'pic_customer' => $post['pic_customer'],
+							'top' => $post['term_of_payment'],
+							'notes' => $post['notes'],
+							'project' => $post['project'],
+							'email_customer' => $post['email_customer'],
+							'id_sales' => $session['id_user'],
+							'nama_sales' => $session['nm_lengkap'],
+							'nilai_ppn' => $nilai_ppn,
+							'ppn' => $persen_ppn,
+							'nilai_penawaran' => $get_ttl_detail->ttl_harga,
+							'modified_by' => $session['id_user'],
+							'modified_on' => date('Y-m-d H:i:s'),
+							'no_revisi' => $no_revisi,
+							'status' => 0,
+							'req_app1' => null,
+							'req_app2' => null,
+							'req_app3' => null,
+							'app_1' => null,
+							'app_2' => null,
+							'app_3' => null,
+							'keterangan_app1' => null,
+							'keterangan_app2' => null,
+							'keterangan_app3' => null,
+							'time_delivery' => $post['time_delivery'],
+							'delivery_term' => $post['delivery_term'],
+							'warranty' => $post['warranty']
+						], [
+							'no_penawaran' => $no_surat
+						]);
+						if (!$update_quote) {
+							print_r($this->db->error($update_quote));
+							exit;
+						}
+						// print_r($update_quote);
+						// exit;
+						// if(!$update_quote){
+						// }
+					} else {
+						$update_quote = $this->db->update('tr_penawaran', [
+							'tgl_penawaran' => $post['tanggal'],
+							'id_customer' => $post['id_customer'],
+							'pic_customer' => $post['pic_customer'],
+							'top' => $post['term_of_payment'],
+							'notes' => $post['notes'],
+							'project' => $post['project'],
+							'email_customer' => $post['email_customer'],
+							'id_sales' => $session['id_user'],
+							'nama_sales' => $session['nm_lengkap'],
+							'nilai_ppn' => $nilai_ppn,
+							'ppn' => $persen_ppn,
+							'nilai_penawaran' => $get_ttl_detail->ttl_harga,
+							'modified_by' => $session['id_user'],
+							'modified_on' => date('Y-m-d H:i:s'),
+							'no_revisi' => $no_revisi,
+							'time_delivery' => $post['time_delivery'],
+							'delivery_term' => $post['delivery_term'],
+							'warranty' => $post['warranty']
+						], [
+							'no_penawaran' => $no_surat
+						]);
+
+						if (!$update_quote) {
+							print_r($this->db->error($update_quote));
+							exit;
+						}
+					}
+
+					$id_history_penawaran = $this->quotation_model->generate_id_history();
+
+					$insert_history = $this->db->insert('tr_history_penawaran', [
+						'id_history_penawaran' => $id_history_penawaran,
+						'no_penawaran' => $post['no_surat'],
+						'tgl_penawaran' => $post['tanggal'],
+						'id_customer' => $post['id_customer'],
+						'pic_customer' => $post['pic_customer'],
+						'email_customer' => $post['email_customer'],
+						'top' => $post['term_payment'],
+						'notes' => $post['notes'],
+						'nilai_penawaran' => $get_ttl_detail->ttl_harga,
+						'id_sales' => $get_penawaran->id_sales,
+						'nama_sales' => $get_penawaran->nama_sales,
+						'revisi' => $no_revisi,
+						'created_by' => $get_penawaran->created_by,
+						'created_on' => $get_penawaran->created_on,
+						'modified_by' => $session['id_user'],
+						'modified_on' => date('Y-m-d H:i:s'),
+						'revisi_by' => $session['id_user'],
+						'revisi_on' => date('Y-m-d H:i:s'),
+						'ppn' => str_replace(',', '', str_replace('%', '', $post['persen_ppn'])),
+						'nilai_ppn' => str_replace(',', '', $post['nilai_ppn']),
+						'project' => $post['project'],
+						'req_app1' => $get_penawaran->req_app1,
+						'req_app2' => $get_penawaran->req_app2,
+						'req_app3' => $get_penawaran->req_app3,
+						'app_1' => $get_penawaran->app_1,
+						'app_2' => $get_penawaran->app_2,
+						'app_3' => $get_penawaran->app_3,
+						'keterangan_app1' => $get_penawaran->keterangan_app1,
+						'keterangan_app2' => $get_penawaran->keterangan_app2,
+						'keterangan_app3' => $get_penawaran->keterangan_app3,
+						'time_delivery' => $post['time_delivery'],
+						'delivery_term' => $post['delivery_term'],
+						'warranty' => $post['warranty'],
+						'curr' => $post['curr'],
+						'notes' => $post['notes']
+					]);
+
+					if (!$insert_history) {
+						print_r($this->db->error($insert_history));
+						exit;
+					}
+
+
+
+					$get_penawaran_detail = $this->db->get_where('tr_penawaran_detail', ['no_penawaran' => $no_surat])->result();
+					foreach ($get_penawaran_detail as $penawaran_detail) {
+						// print_r($penawaran_detail->id_penawaran_detail);
+						// exit;
+
+						$ukuran_potong = $this->input->post('ukuran_potong_' . $penawaran_detail->id_penawaran_detail);
+
+						$update_ukuran = $this->db->update('tr_penawaran_detail', [
+							'ukuran_potongan' => $ukuran_potong
+						], [
+							'id_penawaran_detail' => $penawaran_detail->id_penawaran_detail
+						]);
+						if (!$update_ukuran) {
+							print_r($this->db->error($update_ukuran));
+							exit;
+						}
+
+						// print_r($update_product);
+						// exit;
+
+						$insert_history_detail = $this->db->insert('tr_history_penawaran_detail', [
+							'id_history_penawaran' => $id_history_penawaran,
+							'no_penawaran' => $penawaran_detail->no_penawaran,
+							'id_category3' => $penawaran_detail->id_category3,
+							'nama_produk' => $penawaran_detail->nama_produk,
+							'qty' => $penawaran_detail->qty,
+							'harga_satuan' => $penawaran_detail->harga_satuan,
+							'stok_tersedia' => $penawaran_detail->stok_tersedia,
+							'diskon_persen' => $penawaran_detail->diskon_persen,
+							'diskon_nilai' => $penawaran_detail->diskon_nilai,
+							'total_harga' => $penawaran_detail->total_harga,
+							'keterangan' => $penawaran_detail->keterangan,
+							'revisi' => $no_revisi,
+							'created_by' => $penawaran_detail->created_by,
+							'created_on' => $penawaran_detail->created_on,
+							'modified_by' => $session['id_user'],
+							'modified_on' => date("Y-m-d H:i:s"),
+							'nilai_diskon' => $penawaran_detail->nilai_diskon,
+							'free_stock' => $penawaran_detail->free_stock,
+							'curr' => $penawaran_detail->curr,
+							'ukuran_potongan' => $penawaran_detail->ukuran_potongan,
+							'cutting_fee' => $penawaran_detail->cutting_fee,
+							'delivery_fee' => $penawaran_detail->delivery_fee
+						]);
+						if (!$insert_history_detail) {
+							print_r($this->db->error($insert_history_detail));
+							exit;
+						}
+					}
+
+					$get_penawaran_other_cost = $this->db->get_where('tr_penawaran_other_cost', ['id_penawaran' => $no_surat])->result();
+					foreach ($get_penawaran_other_cost as $other_cost) {
+						$insert_history_other_cost = $this->db->insert('tr_history_penawaran_other_cost', [
+							'id_history_penawaran' => $id_history_penawaran,
+							'id_penawaran' => $other_cost->id_penawaran,
+							'curr' => $other_cost->curr,
+							'inc_exc_pph' => $other_cost->inc_exc_pph,
+							'nilai' => $other_cost->nilai,
+							'nilai_pph' => $other_cost->nilai_pph,
+							'total_nilai' => $other_cost->total_nilai,
+							'keterangan' => $other_cost->keterangan,
+							'dibuat_oleh' => $this->auth->user_id(),
+							'dibuat_tgl' => date('Y-m-d H:i:s')
+						]);
+
+						if (!$insert_history_other_cost) {
+							print_r($this->db->error($insert_history_other_cost));
+							exit;
+						}
+					}
+					// print_r($post);
+				} else {
+
+					$get_ttl_detail = $this->db->query("SELECT SUM(a.harga_satuan * a.qty) AS ttl_harga, SUM(a.total_harga) AS ttl_harga_after_disc FROM tr_penawaran_detail a WHERE a.no_penawaran = '" . $no_surat . "'")->row();
+
+					$get_ttl_other_cost = $this->db->select('SUM(a.total_nilai) AS ttl_other_cost')->get_where('tr_penawaran_other_cost a', ['a.id_penawaran' => $no_surat])->row();
+					$get_ttl_other_item = $this->db->select('SUM(a.total) AS ttl_other_item')->get_where('tr_penawaran_other_item a', ['a.id_penawaran' => $no_surat])->row();
+
+					$get_penawaran = $this->db->get_where('tr_penawaran', ['no_penawaran' => $no_surat])->row();
+
+					if ($get_penawaran->status == '2') {
+						$sts = 1;
+					} else {
+						$sts = ($get_penawaran->status + 1);
+					}
+
+					$persen_ppn = 11;
+					if ($post['ppn_check'] !== '11') {
+						$persen_ppn = 0;
+					}
+
+					$nilai_ppn = (($get_ttl_detail->ttl_harga_after_disc + $get_ttl_other_cost->ttl_other_cost + $get_ttl_other_item->ttl_other_item) * $persen_ppn / 100);
+
+					$update_penawaran = $this->db->update('tr_penawaran', [
+						'tgl_penawaran' => $post['tanggal'],
+						'id_customer' => $post['id_customer'],
+						'pic_customer' => $post['pic_customer'],
+						'top' => $post['term_of_payment'],
+						'notes' => $post['notes'],
+						'project' => $post['project'],
+						'email_customer' => $post['email_customer'],
+						'id_sales' => $session['id_user'],
+						'nama_sales' => $session['nm_lengkap'],
+						'nilai_ppn' => $nilai_ppn,
+						'ppn' => $persen_ppn,
+						'nilai_penawaran' => $get_ttl_detail->ttl_harga,
+						'modified_by' => $session['id_user'],
+						'modified_on' => date('Y-m-d H:i:s'),
+						'time_delivery' => $post['time_delivery'],
+						'delivery_term' => $post['delivery_term'],
+						'warranty' => $post['warranty']
+					], [
+						'no_penawaran' => $no_surat
+					]);
+					if (!$update_penawaran) {
+						print_r($this->db->error($update_penawaran));
+						exit;
+					}
+				}
+			}
+		}
+
+		$id_penawaran = ($no_surat == '' || $no_surat == $this->auth->user_id()) ? $no_penawaran : $no_surat;
+
+
+
+
+		// print_r($post);
+
+		if ($this->db->trans_status() === FALSE) {
+			$this->db->trans_rollback();
+			$Arr_Return		= array(
+				'status'		=> 2,
+				'pesan'			=> 'Save Process Failed. Please Try Again...'
+			);
+		} else {
+			$this->db->trans_commit();
+			$Arr_Return		= array(
+				'status'		=> 1,
+				'pesan'			=> 'Save Process Success. '
+			);
+
+			$this->quotation_model->generate_quotation_hist($id_penawaran);
+		}
+		echo json_encode($Arr_Return);
+	}
+
+	public function save_penerimaan_new()
+	{
+
+		// print_r($this->input->post());
+		// exit;
+		$session = $this->session->userdata('app_session');
+
+		// $post = $this->input->post();//version old
+		// $post = $this->input->post('form_header');
+		// Ubah menjadi array associative
+		$form_header = $this->input->post('form_header');
+		$post = array();
+		foreach ($form_header as $field) {
+			$post[$field['name']] = $field['value'];
+		}
+		$list_detail = $this->input->post('list_detail');
+		// print_r($list_detail);
+		// die();
+
+		$no_surat = $post['no_surat'];
+
+
+		$this->db->trans_begin();
+
+		if ($no_surat == '' || $no_surat == $this->auth->user_id()) {
+			// print_r($list_detail);
+			// die();
+			$no_penawaran = $this->quotation_model->generate_no_penawaran();
+
+			$get_ttl_detail = $this->db->query("SELECT SUM(a.harga_satuan * a.qty) AS ttl_harga, SUM(a.total_harga) AS ttl_harga_after_disc FROM tr_penawaran_detail a WHERE a.no_penawaran = '" . $session['id_user'] . "'")->row();
+
+			$get_ttl_other_cost = $this->db->select('SUM(a.total_nilai) AS ttl_other_cost')->get_where('tr_penawaran_other_cost a', ['a.id_penawaran' => $session['id_user']])->row();
+			$get_ttl_other_item = $this->db->select('SUM(a.total) AS ttl_other_item')->get_where('tr_penawaran_other_item a', ['a.id_penawaran' => $session['id_user']])->row();
+
+			$persen_ppn = 11;
+			if ($post['ppn_check'] !== '11') {
+				$persen_ppn = 0;
+			}
+
+			$nilai_ppn = (($get_ttl_detail->ttl_harga_after_disc + $get_ttl_other_cost->ttl_other_cost + $get_ttl_other_item->ttl_other_item) * $persen_ppn / 100);
+
+			// Simpan header delivery cost detail
+			// if (!empty($list_detail)) {
+				$get_data_customer = $this->db->query("SELECT name_customer FROM master_customers WHERE id_customer = '" . $post['id_customer'] . "'")->row();
+
+				$header_datass = array(
+					'no_penawaran' => $no_penawaran,
+					'grand_total_weight' => $post['total_berat_all_new'],
+					'id_customer' => $post['id_customer'],
+					// 'name_customer' => $post['customer_dc'],
+					'name_customer' => @$get_data_customer->name_customer,
+					'kapasitas' => $post['kapasitas_truck_dc'],
+					'berat_vs_kapasitas' => $post['berat_aktual_truck_dc'],
+					'jarak_pengiriman' => $post['jarak_pengiriman_truck_dc'],
+					'rate_truck' => $post['rate_truck_ba'],
+					'total_pengiriman' => $post['total_pengiriman_ba'],
+					'rate_biaya_angkut' => $post['rate_biaya_angkut_ba'],
+					'biaya_angkut' => $post['biaya_angkut_ba'],
+					'estimasi_tol' => $post['estimasi_tol_bt'],
+					'charger_biaya_lain_lain' => $post['charger_biaya_cbl'],
+					'total_charger_biaya_lain_lain' => $post['biaya_cbl'],
+					'total_biaya_delivery' => $post['total_biaya_delivery_tbp'],
+					'biaya_pengiriman' => $post['grand_total_tbp'],
+					'ppn' => $post['ppn_check'],
+					'biaya_ppn' => $post['ppn_final'],
+					'grand_total' => $post['grand_total_final'],
+					'created_by' => $session['id_user'],
+					'created_date' => date('Y-m-d H:i:s')
+				);
+				// print_r($header_data);
+				// die();
+				$this->db->insert('delivery_cost_header', $header_datass);
+				// echo $this->db->last_query();
+				// die();
+				$id_delivery_cost = $this->db->insert_id(); // Ambil id_delivery_cost baru
+			// }
+
+			// Simpan detail delivery cost detail
+			// if (!empty($list_detail)) {
+				foreach ($list_detail as $row) {
+					$detail_datass = array(
+						'id_delivery_cost' => $id_delivery_cost,
+						// 'no_penawaran' => $row['no_penawaran'],
+						'no_penawaran' => $no_penawaran,
+						'id_product' => $row['item'],
+						'name_product' => $row['nama_item'],
+						'weight_per_product' => $row['berat'],
+						'qty' => $row['qty'],
+						'total_weight' => $row['total_berat']
+					);
+					// print_r($detail_data);
+					// die();
+					// $this->Namamodel->insert_detail($detail_data);
+					$this->db->insert('delivery_cost_detail', $detail_datass);
+				}
+			// }
 
 			$data_header = [
 				'no_penawaran' => $no_penawaran,
@@ -1650,6 +2133,7 @@ class Quotation extends Admin_Controller
 
 		$hasil = '';
 		$hasil_delivery_cost = '';
+		$total_berat_all = 0;
 
 		$get_penawaran_detail = $this->db->get_where('tr_penawaran_detail', ['no_penawaran' => $id, 'curr' => $curr])->result();
 		foreach ($get_penawaran_detail as $penawaran_detail) {
@@ -1812,6 +2296,8 @@ $result_qty = $query_qty->row();
 $qty = $result_qty ? $result_qty->qty : 0;
 
 $total_berat = $berat_produk * $qty;
+$total_berat_all += $total_berat;
+$total_all_qty += $qty;
 //END GET DATA INVENTORY
 
 			$hasil_delivery_cost = $hasil_delivery_cost . '
@@ -1831,6 +2317,9 @@ $total_berat = $berat_produk * $qty;
 		$ttl_after_disc = 0;
 		$total_nilai_discount = 0;
 		$ttl_persen_discount = 0;
+		$total_berat_alls = 0;
+
+		$get_sum_qty = $this->db->query("SELECT SUM(b.berat_produk * a.qty) as berat_total FROM tr_penawaran_detail a INNER JOIN new_inventory_4 B ON a.id_category3 = b.code_lv4 WHERE a.no_penawaran = '" . $id . "'  ")->row();
 
 		$get_ttl_detail = $this->db->query("SELECT SUM(a.total_harga) AS ttl_harga, SUM(a.harga_satuan * a.qty) AS ttl_price_bef_disc, SUM(a.total_harga) AS ttl_after_disc, SUM(a.diskon_nilai * a.qty) AS ttl_nilai_diskon FROM tr_penawaran_detail a WHERE a.no_penawaran = '" . $id . "'")->row();
 
@@ -1838,6 +2327,8 @@ $total_berat = $berat_produk * $qty;
 		$total_price_before_discount = ($get_ttl_detail->ttl_price_bef_disc);
 		$ttl_after_disc = $get_ttl_detail->ttl_after_disc;
 		$total_nilai_discount = $get_ttl_detail->ttl_nilai_diskon;
+
+		$total_berat_alls = ($get_sum_qty->berat_total);
 
 
 		if ($total_price_before_discount > 0 && $ttl_after_disc > 0) {
@@ -1872,7 +2363,8 @@ $total_berat = $berat_produk * $qty;
 			'grand_total' => ($get_ttl_detail->ttl_harga + $nilai_ppn + $total_other_cost + $ttl_other_item),
 			'total_price_before_discount' => $total_price_before_discount,
 			'total_nilai_discount' => $total_nilai_discount,
-			'ttl_persen_discount' => $ttl_persen_discount
+			'ttl_persen_discount' => $ttl_persen_discount,
+			'total_berat' => $total_berat_alls
 		]);
 	}
 

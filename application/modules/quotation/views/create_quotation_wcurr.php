@@ -953,6 +953,8 @@ $total_all_qty += $qty;
 
                                     echo '
                                             <tr>
+                                            <td style="display:none">' . $no_penawaran . '</td>
+                                            <td style="display:none">' . $id_category3 . '</td>
                                             <td>
                                             <span>' . htmlspecialchars($penawaran_detail->nama_produk) . '</span><br><br>
                                             </td>
@@ -963,6 +965,7 @@ $total_all_qty += $qty;
                                         ';
                                 }
                             } else {
+                                $total_berat_all = 0;
                                 foreach ($results['list_penawaran_detail'] as $penawaran_detail) {
 
                                 //start get stok
@@ -1027,6 +1030,8 @@ $total_all_qty += $qty;
 //END GET DATA INVENTORY
                                 echo '
                                     <tr>
+                                        <td style="display:none">' . $no_penawaran . '</td>
+                                        <td style="display:none">' . $id_category3 . '</td>
                                         <td>
                                         <span>' . htmlspecialchars($penawaran_detail->nama_produk) . '</span><br><br>
                                         </td>
@@ -1047,7 +1052,7 @@ $total_all_qty += $qty;
                             <label class="col-sm-4 control-label">Total Berat</label>
                             <div class="col-sm-6">
                             <!-- number_format($total_berat_all, 2) -->
-                                <input type="text" name="total_berat_all" class="form-control input-sm text-right grand_total" id="total_berat_all" value="<?= number_format($total_berat_all, 2) ?>" readonly>
+                                <input type="text" name="total_berat_all" class="form-control input-sm text-right" id="total_berat_all" value="<?= number_format($total_berat_all, 2) ?>" readonly>
                                 <input type="hidden" name="total_berat_all_new" class="form-control input-sm text-right" id="total_berat_all_new" value="<?= $total_berat_all ?>" readonly>
                                 <input type="hidden" name="total_all_qty" class="form-control input-sm text-right" id="total_all_qty" value="<?= $total_all_qty ?>" readonly>
 
@@ -1461,7 +1466,7 @@ function formatRupiahTanpaSimbol(angka) {
                 var no_surat = $('.no_surat').val();
                 var curr = $('.curr').val()
 
-                function savemutasi() {
+                function savemutasi_old() {
 
                     // if ($('#tgl_bayar').val() == "") {
                     // 	swal({
@@ -1578,6 +1583,110 @@ function formatRupiahTanpaSimbol(angka) {
                             }
                         });
                 }
+
+function savemutasi() {
+    var formdata = $("#form-header-mutasi").serializeArray(); // serializeArray untuk dapat array
+    var listData = [];
+
+    // Ambil semua baris di tbody
+    $('#list_item_mutasi_delivery_cost tr').each(function() {
+        var no_penawaran = $(this).find('td:eq(0)').text().trim();
+        var item = $(this).find('td:eq(1)').text().trim();
+        var nama_item = $(this).find('td:eq(2)').text().trim();
+        var berat = $(this).find('td:eq(3)').text().trim();
+        var qty = $(this).find('td:eq(4)').text().trim();
+        var total_berat = $(this).find('td:eq(5)').text().trim();
+
+        // if (item !== '') {
+            listData.push({
+                'no_penawaran': no_penawaran,
+                'item': item,
+                'nama_item': nama_item,
+                'berat': berat,
+                'qty': qty,
+                'total_berat': total_berat
+            });
+        // }
+    });
+
+    // Gabungkan formdata + listData
+    var finalData = {
+        form_header: formdata,
+        list_detail: listData
+    };
+
+swal({
+        title: "Peringatan !",
+        text: "Pastikan data sudah lengkap dan benar",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#DD6B55",
+        confirmButtonText: "Ya, simpan!",
+        cancelButtonText: "Batal!",
+        closeOnConfirm: false,
+        closeOnCancel: true
+    },
+    function(isConfirm) {
+        if (isConfirm) {
+            // $('#simpanpenerimaan').hide();
+            var formdata = $("#form-header-mutasi").serialize();
+            $.ajax({
+                url: siteurl + active_controller + "save_penerimaan_new",
+                dataType: "json",
+                type: 'POST',
+                // data: formdata,
+                data: finalData,
+                success: function(data) {
+                    if (data.status == 1) {
+                        swal({
+                            title: "Save Success!",
+                            text: data.pesan,
+                            type: "success",
+                            timer: 5000,
+                            showCancelButton: false,
+                            showConfirmButton: false,
+                            allowOutsideClick: false
+                        });
+                        window.location.href = base_url + active_controller;
+                    } else {
+
+                        if (data.status == 2) {
+                            swal({
+                                title: "Save Failed!",
+                                text: data.pesan,
+                                type: "warning",
+                                timer: 10000,
+                                showCancelButton: false,
+                                showConfirmButton: false,
+                                allowOutsideClick: false
+                            });
+                        } else {
+                            swal({
+                                title: "Save Failed!",
+                                text: data.pesan,
+                                type: "warning",
+                                timer: 10000,
+                                showCancelButton: false,
+                                showConfirmButton: false,
+                                allowOutsideClick: false
+                            });
+                        }
+
+                    }
+                },
+                error: function() {
+                    swal({
+                        title: "Gagal!",
+                        text: "Batal Proses, Data bisa diproses nanti",
+                        type: "error",
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                }
+            });
+        }
+    });
+}
 
                 function kembali_inv() {
 
@@ -1933,6 +2042,9 @@ function formatRupiahTanpaSimbol(angka) {
                             $('.total_other_item').val(number_format(result.grand_total_other_item, 2));
                             $('.grand_total').val(number_format(result.grand_total, 2));
                             $('.col_grand_total_other_item').html(number_format(result.grand_total_other_item, 2));
+
+                            $('#total_berat_all').val(result.total_berat);
+                            $('#total_berat_all_new').val(result.total_berat);
 
                             $('.nilai_ppn').autoNumeric('destroy');
                             $('.diskon_nilai').autoNumeric('destroy');
