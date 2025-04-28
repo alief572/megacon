@@ -787,22 +787,14 @@
                                 </div>
                             </div>
                             <div class="col-lg-12"></div>
-                            <div class="col-lg-7">
+                            <!-- <div class="col-lg-7"> -->
                             <div class="form-group " style="padding-top:15px;">
                                     &nbsp;
                                 </div>
                             </div>
-                            <div class="col-lg-5">
+                            <!-- <div class="col-lg-5">
                                 <div class="form-group " style="padding-top:15px;">
-                                    <?php
-
-                                    $grand_total = ($total_all + $total_other_cost + $grand_total_other_item);
-                                    if (isset($results['data_penawaran'])) {
-                                        $grand_total = (($total_all + $total_other_cost + $grand_total_other_item) + ($results['data_penawaran']->nilai_ppn));
-                                    } else {
-                                        $grand_total = (($total_all + $total_other_cost + $grand_total_other_item) + (($total_all + $total_other_cost + $grand_total_other_item) * 11 / 100));
-                                    }
-                                    ?>
+                                    
                                     <label class="col-sm-4 control-label">PPN (11%)(<?= $results['curr']; ?>)</label>
                                     <div class="col-sm-6 text-center">
                                         <div class="form-group">
@@ -815,8 +807,17 @@
                                         </div>
                                     </div>
                                 </div>
+                            </div> -->
+                            <div class="col-lg-7">
+                            <?php
+                            $grand_total = ($total_all + $total_other_cost + $grand_total_other_item);
+                            if (isset($results['data_penawaran'])) {
+                                $grand_total = (($total_all + $total_other_cost + $grand_total_other_item) + ($results['data_penawaran']->nilai_ppn));
+                            } else {
+                                $grand_total = (($total_all + $total_other_cost + $grand_total_other_item) + (($total_all + $total_other_cost + $grand_total_other_item) * 11 / 100));
+                            }
+                            ?>
                             </div>
-                            <div class="col-lg-7"></div>
                             <div class="col-lg-5">
                                 <div class="form-group " style="padding-top:15px;">
                                     <label class="col-sm-4 control-label">Total Other Cost (<?= $results['curr']; ?>)</label>
@@ -837,7 +838,8 @@
                             <div class="col-lg-7"></div>
                             <div class="col-lg-5">
                                 <div class="form-group " style="padding-top:15px;">
-                                    <label class="col-sm-4 control-label">Grand Total (<?= $results['curr']; ?>)</label>
+                                    <!-- <label class="col-sm-4 control-label">Grand Total (<?= $results['curr']; ?>)</label> -->
+                                    <label class="col-sm-4 control-label">Total Value Before Delivery Cost</label>
                                     <div class="col-sm-6">
                                         <input type="text" name="grand_total" class="form-control input-sm text-right grand_total" id="" value="<?= number_format($grand_total, 2) ?>" readonly>
                                     </div>
@@ -846,7 +848,7 @@
                         </div>
                         <hr>
                         <div class="row">
-                            <div class="col-lg-12">
+                            <!-- <div class="col-lg-12">
                                 <button id="simpanpenerimaan" class="btn btn-primary" type="button" onclick="savemutasi()">
                                     <i class="fa fa-save"></i><b> Save Quotation</b>
                                 </button>
@@ -854,7 +856,7 @@
                                 <a href="<?= base_url() ?>quotation" class="btn btn-danger">
                                     <i class="fa fa-refresh"></i><b> Back</b>
                                 </a>
-                            </div>
+                            </div> -->
                         </div>
                     </div>
                 </div>
@@ -1047,7 +1049,7 @@ $total_all_qty += $qty;
                             <!-- number_format($total_berat_all, 2) -->
                                 <input type="text" name="total_berat_all" class="form-control input-sm text-right grand_total" id="total_berat_all" value="<?= number_format($total_berat_all, 2) ?>" readonly>
                                 <input type="hidden" name="total_berat_all_new" class="form-control input-sm text-right" id="total_berat_all_new" value="<?= $total_berat_all ?>" readonly>
-                                <input type="hidden" name="total_all_qty" class="form-control input-sm text-right grand_total" id="total_all_qty" value="<?= number_format($total_all_qty, 2) ?>" readonly>
+                                <input type="hidden" name="total_all_qty" class="form-control input-sm text-right" id="total_all_qty" value="<?= $total_all_qty ?>" readonly>
 
                             </div>
                         </div>
@@ -1058,7 +1060,7 @@ $total_all_qty += $qty;
                             <label class="col-sm-4 control-label">Customer</label>
                             <div class="col-sm-6">
                             <!-- number_format($total_berat_all, 2) -->
-                                <input type="text" name="customer_dc" class="form-control input-sm text-right" id="customer_dc" readonly>
+                                <input type="text" name="customer_dc" class="form-control input-sm" id="customer_dc" readonly>
                             </div>
                         </div>
                     </div>
@@ -1200,7 +1202,7 @@ $total_all_qty += $qty;
                     <div class="col-lg-12"></div>
                     <div class="col-lg-4">
                         <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Biaya Charger (RP)</label>
+                            <label class="col-sm-4 control-label">&nbsp;</label>
                             <div class="col-sm-6">
                             <input type="text" name="biaya_cbl" class="form-control text-right" id="biaya_cbl" readonly>
                             </div>
@@ -1221,12 +1223,62 @@ $total_all_qty += $qty;
                     <div class="col-lg-12"></div>
                     <div class="col-lg-4">
                         <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Grand Total (RP)</label>
+                            <label class="col-sm-4 control-label">&nbsp;</label>
                             <div class="col-sm-6">
                             <input type="text" name="grand_total_tbp" class="form-control text-right" id="grand_total_tbp" readonly>
                             </div>
                         </div>
                     </div>
+                    <br>
+                    <div class="col-lg-12"></div>
+                    <div class="col-lg-8"></div>
+                    <div class="col-lg-4">
+                        <div class="form-group" style="">
+                            <label class="col-sm-4 control-label">PPN (11%)(<?= $results['curr']; ?>)</label>
+                            <div class="col-sm-6">
+                            <input type="text" name="ppn_check" id="ppn_check" class="form-control text-right" 
+                            value="<?= (isset($results['data_penawaran']) && $results['data_penawaran']->ppn == '11') ? '11' : '0' ?>">
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="col-lg-12"></div>
+                    <div class="col-lg-8"></div>
+                    <div class="col-lg-4">
+                        <div class="form-group " style="padding-top:15px;">
+                            <label class="col-sm-4 control-label">&nbsp;</label>
+                            <div class="col-sm-6 text-center">
+                                <div class="form-group">
+                                    <!-- <span style="padding-right: 40px;"> -->
+                                        <input type="text" name="ppn_final" id="ppn_final" class="form-control text-right" value="" readonly>
+                                    <!-- </span> -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="col-lg-12"></div>
+                    <div class="col-lg-8"></div>
+                    <div class="col-lg-4">
+                        <div class="form-group" style="">
+                            <label class="col-sm-4 control-label">Grand Total (Rp)</label>
+                            <div class="col-sm-6">
+                            <input type="text" name="grand_total_final" class="form-control text-right" id="grand_total_final" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12"></div>
+                    <div class="col-lg-10"></div>
+                    <div class="col-lg-2" style="padding-top:15px;">
+                        <button id="simpanpenerimaan" class="btn btn-primary" type="button" onclick="savemutasi()">
+                            <i class="fa fa-save"></i><b> Save Quotation</b>
+                        </button>
+
+                        <a href="<?= base_url() ?>quotation" class="btn btn-danger">
+                            <i class="fa fa-refresh"></i><b> Back</b>
+                        </a>
+                    </div>
+
 
                     </div>
                 </div>
@@ -2326,7 +2378,8 @@ function formatRupiahTanpaSimbol(angka) {
                     var id_truck = $(this).val();
                     // var total_berat_all = $('#total_berat_all').val();
                     var total_berat_all = parseFloat($('#total_berat_all_new').val()) || 0;  // Ambil nilai total berat all
-                    var total_all_qty = parseFloat($('#total_all_qty').val()) || 0;
+                    // var total_all_qty = parseFloat($('#total_all_qty').val()) || 0;
+                    var total_all_qty = parseFloat($('#total_all_qty').val().replace(/[^0-9.-]+/g,"")) || 0;
                     var jarak_pengiriman = parseFloat($('#jarak_pengiriman_truck_dc').val()) || 0;
                     var estimasi_tol = parseFloat($('#estimasi_tol_bt').val()) || 0;
                     var charger_biaya = parseFloat($('#charger_biaya_cbl').val()) || 0;
@@ -2347,15 +2400,18 @@ function formatRupiahTanpaSimbol(angka) {
                             var berat_aktual = total_berat_all - kapasitas; // Hitung berat aktual
                             var rate_truck = parseFloat(result.rate_truck) || 0; // Kapasitas truck
                             var rate_biaya_angkut = rate_truck / total_all_qty;
+                            // Batasi rate_biaya_angkut menjadi 2 angka di belakang koma
+                            rate_biaya_angkut = rate_biaya_angkut.toFixed(2);
                             var biaya_angkut = rate_biaya_angkut * total_all_qty * jarak_pengiriman;
-                            var biaya_charger = biaya_angkut + estimasi_tol;
+                            biaya_angkut = biaya_angkut.toFixed(2);
+                            var biaya_charger = parseFloat(biaya_angkut) + estimasi_tol;
                             var biaya_charger_final = biaya_charger * (charger_biaya / 100);
-                            var total_biaya_delivery = biaya_angkut + estimasi_tol + biaya_charger_final;
+                            var total_biaya_delivery = parseFloat(biaya_angkut) + estimasi_tol + biaya_charger_final;
                             var grand_total_delivery = total_price_before_discount + total_biaya_delivery;
                             // console.log(total_price_before_discount);
                             // Set nilai input
                             $('#kapasitas_truck_dc').val(kapasitas); // Set kapasitas truck
-                            $('#berat_aktual_truck_dc').val(total_berat_all); // Set berat aktual truck
+                            $('#berat_aktual_truck_dc').val(berat_aktual); // Set berat aktual truck
                             $('#rate_truck_ba').val(rate_truck);
                             $('#total_pengiriman_ba').val(total_all_qty);
                             $('#rate_biaya_angkut_ba').val(rate_biaya_angkut);
@@ -2368,7 +2424,7 @@ function formatRupiahTanpaSimbol(angka) {
 
                             // Ubah warna latar belakang inputan berat_aktual_truck_dc berdasarkan kondisi
                             // if (berat_aktual > kapasitas) {//version old
-                            if (kapasitas > berat_aktual) {
+                            if (total_berat_all >= kapasitas) {
                                 $('#berat_aktual_truck_dc').css('background-color', 'red'); // Merah jika lebih dari kapasitas
                                 $('#berat_aktual_truck_dc').css('color', 'white'); // Teks putih untuk kontras
                             } else {
@@ -2381,122 +2437,6 @@ function formatRupiahTanpaSimbol(angka) {
                         }
                     });
                 });
-
-function hitungTruckDanDelivery_old() {
-    var id_truck = $('#id_truck').val(); // pastikan id_truck sesuai id select nya
-    var total_berat_all = parseFloat($('#total_berat_all_new').val()) || 0;
-    var total_all_qty = parseFloat($('#total_all_qty').val()) || 0;
-    var jarak_pengiriman = parseFloat($('#jarak_pengiriman_truck_dc').val()) || 0;
-    var estimasi_tol = parseFloat($('#estimasi_tol_bt').val()) || 0;
-    var charger_biaya = parseFloat($('#charger_biaya_cbl').val()) || 0;
-    var total_price_before_discount = parseFloat($('#total_price_before_discount_new').val()) || 0;
-
-    if (!id_truck) {
-        // alert('Pilih truck terlebih dahulu!');
-        return;
-    }
-
-    if (total_all_qty == 0 || jarak_pengiriman == 0) {
-        alert('Data belum lengkap, stop!');
-        return; // Data belum lengkap, stop
-    }
-
-    $.ajax({
-        type: 'POST',
-        url: siteurl + active_controller + 'get_data_truck',
-        data: { 'id_truck': id_truck },
-        cache: false,
-        dataType: 'json',
-        success: function(result) {
-            var kapasitas = parseFloat(result.kapasitas) || 0;
-            var berat_aktual = total_berat_all; // Berat aktual adalah total berat barang
-            var rate_truck = parseFloat(result.rate_truck) || 0;
-            var rate_biaya_angkut = total_all_qty > 0 ? (rate_truck / total_all_qty) : 0;
-            var biaya_angkut = rate_biaya_angkut * total_all_qty * jarak_pengiriman;
-            var biaya_charger = biaya_angkut + estimasi_tol;
-            var biaya_charger_final = biaya_charger * (charger_biaya / 100);
-            var total_biaya_delivery = biaya_angkut + estimasi_tol + biaya_charger_final;
-            var grand_total_delivery = total_price_before_discount + total_biaya_delivery;
-
-            // Set ke inputan
-            $('#kapasitas_truck_dc').val(kapasitas);
-            $('#berat_aktual_truck_dc').val(berat_aktual);
-            $('#rate_truck_ba').val(rate_truck);
-            $('#total_pengiriman_ba').val(total_all_qty);
-            $('#rate_biaya_angkut_ba').val(rate_biaya_angkut);
-            $('#biaya_angkut_ba').val(biaya_angkut);
-            $('#biaya_cbl').val(formatRupiahTanpaSimbol(biaya_charger_final));
-            $('#total_biaya_delivery_tbp').val(formatRupiahTanpaSimbol(total_biaya_delivery));
-            $('#grand_total_tbp').val(formatRupiahTanpaSimbol(grand_total_delivery));
-
-            // Warna input berat aktual
-            if (berat_aktual > kapasitas) {
-                $('#berat_aktual_truck_dc').css({'background-color': 'red', 'color': 'white'});
-            } else {
-                $('#berat_aktual_truck_dc').css({'background-color': '#90EE90', 'color': '#000'}); // hijau muda + teks hitam
-            }
-        }
-    });
-}
-
-function hitungTruckDanDelivery_old2() {
-    var id_truck = $('#id_truck').val(); // pastikan id truck terisi
-
-    if (!id_truck) {
-        console.log('Truck belum dipilih.');
-        return;
-    }
-
-    var total_berat_all = parseFloat($('#total_berat_all_new').val()) || 0;
-    var total_all_qty = parseFloat($('#total_all_qty').val()) || 0;
-    var jarak_pengiriman = parseFloat($('#jarak_pengiriman_truck_dc').val()) || 0;
-    var estimasi_tol = parseFloat($('#estimasi_tol_bt').val()) || 0;
-    var charger_biaya = parseFloat($('#charger_biaya_cbl').val()) || 0;
-    var total_price_before_discount = parseFloat($('#total_price_before_discount_new').val()) || 0;
-
-    $.ajax({
-        type: 'post',
-        url: siteurl + active_controller + 'get_data_truck',
-        data: { 'id_truck': id_truck },
-        cache: false,
-        dataType: 'json',
-        success: function(result) {
-            var kapasitas = parseFloat(result.kapasitas) || 0;
-            var rate_truck = parseFloat(result.rate_truck) || 0;
-
-            // Hitung
-            var rate_biaya_angkut = 0;
-            if (total_all_qty > 0) {
-                rate_biaya_angkut = rate_truck / total_all_qty;
-            }
-            var biaya_angkut = rate_biaya_angkut * total_all_qty * jarak_pengiriman;
-            var biaya_charger = biaya_angkut + estimasi_tol;
-            var biaya_charger_final = biaya_charger * (charger_biaya / 100);
-            var total_biaya_delivery = biaya_angkut + estimasi_tol + biaya_charger_final;
-            var grand_total_delivery = total_price_before_discount + total_biaya_delivery;
-
-            // Set inputan
-            $('#kapasitas_truck_dc').val(kapasitas);
-            $('#rate_truck_ba').val(rate_truck);
-            $('#rate_biaya_angkut_ba').val(formatRupiahTanpaSimbol(rate_biaya_angkut));
-            $('#biaya_angkut_ba').val(formatRupiahTanpaSimbol(biaya_angkut));
-            $('#biaya_cbl').val(formatRupiahTanpaSimbol(biaya_charger_final));
-            $('#total_biaya_delivery_tbp').val(formatRupiahTanpaSimbol(total_biaya_delivery));
-            $('#grand_total_tbp').val(formatRupiahTanpaSimbol(grand_total_delivery));
-
-            // Hitung berat aktual dan kasih warna background
-            var berat_aktual = total_berat_all - kapasitas;
-            $('#berat_aktual_truck_dc').val(total_berat_all);
-
-            if (kapasitas > berat_aktual) {
-                $('#berat_aktual_truck_dc').css('background-color', 'red').css('color', 'white');
-            } else {
-                $('#berat_aktual_truck_dc').css('background-color', '#b2fab4').css('color', 'black');
-            }
-        }
-    });
-}
-
 
 // $(document).on('change', '.get_data_truck', function() {
 //     hitungTruckDanDelivery();
@@ -2534,6 +2474,7 @@ function hitungTruckDanDelivery() {
     var total_price_before_discount = parseFloat($('#total_price_before_discount_new').val()) || 0;
     var kapasitas = parseFloat($('#kapasitas_truck_dc').val()) || 0;
     var rate_truck = parseFloat($('#rate_truck_ba').val()) || 0;
+    var ppn_check = parseFloat($('#ppn_check').val()) || 0;
 
     if (kapasitas == 0 || rate_truck == 0) {
         console.log('Truck belum dipilih lengkap, hitungan skip.');
@@ -2545,30 +2486,41 @@ function hitungTruckDanDelivery() {
         rate_biaya_angkut = rate_truck / total_all_qty;
     }
 
+    // Batasi rate_biaya_angkut menjadi 2 angka di belakang koma
+    rate_biaya_angkut = rate_biaya_angkut.toFixed(2);
+
     var biaya_angkut = rate_biaya_angkut * total_all_qty * jarak_pengiriman;
-    var biaya_charger = biaya_angkut + estimasi_tol;
+    biaya_angkut = biaya_angkut.toFixed(2);
+    var biaya_charger = parseFloat(biaya_angkut) + estimasi_tol;
     var biaya_charger_final = biaya_charger * (charger_biaya / 100);
-    var total_biaya_delivery = biaya_angkut + estimasi_tol + biaya_charger_final;
+    var total_biaya_delivery = parseFloat(biaya_angkut) + estimasi_tol + biaya_charger_final;
     var grand_total_delivery = total_price_before_discount + total_biaya_delivery;
+    var biaya_ppn = (total_price_before_discount + total_biaya_delivery) * (ppn_check / 100);
+    var grand_total_final = (total_price_before_discount + total_biaya_delivery) + biaya_ppn;
 
     $('#rate_biaya_angkut_ba').val(formatRupiahTanpaSimbol(rate_biaya_angkut));
     $('#biaya_angkut_ba').val(formatRupiahTanpaSimbol(biaya_angkut));
     $('#biaya_cbl').val(formatRupiahTanpaSimbol(biaya_charger_final));
     $('#total_biaya_delivery_tbp').val(formatRupiahTanpaSimbol(total_biaya_delivery));
     $('#grand_total_tbp').val(formatRupiahTanpaSimbol(grand_total_delivery));
+    $('#ppn_final').val(formatRupiahTanpaSimbol(biaya_ppn));
+    $('#grand_total_final').val(formatRupiahTanpaSimbol(grand_total_final));
 
     var berat_aktual = total_berat_all - kapasitas;
     $('#berat_aktual_truck_dc').val(total_berat_all);
-
-    if (kapasitas > berat_aktual) {
+    // console.log(total_berat_all);
+    // if (kapasitas > berat_aktual) {
+    if (total_berat_all >= kapasitas) {
+        // console.log(total_berat_all);
         $('#berat_aktual_truck_dc').css({'background-color': 'red', 'color': 'white'});
     } else {
         $('#berat_aktual_truck_dc').css({'background-color': '#b2fab4', 'color': 'black'});
     }
+
 }
 
 
-$(document).on('input', '#jarak_pengiriman_truck_dc, #estimasi_tol_bt, #charger_biaya_cbl', function() {
+$(document).on('input', '#jarak_pengiriman_truck_dc, #estimasi_tol_bt, #charger_biaya_cbl, #ppn_check', function() {
     hitungTruckDanDelivery(); // Hitung ulang saat input manual
 });
 
