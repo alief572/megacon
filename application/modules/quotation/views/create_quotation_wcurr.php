@@ -750,7 +750,7 @@
                                     <label class="col-sm-4 control-label">Total price before discount (<?= $results['curr']; ?>)</label>
                                     <div class="col-sm-6">
                                         <input type="text" name="total_price_before_discount" class="form-control input-sm text-right total_price_before_discount" id="total_price_before_discount" value="<?= number_format($total_price_before_discount, 2) ?>" readonly>
-                                        <input type="text" name="total_price_before_discount_new" class="form-control input-sm text-right" id="total_price_before_discount_new" value="<?= $total_price_before_discount ?>" readonly>
+                                        <input type="hidden" name="total_price_before_discount_new" class="form-control input-sm text-right" id="total_price_before_discount_new" value="<?= $total_price_before_discount ?>" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -1046,6 +1046,7 @@ $total_all_qty += $qty;
                             <div class="col-sm-6">
                             <!-- number_format($total_berat_all, 2) -->
                                 <input type="text" name="total_berat_all" class="form-control input-sm text-right grand_total" id="total_berat_all" value="<?= number_format($total_berat_all, 2) ?>" readonly>
+                                <input type="hidden" name="total_berat_all_new" class="form-control input-sm text-right" id="total_berat_all_new" value="<?= $total_berat_all ?>" readonly>
                                 <input type="hidden" name="total_all_qty" class="form-control input-sm text-right grand_total" id="total_all_qty" value="<?= number_format($total_all_qty, 2) ?>" readonly>
 
                             </div>
@@ -1089,7 +1090,7 @@ $total_all_qty += $qty;
                     </div>
                     <div class="col-lg-4">
                         <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Berat Aktual</label>
+                            <label class="col-sm-4 control-label">Perbandingan berat produk Vs Kapasitas</label>
                             <div class="col-sm-6">
                                 <input type="text" name="berat_aktual_truck_dc" class="form-control input-sm text-right" id="berat_aktual_truck_dc" readonly>
                             </div>
@@ -2324,7 +2325,7 @@ function formatRupiahTanpaSimbol(angka) {
                 $(document).on('change', '.get_data_truck', function() {
                     var id_truck = $(this).val();
                     // var total_berat_all = $('#total_berat_all').val();
-                    var total_berat_all = parseFloat($('#total_berat_all').val()) || 0;  // Ambil nilai total berat all
+                    var total_berat_all = parseFloat($('#total_berat_all_new').val()) || 0;  // Ambil nilai total berat all
                     var total_all_qty = parseFloat($('#total_all_qty').val()) || 0;
                     var jarak_pengiriman = parseFloat($('#jarak_pengiriman_truck_dc').val()) || 0;
                     var estimasi_tol = parseFloat($('#estimasi_tol_bt').val()) || 0;
@@ -2366,7 +2367,8 @@ function formatRupiahTanpaSimbol(angka) {
                             $('#grand_total_tbp').val(formatRupiahTanpaSimbol(grand_total_delivery));
 
                             // Ubah warna latar belakang inputan berat_aktual_truck_dc berdasarkan kondisi
-                            if (berat_aktual > kapasitas) {
+                            // if (berat_aktual > kapasitas) {//version old
+                            if (kapasitas > berat_aktual) {
                                 $('#berat_aktual_truck_dc').css('background-color', 'red'); // Merah jika lebih dari kapasitas
                                 $('#berat_aktual_truck_dc').css('color', 'white'); // Teks putih untuk kontras
                             } else {
@@ -2379,6 +2381,203 @@ function formatRupiahTanpaSimbol(angka) {
                         }
                     });
                 });
+
+function hitungTruckDanDelivery_old() {
+    var id_truck = $('#id_truck').val(); // pastikan id_truck sesuai id select nya
+    var total_berat_all = parseFloat($('#total_berat_all_new').val()) || 0;
+    var total_all_qty = parseFloat($('#total_all_qty').val()) || 0;
+    var jarak_pengiriman = parseFloat($('#jarak_pengiriman_truck_dc').val()) || 0;
+    var estimasi_tol = parseFloat($('#estimasi_tol_bt').val()) || 0;
+    var charger_biaya = parseFloat($('#charger_biaya_cbl').val()) || 0;
+    var total_price_before_discount = parseFloat($('#total_price_before_discount_new').val()) || 0;
+
+    if (!id_truck) {
+        // alert('Pilih truck terlebih dahulu!');
+        return;
+    }
+
+    if (total_all_qty == 0 || jarak_pengiriman == 0) {
+        alert('Data belum lengkap, stop!');
+        return; // Data belum lengkap, stop
+    }
+
+    $.ajax({
+        type: 'POST',
+        url: siteurl + active_controller + 'get_data_truck',
+        data: { 'id_truck': id_truck },
+        cache: false,
+        dataType: 'json',
+        success: function(result) {
+            var kapasitas = parseFloat(result.kapasitas) || 0;
+            var berat_aktual = total_berat_all; // Berat aktual adalah total berat barang
+            var rate_truck = parseFloat(result.rate_truck) || 0;
+            var rate_biaya_angkut = total_all_qty > 0 ? (rate_truck / total_all_qty) : 0;
+            var biaya_angkut = rate_biaya_angkut * total_all_qty * jarak_pengiriman;
+            var biaya_charger = biaya_angkut + estimasi_tol;
+            var biaya_charger_final = biaya_charger * (charger_biaya / 100);
+            var total_biaya_delivery = biaya_angkut + estimasi_tol + biaya_charger_final;
+            var grand_total_delivery = total_price_before_discount + total_biaya_delivery;
+
+            // Set ke inputan
+            $('#kapasitas_truck_dc').val(kapasitas);
+            $('#berat_aktual_truck_dc').val(berat_aktual);
+            $('#rate_truck_ba').val(rate_truck);
+            $('#total_pengiriman_ba').val(total_all_qty);
+            $('#rate_biaya_angkut_ba').val(rate_biaya_angkut);
+            $('#biaya_angkut_ba').val(biaya_angkut);
+            $('#biaya_cbl').val(formatRupiahTanpaSimbol(biaya_charger_final));
+            $('#total_biaya_delivery_tbp').val(formatRupiahTanpaSimbol(total_biaya_delivery));
+            $('#grand_total_tbp').val(formatRupiahTanpaSimbol(grand_total_delivery));
+
+            // Warna input berat aktual
+            if (berat_aktual > kapasitas) {
+                $('#berat_aktual_truck_dc').css({'background-color': 'red', 'color': 'white'});
+            } else {
+                $('#berat_aktual_truck_dc').css({'background-color': '#90EE90', 'color': '#000'}); // hijau muda + teks hitam
+            }
+        }
+    });
+}
+
+function hitungTruckDanDelivery_old2() {
+    var id_truck = $('#id_truck').val(); // pastikan id truck terisi
+
+    if (!id_truck) {
+        console.log('Truck belum dipilih.');
+        return;
+    }
+
+    var total_berat_all = parseFloat($('#total_berat_all_new').val()) || 0;
+    var total_all_qty = parseFloat($('#total_all_qty').val()) || 0;
+    var jarak_pengiriman = parseFloat($('#jarak_pengiriman_truck_dc').val()) || 0;
+    var estimasi_tol = parseFloat($('#estimasi_tol_bt').val()) || 0;
+    var charger_biaya = parseFloat($('#charger_biaya_cbl').val()) || 0;
+    var total_price_before_discount = parseFloat($('#total_price_before_discount_new').val()) || 0;
+
+    $.ajax({
+        type: 'post',
+        url: siteurl + active_controller + 'get_data_truck',
+        data: { 'id_truck': id_truck },
+        cache: false,
+        dataType: 'json',
+        success: function(result) {
+            var kapasitas = parseFloat(result.kapasitas) || 0;
+            var rate_truck = parseFloat(result.rate_truck) || 0;
+
+            // Hitung
+            var rate_biaya_angkut = 0;
+            if (total_all_qty > 0) {
+                rate_biaya_angkut = rate_truck / total_all_qty;
+            }
+            var biaya_angkut = rate_biaya_angkut * total_all_qty * jarak_pengiriman;
+            var biaya_charger = biaya_angkut + estimasi_tol;
+            var biaya_charger_final = biaya_charger * (charger_biaya / 100);
+            var total_biaya_delivery = biaya_angkut + estimasi_tol + biaya_charger_final;
+            var grand_total_delivery = total_price_before_discount + total_biaya_delivery;
+
+            // Set inputan
+            $('#kapasitas_truck_dc').val(kapasitas);
+            $('#rate_truck_ba').val(rate_truck);
+            $('#rate_biaya_angkut_ba').val(formatRupiahTanpaSimbol(rate_biaya_angkut));
+            $('#biaya_angkut_ba').val(formatRupiahTanpaSimbol(biaya_angkut));
+            $('#biaya_cbl').val(formatRupiahTanpaSimbol(biaya_charger_final));
+            $('#total_biaya_delivery_tbp').val(formatRupiahTanpaSimbol(total_biaya_delivery));
+            $('#grand_total_tbp').val(formatRupiahTanpaSimbol(grand_total_delivery));
+
+            // Hitung berat aktual dan kasih warna background
+            var berat_aktual = total_berat_all - kapasitas;
+            $('#berat_aktual_truck_dc').val(total_berat_all);
+
+            if (kapasitas > berat_aktual) {
+                $('#berat_aktual_truck_dc').css('background-color', 'red').css('color', 'white');
+            } else {
+                $('#berat_aktual_truck_dc').css('background-color', '#b2fab4').css('color', 'black');
+            }
+        }
+    });
+}
+
+
+// $(document).on('change', '.get_data_truck', function() {
+//     hitungTruckDanDelivery();
+// });
+
+// $(document).on('input', '#jarak_pengiriman_truck_dc, #estimasi_tol_bt, #charger_biaya_cbl', function() {
+//     hitungTruckDanDelivery();
+// });
+
+$(document).on('change', '#id_truck', function() {
+    var id_truck = $(this).val();
+    if (!id_truck) return; // Kalau belum pilih truck, stop
+
+    $.ajax({
+        type: 'post',
+        url: siteurl + active_controller + 'get_data_truck',
+        data: { 'id_truck': id_truck },
+        dataType: 'json',
+        success: function(result) {
+            if (result) {
+                $('#kapasitas_truck_dc').val(result.kapasitas || 0);
+                $('#rate_truck_ba').val(result.rate_truck || 0);
+                hitungTruckDanDelivery(); // Langsung hitung setelah dapat data
+            }
+        }
+    });
+});
+
+function hitungTruckDanDelivery() {
+    var total_berat_all = parseFloat($('#total_berat_all_new').val()) || 0;
+    var total_all_qty = parseFloat($('#total_all_qty').val()) || 0;
+    var jarak_pengiriman = parseFloat($('#jarak_pengiriman_truck_dc').val()) || 0;
+    var estimasi_tol = parseFloat($('#estimasi_tol_bt').val()) || 0;
+    var charger_biaya = parseFloat($('#charger_biaya_cbl').val()) || 0;
+    var total_price_before_discount = parseFloat($('#total_price_before_discount_new').val()) || 0;
+    var kapasitas = parseFloat($('#kapasitas_truck_dc').val()) || 0;
+    var rate_truck = parseFloat($('#rate_truck_ba').val()) || 0;
+
+    if (kapasitas == 0 || rate_truck == 0) {
+        console.log('Truck belum dipilih lengkap, hitungan skip.');
+        return; // Jangan hitung kalau belum lengkap
+    }
+
+    var rate_biaya_angkut = 0;
+    if (total_all_qty > 0) {
+        rate_biaya_angkut = rate_truck / total_all_qty;
+    }
+
+    var biaya_angkut = rate_biaya_angkut * total_all_qty * jarak_pengiriman;
+    var biaya_charger = biaya_angkut + estimasi_tol;
+    var biaya_charger_final = biaya_charger * (charger_biaya / 100);
+    var total_biaya_delivery = biaya_angkut + estimasi_tol + biaya_charger_final;
+    var grand_total_delivery = total_price_before_discount + total_biaya_delivery;
+
+    $('#rate_biaya_angkut_ba').val(formatRupiahTanpaSimbol(rate_biaya_angkut));
+    $('#biaya_angkut_ba').val(formatRupiahTanpaSimbol(biaya_angkut));
+    $('#biaya_cbl').val(formatRupiahTanpaSimbol(biaya_charger_final));
+    $('#total_biaya_delivery_tbp').val(formatRupiahTanpaSimbol(total_biaya_delivery));
+    $('#grand_total_tbp').val(formatRupiahTanpaSimbol(grand_total_delivery));
+
+    var berat_aktual = total_berat_all - kapasitas;
+    $('#berat_aktual_truck_dc').val(total_berat_all);
+
+    if (kapasitas > berat_aktual) {
+        $('#berat_aktual_truck_dc').css({'background-color': 'red', 'color': 'white'});
+    } else {
+        $('#berat_aktual_truck_dc').css({'background-color': '#b2fab4', 'color': 'black'});
+    }
+}
+
+
+$(document).on('input', '#jarak_pengiriman_truck_dc, #estimasi_tol_bt, #charger_biaya_cbl', function() {
+    hitungTruckDanDelivery(); // Hitung ulang saat input manual
+});
+
+
+// $(document).on('input change', '#jarak_pengiriman_truck_dc, #estimasi_tol_bt, #charger_biaya_cbl', function() {
+//     console.log('Input/Change Detected'); // Test console
+//     hitungTruckDanDelivery();
+// });
+
 
                 $(document).on('click', '.tambah_other_cost', function() {
                     var curr = $('.curr').val();
