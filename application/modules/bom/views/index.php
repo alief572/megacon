@@ -17,6 +17,7 @@ $ENABLE_DELETE  = has_permission('BOM.Delete');
 		<span class="pull-right">
 			<?php if ($ENABLE_ADD) : ?>
 				<a class="btn btn-success btn-md" href="<?= base_url('bom/add') ?>" title="Add"> <i class="fa fa-plus">&nbsp;</i>Add</a>
+				<!-- <button type="button" class="btn btn-sm btn-success update_satuan"><i class="fa fa-plus"></i> Update Material Lain</button> -->
 			<?php endif; ?>
 			<!-- <a class="btn btn-success btn-md" href="<?= base_url('bom/excel_report_all_bom') ?>" target='_blank' title="Download Excel"> <i class="fa fa-file-excel-o">&nbsp;</i>&nbsp;Download Excel</a> -->
 
@@ -147,6 +148,44 @@ $ENABLE_DELETE  = has_permission('BOM.Delete');
 					})
 				});
 
+		});
+
+		$(document).on('click', '.update_satuan', function() {
+			$.ajax({
+				type: 'post',
+				url: siteurl + active_controller + 'update_satuan',
+				cache: false,
+				dataType: 'json',
+				success: function(result) {
+					// alert(result.status);
+					if (result.status == '1') {
+						swal({
+							title: 'Success !',
+							type: 'success',
+							text: 'Update data has been success !'
+						}, function() {
+							location.reload();
+						});
+					} else {
+						swal({
+							title: 'Failed !',
+							type: 'warning',
+							text: 'Please try again later !'
+						}, function() {
+							location.reload();
+						});
+					}
+				},
+				error: function(result) {
+					swal({
+						title: 'Error !',
+						type: 'error',
+						text: 'Please try again later !'
+					}, function() {
+						location.reload();
+					});
+				}
+			});
 		});
 
 		$(function() {
