@@ -18,7 +18,7 @@
                                                     <label for="customer">Quotation No :</label>
                                                 </div>
                                                 <div class="col-md-8">
-                                                    <input type="text" class="form-control no_surat" id="" required name="no_surat" readonly placeholder="Quotation No" value="<?= (isset($results['data_penawaran'])) ? $results['data_penawaran']->no_penawaran : $this->auth->user_id() ?>">
+                                                    <input type="text" class="form-control no_surat" id="no_surat" required name="no_surat" readonly placeholder="Quotation No" value="<?= (isset($results['data_penawaran'])) ? $results['data_penawaran']->no_penawaran : $this->auth->user_id() ?>">
                                                 </div>
                                             </div>
                                         </div>
@@ -841,7 +841,7 @@
                                     <!-- <label class="col-sm-4 control-label">Grand Total (<?= $results['curr']; ?>)</label> -->
                                     <label class="col-sm-4 control-label">Total Value Before Delivery Cost</label>
                                     <div class="col-sm-6">
-                                        <input type="text" name="grand_total" class="form-control input-sm text-right grand_total" id="" value="<?= number_format($grand_total, 2) ?>" readonly>
+                                        <input type="text" name="grand_total" class="form-control input-sm text-right grand_total" id="grand_total" value="<?= number_format($grand_total, 2) ?>" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -1424,43 +1424,68 @@ function formatRupiahTanpaSimbol(angka) {
     return new Intl.NumberFormat('id-ID').format(angka);
 }
 
-                $(document).ready(function() {
-                    $('.select2').select2();
-                    swal.close();
-                    $('#incomplete').hide();
-                    $('#pakailebihbayar').hide();
-                    $("#list_item_unlocated").DataTable({
-                        lengthMenu: [10, 155, 30]
-                    }).draw();
-                    $(".divide").divide();
+$(document).ready(function() {
+    $('.select2').select2();
+    swal.close();
+    $('#incomplete').hide();
+    $('#pakailebihbayar').hide();
+    $("#list_item_unlocated").DataTable({
+        lengthMenu: [10, 155, 30]
+    }).draw();
+    $(".divide").divide();
 
-                    $('.nilai_ppn').autoNumeric('init', {
-                        aSep: ',',
-                        aDec: '.',
-                        mDec: '2'
-                    });
-                    $('.ppn_persen').autoNumeric('init', {
-                        suffixText: '%'
-                    });
-                    $('.diskon_nilai').autoNumeric('init', {
-                        aSep: ',',
-                        aDec: '.',
-                        mDec: '2'
-                    });
-                    $('.diskon_persen').autoNumeric({
-                        suffixText: '%'
-                    });
-                    $('.qty').autoNumeric('init', {
-                        aSep: ',',
-                        aDec: '.',
-                        mDec: '2'
-                    });
-                    $('.auto_num').autoNumeric('init', {
-                        aSep: ',',
-                        aDec: '.',
-                        mDec: '2'
-                    });
-                });
+    $('.nilai_ppn').autoNumeric('init', {
+        aSep: ',',
+        aDec: '.',
+        mDec: '2'
+    });
+    $('.ppn_persen').autoNumeric('init', {
+        suffixText: '%'
+    });
+    $('.diskon_nilai').autoNumeric('init', {
+        aSep: ',',
+        aDec: '.',
+        mDec: '2'
+    });
+    $('.diskon_persen').autoNumeric({
+        suffixText: '%'
+    });
+    $('.qty').autoNumeric('init', {
+        aSep: ',',
+        aDec: '.',
+        mDec: '2'
+    });
+    $('.auto_num').autoNumeric('init', {
+        aSep: ',',
+        aDec: '.',
+        mDec: '2'
+    });
+
+    var storedCustomerName = localStorage.getItem('name_customer');
+    var storedCustomerId = localStorage.getItem('id_customer');
+
+    if (storedCustomerId) {
+        $('.get_data_customer').val(storedCustomerId);
+        loadCustomerData(storedCustomerId);
+    }
+
+    if (storedCustomerName) {
+        $('#customer_dc').val(storedCustomerName);
+    }
+
+    // var saved_id_truck = localStorage.getItem('selected_id_truck');
+    // if (saved_id_truck) {
+    //     $('.get_data_truck').val(saved_id_truck).trigger('change');
+    //     // loadCustomerData(storedCustomerId);
+    // }
+
+    // if (!saved_id_truck) {
+    //     $('#jenis_truck').html('');
+    //     localStorage.removeItem('selected_id_truck');
+    // }
+    
+
+});
 
 
                 var no_surat = $('.no_surat').val();
@@ -2466,28 +2491,89 @@ swal({
                         }
                     });
                 });
+//START VERSION OLD
+// $(document).on('change', '.get_data_customer', function() {
+//     var id_customer = $(this).val();
 
-                $(document).on('change', '.get_data_customer', function() {
-                    var id_customer = $(this).val();
+//     $.ajax({
+//         type: 'post',
+//         url: siteurl + active_controller + 'get_data_customer',
+//         data: {
+//             'id_customer': id_customer
+//         },
+//         cache: false,
+//         dataType: 'json',
+//         success: function(result) {
+//             $('#pic_customer').html(result.list_pic);
+//             $('#email_customer').val(result.email_pic);
+//             $('#customer_dc').val(result.name_customer);
+//             // Simpan ke Local Storage
+//             localStorage.setItem('name_customer', result.name_customer);
+//             localStorage.setItem('id_customer', id_customer);
+//         }
+//     });
+// });
+//END VERSION OLD
 
-                    $.ajax({
-                        type: 'post',
-                        url: siteurl + active_controller + 'get_data_customer',
-                        data: {
-                            'id_customer': id_customer
-                        },
-                        cache: false,
-                        dataType: 'json',
-                        success: function(result) {
-                            $('#pic_customer').html(result.list_pic);
-                            $('#email_customer').val(result.email_pic);
-                            $('#customer_dc').val(result.name_customer);
-                        }
-                    });
-                });
+// Function untuk load data customer berdasarkan ID
+function loadCustomerData(id_customer) {
+    if (!id_customer) {
+        // Kalau kosong, bersihkan field dan localStorage
+        clearCustomerFields();
+        return;
+    }
+
+    $.ajax({
+        type: 'POST',
+        url: siteurl + active_controller + 'get_data_customer',
+        data: { id_customer: id_customer },
+        cache: false,
+        dataType: 'json',
+        success: function(result) {
+            if (result) {
+                $('#pic_customer').html(result.list_pic);
+                $('#email_customer').val(result.email_pic);
+                $('#customer_dc').val(result.name_customer);
+
+                // Simpan ke Local Storage
+                localStorage.setItem('name_customer', result.name_customer);
+                localStorage.setItem('id_customer', id_customer);
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('AJAX Error:', status, error);
+        }
+    });
+}
+
+// Function untuk membersihkan input dan localStorage
+function clearCustomerFields() {
+    $('#pic_customer').html('');
+    $('#email_customer').val('');
+    $('#customer_dc').val('');
+
+    localStorage.removeItem('name_customer');
+    localStorage.removeItem('id_customer');
+}
+
+// Event change saat pilih customer
+$(document).on('change', '.get_data_customer', function() {
+    var id_customer = $(this).val();
+    loadCustomerData(id_customer);
+});
+
+function clearTruckFields() {
+    $('#jenis_truck').html('');
+
+    localStorage.removeItem('selected_id_truck');
+}
                 
                 $(document).on('change', '.get_data_truck', function() {
                     var id_truck = $(this).val();
+                    var no_penawaran = $('#no_surat').val();
+                    var grand_total_input = $('#grand_total').val();
+                    // let nilai_input = $('#grand_total').val(); // contoh input value "673,577,640.000"
+                    let grand_total = parseFloat(grand_total_input.replace(/,/g, '')) || 0;
                     // var total_berat_all = $('#total_berat_all').val();
                     var total_berat_all = parseFloat($('#total_berat_all_new').val()) || 0;  // Ambil nilai total berat all
                     // var total_all_qty = parseFloat($('#total_all_qty').val()) || 0;
@@ -2497,17 +2583,37 @@ swal({
                     var charger_biaya = parseFloat($('#charger_biaya_cbl').val()) || 0;
                     var total_price_before_discount = parseFloat($('#total_price_before_discount_new').val()) || 0;
 
+                    // console.log("DEBUG id_truck = ", id_truck);
+                    // console.log("DEBUG siteurl = ", siteurl);
+                    // console.log("DEBUG active_controller = ", active_controller);
+
+                    if (!id_truck) {
+                        console.warn("ID truck kosong saat pilih pertama!");
+                        return; // Jangan lanjut Ajax kalau id_truck kosong
+                    }
+
+                    // console.log(no_penawaran);
+                    // return;
+
                     $.ajax({
                         type: 'post',
                         url: siteurl + active_controller + 'get_data_truck',
                         data: {
-                            'id_truck': id_truck
+                            'id_truck': id_truck,
+                            'no_penawaran': no_penawaran,
+                            'grand_total': grand_total
                         },
                         cache: false,
                         dataType: 'json',
                         success: function(result) {
+                            // console.log("Success result = ", result);
                             // $('#kapasitas_truck_dc').html(result.kapasitas);
                             // Mengambil kapasitas dari response dan menghitung berat aktual
+                            if(total_all_qty == 0 || total_all_qty == ''){
+                                total_all_qty = parseFloat(result.all_qty_penawaran) || 0;
+                            }else{
+                                total_all_qty = parseFloat(total_all_qty) || 0;
+                            }
                             var kapasitas = parseFloat(result.kapasitas) || 0; // Kapasitas truck
                             var berat_aktual = total_berat_all - kapasitas; // Hitung berat aktual
                             var rate_truck = parseFloat(result.rate_truck) || 0; // Kapasitas truck
@@ -2519,8 +2625,14 @@ swal({
                             var biaya_charger = parseFloat(biaya_angkut) + estimasi_tol;
                             var biaya_charger_final = biaya_charger * (charger_biaya / 100);
                             var total_biaya_delivery = parseFloat(biaya_angkut) + estimasi_tol + biaya_charger_final;
-                            var grand_total_delivery = total_price_before_discount + total_biaya_delivery;
-                            // console.log(total_price_before_discount);
+                            // var grand_total_delivery = total_price_before_discount + total_biaya_delivery;//version 1
+                            if(total_biaya_delivery == 0 || total_biaya_delivery == ''){
+                                var grand_total_delivery = result.grand_total;
+                            }else{
+                                var grand_total_delivery = result.grand_total + total_biaya_delivery;
+                            }
+                            // var grand_total_delivery = result.grand_total + total_biaya_delivery;
+                            console.log(result.grand_total);
                             // Set nilai input
                             $('#kapasitas_truck_dc').val(kapasitas); // Set kapasitas truck
                             $('#berat_aktual_truck_dc').val(berat_aktual); // Set berat aktual truck
@@ -2543,9 +2655,17 @@ swal({
                                 $('#berat_aktual_truck_dc').css('background-color', '#90EE90'); // Hijau jika kurang atau sama dengan kapasitas
                                 $('#berat_aktual_truck_dc').css('color', 'white'); // Teks putih untuk kontras
                             }
-
+                            // hitungTruckDanDelivery();
                             // Jika diperlukan, bisa juga menampilkan hasilnya di elemen lain
                             // $('#result_display').html('Berat Aktual: ' + berat_aktual);
+                            // Simpan ID Truck ke LocalStorage
+                            // localStorage.setItem('selected_id_truck', id_truck);
+                            // Setelah selesai, langsung refresh page:
+                            // location.reload();
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("AJAX Error: ", status, error);
+                            console.log(xhr.responseText); // ini supaya kita tahu detail error dari server
                         }
                     });
                 });
@@ -2587,6 +2707,9 @@ function hitungTruckDanDelivery() {
     var kapasitas = parseFloat($('#kapasitas_truck_dc').val()) || 0;
     var rate_truck = parseFloat($('#rate_truck_ba').val()) || 0;
     var ppn_check = parseFloat($('#ppn_check').val()) || 0;
+    var grand_total_input = $('#grand_total').val();
+    // let nilai_input = $('#grand_total').val(); // contoh input value "673,577,640.000"
+    let grand_total = parseFloat(grand_total_input.replace(/,/g, '')) || 0;
 
     if (kapasitas == 0 || rate_truck == 0) {
         console.log('Truck belum dipilih lengkap, hitungan skip.');
@@ -2606,9 +2729,12 @@ function hitungTruckDanDelivery() {
     var biaya_charger = parseFloat(biaya_angkut) + estimasi_tol;
     var biaya_charger_final = biaya_charger * (charger_biaya / 100);
     var total_biaya_delivery = parseFloat(biaya_angkut) + estimasi_tol + biaya_charger_final;
-    var grand_total_delivery = total_price_before_discount + total_biaya_delivery;
-    var biaya_ppn = (total_price_before_discount + total_biaya_delivery) * (ppn_check / 100);
-    var grand_total_final = (total_price_before_discount + total_biaya_delivery) + biaya_ppn;
+    // var grand_total_delivery = total_price_before_discount + total_biaya_delivery;
+    // var biaya_ppn = (total_price_before_discount + total_biaya_delivery) * (ppn_check / 100);
+    // var grand_total_final = (total_price_before_discount + total_biaya_delivery) + biaya_ppn;
+    var grand_total_delivery = grand_total + total_biaya_delivery;
+    var biaya_ppn = (grand_total + total_biaya_delivery) * (ppn_check / 100);
+    var grand_total_final = (grand_total + total_biaya_delivery) + biaya_ppn;
 
     $('#rate_biaya_angkut_ba').val(formatRupiahTanpaSimbol(rate_biaya_angkut));
     $('#biaya_angkut_ba').val(formatRupiahTanpaSimbol(biaya_angkut));

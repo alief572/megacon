@@ -2634,7 +2634,10 @@ $total_all_qty += $qty;
 	public function get_data_truck()
 	{
 		$id_truck = $this->input->post('id_truck');
-		// print_r($id_truck);
+		$no_penawarans = $this->input->post('no_penawaran');
+		$grand_total = $this->input->post('grand_total');
+		// print_r($no_penawarans);
+		// die();
 		// $PIC = 'PIC';
 		// $get_data_pic = $this->db->query('SELECT a.nm_pic, a.id_pic, a.email_pic FROM customer_pic a JOIN customer b ON b.id_pic = a.id_pic WHERE b.id_customer = "' . $id_customer . '"')->row();//version old
 		// $get_data_truck = $this->db->query('SELECT a.name_pic, a.id_pic, a.email_pic, b.name_customer FROM child_customer_pic a JOIN master_customers b ON b.id_customer = a.id_customer WHERE position_pic = "' . $PIC . '" AND b.id_customer = "' . $id_customer . '" LIMIT 1 ')->row();
@@ -2643,10 +2646,16 @@ $total_all_qty += $qty;
 		// echo $get_data_truck->maksimal_muatan;
 		$list_truck = '<option value="' . $get_data_truck->id_truck_rate . '">' . $get_data_truck->nm_asset . '</option>';
 
+		$get_data_detail_penawaran = $this->db->query('SELECT SUM(a.qty) as sum_qty FROM tr_penawaran_detail a where a.no_penawaran = "' . $no_penawarans . '" ')->row();
+		// print_r($get_data_detail_penawaran->sum_qty);
+		// echo $this->db->last_query();
+		// die();
 		echo json_encode([
 			'list_truck' => $list_truck,
 			'kapasitas' => $get_data_truck->maksimal_muatan,
-			'rate_truck' => $get_data_truck->rate_truck
+			'rate_truck' => $get_data_truck->rate_truck,
+			'all_qty_penawaran' => $get_data_detail_penawaran->sum_qty,
+			'grand_total' => $grand_total
 		]);
 	}
 
