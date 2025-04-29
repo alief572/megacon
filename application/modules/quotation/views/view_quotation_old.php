@@ -39,16 +39,10 @@
                                                     <label for="id_customer">Customer</label>
                                                 </div>
                                                 <div class="col-md-8">
-                                                    <!-- <select id="id_customer" name="id_customer" class="form-control select2 get_data_customer" disabled>
+                                                    <select id="id_customer" name="id_customer" class="form-control select2 get_data_customer" disabled>
                                                         <option value="">--Pilih--</option>
                                                         <?php foreach ($results['customers'] as $customers) { ?>
                                                             <option value="<?= $customers->id_customer ?>" <?= (isset($results['data_penawaran']) && $customers->id_customer == $results['data_penawaran']->id_customer) ? 'selected' : null ?>><?= ucfirst($customers->nm_customer) ?></option>
-                                                        <?php } ?>
-                                                    </select> -->
-                                                    <select id="id_customer" name="id_customer" class="form-control select2 get_data_customer" required>
-                                                        <!-- <option value="">-- Choose Customer --</option> -->
-                                                        <?php foreach ($results['customers'] as $customers) { ?>
-                                                            <option value="<?= $customers->id_customer ?>" <?= (isset($results['data_penawaran']) && $customers->id_customer == $results['data_penawaran']->id_customer) ? 'selected' : null ?>><?= ucfirst($customers->name_customer) ?></option>
                                                         <?php } ?>
                                                     </select>
                                                 </div>
@@ -78,15 +72,15 @@
                                                     <label for='id_category_supplier'>PIC Customer</label>
                                                 </div>
                                                 <div class='col-md-8' id="pic_slot">
-                                                    <select id='pic_customer' name='pic_customer' class='form-control select2' required>
-                                                        <!-- <option value=''>--Pilih--</option> -->
+                                                    <select id='pic_customer' name='pic_customer' class='form-control select2' disabled>
+                                                        <option value=''>--Pilih--</option>
                                                         <?php
                                                         foreach ($results['pic_cust'] as $pic) {
                                                             $selected = '';
                                                             if (isset($results['data_penawaran']) && $results['data_penawaran']->pic_customer == $pic->id_pic) {
                                                                 $selected = 'selected';
                                                             }
-                                                            echo '<option value="' . $pic->id_pic . '" ' . $selected . '>' . ucfirst($pic->name_pic) . '</option>';
+                                                            echo '<option value="' . $pic->id_pic . '" ' . $selected . '>' . ucfirst($pic->nm_pic) . '</option>';
                                                         }
                                                         ?>
                                                     </select>
@@ -476,6 +470,64 @@
                                     <table class="table table-bordered">
                                         <thead>
                                             <tr>
+                                                <th class="text-center bg-blue">Information</th>
+                                                <th class="text-center bg-blue">Value</th>
+                                                <th class="text-center bg-blue">Include/Exclude PPh</th>
+                                                <th class="text-center bg-blue">PPh 23 (2%)</th>
+                                                <th class="text-center bg-blue">Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="list_other_cost">
+                                            <?php
+                                            $total_other_cost = 0;
+                                            $total_other_cost_pph = 0;
+                                            foreach ($results['list_other_cost'] as $other_cost) {
+                                                $inc_exc_pph = ($other_cost->inc_exc_pph == '1') ? 'Include' : 'Exclude';
+                                                echo '
+                                                <tr>
+                                                    <td class="text-left">' . $other_cost->keterangan . '</td>
+                                                    <td class="text-right">
+                                                        <input type="hidden" class="nilai_other_cost" value="' . $other_cost->nilai . '">
+                                                        <span>(' . $other_cost->curr . ') ' . number_format($other_cost->nilai, 2) . '</span>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        ' . $inc_exc_pph . '
+                                                    </td>
+                                                    <td class="text-right">
+                                                        <input type="hidden" class="nilai_pph23_other_cost" value="' . $other_cost->nilai_pph . '">
+                                                        <span>(' . $other_cost->curr . ') ' . number_format($other_cost->nilai_pph, 2) . '</span>
+                                                    </td>
+                                                    <td class="text-right">
+                                                        <input type="hidden" class="total_nilai_other_cost" value="' . $other_cost->total_nilai . '">
+                                                        <span>(' . $other_cost->curr . ') ' . number_format($other_cost->total_nilai, 2) . '</span>
+                                                    </td>
+                                                </tr>
+                                            ';
+
+                                                $total_other_cost += $other_cost->total_nilai;
+                                                $total_other_cost_pph += $other_cost->nilai_pph;
+                                                // $total_all += $other_cost->total_nilai;
+                                            }
+                                            ?>
+                                        </tbody>
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="3" class="text-right">Total Other Cost</td>
+                                                <td class="text-right">
+                                                    <?= '(' . $results['curr'] . ') ' . number_format($total_other_cost_pph, 2) ?>
+                                                </td>
+                                                <td class="text-right">
+                                                    <?= '(' . $results['curr'] . ') ' . number_format($total_other_cost, 2) ?>
+                                                </td>
+                                                <td></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="col-lg-12">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
                                                 <th class="text-center bg-blue">Item</th>
                                                 <th class="text-center bg-blue">Price</th>
                                                 <th class="text-center bg-blue">Qty</th>
@@ -570,12 +622,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-lg-12"></div>
-                            <div class="col-lg-7">
-                                <div class="form-group " style="padding-top:15px;">
-                                    &nbsp;
-                                </div>
-                            </div>
+
                             <div class="col-lg-5">
                                 <div class="form-group " style="padding-top:15px;">
                                     <label class="col-sm-4 control-label">Total price after discount (<?= $results['curr']; ?>)</label>
@@ -584,23 +631,31 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-lg-12"></div>
-                            <!-- <div class="col-lg-7"> -->
-                            <div class="form-group " style="padding-top:15px;">
-                                    &nbsp;
+                            <div class="col-lg-7"></div>
+                            <div class="col-lg-5">
+                                <div class="form-group " style="padding-top:15px;">
+                                    <?php
+                                    $grand_total = ($total_all + $total_other_cost + $grand_total_other_item);
+                                    if (isset($results['data_penawaran'])) {
+                                        $grand_total = (($total_all + $total_other_cost + $grand_total_other_item) + ($results['data_penawaran']->nilai_ppn));
+                                    } else {
+                                        $grand_total = (($total_all + $total_other_cost + $grand_total_other_item) + (($total_all + $total_other_cost + $grand_total_other_item) * 11 / 100));
+                                    }
+                                    ?>
+                                    <label class="col-sm-4 control-label">PPN (11%)(<?= $results['curr']; ?>)</label>
+                                    <div class="col-sm-6 text-center">
+                                        <div class="form-group">
+                                            <span style="padding-right: 40px;">
+                                                <input type="radio" name="ppn_check" id="" class="ppn_check" value="11" <?= (!isset($results['data_penawaran']) || (isset($results['data_penawran']) && $results['data_penawaran']->ppn == '11')) ? 'checked' : 'checked' ?>> Yes
+                                            </span>
+                                            <span>
+                                                <input type="radio" name="ppn_check" id="" class="ppn_check ml-5" value="0" <?= (isset($results['data_penawaran']) && $results['data_penawaran']->ppn == '0') ? 'checked' : null ?>> No
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            
-                            <div class="col-lg-7">
-                                <?php
-                                $grand_total = ($total_all + $total_other_cost + $grand_total_other_item);
-                                if (isset($results['data_penawaran'])) {
-                                    $grand_total = (($total_all + $total_other_cost + $grand_total_other_item) + ($results['data_penawaran']->nilai_ppn));
-                                } else {
-                                    $grand_total = (($total_all + $total_other_cost + $grand_total_other_item) + (($total_all + $total_other_cost + $grand_total_other_item) * 11 / 100));
-                                }
-                                ?>
-                            </div>
+                            <div class="col-lg-7"></div>
                             <div class="col-lg-5">
                                 <div class="form-group " style="padding-top:15px;">
                                     <label class="col-sm-4 control-label">Total Other Cost (<?= $results['curr']; ?>)</label>
@@ -622,446 +677,14 @@
                         <hr>
                         <div class="row">
                             <div class="col-lg-12">
-                                <!-- <a href="<?= base_url() ?>quotation" class="btn btn-danger">
+                                <a href="<?= base_url() ?>quotation" class="btn btn-danger">
                                     <i class="fa fa-refresh"></i><b> Back</b>
-                                </a> -->
+                                </a>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <!-- START BAGIAN DELIVERY COST -->
-            <div class="box box-default ">
-                <div class="box-header">
-                    <h3>Biaya Pengiriman</h3>
-                </div>
-                <div class="box-body">
-                    <table class="table table-bordered" width="100%" id="tabel-detail-mutasi-delivery-cost">
-                        <thead>
-                            <tr class="bg-blue">
-                                <th class="text-center">Product</th>
-                                <th class="text-center">Berat</th>
-                                <th class="text-center">Qty</th>
-                                <th class="text-center">Total Berat</th>
-                                <!-- <th class="text-center">Discount (%)</th>
-                                <th class="text-center">Price Unit After Discount</th>
-                                <th class="text-center">Total Price</th>
-                                <th class="text-center">Action</th> -->
-                            </tr>
-                        </thead>
-                        <tbody id="list_item_mutasi_delivery_cost">
-                            <?php
-                            $total_all = 0;
-                            $total_price_before_discount = 0;
-                            $total_nilai_discount = 0;
-                            $total_berat_all = 0;
-                            if (isset($results['data_penawaran_detail'])) {
-                                foreach ($results['data_penawaran_detail'] as $penawaran_detail) {
-
-                                    //start get stok
-                                    $id_category3 = $penawaran_detail->id_category3;
-                                    $no_penawaran = $penawaran_detail->no_penawaran;
-                                    $sql = "
-                                            SELECT
-                                                a.code_lv4,
-                                                MAX(a.actual_stock) AS stock_akhir,
-                                                b.berat_produk,
-                                                c.qty,
-                                                (IFNULL(b.berat_produk,0) * c.qty) total_berat
-                                            FROM
-                                                stock_product a
-                                            LEFT JOIN
-                                                new_inventory_4 b ON a.code_lv4 = b.code_lv4
-                                            LEFT JOIN tr_penawaran_detail as c 
-                                            ON c.id_category3 = a.code_lv4
-                                            WHERE
-                                                b.code_lv4 = ?
-                                                AND c.no_penawaran = ?
-                                                AND a.deleted_date IS NULL
-                                            GROUP BY
-                                                a.code_lv4
-                                        ";
-
-                                    // Eksekusi query dengan parameter binding
-                                    @$query = $this->db->query(@$sql, array($id_category3, $no_penawaran));
-                                    @$result_stok = $query->row(); // ambil satu baris hasil
-                                    //end get stok
-
-//START GET DATA INVENTORY
-$sql_berat = "
-SELECT
-berat_produk
-FROM
-new_inventory_4
-WHERE
-code_lv4 = ?
-";
-$query_berat = $this->db->query($sql_berat, array($id_category3));
-$result_berat = $query_berat->row();
-// $berat_produk = $result_berat ? $result_berat->berat_produk : 0;
-$berat_produk = ($result_berat && !empty($result_berat->berat_produk)) ? $result_berat->berat_produk : 0;
-
-$sql_qty = "
-    SELECT
-        qty
-    FROM
-        tr_penawaran_detail
-    WHERE
-        id_category3 = ?
-        AND no_penawaran = ?
-";
-$query_qty = $this->db->query($sql_qty, array($id_category3, $no_penawaran));
-$result_qty = $query_qty->row();
-$qty = $result_qty ? $result_qty->qty : 0;
-
-$total_berat = $berat_produk * $qty;
-$total_berat_all += $total_berat;
-$total_all_qty += $qty;
-//END GET DATA INVENTORY
-
-                                    echo '
-                                            <tr>
-                                            <td style="display:none">' . $no_penawaran . '</td>
-                                            <td style="display:none">' . $id_category3 . '</td>
-                                            <td>
-                                            <span>' . htmlspecialchars($penawaran_detail->nama_produk) . '</span><br><br>
-                                            </td>
-                                            <td>' . $berat_produk . '</td>
-                                            <td>' . $qty . '</td>
-                                            <td>' . $total_berat . '</td>
-                                            </tr>
-                                        ';
-                                }
-                            } else {
-                                $total_berat_all = 0;
-                                foreach ($results['list_penawaran_detail'] as $penawaran_detail) {
-
-                                //start get stok
-                                $id_category3 = $penawaran_detail->id_category3;
-                                $no_penawaran = $penawaran_detail->no_penawaran;
-                                $sql = "
-                                        SELECT
-                                            a.code_lv4,
-                                            MAX(a.actual_stock) AS stock_akhir,
-                                            b.berat_produk,
-                                            c.qty,
-                                            (IFNULL(b.berat_produk,0) * c.qty) total_berat
-                                        FROM
-                                            stock_product a
-                                        LEFT JOIN
-                                            new_inventory_4 b ON a.code_lv4 = b.code_lv4
-                                        LEFT JOIN tr_penawaran_detail as c 
-                                        ON c.id_category3 = a.code_lv4
-                                        WHERE
-                                            b.code_lv4 = ?
-                                            AND c.no_penawaran = ?
-                                            AND a.deleted_date IS NULL
-                                        GROUP BY
-                                            a.code_lv4
-                                    ";
-                                // echo $this->db->last_query();die();
-                                // Eksekusi query dengan parameter binding
-                                @$query = $this->db->query(@$sql, array($id_category3, $no_penawaran));
-                                @$result_stok = $query->row(); // ambil satu baris hasil
-                                //end get stok
-
-//START GET DATA INVENTORY
-$sql_berat = "
-SELECT
-berat_produk
-FROM
-new_inventory_4
-WHERE
-code_lv4 = ?
-";
-$query_berat = $this->db->query($sql_berat, array($id_category3));
-$result_berat = $query_berat->row();
-// $berat_produk = $result_berat ? $result_berat->berat_produk : 0;
-$berat_produk = ($result_berat && !empty($result_berat->berat_produk)) ? $result_berat->berat_produk : 0;
-
-$sql_qty = "
-    SELECT
-        qty
-    FROM
-        tr_penawaran_detail
-    WHERE
-        id_category3 = ?
-        AND no_penawaran = ?
-";
-$query_qty = $this->db->query($sql_qty, array($id_category3, $no_penawaran));
-$result_qty = $query_qty->row();
-$qty = $result_qty ? $result_qty->qty : 0;
-
-$total_berat = $berat_produk * $qty;
-$total_berat_all += $total_berat;
-$total_all_qty += $qty;
-//END GET DATA INVENTORY
-                                echo '
-                                    <tr>
-                                        <td style="display:none">' . $no_penawaran . '</td>
-                                        <td style="display:none">' . $id_category3 . '</td>
-                                        <td>
-                                        <span>' . htmlspecialchars($penawaran_detail->nama_produk) . '</span><br><br>
-                                        </td>
-                                        <td>' . $berat_produk . '</td>
-                                        <td>' . $qty . '</td>
-                                        <td>' . $total_berat . '</td>
-                                    </tr>
-                                ';
-                                }
-                            }
-                            ?>
-                        </tbody>
-                    </table>
-                    <div>
-                    <div class="col-lg-8"></div>
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Total Berat</label>
-                            <div class="col-sm-6">
-                            <!-- number_format($total_berat_all, 2) -->
-                                <input type="text" name="total_berat_all" class="form-control input-sm text-right" id="total_berat_all" value="<?= number_format($total_berat_all, 2) ?>" readonly>
-                                <input type="hidden" name="total_berat_all_new" class="form-control input-sm text-right" id="total_berat_all_new" value="<?= $total_berat_all ?>" readonly>
-                                <input type="hidden" name="total_all_qty" class="form-control input-sm text-right" id="total_all_qty" value="<?= $total_all_qty ?>" readonly>
-
-                            </div>
-                        </div>
-                    </div>
-                    <br>
-<?php
-$get_data_cust = $this->db->get_where('master_customers', ['id_customer' => $results['data_penawaran']->id_customer])->row();
-$ViewCustName = $get_data_cust->name_customer;
-?>
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Customer</label>
-                            <div class="col-sm-6">
-                            <!-- number_format($total_berat_all, 2) -->
-                                <input type="text" name="customer_dc" class="form-control input-sm" id="customer_dc" readonly value="<?= @$ViewCustName ?>">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-8">
-                        <div class="form-group " style="padding-top:15px;">&nbsp;</div>
-                    </div>
-                    <br>
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Jenis Truck <?= $results['get_delivery_cost_header']->id_truck_rate ?></label>
-                            <div class="col-sm-6">
-                                <select id="jenis_truck" name="jenis_truck" class="form-control select2 get_data_truck" required>
-                                    <!-- <option value="">-- Choose Option --</option> -->
-                                    <?php foreach ($results['jenis_truck'] as $jenis_trucks) { ?>
-                                        <option value="<?= $jenis_trucks->id_truck_rate ?>" <?php if($jenis_trucks->id_truck_rate == $results['get_delivery_cost_header']->id_truck_rate){ 'selected'; } ?>><?= ucfirst($jenis_trucks->nm_asset) ?></option>
-                                        <!-- <option value="<?= $jenis_trucks->id_truck_rate ?>" ><?= ucfirst($jenis_trucks->nm_asset) ?></option> -->
-                                    <?php } ?>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Kapasitas</label>
-                            <div class="col-sm-6">
-                            <input type="text" name="kapasitas_truck_dc" class="form-control text-right" id="kapasitas_truck_dc" readonly value="<?= @$results['get_delivery_cost_header']->kapasitas ?>">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Perbandingan berat produk Vs Kapasitas</label>
-                            <div class="col-sm-6">
-                                <input type="text" name="berat_aktual_truck_dc" class="form-control input-sm text-right" id="berat_aktual_truck_dc" readonly value="<?= @$results['get_delivery_cost_header']->berat_vs_kapasitas ?>">
-                            </div>
-                        </div>
-                    </div>
-                    <br>
-                    <div class="col-lg-8"></div>
-                    <div class="col-lg-4">
-                        <!-- <div class="form-group " style="padding-top:15px;"> -->
-                            <!-- <label class="col-sm-4 control-label">&nbsp;</label> -->
-                            <!-- <div class="col-sm-6"> -->
-                            <!-- number_format($total_berat_all, 2) -->
-                                <!-- <input type="text" name="total_berat_all" class="form-control input-sm text-right grand_total" id="total_berat_all" value="<?= number_format($total_berat_all, 2) ?>" readonly> -->
-                            <!-- </div> -->
-                        <!-- </div> -->
-                    </div>
-                    <br>
-                    <!-- <div class="col-lg-7"></div> -->
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Jarak Pengiriman (PP) (Km)</label>
-                            <div class="col-sm-6">
-                            <input type="text" name="jarak_pengiriman_truck_dc" class="form-control text-right" id="jarak_pengiriman_truck_dc" value="<?= @$results['get_delivery_cost_header']->jarak_pengiriman ?>">
-                            </div>
-                        </div>
-                    </div>
-                    <!-- <div class="col-lg-8">
-                        <div class="form-group " style="padding-top:15px;">&nbsp;</div>
-                    </div> -->
-                    <br>
-                    <div class="col-lg-8"></div>
-                    <div class="col-lg-4">
-                        <!-- <div class="form-group " style="padding-top:15px;"> -->
-                            <!-- <label class="col-sm-4 control-label">&nbsp;</label> -->
-                            <!-- <div class="col-sm-6"> -->
-                            <!-- number_format($total_berat_all, 2) -->
-                                <!-- <input type="text" name="total_berat_all" class="form-control input-sm text-right grand_total" id="total_berat_all" value="<?= number_format($total_berat_all, 2) ?>" readonly> -->
-                            <!-- </div> -->
-                        <!-- </div> -->
-                    </div>
-                    <br>
-                    <!-- <hr> -->
-                    <div class="col-lg-12"></div>
-                    <div class="col-lg-12">
-                        <h3>Biaya Angkut</h3>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Rate Truck</label>
-                            <div class="col-sm-6">
-                            <input type="text" name="rate_truck_ba" class="form-control text-right" id="rate_truck_ba" readonly value="<?= @$results['get_delivery_cost_header']->rate_truck ?>">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-12"></div>
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Total Pengiriman (Qty)</label>
-                            <div class="col-sm-6">
-                            <input type="text" name="total_pengiriman_ba" class="form-control text-right" id="total_pengiriman_ba" readonly value="<?= @$results['get_delivery_cost_header']->total_pengiriman ?>">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-12"></div>
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Rate Biaya Angkut (Rp/Km)</label>
-                            <div class="col-sm-6">
-                                <input type="text" name="rate_biaya_angkut_ba" class="form-control input-sm text-right" id="rate_biaya_angkut_ba" readonly value="<?= @$results['get_delivery_cost_header']->rate_biaya_angkut ?>">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-12"></div>
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Biaya Angkut (Rp)</label>
-                            <div class="col-sm-6">
-                                <input type="text" name="biaya_angkut_ba" class="form-control input-sm text-right" id="biaya_angkut_ba" readonly value="<?= @$results['get_delivery_cost_header']->biaya_angkut ?>">
-                            </div>
-                        </div>
-                    </div>
-                    <br>
-                    <div class="col-lg-12"></div>
-                    <div class="col-lg-12">
-                        <h3>Biaya Tol (PP)</h3>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Estimasi Tol (PP) (Rp)</label>
-                            <div class="col-sm-6">
-                            <input type="text" name="estimasi_tol_bt" class="form-control text-right" id="estimasi_tol_bt" value="<?= @$results['get_delivery_cost_header']->estimasi_tol ?>">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-12"></div>
-                    <div class="col-lg-12">
-                        <h3>Charger Biaya Lain-Lain (Supir, Kenek, Uang Makan, Maintenance)</h3>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Charger Biaya Lain-Lain (%)</label>
-                            <div class="col-sm-6">
-                            <input type="text" name="charger_biaya_cbl" class="form-control text-right" id="charger_biaya_cbl"  value="<?= @$results['get_delivery_cost_header']->charger_biaya_lain_lain ?>" >
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-12"></div>
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">&nbsp;</label>
-                            <div class="col-sm-6">
-                            <input type="text" name="biaya_cbl" class="form-control text-right" id="biaya_cbl" readonly value="<?= @$results['get_delivery_cost_header']->total_charger_biaya_lain_lain ?>" >
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-12"></div>
-                    <div class="col-lg-12">
-                        <h3>Total Biaya Pengiriman</h3>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Total Biaya Delivery (Rp)</label>
-                            <div class="col-sm-6">
-                            <input type="text" name="total_biaya_delivery_tbp" class="form-control text-right" id="total_biaya_delivery_tbp" readonly value="<?= @$results['get_delivery_cost_header']->total_biaya_delivery ?>" >
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-12"></div>
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">&nbsp;</label>
-                            <div class="col-sm-6">
-                            <input type="text" name="grand_total_tbp" class="form-control text-right" id="grand_total_tbp" readonly value="<?= @$results['get_delivery_cost_header']->biaya_pengiriman ?>" >
-                            </div>
-                        </div>
-                    </div>
-                    <br>
-                    <div class="col-lg-12"></div>
-                    <div class="col-lg-8"></div>
-                    <div class="col-lg-4">
-                        <div class="form-group" style="">
-                            <label class="col-sm-4 control-label">PPN (11%)(<?= $results['curr']; ?>)</label>
-                            <div class="col-sm-6">
-                            <input type="text" name="ppn_check" id="ppn_check" class="form-control text-right" 
-                            value="<?= (isset($results['data_penawaran']) && $results['data_penawaran']->ppn == '11') ? '11' : '0' ?>">
-                            </div>
-                        </div>
-                    </div>
-                    <br>
-                    <div class="col-lg-12"></div>
-                    <div class="col-lg-8"></div>
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">&nbsp;</label>
-                            <div class="col-sm-6 text-center">
-                                <div class="form-group">
-                                    <!-- <span style="padding-right: 40px;"> -->
-                                        <input type="text" name="ppn_final" id="ppn_final" class="form-control text-right" readonly value="<?= @$results['get_delivery_cost_header']->biaya_ppn ?>" >
-                                    <!-- </span> -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <br>
-                    <div class="col-lg-12"></div>
-                    <div class="col-lg-8"></div>
-                    <div class="col-lg-4">
-                        <div class="form-group" style="">
-                            <label class="col-sm-4 control-label">Grand Total (Rp)</label>
-                            <div class="col-sm-6">
-                            <input type="text" name="grand_total_final" class="form-control text-right" id="grand_total_final" readonly value="<?= @$results['get_delivery_cost_header']->grand_total ?>" >
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-12"></div>
-                    <div class="col-lg-11"></div>
-                    <div class="col-lg-1" style="padding-top:15px;">
-                        <!-- <button id="simpanpenerimaan" class="btn btn-primary" type="button" onclick="savemutasi()">
-                            <i class="fa fa-save"></i><b> Save Quotation</b>
-                        </button> -->
-
-                        <a href="<?= base_url() ?>quotation" class="btn btn-danger">
-                            <i class="fa fa-refresh"></i><b> Back</b>
-                        </a>
-                    </div>
-
-
-                    </div>
-                </div>
-            </div>
-            <!-- END BAGIAN DELIVERY COST -->
 
             <div class="modal modal-primary" id="dialog-data-stok" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg">

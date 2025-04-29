@@ -186,9 +186,12 @@ class Quotation_model extends BF_Model
 	{
 		$session = $this->session->userdata('app_session');
 
-		$Cust = $this->db->query("SELECT a.* FROM customer a")->result();
+		// $Cust = $this->db->query("SELECT a.* FROM customer a")->result();
+		$Cust = $this->db->query("SELECT a.* FROM master_customers a")->result();
+		$jenis_truck = $this->db->query("SELECT a.*, b.nm_asset FROM tr_truck_rate a LEFT JOIN asset b ON a.kd_asset = b.kd_asset where (a.deleted_by IS NULL OR a.deleted_by = '') ")->result();
 		$User = $this->db->query("SELECT a.* FROM users a")->result();
-		$pic_cust = $this->db->query("SELECT a.* FROM customer_pic a WHERE a.nm_pic <> ''")->result();
+		// $pic_cust = $this->db->query("SELECT a.* FROM customer_pic a WHERE a.nm_pic <> ''")->result();
+		$pic_cust = $this->db->query("SELECT a.* FROM child_customer_pic a WHERE a.name_pic <> '' and position_pic = 'PIC' ")->result();
 
 		$get_penawaran_detail = $this->db->get_where('tr_penawaran_detail', ['no_penawaran' => $session['id_user']])->result();
 		$get_top = $this->db->get_where('list_help', ['group_by' => 'top invoice'])->result();
@@ -196,6 +199,12 @@ class Quotation_model extends BF_Model
 		if ($no_penawaran !== null) {
 			$get_penawaran = $this->db->query('SELECT a.*, b.nm_lengkap FROM tr_penawaran a LEFT JOIN users b ON b.id_user = a.created_by WHERE a.no_penawaran = "' . $no_penawaran . '"')->row();
 			$get_penawaran_detail = $this->db->get_where('tr_penawaran_detail', ['no_penawaran' => $no_penawaran])->result();
+
+			$get_delivery_cost_header = $this->db->get_where('delivery_cost_header', ['no_penawaran' => $no_penawaran])->row();
+			// print_r($get_delivery_cost_header->id_customer);
+			// die();
+
+			$get_delivery_cost_detail = $this->db->get_where('delivery_cost_detail', ['no_penawaran' => $no_penawaran])->result();
 
 			$get_other_cost = $this->db->get_where('tr_penawaran_other_cost', ['id_penawaran' => $no_penawaran])->result();
 
@@ -235,7 +244,10 @@ class Quotation_model extends BF_Model
 				'curr' => $get_penawaran->currency,
 				'list_other_cost' => $get_other_cost,
 				'list_other_item' => $get_other_item,
-				'list_another_item' => $get_list_item_others
+				'list_another_item' => $get_list_item_others,
+				'jenis_truck' => $jenis_truck,
+				'get_delivery_cost_header' => $get_delivery_cost_header,
+				'get_delivery_cost_detail' => $get_delivery_cost_detail
 			]);
 		} else {
 			$this->template->set('results', [
@@ -1322,9 +1334,16 @@ class Quotation_model extends BF_Model
 				$this->db->where('a.approved', 'N');
 				$this->db->order_by('a.level', 'asc');
 				$this->db->limit(1);
-				$get_req_quot = $this->db->get()->row_array();
+				// $get_req_quot = $this->db->get()->row_array();
+				$query = $this->db->get();
+				// echo $this->db->last_query();
+				// die();
 
-				
+				if ($query && $query->num_rows() > 0) {
+				    $get_req_quot = $query->row_array();
+				} else {
+				    $get_req_quot = null; // Atau array kosong [] tergantung kebutuhan
+				}
 
 
 				$tingkatan_approval = $get_req_quot['level'];
@@ -1332,6 +1351,8 @@ class Quotation_model extends BF_Model
 				// exit;
 
 				$get_master_disc = $this->db->get_where('ms_diskon', array('no' => $tingkatan_approval))->row_array();
+				// echo $this->db->last_query();
+				// die();
 				
 				$num_approval = $get_master_disc['tingkatan'];
 

@@ -1335,6 +1335,7 @@ class Quotation extends Admin_Controller
 					'tanggal'       => $Tgl_Inv,
 					'tipe'          => 'BUM',
 					'no_perkiraan'  => $jenis_pph,
+					// 'no_perkiraan' => !empty($jenis_pph) ? $jenis_pph : null,
 					'keterangan'    => $Keterangan_INV,
 					'no_reff'       => $No_Inv,
 					'debet'         => $jmlpph,

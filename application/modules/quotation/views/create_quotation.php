@@ -1306,7 +1306,7 @@ $total_all_qty += $qty;
                             <div class="col-sm-6 text-center">
                                 <div class="form-group">
                                     <!-- <span style="padding-right: 40px;"> -->
-                                        <input type="text" name="ppn_final" id="ppn_final" class="form-control text-right" value="" readonly value="<?= @$results['get_delivery_cost_header']->biaya_ppn ?>" >
+                                        <input type="text" name="ppn_final" id="ppn_final" class="form-control text-right" readonly value="<?= @$results['get_delivery_cost_header']->biaya_ppn ?>" >
                                     <!-- </span> -->
                                 </div>
                             </div>
