@@ -388,4 +388,12 @@ class Price_sup_raw_material extends Admin_Controller
     //unduh file
     $objWriter->save("php://output");
   }
+
+  public function get_price_ref() {
+    $this->Price_sup_raw_material_model->get_price_ref();
+  }
+
+  public function get_price_ref_2() {
+    $this->Price_sup_raw_material_model->get_price_ref_2();
+  }
 }

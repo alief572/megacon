@@ -80,9 +80,11 @@ class Quotation_model extends BF_Model
 	{
 		$session = $this->session->userdata('app_session');
 
-		$Cust = $this->db->query("SELECT a.* FROM customer a")->result();
+		// $Cust = $this->db->query("SELECT a.* FROM customer a")->result();//version old
+		$Cust = $this->db->query("SELECT a.* FROM master_customers a")->result();
 		$User = $this->db->query("SELECT a.* FROM users a")->result();
-		$pic_cust = $this->db->query("SELECT a.* FROM customer_pic a WHERE a.nm_pic <> ''")->result();
+		// $pic_cust = $this->db->query("SELECT a.* FROM customer_pic a WHERE a.nm_pic <> ''")->result();//version old
+		$pic_cust = $this->db->query("SELECT a.* FROM child_customer_pic a WHERE a.name_pic <> '' and position_pic = 'PIC' ")->result();
 
 		$get_penawaran_detail = $this->db->get_where('tr_penawaran_detail', ['no_penawaran' => $session['id_user'], 'curr' => $curr])->result();
 
@@ -1257,12 +1259,13 @@ class Quotation_model extends BF_Model
 		$start = $this->input->post('start');
 		$search = $this->input->post('search');
 
-		$this->db->select('a.no_penawaran, a.tgl_penawaran, a.project, a.status, a.req_app1, a.app_1, a.req_app2, a.app_2, a.req_app3, a.app_3, b.nm_customer');
+		$this->db->select('a.no_penawaran, a.tgl_penawaran, a.project, a.status, a.req_app1, a.app_1, a.req_app2, a.app_2, a.req_app3, a.app_3, b.name_customer as nm_customer');
 		$this->db->from('tr_penawaran a');
-		$this->db->join('customer b', 'b.id_Customer = a.id_customer', 'left');
+		// $this->db->join('customer b', 'b.id_Customer = a.id_customer', 'left');
+		$this->db->join('master_customers b', 'b.id_Customer = a.id_customer', 'left');
 		if (!empty($search)) {
 			$this->db->like('DATE_FORMAT(a.tgl_penawaran, "%d-%M-%Y")', $search['value'], 'both');
-			$this->db->or_like('b.nm_customer', $search['value'], 'both');
+			$this->db->or_like('b.name_customer', $search['value'], 'both');
 			$this->db->or_like('a.no_penawaran', $search['value'], 'both');
 			$this->db->or_like('a.project', $search['value'], 'both');
 			$this->db->or_like('a.no_revisi', $search['value'], 'both');
@@ -1271,12 +1274,13 @@ class Quotation_model extends BF_Model
 		$this->db->limit($length, $start);
 		$get_data = $this->db->get();
 
-		$this->db->select('a.no_penawaran, a.tgl_penawaran, a.status, a.project, a.req_app1, a.app_1, a.req_app2, a.app_2, a.req_app3, a.app_3, b.nm_customer');
+		$this->db->select('a.no_penawaran, a.tgl_penawaran, a.status, a.project, a.req_app1, a.app_1, a.req_app2, a.app_2, a.req_app3, a.app_3, b.name_customer as nm_customer');
 		$this->db->from('tr_penawaran a');
-		$this->db->join('customer b', 'b.id_Customer = a.id_customer', 'left');
+		// $this->db->join('customer b', 'b.id_Customer = a.id_customer', 'left');
+		$this->db->join('master_customers b', 'b.id_Customer = a.id_customer', 'left');
 		if (!empty($search)) {
 			$this->db->like('DATE_FORMAT(a.tgl_penawaran, "%d-%M-%Y")', $search['value'], 'both');
-			$this->db->or_like('b.nm_customer', $search['value'], 'both');
+			$this->db->or_like('b.name_customer', $search['value'], 'both');
 			$this->db->or_like('a.no_penawaran', $search['value'], 'both');
 			$this->db->or_like('a.project', $search['value'], 'both');
 			$this->db->or_like('a.no_revisi', $search['value'], 'both');
@@ -1290,20 +1294,30 @@ class Quotation_model extends BF_Model
 		foreach ($get_data->result_array() as $item) {
 			$no++;
 
-			$$Status = '';
+			$Status = '';
 
 			if ($item['status'] == 0) {
 				$Status = "<span class='badge bg-yellow'>Draft</span>";
 			} elseif ($item['status'] == 1) {
 
+				$this->db->select('a.*');
+				$this->db->from('tr_req_quot a');
+				$this->db->where('a.id_quotation', $item['no_penawaran']);
+				$this->db->where('a.approved', 'N');
+				$this->db->order_by('a.level', 'asc');
+				$this->db->limit(1);
+				$get_req_quot = $this->db->get()->row_array();
+
+				
 
 
-				$num_approval = 'Staff Sales';
-				if ($item['req_app2'] == '1' && $item['app_1'] == '1') {
-					$num_approval = 'Manager Sales';
-				} if ($item['req_app3'] == '1' && $item['app_2'] == '1') {
-					$num_approval = 'Direktur';
-				}
+				$tingkatan_approval = $get_req_quot['level'];
+				// print_r($item['no_quotation']);
+				// exit;
+
+				$get_master_disc = $this->db->get_where('ms_diskon', array('no' => $tingkatan_approval))->row_array();
+				
+				$num_approval = $get_master_disc['tingkatan'];
 
 				$Status = "<span class='badge bg-blue'>Waiting Approval " . $num_approval . "</span>";
 			} elseif ($item['status'] == '2') {

@@ -43,7 +43,7 @@
                                                     <select id="id_customer" name="id_customer" class="form-control select2 get_data_customer" required>
                                                         <option value="">-- Choose Customer --</option>
                                                         <?php foreach ($results['customers'] as $customers) { ?>
-                                                            <option value="<?= $customers->id_customer ?>" <?= (isset($results['data_penawaran']) && $customers->id_customer == $results['data_penawaran']->id_customer) ? 'selected' : null ?>><?= ucfirst($customers->nm_customer) ?></option>
+                                                            <option value="<?= $customers->id_customer ?>" <?= (isset($results['data_penawaran']) && $customers->id_customer == $results['data_penawaran']->id_customer) ? 'selected' : null ?>><?= ucfirst($customers->name_customer) ?></option>
                                                         <?php } ?>
                                                     </select>
                                                 </div>
@@ -81,7 +81,7 @@
                                                             if (isset($results['data_penawaran']) && $results['data_penawaran']->pic_customer == $pic->id_pic) {
                                                                 $selected = 'selected';
                                                             }
-                                                            echo '<option value="' . $pic->id_pic . '" ' . $selected . '>' . ucfirst($pic->nm_pic) . '</option>';
+                                                            echo '<option value="' . $pic->id_pic . '" ' . $selected . '>' . ucfirst($pic->name_pic) . '</option>';
                                                         }
                                                         ?>
                                                     </select>
@@ -314,6 +314,7 @@
                         <thead>
                             <tr class="bg-blue">
                                 <th class="text-center">Product Name</th>
+                                <th class="text-center">Stok</th>
                                 <th class="text-center">Qty</th>
                                 <th class="text-center">Price List</th>
                                 <th class="text-center">Discount (%)</th>
@@ -329,6 +330,28 @@
                             $total_nilai_discount = 0;
                             if (isset($results['data_penawaran_detail'])) {
                                 foreach ($results['data_penawaran_detail'] as $penawaran_detail) {
+
+                                    //start get stok
+                                    $id_category3 = (int) $penawaran_detail->id_category3;
+                                    $sql = "
+                                            SELECT
+                                                a.code_lv4,
+                                                MAX(a.actual_stock) AS stock_akhir
+                                            FROM
+                                                stock_product a
+                                            LEFT JOIN
+                                                new_inventory_4 b ON a.code_lv4 = b.code_lv4
+                                            WHERE
+                                                b.code_lv4 = ?
+                                                AND a.deleted_date IS NULL
+                                            GROUP BY
+                                                a.code_lv4
+                                        ";
+
+                                    // Eksekusi query dengan parameter binding
+                                    @$query = $this->db->query(@$sql, array($id_category3));
+                                    @$result_stok = $query->row(); // ambil satu baris hasil
+                                    //end get stok
 
                                     $harga_x_qty = (($penawaran_detail->harga_satuan + $penawaran_detail->cutting_fee + $penawaran_detail->delivery_fee) * $penawaran_detail->qty);
                                     $price_after_disc = (($penawaran_detail->harga_satuan + $penawaran_detail->cutting_fee + $penawaran_detail->delivery_fee) - $penawaran_detail->diskon_nilai);
@@ -356,6 +379,9 @@
                                                 <td>
                                                     <span>' . $penawaran_detail->nama_produk . '</span> <br><br>
                                                     
+                                                </td>
+                                                <td>
+                                                    ' . @$result_stok->stock_akhir . '<br><br>
                                                 </td>
                                                 <td>
                                                     <input type="number" name="qty_' . $penawaran_detail->id_penawaran_detail . '" value="' . $penawaran_detail->qty . '" class="form-control text-right qty qty_' . $penawaran_detail->id_penawaran_detail . '" onchange="hitung_all(' . $penawaran_detail->id_penawaran_detail . ')">
@@ -414,6 +440,28 @@
                             } else {
                                 foreach ($results['list_penawaran_detail'] as $penawaran_detail) {
 
+                                    //start get stok
+                                    $id_category3 = (int) $penawaran_detail->id_category3;
+                                    $sql = "
+                                            SELECT
+                                                a.code_lv4,
+                                                MAX(a.actual_stock) AS stock_akhir
+                                            FROM
+                                                stock_product a
+                                            LEFT JOIN
+                                                new_inventory_4 b ON a.code_lv4 = b.code_lv4
+                                            WHERE
+                                                b.code_lv4 = ?
+                                                AND a.deleted_date IS NULL
+                                            GROUP BY
+                                                a.code_lv4
+                                        ";
+
+                                    // Eksekusi query dengan parameter binding
+                                    @$query = $this->db->query(@$sql, array($id_category3));
+                                    @$result_stok = $query->row(); // ambil satu baris hasil
+                                    //end get stok
+
                                     $harga_x_qty = (($penawaran_detail->harga_satuan + $penawaran_detail->cutting_fee + $penawaran_detail->delivery_fee) * $penawaran_detail->qty);
                                     $price_after_disc = (($penawaran_detail->harga_satuan + $penawaran_detail->cutting_fee + $penawaran_detail->delivery_fee) - $penawaran_detail->diskon_nilai);
                                     $total_harga = ($penawaran_detail->total_harga);
@@ -440,6 +488,9 @@
                                         <td>
                                             <span>' . $penawaran_detail->nama_produk . '</span> <br><br>
                                             
+                                        </td>
+                                        <td>
+                                            ' . @$result_stok->stock_akhir . '<br><br>
                                         </td>
                                         <td>
                                             <input type="number" name="qty_' . $penawaran_detail->id_penawaran_detail . '" value="' . $penawaran_detail->qty . '" class="form-control text-right qty qty_' . $penawaran_detail->id_penawaran_detail . '" onchange="hitung_all(' . $penawaran_detail->id_penawaran_detail . ')">
@@ -507,7 +558,7 @@
                     <div class="box-body">
                         <div class="row">
                             <div class="col-lg-7">
-                                <div class="col-lg-12">
+                                <!-- <div class="col-lg-12">
                                     <table class="table table-bordered">
                                         <thead>
                                             <tr>
@@ -596,7 +647,7 @@
                                             </tr>
                                         </tbody>
                                     </table>
-                                </div>
+                                </div> -->
                                 <div class="col-lg-12">
                                     <table class="table table-bordered">
                                         <thead>

@@ -10,7 +10,7 @@ $ENABLE_DELETE  = has_permission('Price_Supplier_Raw_Material.Delete');
 	}
 </style>
 <div id='alert_edit' class="alert alert-success alert-dismissable" style="padding: 15px; display: none;"></div>
-<link rel="stylesheet" href="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.css') ?>">
+<link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css">
 
 <div class="box">
 	<div class="box-header">
@@ -20,95 +20,60 @@ $ENABLE_DELETE  = has_permission('Price_Supplier_Raw_Material.Delete');
 	</div>
 	<!-- /.box-header -->
 	<div class="box-body">
-		<table id="example1" class="table table-bordered table-striped">
-			<thead>
-				<tr>
-					<th>#</th>
-					<th>Material Code</th>
-					<th>Material Master</th>
-					<th>Satuan Beli</th>
-					<th>Lower Price<br>Before</th>
-					<th>Lower Price<br>After</th>
-					<th>Higher Price<br>Before</th>
-					<th>Higher Price<br>After</th>
-					<th>Expired<br>Before</th>
-					<th>Expired<br>After</th>
-					<th>Status</th>
-					<th>Alasan Reject</th>
-					<th width='7%'>Action</th>
-				</tr>
-			</thead>
+		<ul class="nav nav-tabs" role="tablist">
+			<li role="presentation" class="cikarang_tab tab_pin active"><a href="javascript:void();" onclick="change_tab('cikarang')">Cikarang</a></li>
+			<li role="presentation" class="palembang_tab tab_pin"><a href="javascript:void();" onclick="change_tab('palembang')">Palembang</a></li>
+		</ul>
+		<div class="cikarang">
+			<table id="example2" class="table table-bordered table-striped">
+				<thead>
+					<tr>
+						<th>#</th>
+						<th>Material Code</th>
+						<th>Material Master</th>
+						<th>Satuan Beli</th>
+						<th>Lower Price<br>Before</th>
+						<th>Lower Price<br>After</th>
+						<th>Higher Price<br>Before</th>
+						<th>Higher Price<br>After</th>
+						<th>Expired<br>Before</th>
+						<th>Expired<br>After</th>
+						<th>Status</th>
+						<th>Alasan Reject</th>
+						<th width='7%'>Action</th>
+					</tr>
+				</thead>
 
-			<tbody>
-				<?php if (empty($result)) {
-				} else {
-					$numb = 0;
-					foreach ($result as $record) {
-						$numb++;
-						$tgl_create 	= $record->price_ref_new_date;
-						$max_exp 		= $record->price_ref_new_expired;
-						$tgl_expired 	= date('Y-m-d', strtotime('+' . $max_exp . ' month', strtotime($tgl_create)));
-						$date_now		= date('Y-m-d');
+				<tbody>
 
-						$status = 'Not Set';
-						$status_ = 'yellow';
-						$status2 = '';
+				</tbody>
+			</table>
+		</div>
+		<div class="palembang" style="display: none;">
+			<table id="example3" class="table table-bordered table-striped">
+				<thead>
+					<tr>
+						<th>#</th>
+						<th>Material Code</th>
+						<th>Material Master</th>
+						<th>Satuan Beli</th>
+						<th>Lower Price<br>Before</th>
+						<th>Lower Price<br>After</th>
+						<th>Higher Price<br>Before</th>
+						<th>Higher Price<br>After</th>
+						<th>Expired<br>Before</th>
+						<th>Expired<br>After</th>
+						<th>Status</th>
+						<th>Alasan Reject</th>
+						<th width='7%'>Action</th>
+					</tr>
+				</thead>
 
-						$expired = '-';
-						$expired_new = '-';
+				<tbody>
 
-						$satuan_beli = (isset($list_satuan[$record->satuan_beli])) ? $list_satuan[$record->satuan_beli] : '';
-
-						if (!empty($record->price_ref_date)) {
-							$price_ref_date 	= date('Y-m-d', strtotime('+' . $record->price_ref_expired . ' month', strtotime($record->price_ref_date)));
-							$expired = date('d-M-Y', strtotime($price_ref_date));
-							if ($date_now > $price_ref_date) {
-								$status = 'Expired';
-								$status_ = 'red';
-							} else {
-								$status = 'Oke';
-								$status_ = 'green';
-							}
-						}
-
-						if ($record->status_app == 'Y') {
-							$expired_new = date('d-M-Y', strtotime($tgl_expired));
-							$status2 = 'Waiting Approve';
-							$status2_ = 'purple';
-						}
-				?>
-						<tr>
-							<td><?= $numb; ?></td>
-							<td><?= strtoupper($record->code_lv4) ?></td>
-							<td><?= strtoupper($record->nama) ?></td>
-							<td><?= strtoupper($satuan_beli) ?></td>
-							<td align='right'><?= number_format($record->price_ref, 2) ?></td>
-							<td align='right'><?= number_format($record->price_ref_new, 2) ?></td>
-							<td align='right'><?= number_format($record->price_ref_high, 2) ?></td>
-							<td align='right'><?= number_format($record->price_ref_high_new, 2) ?></td>
-
-							<td align='center'><?= $expired; ?></td>
-							<td align='center'><?= $expired_new; ?></td>
-							<td><span class='badge bg-<?= $status_; ?>'><?= $status; ?></span><br><span class='badge bg-<?= $status2_; ?>'><?= $status2; ?></span></td>
-							<td><?= strtoupper($record->status_reject) ?></td>
-
-
-							<td align='left'>
-
-								<?php if ($ENABLE_MANAGE) : ?>
-									<a class="btn btn-primary btn-sm edit" href="javascript:void(0)" title="Edit" data-id="<?= $record->id ?>"><i class="fa fa-edit"></i></a>
-								<?php endif; ?>
-
-								<?php if (!empty($record->upload_file)) : ?>
-									<a class="btn btn-success btn-sm" href="<?= base_url($record->upload_file); ?>" target='_blank' title="Download"><i class="fa fa-download"></i></a>
-								<?php endif; ?>
-							</td>
-
-						</tr>
-				<?php }
-				}  ?>
-			</tbody>
-		</table>
+				</tbody>
+			</table>
+		</div>
 	</div>
 	<!-- /.box-body -->
 </div>
@@ -129,8 +94,7 @@ $ENABLE_DELETE  = has_permission('Price_Supplier_Raw_Material.Delete');
 	</div>
 
 	<!-- DataTables -->
-	<script src="<?= base_url('assets/plugins/datatables/jquery.dataTables.min.js') ?>"></script>
-	<script src="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.min.js') ?>"></script>
+	<script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
 	<script src="<?= base_url('assets/js/autoNumeric.js') ?>"></script>
 
 	<!-- page script -->
@@ -444,13 +408,135 @@ $ENABLE_DELETE  = has_permission('Price_Supplier_Raw_Material.Delete');
 			$('#price_ref_high_new').val(price)
 		})
 
-		$(function() {
-			var table = $('#example1').DataTable({
-				orderCellsTop: true,
-				fixedHeader: true
+		function DataTables_cikarang() {
+			var datatables = $('#example2').dataTable({
+				serverSide: true,
+				processing: true,
+				stateSave: true,
+				destroy: true,
+				ajax: {
+					type: 'post',
+					url: siteurl + active_controller + '/get_price_ref',
+					dataType: 'json'
+				},
+				columns: [{
+						data: 'no'
+					},
+					{
+						data: 'material_code'
+					},
+					{
+						data: 'material_master'
+					},
+					{
+						data: 'satuan_beli'
+					},
+					{
+						data: 'lower_price_before'
+					},
+					{
+						data: 'lower_price_after'
+					},
+					{
+						data: 'higher_price_before'
+					},
+					{
+						data: 'higher_price_after'
+					},
+					{
+						data: 'expired_before'
+					},
+					{
+						data: 'expired_after'
+					},
+					{
+						data: 'status'
+					},
+					{
+						data: 'alasan_reject'
+					},
+					{
+						data: 'action'
+					}
+				]
 			});
+		}
+
+		function DataTables_palembang() {
+			var datatables = $('#example3').dataTable({
+				serverSide: true,
+				processing: true,
+				stateSave: true,
+				destroy: true,
+				ajax: {
+					type: 'post',
+					url: siteurl + active_controller + '/get_price_ref_2',
+					dataType: 'json'
+				},
+				columns: [{
+						data: 'no'
+					},
+					{
+						data: 'material_code'
+					},
+					{
+						data: 'material_master'
+					},
+					{
+						data: 'satuan_beli'
+					},
+					{
+						data: 'lower_price_before'
+					},
+					{
+						data: 'lower_price_after'
+					},
+					{
+						data: 'higher_price_before'
+					},
+					{
+						data: 'higher_price_after'
+					},
+					{
+						data: 'expired_before'
+					},
+					{
+						data: 'expired_after'
+					},
+					{
+						data: 'status'
+					},
+					{
+						data: 'alasan_reject'
+					},
+					{
+						data: 'action'
+					}
+				]
+			});
+		}
+
+		$(function() {
+			DataTables_cikarang();
+			DataTables_palembang();
 			$("#form-area").hide();
 		});
+
+		function change_tab(tab) {
+			if(tab == 'cikarang') {
+				$('.cikarang').show();
+				$('.cikarang_tab').addClass('active');
+				
+				$('.palembang').hide();
+				$('.palembang_tab').removeClass('active');
+			} else {
+				$('.palembang').show();
+				$('.palembang_tab').addClass('active');
+				
+				$('.cikarang').hide();
+				$('.cikarang_tab').removeClass('active');
+			}
+		}
 
 		function get_cub() {
 			var l = getNum($('#length').val().split(",").join(""));

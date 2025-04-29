@@ -40,17 +40,20 @@ class Master_customers extends Admin_Controller
 		$session = $this->session->userdata('app_session');
 		$this->template->page_icon('fa fa-users');
 		$deleted = 'active';
-		$category = $this->Customer_model->get_data('child_customer_category', 'activation', $deleted);
+		$category = $this->db->get_where('child_customer_category', array('activation' => 'active'))->result();
+		// print_r($category);
+		// exit;
+		// $category = $this->Customer_model->get_data('child_customer_category', 'activation', $deleted);
 		// buat manggil customer
 		$customer 			= $this->Customer_model->getCustomer();
 		// echo $this->db->last_query();
 		// print_r($$customer);
 		// die();
 		$data = [
-			'customer' => $customer,
-			'category' => $category
+			'customer' => $customer
 		];
-		$this->template->set('results', $data);
+		$this->template->set('list_customer', $data);
+		$this->template->set('list_category', $category);
 		$this->template->title('Master Customer');
 		$this->template->render('index');
 	}

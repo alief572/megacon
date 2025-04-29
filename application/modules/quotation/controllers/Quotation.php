@@ -1653,6 +1653,28 @@ class Quotation extends Admin_Controller
 		$get_penawaran_detail = $this->db->get_where('tr_penawaran_detail', ['no_penawaran' => $id, 'curr' => $curr])->result();
 		foreach ($get_penawaran_detail as $penawaran_detail) {
 
+			//start get stok
+			$id_category3 = (int) $penawaran_detail->id_category3;
+			$sql = "
+					SELECT
+						a.code_lv4,
+						MAX(a.actual_stock) AS stock_akhir
+					FROM
+						stock_product a
+					LEFT JOIN
+						new_inventory_4 b ON a.code_lv4 = b.code_lv4
+					WHERE
+						b.code_lv4 = ?
+						AND a.deleted_date IS NULL
+					GROUP BY
+						a.code_lv4
+				";
+
+			// Eksekusi query dengan parameter binding
+			@$query = $this->db->query(@$sql, array($id_category3));
+			@$result_stok = $query->row(); // ambil satu baris hasil
+			//end get stok
+
 			$harga_x_qty = ($penawaran_detail->harga_satuan * $penawaran_detail->qty);
 			$price_after_disc = ($penawaran_detail->harga_satuan + $penawaran_detail->cutting_fee + $penawaran_detail->delivery_fee - $penawaran_detail->diskon_nilai);
 			$total_harga = ($penawaran_detail->total_harga);
@@ -1676,6 +1698,7 @@ class Quotation extends Admin_Controller
 						<span>' . $penawaran_detail->nama_produk . '</span> <br><br>
 
 					</td>
+					
 					<td>
 						<input type="number" name="qty_' . $penawaran_detail->id_penawaran_detail . '" value="' . $penawaran_detail->qty . '" class="form-control text-right qty qty_' . $penawaran_detail->id_penawaran_detail . '" onchange="hitung_all(' . $penawaran_detail->id_penawaran_detail . ')">
 					</td>
@@ -1931,13 +1954,43 @@ class Quotation extends Admin_Controller
 
 		$this->db->trans_begin();
 
-		for ($i = 1; $i <= $tingkatan; $i++) {
-			if ($i < $tingkatan) {
-				$update_sts = $this->db->update('tr_penawaran', ['req_app' . $i . '' => 1, 'app_' . $i . '' => 1, 'status' => 1], ['no_penawaran' => $id]);
-			} else {
-				$update_sts = $this->db->update('tr_penawaran', ['req_app' . $i . '' => 1, 'status' => 1], ['no_penawaran' => $id]);
+		$check_disc_penawaran = $this->db->query('SELECT MAX(diskon_persen) AS max_disc_persen FROM tr_penawaran_detail WHERE no_penawaran = "' . $id . '"')->row();
+
+		$get_disc = $this->db->query('SELECT * FROM ms_diskon WHERE deleted = 0 ORDER BY diskon_awal ASC')->result();
+
+		$tingkatan = 0;
+
+		$no_awd = 0;
+		$arr_req_app = [];
+		foreach ($get_disc as $list_disc) {
+			$no_awd++;
+
+
+			if ($check_disc_penawaran->max_disc_persen >= $list_disc->diskon_awal) {
+				$arr_req_app[] = [
+					'id_quotation' => $id,
+					'level' => $list_disc->no,
+					'created_by' => $this->auth->user_id(),
+					'created_date' => date('Y-m-d H:i:s')
+				];
 			}
+
 		}
+
+		
+
+		// for ($i = 1; $i <= $tingkatan; $i++) {
+		// 	// if ($i < $tingkatan) {
+		// 	// 	$update_sts = $this->db->update('tr_penawaran', ['req_app' . $i . '' => 1, 'app_' . $i . '' => 1, 'status' => 1], ['no_penawaran' => $id]);
+		// 	// } else {
+		// 	// 	$update_sts = $this->db->update('tr_penawaran', ['req_app' . $i . '' => 1, 'status' => 1], ['no_penawaran' => $id]);
+		// 	// }
+
+			
+		// }
+
+		$this->db->insert_batch('tr_req_quot', $arr_req_app);
+		$this->db->update('tr_penawaran', array('status' => 1), array('no_penawaran' => $id));
 
 
 		if ($this->db->trans_status() === FALSE) {
@@ -2018,10 +2071,11 @@ class Quotation extends Admin_Controller
 	public function get_data_customer()
 	{
 		$id_customer = $this->input->post('id_customer');
+		$PIC = 'PIC';
+		// $get_data_pic = $this->db->query('SELECT a.nm_pic, a.id_pic, a.email_pic FROM customer_pic a JOIN customer b ON b.id_pic = a.id_pic WHERE b.id_customer = "' . $id_customer . '"')->row();//version old
+		$get_data_pic = $this->db->query('SELECT a.name_pic, a.id_pic, a.email_pic FROM child_customer_pic a JOIN master_customers b ON b.id_customer = a.id_customer WHERE position_pic = "' . $PIC . '" AND b.id_customer = "' . $id_customer . '" LIMIT 1 ')->row();
 
-		$get_data_pic = $this->db->query('SELECT a.nm_pic, a.id_pic, a.email_pic FROM customer_pic a JOIN customer b ON b.id_pic = a.id_pic WHERE b.id_customer = "' . $id_customer . '"')->row();
-
-		$list_pic = '<option value="' . $get_data_pic->id_pic . '">' . $get_data_pic->nm_pic . '</option>';
+		$list_pic = '<option value="' . $get_data_pic->id_pic . '">' . $get_data_pic->name_pic . '</option>';
 
 		echo json_encode([
 			'list_pic' => $list_pic,
