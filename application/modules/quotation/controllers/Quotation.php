@@ -626,6 +626,15 @@ class Quotation extends Admin_Controller
 		echo json_encode($Arr_Return);
 	}
 
+	function bersihkan_format_uang($nilai) {
+		// Hapus semua titik sebagai pemisah ribuan
+		$nilai = str_replace('.', '', $nilai);
+		// Ganti koma menjadi titik untuk desimal (jika ada)
+		$nilai = str_replace(',', '.', $nilai);
+		// Ubah ke float
+		return floatval($nilai);
+	}
+
 	public function save_penerimaan_new()
 	{
 
@@ -651,7 +660,7 @@ class Quotation extends Admin_Controller
 		$this->db->trans_begin();
 
 		if ($no_surat == '' || $no_surat == $this->auth->user_id()) {
-			// print_r($list_detail);
+			// print_r('error 1');
 			// die();
 			$no_penawaran = $this->quotation_model->generate_no_penawaran();
 
@@ -677,21 +686,22 @@ class Quotation extends Admin_Controller
 					'id_customer' => $post['id_customer'],
 					// 'name_customer' => $post['customer_dc'],
 					'name_customer' => @$get_data_customer->name_customer,
+					'id_truck_rate' => $post['jenis_truck'],
 					'kapasitas' => $post['kapasitas_truck_dc'],
 					'berat_vs_kapasitas' => $post['berat_aktual_truck_dc'],
 					'jarak_pengiriman' => $post['jarak_pengiriman_truck_dc'],
-					'rate_truck' => $post['rate_truck_ba'],
-					'total_pengiriman' => $post['total_pengiriman_ba'],
-					'rate_biaya_angkut' => $post['rate_biaya_angkut_ba'],
-					'biaya_angkut' => $post['biaya_angkut_ba'],
-					'estimasi_tol' => $post['estimasi_tol_bt'],
-					'charger_biaya_lain_lain' => $post['charger_biaya_cbl'],
-					'total_charger_biaya_lain_lain' => $post['biaya_cbl'],
-					'total_biaya_delivery' => $post['total_biaya_delivery_tbp'],
-					'biaya_pengiriman' => $post['grand_total_tbp'],
+					'rate_truck' => $this->bersihkan_format_uang($post['rate_truck_ba']),
+					'total_pengiriman' => $this->bersihkan_format_uang($post['total_pengiriman_ba']),
+					'rate_biaya_angkut' => $this->bersihkan_format_uang($post['rate_biaya_angkut_ba']),
+					'biaya_angkut' => $this->bersihkan_format_uang($post['biaya_angkut_ba']),
+					'estimasi_tol' => $this->bersihkan_format_uang($post['estimasi_tol_bt']),
+					'charger_biaya_lain_lain' => $this->bersihkan_format_uang($post['charger_biaya_cbl']),
+					'total_charger_biaya_lain_lain' => $this->bersihkan_format_uang($post['biaya_cbl']),
+					'total_biaya_delivery' => $this->bersihkan_format_uang($post['total_biaya_delivery_tbp']),
+					'biaya_pengiriman' => $this->bersihkan_format_uang($post['grand_total_tbp']),
 					'ppn' => $post['ppn_check'],
-					'biaya_ppn' => $post['ppn_final'],
-					'grand_total' => $post['grand_total_final'],
+					'biaya_ppn' => $this->bersihkan_format_uang($post['ppn_final']),
+					'grand_total' => $this->bersihkan_format_uang($post['grand_total_final']),
 					'created_by' => $session['id_user'],
 					'created_date' => date('Y-m-d H:i:s')
 				);
@@ -773,7 +783,8 @@ class Quotation extends Admin_Controller
 
 			// print_r($session);
 		} else {
-
+			// print_r('error 2');
+			// die();
 			$get_ttl_detail = $this->db->query("SELECT SUM(a.harga_satuan * a.qty) AS ttl_harga, SUM(a.total_harga) AS ttl_harga_after_disc FROM tr_penawaran_detail a WHERE a.no_penawaran = '" . $no_surat . "'")->row();
 
 			$get_ttl_other_cost = $this->db->select('SUM(a.total_nilai) AS ttl_other_cost')->get_where('tr_penawaran_other_cost a', ['a.id_penawaran' => $no_surat])->row();
@@ -1080,6 +1091,67 @@ class Quotation extends Admin_Controller
 					}
 				}
 			}
+			//START RESET DELIVERY COST HEADER DAN DETAIL
+			// $this->db->where('no_penawaran', $no_surat);
+			// $this->db->delete('delivery_cost_header');
+			$this->db->where('no_penawaran', $no_surat);
+			$this->db->delete('delivery_cost_detail');
+			$get_data_customer = $this->db->query("SELECT name_customer FROM master_customers WHERE id_customer = '" . $post['id_customer'] . "'")->row();
+
+				$update_data = array(
+				    // 'no_penawaran' => $no_penawaran,
+				    'grand_total_weight' => $post['total_berat_all_new'],
+				    'id_customer' => $post['id_customer'],
+				    'name_customer' => @$get_data_customer->name_customer,
+				    'id_truck_rate' => $post['jenis_truck'],
+				    'kapasitas' => $post['kapasitas_truck_dc'],
+				    'berat_vs_kapasitas' => $post['berat_aktual_truck_dc'],
+				    'jarak_pengiriman' => $post['jarak_pengiriman_truck_dc'],
+				    'rate_truck' => $this->bersihkan_format_uang($post['rate_truck_ba']),
+				    'total_pengiriman' => $this->bersihkan_format_uang($post['total_pengiriman_ba']),
+				    'rate_biaya_angkut' => $this->bersihkan_format_uang($post['rate_biaya_angkut_ba']),
+				    'biaya_angkut' => $this->bersihkan_format_uang($post['biaya_angkut_ba']),
+				    'estimasi_tol' => $this->bersihkan_format_uang($post['estimasi_tol_bt']),
+				    'charger_biaya_lain_lain' => $this->bersihkan_format_uang($post['charger_biaya_cbl']),
+				    'total_charger_biaya_lain_lain' => $this->bersihkan_format_uang($post['biaya_cbl']),
+				    'total_biaya_delivery' => $this->bersihkan_format_uang($post['total_biaya_delivery_tbp']),
+				    'biaya_pengiriman' => $this->bersihkan_format_uang($post['grand_total_tbp']),
+				    'ppn' => $post['ppn_check'],
+				    'biaya_ppn' => $this->bersihkan_format_uang($post['ppn_final']),
+				    'grand_total' => $this->bersihkan_format_uang($post['grand_total_final']),
+				    'updated_by' => $session['id_user'],
+				    'updated_date' => date('Y-m-d H:i:s')
+				);
+
+				// Lakukan update berdasarkan ID (misalnya $id_delivery_cost)
+				$this->db->where('no_penawaran', $no_surat);
+				$this->db->update('delivery_cost_header', $update_data);
+				// echo $this->db->last_query();
+				// die();
+				// $id_delivery_cost = $this->db->insert_id(); // Ambil id_delivery_cost baru
+			// }
+			$get_data_delivery_cost= $this->db->query("SELECT id_delivery_cost FROM delivery_cost_header WHERE no_penawaran = '" . $no_surat . "'")->row();
+
+			// Simpan detail delivery cost detail
+			// if (!empty($list_detail)) {
+				foreach ($list_detail as $row) {
+					$detail_datass = array(
+						'id_delivery_cost' => $get_data_delivery_cost->id_delivery_cost,
+						// 'no_penawaran' => $row['no_penawaran'],
+						'no_penawaran' => $no_penawaran,
+						'id_product' => $row['item'],
+						'name_product' => $row['nama_item'],
+						'weight_per_product' => $row['berat'],
+						'qty' => $row['qty'],
+						'total_weight' => $row['total_berat']
+					);
+					// print_r($detail_data);
+					// die();
+					// $this->Namamodel->insert_detail($detail_data);
+					$this->db->insert('delivery_cost_detail', $detail_datass);
+				}
+			// }
+			//END RESET DELIVERY COST HEADER DAN DETAIL
 		}
 
 		$id_penawaran = ($no_surat == '' || $no_surat == $this->auth->user_id()) ? $no_penawaran : $no_surat;
@@ -2623,7 +2695,8 @@ $total_all_qty += $qty;
 		$get_data_pic = $this->db->query('SELECT a.name_pic, a.id_pic, a.email_pic, b.name_customer FROM child_customer_pic a JOIN master_customers b ON b.id_customer = a.id_customer WHERE position_pic = "' . $PIC . '" AND b.id_customer = "' . $id_customer . '" LIMIT 1 ')->row();
 
 		$list_pic = '<option value="' . $get_data_pic->id_pic . '">' . $get_data_pic->name_pic . '</option>';
-
+		// print_r($list_pic);
+		// die();
 		echo json_encode([
 			'list_pic' => $list_pic,
 			'name_customer' => $get_data_pic->name_customer,

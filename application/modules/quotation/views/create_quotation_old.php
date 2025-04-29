@@ -331,7 +331,6 @@
                         <thead>
                             <tr class="bg-blue">
                                 <th class="text-center">Product Name</th>
-                                <th class="text-center">Stok</th>
                                 <th class="text-center">Qty</th>
                                 <th class="text-center">Price List</th>
                                 <th class="text-center">Discount (%)</th>
@@ -466,28 +465,6 @@
                             if (isset($results['data_penawaran_detail'])) {
                                 foreach ($results['data_penawaran_detail'] as $penawaran_detail) {
 
-                                    //start get stok
-                                    $id_category3 = (int) $penawaran_detail->id_category3;
-                                    $sql = "
-                                            SELECT
-                                                a.code_lv4,
-                                                MAX(a.actual_stock) AS stock_akhir
-                                            FROM
-                                                stock_product a
-                                            LEFT JOIN
-                                                new_inventory_4 b ON a.code_lv4 = b.code_lv4
-                                            WHERE
-                                                b.code_lv4 = ?
-                                                AND a.deleted_date IS NULL
-                                            GROUP BY
-                                                a.code_lv4
-                                        ";
-
-                                    // Eksekusi query dengan parameter binding
-                                    @$query = $this->db->query(@$sql, array($id_category3));
-                                    @$result_stok = $query->row(); // ambil satu baris hasil
-                                    //end get stok
-
                                     $harga_x_qty = (($penawaran_detail->harga_satuan + $penawaran_detail->cutting_fee + $penawaran_detail->delivery_fee) * $penawaran_detail->qty);
                                     $price_after_disc = (($penawaran_detail->harga_satuan + $penawaran_detail->cutting_fee + $penawaran_detail->delivery_fee) - $penawaran_detail->diskon_nilai);
                                     $total_harga = ($penawaran_detail->total_harga);
@@ -513,9 +490,6 @@
                                             <tr>
                                                 <td>
                                                     <span>' . $penawaran_detail->nama_produk . '</span> <br><br>
-                                                </td>
-                                                <td>
-                                                    ' . @$result_stok->stock_akhir . '<br><br>
                                                 </td>
                                                 <td>
                                                     <input type="number" name="qty_' . $penawaran_detail->id_penawaran_detail . '" value="' . $penawaran_detail->qty . '" class="form-control text-right qty qty_' . $penawaran_detail->id_penawaran_detail . '" onchange="hitung_all(' . $penawaran_detail->id_penawaran_detail . ')">
@@ -687,6 +661,97 @@
                                     <table class="table table-bordered">
                                         <thead>
                                             <tr>
+                                                <th class="text-center bg-blue">Information</th>
+                                                <th class="text-center bg-blue">Value</th>
+                                                <th class="text-center bg-blue">Include/Exclude PPh</th>
+                                                <th class="text-center bg-blue">PPh 23 (2%)</th>
+                                                <th class="text-center bg-blue">Total</th>
+                                                <th class="text-center bg-blue">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="list_other_cost">
+                                            <?php
+                                            $total_other_cost = 0;
+                                            $total_other_cost_pph = 0;
+                                            foreach ($results['list_other_cost'] as $other_cost) {
+                                                $inc_exc_pph = ($other_cost->inc_exc_pph == '1') ? 'Include' : 'Exclude';
+                                                echo '
+                                                <tr>
+                                                    <td class="text-left">' . $other_cost->keterangan . '</td>
+                                                    <td class="text-right">
+                                                        <input type="hidden" class="nilai_other_cost" value="' . $other_cost->nilai . '">
+                                                        <span>(' . $other_cost->curr . ') ' . number_format($other_cost->nilai, 2) . '</span>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        ' . $inc_exc_pph . '
+                                                    </td>
+                                                    <td class="text-right">
+                                                        <input type="hidden" class="nilai_pph23_other_cost" value="' . $other_cost->nilai_pph . '">
+                                                        <span>(' . $other_cost->curr . ') ' . number_format($other_cost->nilai_pph, 2) . '</span>
+                                                    </td>
+                                                    <td class="text-right">
+                                                        <input type="hidden" class="total_nilai_other_cost" value="' . $other_cost->total_nilai . '">
+                                                        <span>(' . $other_cost->curr . ') ' . number_format($other_cost->total_nilai, 2) . '</span>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <button type="button" class="btn btn-sm btn-danger del_other_cost" data-id="' . $other_cost->id . '">
+                                                            <i class="fa fa-trash"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ';
+
+                                                $total_other_cost += $other_cost->total_nilai;
+                                                $total_other_cost_pph += $other_cost->nilai_pph;
+                                                // $total_all += $other_cost->total_nilai;
+                                            }
+                                            ?>
+                                        </tbody>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <input type="text" name="keterangan_other_cost" id="" class="form-control form-control-sm keterangan_other_cost">
+                                                </td>
+                                                <td>
+                                                    <input type="text" name="nilai_other_cost" id="" class="form-control form-control-sm text-right auto_num nilai_other_cost_new">
+                                                </td>
+                                                <td>
+                                                    <select name="inc_exc_pph" id="" class="form-control form-control-sm inc_exc_pph_new">
+                                                        <option value="1">Include</option>
+                                                        <option value="2">Exclude</option>
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <input type="text" name="nilai_pph23_other_cost" id="" class="form-control form-control-sm text-right auto_num nilai_pph23_other_cost_new" readonly>
+                                                </td>
+                                                <td>
+                                                    <input type="text" name="total_other_cost" id="" class="form-control form-control-sm text-right auto_num total_other_cost_new" readonly>
+                                                </td>
+                                                <td class="text-center">
+                                                    <button type="button" class="btn btn-sm btn-warning tambah_other_cost">
+                                                        <i class="fa fa-plus"></i> Add
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="3" class="text-right">Total Other Cost</td>
+                                                <td class="text-right ttl_other_cost_pph">
+                                                    <?= '(' . $results['curr'] . ') ' . number_format($total_other_cost_pph, 2) ?>
+                                                </td>
+                                                <td class="text-right ttl_other_cost">
+                                                    <?= '(' . $results['curr'] . ') ' . number_format($total_other_cost, 2) ?>
+                                                </td>
+                                                <td></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="col-lg-12">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
                                                 <th class="text-center bg-blue">Item</th>
                                                 <th class="text-center bg-blue">Price</th>
                                                 <th class="text-center bg-blue">Qty</th>
@@ -814,7 +879,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- <div class="col-lg-5">
+                            <div class="col-lg-5">
                                 <div class="form-group " style="padding-top:15px;">
                                     <?php
                                     $grand_total = (($total_all + $total_other_cost + $grand_total_other_item) + (($total_all + $total_other_cost + $grand_total_other_item) * $results['data_penawaran']->ppn / 100));
@@ -836,38 +901,6 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div> -->
-                            <div class="col-lg-12"></div>
-                            <!-- <div class="col-lg-7"> -->
-                            <div class="form-group " style="padding-top:15px;">
-                                    &nbsp;
-                                </div>
-                            </div>
-                            <!-- <div class="col-lg-5">
-                                <div class="form-group " style="padding-top:15px;">
-                                    
-                                    <label class="col-sm-4 control-label">PPN (11%)(<?= $results['curr']; ?>)</label>
-                                    <div class="col-sm-6 text-center">
-                                        <div class="form-group">
-                                            <span style="padding-right: 40px;">
-                                                <input type="radio" name="ppn_check" id="" class="ppn_check" value="11" <?= (!isset($results['data_penawaran']) || (isset($results['data_penawran']) && $results['data_penawaran']->ppn == '11')) ? 'checked' : 'checked' ?>> Yes
-                                            </span>
-                                            <span>
-                                                <input type="radio" name="ppn_check" id="" class="ppn_check ml-5" value="0" <?= (isset($results['data_penawaran']) && $results['data_penawaran']->ppn == '0') ? 'checked' : null ?>> No
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div> -->
-                            <div class="col-lg-7">
-                            <?php
-                            $grand_total = ($total_all + $total_other_cost + $grand_total_other_item);
-                            if (isset($results['data_penawaran'])) {
-                                $grand_total = (($total_all + $total_other_cost + $grand_total_other_item) + ($results['data_penawaran']->nilai_ppn));
-                            } else {
-                                $grand_total = (($total_all + $total_other_cost + $grand_total_other_item) + (($total_all + $total_other_cost + $grand_total_other_item) * 11 / 100));
-                            }
-                            ?>
                             </div>
                             <div class="col-lg-7"></div>
                             <div class="col-lg-5">
@@ -892,14 +925,14 @@
                                 <div class="form-group " style="padding-top:15px;">
                                     <label class="col-sm-4 control-label">Grand Total (<?= $results['curr']; ?>)</label>
                                     <div class="col-sm-6">
-                                        <input type="text" name="grand_total" class="form-control input-sm text-right grand_total" id="grand_total" value="<?= number_format($grand_total, 2) ?>" readonly>
+                                        <input type="text" name="grand_total" class="form-control input-sm text-right grand_total" id="" value="<?= number_format($grand_total, 2) ?>" readonly>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <hr>
                         <div class="row">
-                            <!-- <div class="col-lg-12">
+                            <div class="col-lg-12">
                                 <button id="simpanpenerimaan" class="btn btn-primary" type="button" onclick="savemutasi()">
                                     <i class="fa fa-save"></i><b> Save Quotation</b>
                                 </button>
@@ -907,439 +940,11 @@
                                 <a href="<?= base_url() ?>quotation" class="btn btn-danger">
                                     <i class="fa fa-refresh"></i><b> Back</b>
                                 </a>
-                            </div> -->
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <!-- START BAGIAN DELIVERY COST -->
-            <div class="box box-default ">
-                <div class="box-header">
-                    <h3>Biaya Pengiriman</h3>
-                </div>
-                <div class="box-body">
-                    <table class="table table-bordered" width="100%" id="tabel-detail-mutasi-delivery-cost">
-                        <thead>
-                            <tr class="bg-blue">
-                                <th class="text-center">Product</th>
-                                <th class="text-center">Berat</th>
-                                <th class="text-center">Qty</th>
-                                <th class="text-center">Total Berat</th>
-                                <!-- <th class="text-center">Discount (%)</th>
-                                <th class="text-center">Price Unit After Discount</th>
-                                <th class="text-center">Total Price</th>
-                                <th class="text-center">Action</th> -->
-                            </tr>
-                        </thead>
-                        <tbody id="list_item_mutasi_delivery_cost">
-                            <?php
-                            $total_all = 0;
-                            $total_price_before_discount = 0;
-                            $total_nilai_discount = 0;
-                            $total_berat_all = 0;
-                            if (isset($results['data_penawaran_detail'])) {
-                                foreach ($results['data_penawaran_detail'] as $penawaran_detail) {
-
-                                    //start get stok
-                                    $id_category3 = $penawaran_detail->id_category3;
-                                    $no_penawaran = $penawaran_detail->no_penawaran;
-                                    $sql = "
-                                            SELECT
-                                                a.code_lv4,
-                                                MAX(a.actual_stock) AS stock_akhir,
-                                                b.berat_produk,
-                                                c.qty,
-                                                (IFNULL(b.berat_produk,0) * c.qty) total_berat
-                                            FROM
-                                                stock_product a
-                                            LEFT JOIN
-                                                new_inventory_4 b ON a.code_lv4 = b.code_lv4
-                                            LEFT JOIN tr_penawaran_detail as c 
-                                            ON c.id_category3 = a.code_lv4
-                                            WHERE
-                                                b.code_lv4 = ?
-                                                AND c.no_penawaran = ?
-                                                AND a.deleted_date IS NULL
-                                            GROUP BY
-                                                a.code_lv4
-                                        ";
-
-                                    // Eksekusi query dengan parameter binding
-                                    @$query = $this->db->query(@$sql, array($id_category3, $no_penawaran));
-                                    @$result_stok = $query->row(); // ambil satu baris hasil
-                                    //end get stok
-
-//START GET DATA INVENTORY
-$sql_berat = "
-SELECT
-berat_produk
-FROM
-new_inventory_4
-WHERE
-code_lv4 = ?
-";
-$query_berat = $this->db->query($sql_berat, array($id_category3));
-$result_berat = $query_berat->row();
-// $berat_produk = $result_berat ? $result_berat->berat_produk : 0;
-$berat_produk = ($result_berat && !empty($result_berat->berat_produk)) ? $result_berat->berat_produk : 0;
-
-$sql_qty = "
-    SELECT
-        qty
-    FROM
-        tr_penawaran_detail
-    WHERE
-        id_category3 = ?
-        AND no_penawaran = ?
-";
-$query_qty = $this->db->query($sql_qty, array($id_category3, $no_penawaran));
-$result_qty = $query_qty->row();
-$qty = $result_qty ? $result_qty->qty : 0;
-
-$total_berat = $berat_produk * $qty;
-$total_berat_all += $total_berat;
-$total_all_qty += $qty;
-//END GET DATA INVENTORY
-
-                                    echo '
-                                            <tr>
-                                            <td style="display:none">' . $no_penawaran . '</td>
-                                            <td style="display:none">' . $id_category3 . '</td>
-                                            <td>
-                                            <span>' . htmlspecialchars($penawaran_detail->nama_produk) . '</span><br><br>
-                                            </td>
-                                            <td>' . $berat_produk . '</td>
-                                            <td>' . $qty . '</td>
-                                            <td>' . $total_berat . '</td>
-                                            </tr>
-                                        ';
-                                }
-                            } else {
-                                $total_berat_all = 0;
-                                foreach ($results['list_penawaran_detail'] as $penawaran_detail) {
-
-                                //start get stok
-                                $id_category3 = $penawaran_detail->id_category3;
-                                $no_penawaran = $penawaran_detail->no_penawaran;
-                                $sql = "
-                                        SELECT
-                                            a.code_lv4,
-                                            MAX(a.actual_stock) AS stock_akhir,
-                                            b.berat_produk,
-                                            c.qty,
-                                            (IFNULL(b.berat_produk,0) * c.qty) total_berat
-                                        FROM
-                                            stock_product a
-                                        LEFT JOIN
-                                            new_inventory_4 b ON a.code_lv4 = b.code_lv4
-                                        LEFT JOIN tr_penawaran_detail as c 
-                                        ON c.id_category3 = a.code_lv4
-                                        WHERE
-                                            b.code_lv4 = ?
-                                            AND c.no_penawaran = ?
-                                            AND a.deleted_date IS NULL
-                                        GROUP BY
-                                            a.code_lv4
-                                    ";
-                                // echo $this->db->last_query();die();
-                                // Eksekusi query dengan parameter binding
-                                @$query = $this->db->query(@$sql, array($id_category3, $no_penawaran));
-                                @$result_stok = $query->row(); // ambil satu baris hasil
-                                //end get stok
-
-//START GET DATA INVENTORY
-$sql_berat = "
-SELECT
-berat_produk
-FROM
-new_inventory_4
-WHERE
-code_lv4 = ?
-";
-$query_berat = $this->db->query($sql_berat, array($id_category3));
-$result_berat = $query_berat->row();
-// $berat_produk = $result_berat ? $result_berat->berat_produk : 0;
-$berat_produk = ($result_berat && !empty($result_berat->berat_produk)) ? $result_berat->berat_produk : 0;
-
-$sql_qty = "
-    SELECT
-        qty
-    FROM
-        tr_penawaran_detail
-    WHERE
-        id_category3 = ?
-        AND no_penawaran = ?
-";
-$query_qty = $this->db->query($sql_qty, array($id_category3, $no_penawaran));
-$result_qty = $query_qty->row();
-$qty = $result_qty ? $result_qty->qty : 0;
-
-$total_berat = $berat_produk * $qty;
-$total_berat_all += $total_berat;
-$total_all_qty += $qty;
-//END GET DATA INVENTORY
-                                echo '
-                                    <tr>
-                                        <td style="display:none">' . $no_penawaran . '</td>
-                                        <td style="display:none">' . $id_category3 . '</td>
-                                        <td>
-                                        <span>' . htmlspecialchars($penawaran_detail->nama_produk) . '</span><br><br>
-                                        </td>
-                                        <td>' . $berat_produk . '</td>
-                                        <td>' . $qty . '</td>
-                                        <td>' . $total_berat . '</td>
-                                    </tr>
-                                ';
-                                }
-                            }
-                            ?>
-                        </tbody>
-                    </table>
-                    <div>
-                    <div class="col-lg-8"></div>
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Total Berat</label>
-                            <div class="col-sm-6">
-                            <!-- number_format($total_berat_all, 2) -->
-                                <input type="text" name="total_berat_all" class="form-control input-sm text-right" id="total_berat_all" value="<?= number_format($total_berat_all, 2) ?>" readonly>
-                                <input type="hidden" name="total_berat_all_new" class="form-control input-sm text-right" id="total_berat_all_new" value="<?= $total_berat_all ?>" readonly>
-                                <input type="hidden" name="total_all_qty" class="form-control input-sm text-right" id="total_all_qty" value="<?= $total_all_qty ?>" readonly>
-
-                            </div>
-                        </div>
-                    </div>
-                    <br>
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Customer</label>
-                            <div class="col-sm-6">
-                            <!-- number_format($total_berat_all, 2) -->
-                                <input type="text" name="customer_dc" class="form-control input-sm" id="customer_dc" readonly>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-8">
-                        <div class="form-group " style="padding-top:15px;">&nbsp;</div>
-                    </div>
-                    <br>
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Jenis Truck <?= $results['get_delivery_cost_header']->id_truck_rate ?></label>
-                            <div class="col-sm-6">
-                                <select id="jenis_truck" name="jenis_truck" class="form-control select2 get_data_truck" required>
-                                    <!-- <option value="">-- Choose Option --</option> -->
-                                    <?php foreach ($results['jenis_truck'] as $jenis_trucks) { ?>
-                                        <option value="<?= $jenis_trucks->id_truck_rate ?>" <?php if($jenis_trucks->id_truck_rate == $results['get_delivery_cost_header']->id_truck_rate){ 'selected'; } ?>><?= ucfirst($jenis_trucks->nm_asset) ?></option>
-                                        <!-- <option value="<?= $jenis_trucks->id_truck_rate ?>" ><?= ucfirst($jenis_trucks->nm_asset) ?></option> -->
-                                    <?php } ?>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Kapasitas</label>
-                            <div class="col-sm-6">
-                            <input type="text" name="kapasitas_truck_dc" class="form-control text-right" id="kapasitas_truck_dc" readonly value="<?= @$results['get_delivery_cost_header']->kapasitas ?>">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Perbandingan berat produk Vs Kapasitas</label>
-                            <div class="col-sm-6">
-                                <input type="text" name="berat_aktual_truck_dc" class="form-control input-sm text-right" id="berat_aktual_truck_dc" readonly value="<?= @$results['get_delivery_cost_header']->berat_vs_kapasitas ?>">
-                            </div>
-                        </div>
-                    </div>
-                    <br>
-                    <div class="col-lg-8"></div>
-                    <div class="col-lg-4">
-                        <!-- <div class="form-group " style="padding-top:15px;"> -->
-                            <!-- <label class="col-sm-4 control-label">&nbsp;</label> -->
-                            <!-- <div class="col-sm-6"> -->
-                            <!-- number_format($total_berat_all, 2) -->
-                                <!-- <input type="text" name="total_berat_all" class="form-control input-sm text-right grand_total" id="total_berat_all" value="<?= number_format($total_berat_all, 2) ?>" readonly> -->
-                            <!-- </div> -->
-                        <!-- </div> -->
-                    </div>
-                    <br>
-                    <!-- <div class="col-lg-7"></div> -->
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Jarak Pengiriman (PP) (Km)</label>
-                            <div class="col-sm-6">
-                            <input type="text" name="jarak_pengiriman_truck_dc" class="form-control text-right" id="jarak_pengiriman_truck_dc" value="<?= @$results['get_delivery_cost_header']->jarak_pengiriman ?>">
-                            </div>
-                        </div>
-                    </div>
-                    <!-- <div class="col-lg-8">
-                        <div class="form-group " style="padding-top:15px;">&nbsp;</div>
-                    </div> -->
-                    <br>
-                    <div class="col-lg-8"></div>
-                    <div class="col-lg-4">
-                        <!-- <div class="form-group " style="padding-top:15px;"> -->
-                            <!-- <label class="col-sm-4 control-label">&nbsp;</label> -->
-                            <!-- <div class="col-sm-6"> -->
-                            <!-- number_format($total_berat_all, 2) -->
-                                <!-- <input type="text" name="total_berat_all" class="form-control input-sm text-right grand_total" id="total_berat_all" value="<?= number_format($total_berat_all, 2) ?>" readonly> -->
-                            <!-- </div> -->
-                        <!-- </div> -->
-                    </div>
-                    <br>
-                    <!-- <hr> -->
-                    <div class="col-lg-12"></div>
-                    <div class="col-lg-12">
-                        <h3>Biaya Angkut</h3>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Rate Truck</label>
-                            <div class="col-sm-6">
-                            <input type="text" name="rate_truck_ba" class="form-control text-right" id="rate_truck_ba" readonly value="<?= @$results['get_delivery_cost_header']->rate_truck ?>">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-12"></div>
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Total Pengiriman (Qty)</label>
-                            <div class="col-sm-6">
-                            <input type="text" name="total_pengiriman_ba" class="form-control text-right" id="total_pengiriman_ba" readonly value="<?= @$results['get_delivery_cost_header']->total_pengiriman ?>">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-12"></div>
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Rate Biaya Angkut (Rp/Km)</label>
-                            <div class="col-sm-6">
-                                <input type="text" name="rate_biaya_angkut_ba" class="form-control input-sm text-right" id="rate_biaya_angkut_ba" readonly value="<?= @$results['get_delivery_cost_header']->rate_biaya_angkut ?>">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-12"></div>
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Biaya Angkut (Rp)</label>
-                            <div class="col-sm-6">
-                                <input type="text" name="biaya_angkut_ba" class="form-control input-sm text-right" id="biaya_angkut_ba" readonly value="<?= @$results['get_delivery_cost_header']->biaya_angkut ?>">
-                            </div>
-                        </div>
-                    </div>
-                    <br>
-                    <div class="col-lg-12"></div>
-                    <div class="col-lg-12">
-                        <h3>Biaya Tol (PP)</h3>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Estimasi Tol (PP) (Rp)</label>
-                            <div class="col-sm-6">
-                            <input type="text" name="estimasi_tol_bt" class="form-control text-right" id="estimasi_tol_bt" value="<?= @$results['get_delivery_cost_header']->estimasi_tol ?>">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-12"></div>
-                    <div class="col-lg-12">
-                        <h3>Charger Biaya Lain-Lain (Supir, Kenek, Uang Makan, Maintenance)</h3>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Charger Biaya Lain-Lain (%)</label>
-                            <div class="col-sm-6">
-                            <input type="text" name="charger_biaya_cbl" class="form-control text-right" id="charger_biaya_cbl"  value="<?= @$results['get_delivery_cost_header']->charger_biaya_lain_lain ?>" >
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-12"></div>
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">&nbsp;</label>
-                            <div class="col-sm-6">
-                            <input type="text" name="biaya_cbl" class="form-control text-right" id="biaya_cbl" readonly value="<?= @$results['get_delivery_cost_header']->total_charger_biaya_lain_lain ?>" >
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-12"></div>
-                    <div class="col-lg-12">
-                        <h3>Total Biaya Pengiriman</h3>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Total Biaya Delivery (Rp)</label>
-                            <div class="col-sm-6">
-                            <input type="text" name="total_biaya_delivery_tbp" class="form-control text-right" id="total_biaya_delivery_tbp" readonly value="<?= @$results['get_delivery_cost_header']->total_biaya_delivery ?>" >
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-12"></div>
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">&nbsp;</label>
-                            <div class="col-sm-6">
-                            <input type="text" name="grand_total_tbp" class="form-control text-right" id="grand_total_tbp" readonly value="<?= @$results['get_delivery_cost_header']->biaya_pengiriman ?>" >
-                            </div>
-                        </div>
-                    </div>
-                    <br>
-                    <div class="col-lg-12"></div>
-                    <div class="col-lg-8"></div>
-                    <div class="col-lg-4">
-                        <div class="form-group" style="">
-                            <label class="col-sm-4 control-label">PPN (11%)(<?= $results['curr']; ?>)</label>
-                            <div class="col-sm-6">
-                            <input type="text" name="ppn_check" id="ppn_check" class="form-control text-right" 
-                            value="<?= (isset($results['data_penawaran']) && $results['data_penawaran']->ppn == '11') ? '11' : '0' ?>">
-                            </div>
-                        </div>
-                    </div>
-                    <br>
-                    <div class="col-lg-12"></div>
-                    <div class="col-lg-8"></div>
-                    <div class="col-lg-4">
-                        <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">&nbsp;</label>
-                            <div class="col-sm-6 text-center">
-                                <div class="form-group">
-                                    <!-- <span style="padding-right: 40px;"> -->
-                                        <input type="text" name="ppn_final" id="ppn_final" class="form-control text-right" value="" readonly value="<?= @$results['get_delivery_cost_header']->biaya_ppn ?>" >
-                                    <!-- </span> -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <br>
-                    <div class="col-lg-12"></div>
-                    <div class="col-lg-8"></div>
-                    <div class="col-lg-4">
-                        <div class="form-group" style="">
-                            <label class="col-sm-4 control-label">Grand Total (Rp)</label>
-                            <div class="col-sm-6">
-                            <input type="text" name="grand_total_final" class="form-control text-right" id="grand_total_final" readonly value="<?= @$results['get_delivery_cost_header']->grand_total ?>" >
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-12"></div>
-                    <div class="col-lg-10"></div>
-                    <div class="col-lg-2" style="padding-top:15px;">
-                        <button id="simpanpenerimaan" class="btn btn-primary" type="button" onclick="savemutasi()">
-                            <i class="fa fa-save"></i><b> Save Quotation</b>
-                        </button>
-
-                        <a href="<?= base_url() ?>quotation" class="btn btn-danger">
-                            <i class="fa fa-refresh"></i><b> Back</b>
-                        </a>
-                    </div>
-
-
-                    </div>
-                </div>
-            </div>
-            <!-- END BAGIAN DELIVERY COST -->
 
             <div class="modal modal-primary" id="dialog-data-stok" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
@@ -1471,79 +1076,49 @@ $total_all_qty += $qty;
             <script src="<?= base_url('assets/js/number-divider.min.js') ?>"></script>
             <script src="<?= base_url('assets/js/autoNumeric.js') ?>"></script>
             <script>
-function formatRupiahTanpaSimbol(angka) {
-    return new Intl.NumberFormat('id-ID').format(angka);
-}
+                $(document).ready(function() {
+                    $('.select2').select2();
+                    swal.close();
+                    $('#incomplete').hide();
+                    $('#pakailebihbayar').hide();
+                    $("#list_item_unlocated").DataTable({
+                        lengthMenu: [10, 155, 30]
+                    }).draw();
+                    $(".divide").divide();
 
-$(document).ready(function() {
-    $('.select2').select2();
-    swal.close();
-    $('#incomplete').hide();
-    $('#pakailebihbayar').hide();
-    $("#list_item_unlocated").DataTable({
-        lengthMenu: [10, 155, 30]
-    }).draw();
-    $(".divide").divide();
-
-    $('.nilai_ppn').autoNumeric('init', {
-        aSep: ',',
-        aDec: '.',
-        mDec: '2'
-    });
-    $('.ppn_persen').autoNumeric('init', {
-        suffixText: '%'
-    });
-    $('.diskon_nilai').autoNumeric('init', {
-        aSep: ',',
-        aDec: '.',
-        mDec: '2'
-    });
-    $('.diskon_persen').autoNumeric({
-        suffixText: '%'
-    });
-    $('.qty').autoNumeric('init', {
-        aSep: ',',
-        aDec: '.',
-        mDec: '2'
-    });
-    $('.auto_num').autoNumeric('init', {
-        aSep: ',',
-        aDec: '.',
-        mDec: '2'
-    });
-
-    var storedCustomerName = localStorage.getItem('name_customer');
-    var storedCustomerId = localStorage.getItem('id_customer');
-
-    if (storedCustomerId) {
-        $('.get_data_customer').val(storedCustomerId);
-        loadCustomerData(storedCustomerId);
-    }
-
-    if (storedCustomerName) {
-        $('#customer_dc').val(storedCustomerName);
-    }
-
-    // var saved_id_truck = localStorage.getItem('selected_id_truck');
-    // if (saved_id_truck) {
-    //     $('.get_data_truck').val(saved_id_truck).trigger('change');
-    //     // loadCustomerData(storedCustomerId);
-    // }
-
-    // if (!saved_id_truck) {
-    //     $('#jenis_truck').html('');
-    //     localStorage.removeItem('selected_id_truck');
-    // }
-
-    hitungTruckDanDelivery();
-
-});
+                    $('.nilai_ppn').autoNumeric('init', {
+                        aSep: ',',
+                        aDec: '.',
+                        mDec: '2'
+                    });
+                    $('.ppn_persen').autoNumeric('init', {
+                        suffixText: '%'
+                    });
+                    $('.diskon_nilai').autoNumeric('init', {
+                        aSep: ',',
+                        aDec: '.',
+                        mDec: '2'
+                    });
+                    $('.diskon_persen').autoNumeric({
+                        suffixText: '%'
+                    });
+                    $('.qty').autoNumeric('init', {
+                        aSep: ',',
+                        aDec: '.',
+                        mDec: '2'
+                    });
+                    $('.auto_num').autoNumeric('init', {
+                        aSep: ',',
+                        aDec: '.',
+                        mDec: '2'
+                    });
+                });
 
 
                 var no_surat = $('.no_surat').val();
                 var curr = $('.curr').val()
 
-                function savemutasi_old() {
+                function savemutasi() {
 
                     // if ($('#tgl_bayar').val() == "") {
                     // 	swal({
@@ -1660,110 +1235,6 @@ $(document).ready(function() {
                             }
                         });
                 }
-
-function savemutasi() {
-    var formdata = $("#form-header-mutasi").serializeArray(); // serializeArray untuk dapat array
-    var listData = [];
-
-    // Ambil semua baris di tbody
-    $('#list_item_mutasi_delivery_cost tr').each(function() {
-        var no_penawaran = $(this).find('td:eq(0)').text().trim();
-        var item = $(this).find('td:eq(1)').text().trim();
-        var nama_item = $(this).find('td:eq(2)').text().trim();
-        var berat = $(this).find('td:eq(3)').text().trim();
-        var qty = $(this).find('td:eq(4)').text().trim();
-        var total_berat = $(this).find('td:eq(5)').text().trim();
-
-        // if (item !== '') {
-            listData.push({
-                'no_penawaran': no_penawaran,
-                'item': item,
-                'nama_item': nama_item,
-                'berat': berat,
-                'qty': qty,
-                'total_berat': total_berat
-            });
-        // }
-    });
-
-    // Gabungkan formdata + listData
-    var finalData = {
-        form_header: formdata,
-        list_detail: listData
-    };
-
-swal({
-        title: "Peringatan !",
-        text: "Pastikan data sudah lengkap dan benar",
-        type: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#DD6B55",
-        confirmButtonText: "Ya, simpan!",
-        cancelButtonText: "Batal!",
-        closeOnConfirm: false,
-        closeOnCancel: true
-    },
-    function(isConfirm) {
-        if (isConfirm) {
-            // $('#simpanpenerimaan').hide();
-            var formdata = $("#form-header-mutasi").serialize();
-            $.ajax({
-                url: siteurl + active_controller + "save_penerimaan_new",
-                dataType: "json",
-                type: 'POST',
-                // data: formdata,
-                data: finalData,
-                success: function(data) {
-                    if (data.status == 1) {
-                        swal({
-                            title: "Save Success!",
-                            text: data.pesan,
-                            type: "success",
-                            timer: 5000,
-                            showCancelButton: false,
-                            showConfirmButton: false,
-                            allowOutsideClick: false
-                        });
-                        window.location.href = base_url + active_controller;
-                    } else {
-
-                        if (data.status == 2) {
-                            swal({
-                                title: "Save Failed!",
-                                text: data.pesan,
-                                type: "warning",
-                                timer: 10000,
-                                showCancelButton: false,
-                                showConfirmButton: false,
-                                allowOutsideClick: false
-                            });
-                        } else {
-                            swal({
-                                title: "Save Failed!",
-                                text: data.pesan,
-                                type: "warning",
-                                timer: 10000,
-                                showCancelButton: false,
-                                showConfirmButton: false,
-                                allowOutsideClick: false
-                            });
-                        }
-
-                    }
-                },
-                error: function() {
-                    swal({
-                        title: "Gagal!",
-                        text: "Batal Proses, Data bisa diproses nanti",
-                        type: "error",
-                        timer: 1500,
-                        showConfirmButton: false
-                    });
-                }
-            });
-        }
-    });
-}
 
                 function kembali_inv() {
 
@@ -2101,7 +1572,6 @@ swal({
                         dataType: 'JSON',
                         success: function(result) {
                             $('#list_item_mutasi').html(result.hasil);
-                            $('#list_item_mutasi_delivery_cost').html(result.hasil_delivery_cost);
 
 
                             $('.total_price_before_discount').val(number_format(result.total_price_before_discount, 2));
@@ -2113,9 +1583,6 @@ swal({
                             $('.total_other_item').val(number_format(result.grand_total_other_item, 2));
                             $('.grand_total').val(number_format(result.grand_total, 2));
                             $('.col_grand_total_other_item').html(number_format(result.grand_total_other_item, 2));
-
-                            $('#total_berat_all').val(result.total_berat);
-                            $('#total_berat_all_new').val(result.total_berat);
 
                             $('.nilai_ppn').autoNumeric('destroy');
                             $('.diskon_nilai').autoNumeric('destroy');
@@ -2189,7 +1656,7 @@ swal({
                     $.ajax({
                         type: 'post',
                         url: siteurl + active_controller + 'hitung_all',
-                        data: {//beda disini
+                        data: {
                             'id': id,
                             'no_surat': no_surat,
                             'qty': qty_penawaran,
@@ -2493,271 +1960,24 @@ swal({
                     });
                 });
 
-//START VERSION OLD
-// $(document).on('change', '.get_data_customer', function() {
-//     var id_customer = $(this).val();
-
-//     $.ajax({
-//         type: 'post',
-//         url: siteurl + active_controller + 'get_data_customer',
-//         data: {
-//             'id_customer': id_customer
-//         },
-//         cache: false,
-//         dataType: 'json',
-//         success: function(result) {
-//             // console.log(result);
-//             $('#pic_customer').html(result.list_pic);
-//             $('#email_customer').val(result.email_pic);
-//         }
-//     });
-// });
-//END VERSION OLD
-// Function untuk load data customer berdasarkan ID
-function loadCustomerData(id_customer) {
-    if (!id_customer) {
-        // Kalau kosong, bersihkan field dan localStorage
-        clearCustomerFields();
-        return;
-    }
-
-    $.ajax({
-        type: 'POST',
-        url: siteurl + active_controller + 'get_data_customer',
-        data: { id_customer: id_customer },
-        cache: false,
-        dataType: 'json',
-        success: function(result) {
-            if (result) {
-                $('#pic_customer').html(result.list_pic);
-                $('#email_customer').val(result.email_pic);
-                $('#customer_dc').val(result.name_customer);
-
-                // Simpan ke Local Storage
-                localStorage.setItem('name_customer', result.name_customer);
-                localStorage.setItem('id_customer', id_customer);
-            }
-        },
-        error: function(xhr, status, error) {
-            console.error('AJAX Error:', status, error);
-        }
-    });
-}
-
-// Function untuk membersihkan input dan localStorage
-function clearCustomerFields() {
-    $('#pic_customer').html('');
-    $('#email_customer').val('');
-    $('#customer_dc').val('');
-
-    localStorage.removeItem('name_customer');
-    localStorage.removeItem('id_customer');
-}
-
-// Event change saat pilih customer
-$(document).on('change', '.get_data_customer', function() {
-    var id_customer = $(this).val();
-    loadCustomerData(id_customer);
-});
-
-function clearTruckFields() {
-    $('#jenis_truck').html('');
-
-    localStorage.removeItem('selected_id_truck');
-}
-
-                $(document).on('change', '.get_data_truck', function() {
-                    var id_truck = $(this).val();
-                    var no_penawaran = $('#no_surat').val();
-                    var grand_total_input = $('#grand_total').val();
-                    // let nilai_input = $('#grand_total').val(); // contoh input value "673,577,640.000"
-                    let grand_total = parseFloat(grand_total_input.replace(/,/g, '')) || 0;
-                    // var total_berat_all = $('#total_berat_all').val();
-                    var total_berat_all = parseFloat($('#total_berat_all_new').val()) || 0;  // Ambil nilai total berat all
-                    // var total_all_qty = parseFloat($('#total_all_qty').val()) || 0;
-                    var total_all_qty = parseFloat($('#total_all_qty').val().replace(/[^0-9.-]+/g,"")) || 0;
-                    var jarak_pengiriman = parseFloat($('#jarak_pengiriman_truck_dc').val()) || 0;
-                    var estimasi_tol = parseFloat($('#estimasi_tol_bt').val()) || 0;
-                    var charger_biaya = parseFloat($('#charger_biaya_cbl').val()) || 0;
-                    var total_price_before_discount = parseFloat($('#total_price_before_discount_new').val()) || 0;
-
-                    // console.log("DEBUG id_truck = ", id_truck);
-                    // console.log("DEBUG siteurl = ", siteurl);
-                    // console.log("DEBUG active_controller = ", active_controller);
-
-                    if (!id_truck) {
-                        console.warn("ID truck kosong saat pilih pertama!");
-                        return; // Jangan lanjut Ajax kalau id_truck kosong
-                    }
-
-                    // console.log(no_penawaran);
-                    // return;
+                $(document).on('change', '.get_data_customer', function() {
+                    var id_customer = $(this).val();
 
                     $.ajax({
                         type: 'post',
-                        url: siteurl + active_controller + 'get_data_truck',
+                        url: siteurl + active_controller + 'get_data_customer',
                         data: {
-                            'id_truck': id_truck,
-                            'no_penawaran': no_penawaran,
-                            'grand_total': grand_total
+                            'id_customer': id_customer
                         },
                         cache: false,
                         dataType: 'json',
                         success: function(result) {
-                            // console.log("Success result = ", result);
-                            // $('#kapasitas_truck_dc').html(result.kapasitas);
-                            // Mengambil kapasitas dari response dan menghitung berat aktual
-                            if(total_all_qty == 0 || total_all_qty == ''){
-                                total_all_qty = parseFloat(result.all_qty_penawaran) || 0;
-                            }else{
-                                total_all_qty = parseFloat(total_all_qty) || 0;
-                            }
-                            var kapasitas = parseFloat(result.kapasitas) || 0; // Kapasitas truck
-                            var berat_aktual = total_berat_all - kapasitas; // Hitung berat aktual
-                            var rate_truck = parseFloat(result.rate_truck) || 0; // Kapasitas truck
-                            var rate_biaya_angkut = rate_truck / total_all_qty;
-                            // Batasi rate_biaya_angkut menjadi 2 angka di belakang koma
-                            rate_biaya_angkut = rate_biaya_angkut.toFixed(2);
-                            var biaya_angkut = rate_biaya_angkut * total_all_qty * jarak_pengiriman;
-                            biaya_angkut = biaya_angkut.toFixed(2);
-                            var biaya_charger = parseFloat(biaya_angkut) + estimasi_tol;
-                            var biaya_charger_final = biaya_charger * (charger_biaya / 100);
-                            var total_biaya_delivery = parseFloat(biaya_angkut) + estimasi_tol + biaya_charger_final;
-                            // var grand_total_delivery = total_price_before_discount + total_biaya_delivery;//version 1
-                            if(total_biaya_delivery == 0 || total_biaya_delivery == ''){
-                                var grand_total_delivery = result.grand_total;
-                            }else{
-                                var grand_total_delivery = result.grand_total + total_biaya_delivery;
-                            }
-                            // var grand_total_delivery = result.grand_total + total_biaya_delivery;
-                            console.log(result.grand_total);
-                            // Set nilai input
-                            $('#kapasitas_truck_dc').val(kapasitas); // Set kapasitas truck
-                            $('#berat_aktual_truck_dc').val(berat_aktual); // Set berat aktual truck
-                            $('#rate_truck_ba').val(rate_truck);
-                            $('#total_pengiriman_ba').val(total_all_qty);
-                            $('#rate_biaya_angkut_ba').val(rate_biaya_angkut);
-                            $('#biaya_angkut_ba').val(biaya_angkut);
-                            // $('#biaya_cbl').val(number_format($biaya_charger_final, 2));
-                            // $('#biaya_cbl').val(number_format($biaya_charger_final));
-                            $('#biaya_cbl').val(formatRupiahTanpaSimbol(biaya_charger_final));
-                            $('#total_biaya_delivery_tbp').val(formatRupiahTanpaSimbol(total_biaya_delivery));
-                            $('#grand_total_tbp').val(formatRupiahTanpaSimbol(grand_total_delivery));
-
-                            // Ubah warna latar belakang inputan berat_aktual_truck_dc berdasarkan kondisi
-                            // if (berat_aktual > kapasitas) {//version old
-                            if (total_berat_all > kapasitas) {
-                                $('#berat_aktual_truck_dc').css('background-color', 'red'); // Merah jika lebih dari kapasitas
-                                $('#berat_aktual_truck_dc').css('color', 'white'); // Teks putih untuk kontras
-                            } else {
-                                $('#berat_aktual_truck_dc').css('background-color', '#90EE90'); // Hijau jika kurang atau sama dengan kapasitas
-                                $('#berat_aktual_truck_dc').css('color', 'white'); // Teks putih untuk kontras
-                            }
-                            // hitungTruckDanDelivery();
-                            // Jika diperlukan, bisa juga menampilkan hasilnya di elemen lain
-                            // $('#result_display').html('Berat Aktual: ' + berat_aktual);
-                            // Simpan ID Truck ke LocalStorage
-                            // localStorage.setItem('selected_id_truck', id_truck);
-                            // Setelah selesai, langsung refresh page:
-                            // location.reload();
-                        },
-                        error: function(xhr, status, error) {
-                            console.error("AJAX Error: ", status, error);
-                            console.log(xhr.responseText); // ini supaya kita tahu detail error dari server
+                            // console.log(result);
+                            $('#pic_customer').html(result.list_pic);
+                            $('#email_customer').val(result.email_pic);
                         }
                     });
                 });
-
-$(document).on('change', '#id_truck', function() {
-    var id_truck = $(this).val();
-    if (!id_truck) return; // Kalau belum pilih truck, stop
-
-    $.ajax({
-        type: 'post',
-        url: siteurl + active_controller + 'get_data_truck',
-        data: { 'id_truck': id_truck },
-        dataType: 'json',
-        success: function(result) {
-            if (result) {
-                $('#kapasitas_truck_dc').val(result.kapasitas || 0);
-                $('#rate_truck_ba').val(result.rate_truck || 0);
-                hitungTruckDanDelivery(); // Langsung hitung setelah dapat data
-            }
-        }
-    });
-});
-
-function hitungTruckDanDelivery() {
-    var total_berat_all = parseFloat($('#total_berat_all_new').val()) || 0;
-    var total_all_qty = parseFloat($('#total_all_qty').val()) || 0;
-    var jarak_pengiriman = parseFloat($('#jarak_pengiriman_truck_dc').val()) || 0;
-    var estimasi_tol = parseFloat($('#estimasi_tol_bt').val()) || 0;
-    var charger_biaya = parseFloat($('#charger_biaya_cbl').val()) || 0;
-    var total_price_before_discount = parseFloat($('#total_price_before_discount_new').val()) || 0;
-    var kapasitas = parseFloat($('#kapasitas_truck_dc').val()) || 0;
-    var rate_truck = parseFloat($('#rate_truck_ba').val()) || 0;
-    var ppn_check = parseFloat($('#ppn_check').val()) || 0;
-    var grand_total_input = $('#grand_total').val();
-    // let nilai_input = $('#grand_total').val(); // contoh input value "673,577,640.000"
-    let grand_total = parseFloat(grand_total_input.replace(/,/g, '')) || 0;
-
-    if (kapasitas == 0 || rate_truck == 0) {
-        console.log('Truck belum dipilih lengkap, hitungan skip.');
-        return; // Jangan hitung kalau belum lengkap
-    }
-
-    var rate_biaya_angkut = 0;
-    if (total_all_qty > 0) {
-        rate_biaya_angkut = rate_truck / total_all_qty;
-    }
-
-    // Batasi rate_biaya_angkut menjadi 2 angka di belakang koma
-    rate_biaya_angkut = rate_biaya_angkut.toFixed(2);
-
-    var biaya_angkut = rate_biaya_angkut * total_all_qty * jarak_pengiriman;
-    biaya_angkut = biaya_angkut.toFixed(2);
-    var biaya_charger = parseFloat(biaya_angkut) + estimasi_tol;
-    var biaya_charger_final = biaya_charger * (charger_biaya / 100);
-    var total_biaya_delivery = parseFloat(biaya_angkut) + estimasi_tol + biaya_charger_final;
-    // var grand_total_delivery = total_price_before_discount + total_biaya_delivery;
-    // var biaya_ppn = (total_price_before_discount + total_biaya_delivery) * (ppn_check / 100);
-    // var grand_total_final = (total_price_before_discount + total_biaya_delivery) + biaya_ppn;
-    var grand_total_delivery = grand_total + total_biaya_delivery;
-    var biaya_ppn = (grand_total + total_biaya_delivery) * (ppn_check / 100);
-    var grand_total_final = (grand_total + total_biaya_delivery) + biaya_ppn;
-
-    $('#rate_biaya_angkut_ba').val(formatRupiahTanpaSimbol(rate_biaya_angkut));
-    $('#biaya_angkut_ba').val(formatRupiahTanpaSimbol(biaya_angkut));
-    $('#biaya_cbl').val(formatRupiahTanpaSimbol(biaya_charger_final));
-    $('#total_biaya_delivery_tbp').val(formatRupiahTanpaSimbol(total_biaya_delivery));
-    $('#grand_total_tbp').val(formatRupiahTanpaSimbol(grand_total_delivery));
-    $('#ppn_final').val(formatRupiahTanpaSimbol(biaya_ppn));
-    $('#grand_total_final').val(formatRupiahTanpaSimbol(grand_total_final));
-
-    var berat_aktual = total_berat_all - kapasitas;
-    $('#berat_aktual_truck_dc').val(total_berat_all);
-    // console.log(total_berat_all);
-    // if (kapasitas > berat_aktual) {
-    if (total_berat_all > kapasitas) {
-        // console.log(total_berat_all);
-        $('#berat_aktual_truck_dc').css({'background-color': 'red', 'color': 'white'});
-    } else {
-        $('#berat_aktual_truck_dc').css({'background-color': '#b2fab4', 'color': 'black'});
-    }
-
-}
-
-
-$(document).on('input', '#jarak_pengiriman_truck_dc, #estimasi_tol_bt, #charger_biaya_cbl, #ppn_check', function() {
-    hitungTruckDanDelivery(); // Hitung ulang saat input manual
-});
-
-
-// $(document).on('input change', '#jarak_pengiriman_truck_dc, #estimasi_tol_bt, #charger_biaya_cbl', function() {
-//     console.log('Input/Change Detected'); // Test console
-//     hitungTruckDanDelivery();
-// });
-
 
                 $(document).on('click', '.tambah_other_cost', function() {
                     var curr = $('.curr').val();
