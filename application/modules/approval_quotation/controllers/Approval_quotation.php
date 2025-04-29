@@ -114,7 +114,7 @@ class Approval_quotation extends Admin_Controller
 			}
 		} else {
 			$this->db->update('tr_penawaran', array('status' => 0), array('no_penawaran' => $post['no_surat']));
-			$this->db->delete('tr_req_quot', array('id_penawaran' => $post['no_surat']));
+			$this->db->delete('tr_req_quot', array('id_quotation' => $post['no_surat']));
 		}
 
 
