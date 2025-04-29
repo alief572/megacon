@@ -82,22 +82,39 @@ class Approval_quotation extends Admin_Controller
 		$next_approval_num = $get_penawaran['req_app' . $next_approval];
 
 		if ($action == 'Approve') {
-			if ($get_penawaran['req_app' . $post['approval_num']] == 1 && $get_penawaran['req_app' . $next_approval] == 1) {
-				$update_status = $this->db->update('tr_penawaran', array('app_' . $post['approval_num'] => 1, 'status' => 1), array('no_penawaran' => $post['no_surat']));
+			$this->db->select('a.*');
+			$this->db->from('tr_req_quot a');
+			$this->db->where('a.id_quotation', $post['no_surat']);
+			$this->db->where('a.approved', 'N');
+			$this->db->order_by('a.level', 'asc');
+			$get_req_quot_num = $this->db->get()->num_rows();
+
+			if ($get_req_quot_num < 2) {
+				$this->db->select('a.*');
+				$this->db->from('tr_req_quot a');
+				$this->db->where('a.id_quotation', $post['no_surat']);
+				$this->db->where('a.approved', 'N');
+				$this->db->order_by('a.level', 'asc');
+				$this->db->limit(1);
+				$get_req_quot = $this->db->get()->row();
+
+				$this->db->update('tr_req_quot', array('approved' => 'Y', 'approved_by' => $this->auth->user_id(), 'approved_date' => date('Y-m-d H:i:s')), array('id' => $get_req_quot->id));
+
+				$this->db->update('tr_penawaran', array('status' => 2), array('no_penawaran' => $post['no_surat']));
 			} else {
-				$update_status = $this->db->update('tr_penawaran', array('app_' . $post['approval_num'] => 1, 'status' => 2), array('no_penawaran' => $post['no_surat']));
+				$this->db->select('a.*');
+				$this->db->from('tr_req_quot a');
+				$this->db->where('a.id_quotation', $post['no_surat']);
+				$this->db->where('a.approved', 'N');
+				$this->db->order_by('a.level', 'asc');
+				$this->db->limit(1);
+				$get_req_quot = $this->db->get()->row();
+
+				$this->db->update('tr_req_quot', array('approved' => 'Y', 'approved_by' => $this->auth->user_id(), 'approved_date' => date('Y-m-d H:i:s')), array('id' => $get_req_quot->id));
 			}
 		} else {
-			$arr_data = [
-				'req_app1' => null,
-				'req_app2' => null,
-				'req_app3' => null,
-				'app_1' => null,
-				'app_2' => null,
-				'app_3' => null,
-				'status' => 0
-			];
-			$update_status = $this->db->update('tr_penawaran', $arr_data, array('no_penawaran' => $post['no_surat']));
+			$this->db->update('tr_penawaran', array('status' => 0), array('no_penawaran' => $post['no_surat']));
+			$this->db->delete('tr_req_quot', array('id_quotation' => $post['no_surat']));
 		}
 
 

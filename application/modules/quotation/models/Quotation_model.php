@@ -1310,20 +1310,30 @@ class Quotation_model extends BF_Model
 		foreach ($get_data->result_array() as $item) {
 			$no++;
 
-			$$Status = '';
+			$Status = '';
 
 			if ($item['status'] == 0) {
 				$Status = "<span class='badge bg-yellow'>Draft</span>";
 			} elseif ($item['status'] == 1) {
 
+				$this->db->select('a.*');
+				$this->db->from('tr_req_quot a');
+				$this->db->where('a.id_quotation', $item['no_penawaran']);
+				$this->db->where('a.approved', 'N');
+				$this->db->order_by('a.level', 'asc');
+				$this->db->limit(1);
+				$get_req_quot = $this->db->get()->row_array();
+
+				
 
 
-				$num_approval = 'Staff Sales';
-				if ($item['req_app2'] == '1' && $item['app_1'] == '1') {
-					$num_approval = 'Manager Sales';
-				} if ($item['req_app3'] == '1' && $item['app_2'] == '1') {
-					$num_approval = 'Direktur';
-				}
+				$tingkatan_approval = $get_req_quot['level'];
+				// print_r($item['no_quotation']);
+				// exit;
+
+				$get_master_disc = $this->db->get_where('ms_diskon', array('no' => $tingkatan_approval))->row_array();
+				
+				$num_approval = $get_master_disc['tingkatan'];
 
 				$Status = "<span class='badge bg-blue'>Waiting Approval " . $num_approval . "</span>";
 			} elseif ($item['status'] == '2') {

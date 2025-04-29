@@ -47,11 +47,11 @@ $ENABLE_DELETE  = has_permission('Master_customers.Delete');
 						</thead>
 
 						<tbody>
-							<?php if (empty($results['customer'])) {
+							<?php if (empty($list_customer['customer'])) {
 							} else {
 
 								$numb = 0;
-								foreach ($results['customer'] as $customer) {
+								foreach ($list_customer['customer'] as $customer) {
 									$numb++;
 
 
@@ -64,31 +64,30 @@ $ENABLE_DELETE  = has_permission('Master_customers.Delete');
 										<td hidden>
 											<?php
 											if (isset($customer->id_customer)) {
-											    $id = $customer->id_customer;
+												$id = $customer->id_customer;
 
-											    // Coba tangani error query dengan try-catch
-											    try {
-											        $cate = $this->db->get_where('child_category_customer', array('id_customer' => $id));
+												// Coba tangani error query dengan try-catch
+												try {
+													$cate = $this->db->get_where('child_category_customer', array('id_customer' => $id));
 
-											        // Cek jika query tidak berhasil
-											        if (!$cate) {
-											            echo '<span class="text-danger">Query gagal</span>';
-											        } else {
-											            $results = $cate->result();
-											            if (!empty($results)) {
-											                foreach ($results as $vp) {
-											                    echo htmlspecialchars($vp->name_category_customer, ENT_QUOTES, 'UTF-8') . '<br>';
-											                }
-											            } else {
-											                echo '<span class="text-muted">Belum ada kategori</span>';
-											            }
-											        }
-											    } catch (Exception $e) {
-											        echo '<span class="text-danger">DB Error: ' . $e->getMessage() . '</span>';
-											    }
-
+													// Cek jika query tidak berhasil
+													if (!$cate) {
+														echo '<span class="text-danger">Query gagal</span>';
+													} else {
+														$results = $cate->result();
+														if (!empty($results)) {
+															foreach ($results as $vp) {
+																echo htmlspecialchars($vp->name_category_customer, ENT_QUOTES, 'UTF-8') . '<br>';
+															}
+														} else {
+															echo '<span class="text-muted">Belum ada kategori</span>';
+														}
+													}
+												} catch (Exception $e) {
+													echo '<span class="text-danger">DB Error: ' . $e->getMessage() . '</span>';
+												}
 											} else {
-											    echo '<span class="text-muted">ID customer tidak ditemukan</span>';
+												echo '<span class="text-muted">ID customer tidak ditemukan</span>';
 											}
 											?>
 
@@ -136,7 +135,7 @@ $ENABLE_DELETE  = has_permission('Master_customers.Delete');
 					<span class="pull-right"></span>
 				</div>
 				<div class="box-body">
-					<table id="example1" class="table table-bordered table-striped">
+					<table id="example2" class="table table-bordered table-striped">
 						<thead>
 							<tr>
 								<th width="5">#</th>
@@ -151,11 +150,11 @@ $ENABLE_DELETE  = has_permission('Master_customers.Delete');
 						</thead>
 
 						<tbody>
-							<?php if (empty($results['category'])) {
+							<?php if (empty($list_category)) {
 							} else {
 
 								$numb3 = 0;
-								foreach ($results['category'] as $category) {
+								foreach ($list_category as $category) {
 									$numb3++; ?>
 									<tr>
 										<td><?= $numb3; ?></td>
@@ -247,6 +246,7 @@ $ENABLE_DELETE  = has_permission('Master_customers.Delete');
 </style>
 <!-- page script -->
 <script type="text/javascript">
+	$('#example2').dataTable();
 	$(document).on('click', '.edit_category', function(e) {
 		var id = $(this).data('id_category_customer');
 		$("#head_title").html("<i class='fa fa-list-alt'></i><b>Edit Data</b>");
@@ -526,6 +526,8 @@ $ENABLE_DELETE  = has_permission('Master_customers.Delete');
 
 	});
 
+	
+
 	$(function() {
 
 		var table = $('#example1').DataTable({
@@ -534,7 +536,6 @@ $ENABLE_DELETE  = has_permission('Master_customers.Delete');
 		});
 		$("#form-area").hide();
 	});
-
 
 	//Delete
 
