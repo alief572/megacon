@@ -1,7 +1,7 @@
 <?php
 class Approval_quotation_model extends BF_Model
 {
-// aaa
+	// aaa
 	public function __construct()
 	{
 		parent::__construct();
@@ -24,15 +24,32 @@ class Approval_quotation_model extends BF_Model
 			$get_other_cost = $this->db->get_where('tr_penawaran_other_cost', ['id_penawaran' => $no_penawaran])->result();
 
 			$action_app = 'Approve';
-			if ($get_penawaran->req_app2 == '1' || $get_penawaran->req_app3 == '1') {
-				$this->db->select('a.tingkatan');
-				$this->db->from('ms_diskon a');
-				$this->db->where('a.deleted', 0);
-				$this->db->order_by('a.id', 'asc');
-				$this->db->limit(1, 1);
-				$get_next_approval = $this->db->get()->row();
 
-				$action_app = 'Request Approval ' . $get_next_approval->tingkatan;
+			$this->db->select('a.*');
+			$this->db->from('tr_req_quot a');
+			$this->db->where('a.id_quotation', $no_penawaran);
+			$this->db->order_by('a.level', 'asc');
+			$get_req_quot = $this->db->get()->result();
+
+
+			if (count($get_req_quot)) {
+				$this->db->select('a.*, b.tingkatan');
+				$this->db->from('tr_req_quot a');
+				$this->db->join('ms_diskon b', 'b.no = a.level', 'left');
+				$this->db->where('a.id_quotation', $no_penawaran);
+				$this->db->where('a.approved', 'N');
+				$this->db->order_by('a.level', 'asc');
+				$this->db->limit(1, 1);
+				$get_req_quot_after = $this->db->get()->row();
+
+				// $this->db->select('a.tingkatan');
+				// $this->db->from('ms_diskon a');
+				// $this->db->where('a.deleted', 0);
+				// $this->db->order_by('a.id', 'asc');
+				// $this->db->limit(1, 1);
+				// $get_next_approval = $this->db->get()->row();
+
+				$action_app = 'Request Approval ' . $get_req_quot_after->tingkatan;
 			}
 
 			$get_top = $this->db->get_where('list_help', ['group_by' => 'top invoice'])->result();
@@ -358,29 +375,39 @@ class Approval_quotation_model extends BF_Model
 		$this->db->where('a.id_karyawan', $this->auth->user_id());
 		$this->db->where('a.deleted_by', null);
 		$this->db->order_by('a.id_diskon', 'asc');
-		$get_approve_step = $this->db->get()->result();
+		$get_approve_step = $this->db->get()->result_array();
 		// echo $this->db->last_query();
+
 		$ids_diskon = array_column($get_approve_step, 'id_diskon');
+
+		// print_r($ids_diskon);
+		// exit;
+
+
 		$no_step = [];
 		$no = 1;
-		// foreach ($get_approve_step as $item_step) {
-		// 	$get_diskon = $this->db->get_where('ms_diskon', array('id' => $item_step->id_diskon))->row();
-		// 	if (!empty($get_diskon)) {
-		// 		$no_step[] = $no;
-		// 		// print_r($no_step);
-		// 	}
+		foreach ($get_approve_step as $item_step) {
+			$get_diskon = $this->db->get_where('ms_diskon', array('id' => $item_step['id_diskon']))->row();
+			if (!empty($get_diskon)) {
+				$no_step[] = $get_diskon->no;
+				// print_r($no_step);
+			}
+		}
+
+		// print_r($no_step);
+		// exit;
 
 		// 	$no++;
 		// }
 		if (!empty($ids_diskon)) {
-			$this->db->where_in('id', $ids_diskon);
-			$get_diskon = $this->db->get('ms_diskon')->result_array();
-		
-			if (!empty($get_diskon)) {
-				$no_step = range(1, count($get_diskon)); // Membuat array [1, 2, 3, ...]
-			} else {
-				$no_step = [];
-			}
+			// $this->db->where_in('id', $ids_diskon);
+			// $get_diskon = $this->db->get('ms_diskon')->result_array();
+
+			// if (!empty($get_diskon)) {
+			// 	$no_step = range(1, count($get_diskon)); // Membuat array [1, 2, 3, ...]
+			// } else {
+			// 	$no_step = [];
+			// }
 		} else {
 			$no_step = [];
 		}
@@ -393,22 +420,12 @@ class Approval_quotation_model extends BF_Model
 		$this->db->select('a.no_penawaran, a.tgl_penawaran, a.project, a.status, a.req_app1, a.app_1, a.req_app2, a.app_2, a.req_app3, a.app_3, b.nm_customer');
 		$this->db->from('tr_penawaran a');
 		$this->db->join('customer b', 'b.id_customer = a.id_customer', 'left');
+		$this->db->join('tr_req_quot c', 'c.id_quotation = a.no_penawaran');
 		$this->db->where('a.status', 1);
 		if (!empty($no_step)) {
-			$noo = 1;
 			$this->db->group_start();
-			foreach ($no_step as $step) {
-				if ($noo == 1) {
-					// $this->db->where('a.req_app' . $step, 1);
-					$this->db->or_where("a.req_app{$step}", 1);
-				} else {
-					// $this->db->or_where('a.req_app' . $step, 1);
-					$this->db->or_where("a.req_app{$step}", 1);
-				}
-
-				$noo++;
-			}
-
+			$this->db->where_in('c.level', $no_step);
+			$this->db->where('c.approved', 'N');
 			$this->db->group_end();
 		}
 
@@ -423,6 +440,7 @@ class Approval_quotation_model extends BF_Model
 			$this->db->or_like('a.no_revisi', $search['value'], 'both');
 			$this->db->group_end();
 		}
+		$this->db->group_by('a.no_penawaran');
 		$this->db->order_by('a.created_on', 'desc');
 		$this->db->limit($length, $start);
 		$get_data = $this->db->get();
@@ -432,27 +450,12 @@ class Approval_quotation_model extends BF_Model
 		$this->db->select('a.no_penawaran, a.tgl_penawaran, a.status, a.project, a.req_app1, a.app_1, a.req_app2, a.app_2, a.req_app3, a.app_3, b.nm_customer');
 		$this->db->from('tr_penawaran a');
 		$this->db->join('customer b', 'b.id_customer = a.id_customer', 'left');
+		$this->db->join('tr_req_quot c', 'c.id_quotation = a.no_penawaran');
 		$this->db->where('a.status', 1);
 		if (!empty($no_step)) {
-			$noo = 1;
 			$this->db->group_start();
-			foreach ($no_step as $step) {
-				// if ($noo == 1) {
-				// 	$this->db->where('a.req_app' . $step, 1);
-				// } else {
-				// 	$this->db->or_where('a.req_app' . $step, 1);
-				// }
-				if ($noo == 1) {
-					// $this->db->where('a.req_app' . $step, 1);
-					$this->db->or_where("a.req_app{$step}", 1);
-				} else {
-					// $this->db->or_where('a.req_app' . $step, 1);
-					$this->db->or_where("a.req_app{$step}", 1);
-				}
-
-				$noo++;
-			}
-
+			$this->db->where_in('c.level', $no_step);
+			$this->db->where('c.approved', 'N');
 			$this->db->group_end();
 		}
 		if (!empty($search)) {
@@ -466,6 +469,7 @@ class Approval_quotation_model extends BF_Model
 			$this->db->or_like('a.no_revisi', $search['value'], 'both');
 			$this->db->group_end();
 		}
+		$this->db->group_by('a.no_penawaran');
 		$this->db->order_by('a.created_on', 'desc');
 		$get_data_all = $this->db->get();
 
@@ -490,16 +494,24 @@ class Approval_quotation_model extends BF_Model
 			if ($item['status'] == 0) {
 				$Status = "<span class='badge bg-yellow'>Draft</span>";
 			} elseif ($item['status'] == 1) {
+				$this->db->select('a.*');
+				$this->db->from('tr_req_quot a');
+				$this->db->where('a.id_quotation', $item['no_penawaran']);
+				$this->db->where('a.approved', 'N');
+				$this->db->order_by('a.level', 'asc');
+				$this->db->limit(1);
+				$get_req_quot = $this->db->get()->row_array();
 
 
 
-				$num_approval = 'Staff Sales';
-				if ($item['req_app2'] == '1' && $item['app_1'] == '1') {
-					$num_approval = 'Manager Sales';
-				}
-				if ($item['req_app3'] == '1' && $item['app_2'] == '1') {
-					$num_approval = 'Direktur';
-				}
+
+				$tingkatan_approval = $get_req_quot['level'];
+				// print_r($item['no_quotation']);
+				// exit;
+
+				$get_master_disc = $this->db->get_where('ms_diskon', array('no' => $tingkatan_approval))->row_array();
+
+				$num_approval = $get_master_disc['tingkatan'];
 
 				$Status = "<span class='badge bg-blue'>Waiting Approval " . $num_approval . "</span>";
 			} elseif ($item['status'] == '2') {

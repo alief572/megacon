@@ -1698,9 +1698,7 @@ class Quotation extends Admin_Controller
 						<span>' . $penawaran_detail->nama_produk . '</span> <br><br>
 
 					</td>
-					<td>
-						' . @$result_stok->stock_akhir . '<br><br>
-					</td>
+					
 					<td>
 						<input type="number" name="qty_' . $penawaran_detail->id_penawaran_detail . '" value="' . $penawaran_detail->qty . '" class="form-control text-right qty qty_' . $penawaran_detail->id_penawaran_detail . '" onchange="hitung_all(' . $penawaran_detail->id_penawaran_detail . ')">
 					</td>
@@ -1956,13 +1954,43 @@ class Quotation extends Admin_Controller
 
 		$this->db->trans_begin();
 
-		for ($i = 1; $i <= $tingkatan; $i++) {
-			if ($i < $tingkatan) {
-				$update_sts = $this->db->update('tr_penawaran', ['req_app' . $i . '' => 1, 'app_' . $i . '' => 1, 'status' => 1], ['no_penawaran' => $id]);
-			} else {
-				$update_sts = $this->db->update('tr_penawaran', ['req_app' . $i . '' => 1, 'status' => 1], ['no_penawaran' => $id]);
+		$check_disc_penawaran = $this->db->query('SELECT MAX(diskon_persen) AS max_disc_persen FROM tr_penawaran_detail WHERE no_penawaran = "' . $id . '"')->row();
+
+		$get_disc = $this->db->query('SELECT * FROM ms_diskon WHERE deleted = 0 ORDER BY diskon_awal ASC')->result();
+
+		$tingkatan = 0;
+
+		$no_awd = 0;
+		$arr_req_app = [];
+		foreach ($get_disc as $list_disc) {
+			$no_awd++;
+
+
+			if ($check_disc_penawaran->max_disc_persen >= $list_disc->diskon_awal) {
+				$arr_req_app[] = [
+					'id_quotation' => $id,
+					'level' => $list_disc->no,
+					'created_by' => $this->auth->user_id(),
+					'created_date' => date('Y-m-d H:i:s')
+				];
 			}
+
 		}
+
+		
+
+		// for ($i = 1; $i <= $tingkatan; $i++) {
+		// 	// if ($i < $tingkatan) {
+		// 	// 	$update_sts = $this->db->update('tr_penawaran', ['req_app' . $i . '' => 1, 'app_' . $i . '' => 1, 'status' => 1], ['no_penawaran' => $id]);
+		// 	// } else {
+		// 	// 	$update_sts = $this->db->update('tr_penawaran', ['req_app' . $i . '' => 1, 'status' => 1], ['no_penawaran' => $id]);
+		// 	// }
+
+			
+		// }
+
+		$this->db->insert_batch('tr_req_quot', $arr_req_app);
+		$this->db->update('tr_penawaran', array('status' => 1), array('no_penawaran' => $id));
 
 
 		if ($this->db->trans_status() === FALSE) {
