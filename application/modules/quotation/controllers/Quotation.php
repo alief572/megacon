@@ -2319,7 +2319,18 @@ $total_all_qty += $qty;
 		$ttl_persen_discount = 0;
 		$total_berat_alls = 0;
 
-		$get_sum_qty = $this->db->query("SELECT SUM(b.berat_produk * a.qty) as berat_total FROM tr_penawaran_detail a INNER JOIN new_inventory_4 B ON a.id_category3 = b.code_lv4 WHERE a.no_penawaran = '" . $id . "'  ")->row();
+		// $get_sum_qty = $this->db->query("SELECT SUM(b.berat_produk * a.qty) as berat_total FROM tr_penawaran_detail a INNER JOIN new_inventory_4 B ON a.id_category3 = b.code_lv4 WHERE a.no_penawaran = '" . $id . "'  ")->row();
+		$sql = "SELECT SUM(COALESCE(b.berat_produk, 0) * a.qty) as berat_total 
+        FROM tr_penawaran_detail a 
+        INNER JOIN new_inventory_4 b ON a.id_category3 = b.code_lv4 
+        WHERE a.no_penawaran = ?";
+		$query = $this->db->query($sql, [$id]);
+		if ($query) {
+			$get_sum_qty = $query->row();
+		} else {
+			echo "SQL ERROR: " . $this->db->error()['message'];
+			exit;
+		}
 
 		$get_ttl_detail = $this->db->query("SELECT SUM(a.total_harga) AS ttl_harga, SUM(a.harga_satuan * a.qty) AS ttl_price_bef_disc, SUM(a.total_harga) AS ttl_after_disc, SUM(a.diskon_nilai * a.qty) AS ttl_nilai_diskon FROM tr_penawaran_detail a WHERE a.no_penawaran = '" . $id . "'")->row();
 
