@@ -2255,7 +2255,9 @@ class Quotation extends Admin_Controller
 						<span>' . $penawaran_detail->nama_produk . '</span> <br><br>
 
 					</td>
-					
+					<td>
+						' . @$result_stok->stock_akhir . '<br><br>
+					</td>
 					<td>
 						<input type="number" name="qty_' . $penawaran_detail->id_penawaran_detail . '" value="' . $penawaran_detail->qty . '" class="form-control text-right qty qty_' . $penawaran_detail->id_penawaran_detail . '" onchange="hitung_all(' . $penawaran_detail->id_penawaran_detail . ')">
 					</td>
