@@ -135,7 +135,7 @@ $ENABLE_DELETE  = has_permission('Master_customers.Delete');
 					<span class="pull-right"></span>
 				</div>
 				<div class="box-body">
-					<table id="" class="table table-bordered table-striped">
+					<table id="example2" class="table table-bordered table-striped">
 						<thead>
 							<tr>
 								<th width="5">#</th>
