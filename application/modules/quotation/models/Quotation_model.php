@@ -1334,16 +1334,16 @@ class Quotation_model extends BF_Model
 				$this->db->where('a.approved', 'N');
 				$this->db->order_by('a.level', 'asc');
 				$this->db->limit(1);
-				// $get_req_quot = $this->db->get()->row_array();
-				$query = $this->db->get();
+				$get_req_quot = $this->db->get()->row_array();
+				// $query = $this->db->get();
 				// echo $this->db->last_query();
 				// die();
 
-				if ($query && $query->num_rows() > 0) {
-				    $get_req_quot = $query->row_array();
-				} else {
-				    $get_req_quot = null; // Atau array kosong [] tergantung kebutuhan
-				}
+				// if ($query && $query->num_rows() > 0) {
+				//     $get_req_quot = $query->row_array();
+				// } else {
+				//     $get_req_quot = null; // Atau array kosong [] tergantung kebutuhan
+				// }
 
 
 				$tingkatan_approval = $get_req_quot['level'];

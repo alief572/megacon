@@ -2616,7 +2616,7 @@ $total_all_qty += $qty;
 			$no_awd++;
 
 
-			if ($check_disc_penawaran->max_disc_persen >= $list_disc->diskon_awal) {
+			if ($check_disc_penawaran->max_disc_persen >= $list_disc->diskon_awal && $check_disc_penawaran->max_disc_persen <= $list_disc->diskon_akhir) {
 				$arr_req_app[] = [
 					'id_quotation' => $id,
 					'level' => $list_disc->no,
