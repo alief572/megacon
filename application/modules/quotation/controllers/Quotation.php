@@ -2723,7 +2723,8 @@ $total_all_qty += $qty;
 		$id_customer = $this->input->post('id_customer');
 		$PIC = 'PIC';
 		// $get_data_pic = $this->db->query('SELECT a.nm_pic, a.id_pic, a.email_pic FROM customer_pic a JOIN customer b ON b.id_pic = a.id_pic WHERE b.id_customer = "' . $id_customer . '"')->row();//version old
-		$get_data_pic = $this->db->query('SELECT a.name_pic, a.id_pic, a.email_pic, b.name_customer FROM child_customer_pic a JOIN master_customers b ON b.id_customer = a.id_customer WHERE position_pic = "' . $PIC . '" AND b.id_customer = "' . $id_customer . '" LIMIT 1 ')->row();
+		// position_pic = "' . $PIC . '" AND
+		$get_data_pic = $this->db->query('SELECT a.name_pic, a.id_pic, a.email_pic, b.name_customer FROM child_customer_pic a JOIN master_customers b ON b.id_customer = a.id_customer WHERE b.id_customer = "' . $id_customer . '" LIMIT 1 ')->row();
 
 		$list_pic = '<option value="' . $get_data_pic->id_pic . '">' . $get_data_pic->name_pic . '</option>';
 		// print_r($list_pic);

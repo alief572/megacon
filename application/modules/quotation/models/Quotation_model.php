@@ -17,7 +17,7 @@ class Quotation_model extends BF_Model
 		$User = $this->db->query("SELECT a.* FROM users a")->result();
 		// $pic_cust = $this->db->query("SELECT a.* FROM customer_pic a WHERE a.nm_pic <> ''")->result();//version old
 		// and position_pic = 'PIC'
-		$pic_cust = $this->db->query("SELECT a.* FROM child_customer_pic a WHERE a.name_pic <> '' and position_pic = 'PIC' ")->result();
+		$pic_cust = $this->db->query("SELECT a.* FROM child_customer_pic a WHERE a.name_pic <> '' ")->result();
 
 		$get_penawaran_detail = $this->db->get_where('tr_penawaran_detail', ['no_penawaran' => $session['id_user']])->result();
 
