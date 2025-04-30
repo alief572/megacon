@@ -1465,6 +1465,7 @@ $(document).ready(function() {
     var storedCustomerId = localStorage.getItem('id_customer');
 
     if (storedCustomerId) {
+        $('.get_data_customer').val(savedCustomer).trigger('change');
         $('.get_data_customer').val(storedCustomerId);
         loadCustomerData(storedCustomerId);
     }
