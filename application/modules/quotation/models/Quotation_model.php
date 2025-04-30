@@ -16,6 +16,7 @@ class Quotation_model extends BF_Model
 		$jenis_truck = $this->db->query("SELECT a.*, b.nm_asset FROM tr_truck_rate a LEFT JOIN asset b ON a.kd_asset = b.kd_asset where (a.deleted_by IS NULL OR a.deleted_by = '') ")->result();
 		$User = $this->db->query("SELECT a.* FROM users a")->result();
 		// $pic_cust = $this->db->query("SELECT a.* FROM customer_pic a WHERE a.nm_pic <> ''")->result();//version old
+		// and position_pic = 'PIC'
 		$pic_cust = $this->db->query("SELECT a.* FROM child_customer_pic a WHERE a.name_pic <> '' and position_pic = 'PIC' ")->result();
 
 		$get_penawaran_detail = $this->db->get_where('tr_penawaran_detail', ['no_penawaran' => $session['id_user']])->result();
@@ -99,7 +100,8 @@ class Quotation_model extends BF_Model
 		$jenis_truck = $this->db->query("SELECT a.*, b.nm_asset FROM tr_truck_rate a LEFT JOIN asset b ON a.kd_asset = b.kd_asset where (a.deleted_by IS NULL OR a.deleted_by = '') ")->result();
 		$User = $this->db->query("SELECT a.* FROM users a")->result();
 		// $pic_cust = $this->db->query("SELECT a.* FROM customer_pic a WHERE a.nm_pic <> ''")->result();//version old
-		$pic_cust = $this->db->query("SELECT a.* FROM child_customer_pic a WHERE a.name_pic <> '' and position_pic = 'PIC' ")->result();
+		// $pic_cust = $this->db->query("SELECT a.* FROM child_customer_pic a WHERE a.name_pic <> '' and position_pic = 'PIC' ")->result();
+		$pic_cust = $this->db->query("SELECT a.* FROM child_customer_pic a WHERE a.name_pic <> '' ")->result();
 
 		$get_penawaran_detail = $this->db->get_where('tr_penawaran_detail', ['no_penawaran' => $session['id_user'], 'curr' => $curr])->result();
 
@@ -191,7 +193,8 @@ class Quotation_model extends BF_Model
 		$jenis_truck = $this->db->query("SELECT a.*, b.nm_asset FROM tr_truck_rate a LEFT JOIN asset b ON a.kd_asset = b.kd_asset where (a.deleted_by IS NULL OR a.deleted_by = '') ")->result();
 		$User = $this->db->query("SELECT a.* FROM users a")->result();
 		// $pic_cust = $this->db->query("SELECT a.* FROM customer_pic a WHERE a.nm_pic <> ''")->result();
-		$pic_cust = $this->db->query("SELECT a.* FROM child_customer_pic a WHERE a.name_pic <> '' and position_pic = 'PIC' ")->result();
+		// and position_pic = 'PIC'
+		$pic_cust = $this->db->query("SELECT a.* FROM child_customer_pic a WHERE a.name_pic <> '' ")->result();
 
 		$get_penawaran_detail = $this->db->get_where('tr_penawaran_detail', ['no_penawaran' => $session['id_user']])->result();
 		$get_top = $this->db->get_where('list_help', ['group_by' => 'top invoice'])->result();
