@@ -251,7 +251,8 @@ $ENABLE_DELETE  = has_permission('Master_customers.Delete');
 													$value = ($field == 'position_pic') ? $row['name'] : '';
 													$readonly = ($field == 'position_pic') ? 'readonly' : '';
 													echo "<td align='left'>";
-													echo "<input type='text' class='form-control input-sm' name='data1[$loop][$field]' id='data1_{$loop}_{$field}' value='$value' $readonly required>";
+													// echo "<input type='text' class='form-control input-sm' name='data1[$loop][$field]' id='data1_{$loop}_{$field}' value='$value' $readonly required>";
+													echo "<input type='text' class='form-control input-sm' name='data1[$loop][$field]' id='data1_{$loop}_{$field}' value='$value' required>";
 													echo "</td>";
 												}
 												echo "<td></td>";
