@@ -232,7 +232,8 @@ class Master_customers extends Admin_Controller
 		// exit();
 		$data = [
 			'activation' 		=> 'inactive',
-			'deleted_by' 	=> $this->auth->user_id()
+			'deleted_by' 	=> $this->auth->user_id(),
+			'deleted_date' 	=> date('Y-m-d H:i:s')
 		];
 		$this->db->trans_begin();
 		$this->db->where('id_category_customer', $id)->update("child_customer_category", $data);
