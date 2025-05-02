@@ -426,7 +426,7 @@ $EmailPT = isset($headerPT) ? $headerPT->email : '';
 	</table>
 
 	<script>
-		// window.print();
+		window.print();
 	</script>
 </body>
 
