@@ -106,7 +106,8 @@ $ENABLE_DELETE  = has_permission('Master_customers.Delete');
 										<label for="id_category_supplier">Provinsi</label>
 									</div>
 									<div class="col-md-6">
-										<select id="id_prov" name="id_prov" class="form-control select" onchange="get_kota()" required>
+										<!-- class="form-control select" -->
+										<select id="id_prov" name="id_prov" class='form-control chosen-select' onchange="get_kota()" required>
 											<option value="">--Pilih--</option>
 											<?php foreach ($results['prof'] as $prof) { ?>
 												<option value="<?= $prof->id_prov ?>"><?= ucfirst(strtolower($prof->nama)) ?></option>
@@ -770,6 +771,25 @@ $ENABLE_DELETE  = has_permission('Master_customers.Delete');
 						return false;
 					}
 				});
+		});
+
+		$('.chosen-select').select2({width: '100%'});
+		// $('.maskM').autoNumeric();
+		// Event ketika modal ditampilkan
+		$('#dialog-popup').on('shown.bs.modal', function () {
+			// Inisialisasi Select2
+			$('#id_prov').select2({
+				width: '100%',
+				placeholder: "Pilih Provinsi",
+				allowClear: true,
+				dropdownParent: $('#dialog-popup') // Pastikan dropdown muncul di dalam modal
+			});
+			$('#id_kota').select2({
+				width: '100%',
+				placeholder: "Pilih Kota",
+				allowClear: true,
+				dropdownParent: $('#dialog-popup') // Pastikan dropdown muncul di dalam modal
+			});
 		});
 
 	});
