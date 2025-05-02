@@ -818,7 +818,7 @@
                             }
                             ?>
                             </div>
-                            <div class="col-lg-5">
+                            <!-- <div class="col-lg-5">
                                 <div class="form-group " style="padding-top:15px;">
                                     <label class="col-sm-4 control-label">Total Other Cost (<?= $results['curr']; ?>)</label>
                                     <div class="col-sm-6">
@@ -826,7 +826,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-lg-7"></div>
+                            <div class="col-lg-7"></div> -->
                             <div class="col-lg-5">
                                 <div class="form-group " style="padding-top:15px;">
                                     <label class="col-sm-4 control-label">Total Other Item (<?= $results['curr']; ?>)</label>
@@ -839,9 +839,10 @@
                             <div class="col-lg-5">
                                 <div class="form-group " style="padding-top:15px;">
                                     <!-- <label class="col-sm-4 control-label">Grand Total (<?= $results['curr']; ?>)</label> -->
-                                    <label class="col-sm-4 control-label">Total Value Before Delivery Cost</label>
+                                    <label class="col-sm-4 control-label">Total Value Before Delivery Cost (<?= $results['curr']; ?>)</label>
                                     <div class="col-sm-6">
                                         <input type="text" name="grand_total" class="form-control input-sm text-right grand_total" id="grand_total" value="<?= number_format($grand_total, 2) ?>" readonly>
+                                        <!-- <input type="hidden" name="grand_total_real" class="form-control input-sm text-right grand_total" id="grand_total_real" value="<?= $grand_total ?>" readonly> -->
                                     </div>
                                 </div>
                             </div>

@@ -37,7 +37,8 @@ class Quotation extends Admin_Controller
 	{
 		$this->template->page_icon('fa fa-list');
 
-		$get_penawaran = $this->db->query('SELECT a.*, b.nm_customer, b.alamat, b.telpon, c.name as nama_top FROM tr_penawaran a LEFT JOIN customer b ON b.id_customer = a.id_customer LEFT JOIN list_help c ON c.id = a.top WHERE a.no_penawaran = "' . $no_penawaran . '"')->row();
+		// $get_penawaran = $this->db->query('SELECT a.*, b.nm_customer, b.alamat, b.telpon, c.name as nama_top, d.nm_lengkap as name_create_quotation FROM tr_penawaran a LEFT JOIN customer b ON b.id_customer = a.id_customer LEFT JOIN list_help c ON c.id = a.top LEFT JOIN users d ON a.created_by = d.id_user WHERE a.no_penawaran = "' . $no_penawaran . '"')->row();//version old
+		$get_penawaran = $this->db->query('SELECT a.*, b.name_customer, b.telephone, c.name as nama_top, d.nm_lengkap as name_create_quotation FROM tr_penawaran a LEFT JOIN master_customers b ON b.id_customer = a.id_customer LEFT JOIN list_help c ON c.id = a.top LEFT JOIN users d ON a.created_by = d.id_user WHERE a.no_penawaran = "' . $no_penawaran . '"')->row();
 		$get_penawaran_detail = $this->db->query('
 			SELECT 
 				a.*,
@@ -635,6 +636,12 @@ class Quotation extends Admin_Controller
 		return floatval($nilai);
 	}
 
+	function bersihkan_format_uang_international($nilai) {
+		// Format internasional: "67,347,764.00"
+		$nilai = str_replace(',', '', $nilai); // Hapus koma ribuan
+		return floatval($nilai); // Ubah ke float
+	}
+
 	public function save_penerimaan_new()
 	{
 
@@ -655,6 +662,9 @@ class Quotation extends Admin_Controller
 		// die();
 
 		$no_surat = $post['no_surat'];
+
+		// print_r($this->bersihkan_format_uang_international($post['grand_total'])."||".$post['grand_total']);
+		// die();
 
 
 		$this->db->trans_begin();
@@ -745,6 +755,7 @@ class Quotation extends Admin_Controller
 				'id_sales' => $session['id_user'],
 				'nama_sales' => $session['nm_lengkap'],
 				'nilai_ppn' => $nilai_ppn,
+				'grand_total' => $this->bersihkan_format_uang_international($post['grand_total']),
 				'ppn' => $persen_ppn,
 				'nilai_penawaran' => $get_ttl_detail->ttl_harga,
 				'created_by' => $session['id_user'],
@@ -2733,6 +2744,18 @@ $total_all_qty += $qty;
 			'list_pic' => $list_pic,
 			'name_customer' => $get_data_pic->name_customer,
 			'email_pic' => $get_data_pic->email_pic
+		]);
+	}
+
+	public function get_data_dinamis()
+	{
+		$no_penawaran = $this->input->post('no_penawaran');
+		$get_data_sum_qty = $this->db->query('SELECT SUM(qty) AS qty_sum FROM tr_penawaran_detail where no_penawaran = "' . $no_penawaran . '" ')->row();
+		// echo $this->db->last_query();
+		// print_r($list_pic);
+		// die();
+		echo json_encode([
+			'qty_sum' => $get_data_sum_qty->qty_sum
 		]);
 	}
 

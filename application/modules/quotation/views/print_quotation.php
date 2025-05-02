@@ -1,444 +1,433 @@
 <?php
-$ENABLE_ADD     = has_permission('Quotation.Add');
-$ENABLE_MANAGE  = has_permission('Quotation.Manage');
-$ENABLE_VIEW    = has_permission('Quotation.View');
-$ENABLE_DELETE  = has_permission('Quotation.Delete');
-// print_r($results);
-// exit;
+date_default_timezone_set("Asia/Bangkok");
 ?>
-<style type="text/css">
-    thead input {
-        width: 100%;
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title></title>
+	<style>
+		@font-face {
+			font-family: kitfont;
+			src: url('1979 Dot Matrix Regular.TTF');
+		}
+
+	.inline-container {
+      display: flex;
+      align-items: center; /* Agar elemen sejajar secara vertikal */
+      /* justify-content: space-between;  */
+	  /* Mengatur spasi antar elemen */
+    }
+    .inline-container img {
+      width: 380px; /* Sesuaikan ukuran gambar */
+      /* height: auto; */
+      height: 180px;
+    }
+    .inline-container h1 {
+      margin: 10px; /* Hapus margin default pada H1 */
+      font-size: 16px; /* Sesuaikan ukuran teks */
     }
 
-    .breakarea {
-        page-break-before: always;
+	@media print {
+        /* a[href]:after {
+			display: none !important; */
+            /* content: none !important; */
+        /* } */
+		/* Default: Hilangkan border untuk semua tabel */
+		table {
+			border: none !important;
+		}
+
+		/* Tampilkan border hanya untuk tabel dengan ID tertentu */
+		#table-with-border {
+			border-collapse: collapse;
+			width: 100%;
+		}
+
+		#table-with-border, #table-with-border th, #table-with-border td {
+			border: 1px solid black;
+		}
+
+		/* #table-with-border td:empty {
+        	border: 1px solid black;
+    	} */
     }
 
-
-
-    .custom-list .marker {
-        display: inline-block;
-        width: 20px;
-        /* Adjust as necessary */
-        text-align: center;
+    .header-pt h2, .header-pt p {
+        margin: 0;
+        padding: 2px 0;
+        line-height: 1.2;
     }
 
-    @media print {
-        .unprint {
-            display: none;
-        }
+    .header-pt td {
+        padding: 4px;
     }
-</style>
-<div id='alert_edit' class="alert alert-success alert-dismissable" style="padding: 15px; display: none;"></div>
-<link rel="stylesheet" href="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.css') ?>">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
-<div class="box" id="printed_area">
-    <!-- <div class="box-body"> -->
-    <table class="table w-100">
-        <tr>
-            <td rowspan="2" style="width: 100px;">
-               
-            </td>
-            <td style="vertical-align: middle; border-bottom: 1px solid #ccc;">
-                <h3 style="font-style: italic;font-weight: bold;">PT. MEGACON BANGUN PERKASA</h3>
-            </td>
-            <!-- <td class="text-center" style="width:200px; border-bottom: 1px solid #ccc;"> -->
-                <!-- <img src="<?= base_url('assets/images/ISO.png'); ?>" width="100" alt=""> -->
-            <!-- </td> -->
-            <!-- <td class="text-right" style="vertical-align: top;">
-                Jl. Pembangunan 2 No. 34 <br>
-                Kec. Batuceper, Kota Tanggerang, Banten 15121 <br>
-                <span style="font-weight:bold;">Hotline Service :</span> (+62) 21 557 66 153 <span style="font-weight:bold;">WhatsApp :</span> (+62) 858 9138 3212
-            </td> -->
-        </tr>
-        <!-- <tr>
-            <td style="height: 60px;">
-                <?= strtoupper($results['pt_name']) ?>
-            </td>
-            <td class="text-right">
-                Jl. Pembangunan II
-                Kel. Batusari,
-                Kec. Batuceper,
-                Kota Tangerang Postal
-                Code 15122
-                Indonesia
-            </td>
-        </tr> -->
-    </table>
+    .contact-table td {
+        padding: 2px 6px;
+    }
+
+	</style>
+</head>
+
+<body>
+<?php
+$date = new DateTime();
+$date_TTD = $date->format('d F Y');
+// print_r($results['data_penawaran']->no_penawaran);
+$NoPenawaran = $results['data_penawaran']->no_penawaran;
+$TglPenawaran = $results['data_penawaran']->tgl_penawaran;
+$TglPenawaranFix = date('d F Y', strtotime($TglPenawaran));
+// echo $TglPenawaranFix; // Output: 30 April 2025
+// die();
+$NameCustomer = $results['data_penawaran']->name_customer;
+$KetTOP = $results['data_penawaran']->nama_top;
+$NameCreateQuotation = $results['data_penawaran']->name_create_quotation;
+$GrandTotal = !empty($results['data_penawaran']->grand_total) ? $results['data_penawaran']->grand_total : 0;
+$Data_DeliveryCost	= $this->db->query("SELECT * FROM delivery_cost_header WHERE no_penawaran ='$NoPenawaran'")->row();
+$GrandTotalAfterDC = isset($Data_DeliveryCost) ? $Data_DeliveryCost->grand_total : 0;
+// $header	= $this->db->query("SELECT * FROM tr_invoice_sales WHERE id_invoice ='$id_invoice'")->row();
+// // $coabank = $header->kd_bank;
+// $Invoice = $header->id_invoice;
+// $NO_SO = $header->id_so;
+// $getDataSO	= $this->db->query("SELECT * FROM tr_sales_order WHERE no_so ='$NO_SO'")->row();
+// $To_Name = $getDataSO->pic_customer;
+// $getIDCustomer = $getDataSO->id_customer;
 
 
-    <table style="width: 100%;">
-        <tr>
-            <th>
-                Jakarta, <?= date('d M Y') ?>
-            </th>
-            <th style="text-align: right;">
-                Rev <?= ($results['data_penawaran']->no_revisi == '') ? 0 : $results['data_penawaran']->no_revisi ?>
-            </th>
-        </tr>
-    </table>
-    <table style="width: 500px !important;">
-        <tr>
-            <td style="vertical-align: top;">No Ref.</td>
-            <td style="text-align:center; width:50px !important; vertical-align: top;">:</td>
-            <td style="vertical-align: top;"><?= $results['data_penawaran']->no_penawaran ?></td>
-        </tr>
-        <tr>
-            <td style="vertical-align: top;">Attn</td>
-            <td style="text-align:center; width:50px !important; vertical-align: top;">:</td>
-            <td style="vertical-align: top;"><?= $results['data_penawaran']->nm_customer ?></td>
-        </tr>
-        <tr>
-            <td style="vertical-align: top;">Address</td>
-            <td style="text-align:center; width:50px !important; vertical-align: top;">:</td>
-            <td style="vertical-align: top;"><?= $results['data_penawaran']->alamat ?></td>
-        </tr>
-        <tr>
-            <td style="vertical-align: top;">Email</td>
-            <td style="text-align:center; width:50px !important; vertical-align: top;">:</td>
-            <td style="vertical-align: top;"><?= $results['data_penawaran']->email_customer ?></td>
-        </tr>
-        <tr>
-            <td style="vertical-align: top;">Phone</td>
-            <td style="text-align:center; width:50px !important; vertical-align: top;">:</td>
-            <td style="vertical-align: top;"><?= $results['data_penawaran']->telpon ?></td>
-        </tr>
-        <tr>
-            <td style="vertical-align: top;">Subject</td>
-            <td style="text-align:center; width:50px !important; vertical-align: top;">:</td>
-            <td style="vertical-align: top;"><?= $results['data_penawaran']->subject ?></td>
-        </tr>
-        <tr>
-            <td style="vertical-align: top;">Notes</td>
-            <td style="text-align:center; width:50px !important; vertical-align: top;">:</td>
-            <td style="vertical-align: top;"><?= $results['data_penawaran']->notes ?></td>
-        </tr>
-    </table>
+//version old
+// $To_Name = $header->nm_customer;
+// $getIDCustomer = $header->id_customer;
+// $getDataCustomer = $this->db->query("SELECT * FROM master_customers WHERE id_customer ='$getIDCustomer'")->row();
+// $AlamatCust = $getDataCustomer->alamat;
+// $coa =  $this->db->query("SELECT * FROM " . DBACC . ".coa_master WHERE no_perkiraan = '$coabank' ")->row();
+// $getNoSO =  $this->db->query("SELECT * FROM tr_invoice_payment_detail WHERE kd_pembayaran ='$kodebayar'")->row();
+// $NO_SO = $getNoSO->no_ipp;
+// $getDataSPK_delivery = $this->db->query("SELECT * FROM spk_delivery WHERE no_so ='$NO_SO'")->row();
+// if(!empty($getDataSPK_delivery->no_surat_jalan)){
+// 	$SuratJalan = $getDataSPK_delivery->no_surat_jalan;
+// }else{
+// 	$SuratJalan = '';
+// }
+// $getDataHeaderSO = $this->db->query("SELECT * FROM tr_sales_order WHERE no_so ='$NO_SO'")->row();
+// $Total_Amt = $getDataHeaderSO->nilai_so;
+// $PPN = $getDataHeaderSO->nilai_ppn;
+// $Total = $getDataHeaderSO->grand_total;
+// $NoPenawaran = $getDataHeaderSO->no_penawaran;
+// $getDataPenawaran = $this->db->query("SELECT * FROM tr_penawaran WHERE no_penawaran ='$NoPenawaran'")->row();
+// $getIDTop = $getDataPenawaran->top;
+// $PpnORNonppn = $getDataPenawaran->ppn;
+// $Tgl_Penawaran = $getDataPenawaran->tgl_penawaran;
+// // Ubah format menggunakan DateTime
+// $date_TTD_Penawaran = DateTime::createFromFormat('Y-m-d', $Tgl_Penawaran)->format('d F Y');
+// // $date_TTD_Penawaran = $Tgl_Penawaran->format('d F Y');
+// // print_r($date_TTD_Penawaran);
+// // die();
+// if($PpnORNonppn != '' || $PpnORNonppn != NULL || $PpnORNonppn > 0){
+// 	$StatusPpnORNonppn = 'PPN';
+// }else{
+// 	$StatusPpnORNonppn = 'NON_PPN';
+// }
+// $getDataTOP = $this->db->query("SELECT * FROM list_help WHERE id ='$getIDTop'")->row();
+// $NameTOP = $getDataTOP->name;
+// if($getDataTOP->data1 != '' || $getDataTOP->data1 != NULL){
+// 	$HariTOP = $getDataTOP->data1;
+// }else{
+// 	$HariTOP = "";
+// }
+//hitung tanggal due date sesuai tanggal penawaran
+// $format = 'd F Y';
+// $HitungDueDate = new DateTime($date_TTD_Penawaran);
+// $HitungDueDate->modify("+{$HariTOP} days");
+// print_r($date_TTD_Penawaran);
+// echo $HitungDueDate->format($format);
+// $FixDueDate = $HitungDueDate->format($format);//tidak jadi pakai ini
+// die();
+// $getDataDueDateBillingPlan = $this->db->query("SELECT * FROM tr_billing_plan WHERE no_so ='$NO_SO'")->row();
+// print_r($getDataDueDateBillingPlan->billing_plan_due_date);
+// die();
+// if(!empty($getDataDueDateBillingPlan->billing_plan_due_date) && $getDataDueDateBillingPlan->billing_plan_due_date != '0000-00-00'){
+// 	// $Tgl_DueDateBillingPlan = $getDataDueDateBillingPlan->billing_plan_due_date;
+// 	// $Tgl_DueDateBillingPlan_New = $getDataDueDateBillingPlan->billing_plan_due_date;
+// 	$Tgl_DueDateBillingPlan_New = date('d F Y', strtotime($getDataDueDateBillingPlan->billing_plan_due_date));
+// }
+// else{
+// 	$Tgl_DueDateBillingPlan_New = "";
+// }
+// print_r($Tgl_DueDateBillingPlan_New);
+// die();
+// $Tgl_DueDateBillingPlan_New = DateTime::createFromFormat('Y-m-d', $Tgl_DueDateBillingPlan)->format('d F Y');
+// $getDataDetailSO = $this->db->query("SELECT * FROM tr_sales_order_detail WHERE no_so ='$NO_SO'")->result();
+$headerPT	= $this->db->query("SELECT * FROM companies LIMIT 1")->row();
+$NamePT = isset($headerPT) ? $headerPT->name : '';
+$AddressPT = isset($headerPT) ? $headerPT->address : '';
+$Address2PT = isset($headerPT) ? $headerPT->address2 : '';
+$NpwpPT = isset($headerPT) ? $headerPT->taxid : '';
+$BankNamePT = isset($headerPT) ? $headerPT->bank_name : '';
+$AccountBeneficiaryPT = isset($headerPT) ? $headerPT->account_beneficiary : '';
+$BankAccountPT = isset($headerPT) ? $headerPT->bank_account : '';
+$PhonePT = isset($headerPT) ? $headerPT->phone : '';
+$FaxPT = isset($headerPT) ? $headerPT->fax : '';
+$WebsitePT = isset($headerPT) ? $headerPT->homepage : '';
+$EmailPT = isset($headerPT) ? $headerPT->email : '';
+?>
 
-    <div style="padding-top: 25px;">
-        <span style="margin-top: 25px;">
-            Dear Mr / Mrs <br>
-            Thank you for inviting us to quote for the above-mentioned project. We are pleased to submit here <br>
-            with our quotation as follow :
-        </span>
-
-        <table class="table table-bordered" border="1">
-            <thead>
-                <tr>
-                    <th class="text-center">NO</th>
-                    <th class="text-center" style="width:250px;">ITEM DESCRIPTION</th>
-                    <th class="text-center">CODE</th>
-                    <th class="text-center">VARIANT</th>
-                    <th class="text-center">QTY</th>
-                    <th class="text-center">UNIT</th>
-                    <th class="text-center">PRICE</th>
-                    <th class="text-center">TOTAL PRICE</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php $no = 1;
-                $harga_seb_diskon = 0;
-                $harga_ses_diskon = 0;
-
-                $ttl_diskon = 0;
-                $ttl_persen_diskon = 0;
-                foreach ($results['data_penawaran_detail'] as $penawaran_detail) {
-                    if (isset($results['show_disc']) && $results['show_disc'] == '1') {
-                        echo '
-                            <tr>
-                                <td class="text-center">' . $no . '</td>
-                                <td class="">' . $penawaran_detail->nama_produk . '';
-
-                        if ($penawaran_detail->ukuran_potongan !== '' && $penawaran_detail->ukuran_potongan !== null) {
-                            echo '<br><br> <b>Cut Size : ' . $penawaran_detail->ukuran_potongan . '</b>';
-                        }
-
-                        $br_harga = (strlen(($penawaran_detail->harga_satuan - ($penawaran_detail->harga_satuan * $penawaran_detail->diskon_persen / 100))) >= 8) ? '<br>' : '';
-
-                        $br_total = (strlen((($penawaran_detail->harga_satuan - ($penawaran_detail->harga_satuan * $penawaran_detail->diskon_persen / 100)) * $penawaran_detail->qty)) >= 8) ? '<br>' : '';
-
-                        echo '</td>
-                                <td class="text-center">' . $penawaran_detail->code_product . '</td>
-                                <td class="text-center">' . $penawaran_detail->variant_product . '</td>
-                                <td class="text-center">' . number_format($penawaran_detail->qty) . '</td>
-                                <td class="text-center">' . ucfirst($penawaran_detail->unit_packing) . '</td>
-                                <td class="text-right">' . $results['data_penawaran']->currency . ' ' . $br_harga . number_format((($penawaran_detail->harga_satuan + $penawaran_detail->cutting_fee + $penawaran_detail->delivery_fee))) . '</td>
-                                <td class="text-right">' . $results['data_penawaran']->currency . ' ' . $br_total . number_format(((($penawaran_detail->harga_satuan + $penawaran_detail->cutting_fee + $penawaran_detail->delivery_fee) * $penawaran_detail->qty))) . '</td>
-                            </tr>
-                        ';
-
-                        $harga_seb_diskon += (($penawaran_detail->harga_satuan + $penawaran_detail->cutting_fee + $penawaran_detail->delivery_fee) * $penawaran_detail->qty);
-                        $harga_ses_diskon += ((($penawaran_detail->harga_satuan + $penawaran_detail->cutting_fee + $penawaran_detail->delivery_fee) - ($penawaran_detail->harga_satuan * $penawaran_detail->diskon_persen / 100)) * $penawaran_detail->qty);
-                        $ttl_diskon += (($penawaran_detail->harga_satuan * $penawaran_detail->diskon_persen / 100) * $penawaran_detail->qty);
-                    } else {
-                        echo '
-                            <tr>
-                                <td class="text-center">' . $no . '</td>
-                                <td class="">' . $penawaran_detail->nama_produk . '';
-
-                        if ($penawaran_detail->ukuran_potongan !== '' && $penawaran_detail->ukuran_potongan !== null) {
-                            echo '<br><br> <b>Cut Size : ' . $penawaran_detail->ukuran_potongan . '</b>';
-                        }
-
-                        $br_harga = (strlen($penawaran_detail->harga_satuan) >= 8) ? '<br>' : '';
-
-                        $br_total = (strlen((($penawaran_detail->harga_satuan) * $penawaran_detail->qty)) >= 8) ? '<br>' : '';
-
-                        echo '</td>
-                                <td class="text-center">' . $penawaran_detail->code . '</td>
-                                <td class="text-center">' . $penawaran_detail->variant_product . '</td>
-                                <td class="text-center">' . $penawaran_detail->color . '</td>
-                                <td class="text-center">' . $penawaran_detail->surface . '</td>
-                                <td class="text-center">' . number_format($penawaran_detail->qty) . '</td>
-                                <td class="text-center">' . ucfirst($penawaran_detail->unit_packing) . '</td>
-                                <td class="text-right">' . $results['data_penawaran']->currency . ' ' . $br_harga . number_format(($penawaran_detail->harga_satuan)) . '</td>
-                                <td class="text-right">' . $results['data_penawaran']->currency . ' ' . $br_total . number_format((($penawaran_detail->harga_satuan) * $penawaran_detail->qty)) . '</td>
-                            </tr>
-                        ';
-
-                        $harga_seb_diskon += (($penawaran_detail->harga_satuan + $penawaran_detail->cutting_fee + $penawaran_detail->delivery_fee) * $penawaran_detail->qty);
-                        $harga_ses_diskon += (($penawaran_detail->harga_satuan + $penawaran_detail->cutting_fee + $penawaran_detail->delivery_fee) * $penawaran_detail->qty);
-                    }
-                    $no++;
-                }
-
-                foreach ($results['list_other_cost'] as $other_cost) {
-                    $br = (strlen($other_cost->nilai) >= 8) ? '<br>' : '';
-
-                    echo '
+	<table border="0" width=800 style="margin-left: 5px;" id="table-no-border">
+        <!-- START BAGIAN AKHIR HEADER KOP SURAT -->
+        <table border="0">
+            <tr>
+                <td>
+                    <div class="inline-container">
+                        <img src="<?= base_url("assets/images/logo.jpg") ?>" width="180">
+                    </div>
+                </td>
+                <td>
+                    <table border="0" class="header-pt">
                         <tr>
-                            <td class="text-center">' . $no . '</td>
-                            <td class="">' . $other_cost->keterangan . '</td>
-                            <td class="text-center"></td>
-                            <td class="text-center"></td>
-                            <td class="text-center"></td>
-                            <td class="text-center"></td>
-                            <td class="text-center"></td>
-                            <td class="text-center"></td>
-                            <td class="text-right">' . $other_cost->curr . ' ' . $br . number_format($other_cost->total_nilai) . '</td>
-                            <td class="text-right">' . $other_cost->curr . ' ' . $br . number_format($other_cost->total_nilai) . '</td>
+                            <td><h2 style="margin: 0;">&nbsp;<?= @$NamePT ?></h2></td>
                         </tr>
-                    ';
-
-                    $harga_seb_diskon += $other_cost->total_nilai;
-                    $harga_ses_diskon += $other_cost->total_nilai;
-                }
-
-                foreach($results['list_other_item'] as $other_item) {
-
-                    $get_other_detail = $this->db->query("
-                        SELECT
-                            a.code as product_code,
-                            b.code as nm_unit
-                        FROM
-                            new_inventory_4 a
-                            LEFT JOIN ms_satuan b ON b.id = a.id_unit
-                        WHERE
-                            a.code_lv4 = '".$other_item->id_other."'
-
-                        UNION ALL
-
-                        SELECT
-                            a.id_stock as product_code,
-                            b.code as nm_unit
-                        FROM
-                            accessories a
-                            LEFT JOIN ms_satuan b ON b.id = a.id_unit
-                        WHERE
-                            a.id = '".$other_item->id_other."'
-                    ")->row();
-
-                    echo '<tr>';
-                    echo '<td class="text-center">'.$no.'</td>';
-                    echo '<td class="text-left">'.$other_item->nm_other.'</td>';
-                    echo '<td class="text-center">'.$get_other_detail->product_code.'</td>';
-                    echo '<td class="text-center">-</td>';
-                    echo '<td class="text-center">-</td>';
-                    echo '<td class="text-center">-</td>';
-                    echo '<td class="text-center">'.number_format($other_item->qty).'</td>';
-                    echo '<td class="text-center">'.ucfirst($get_other_detail->nm_unit).'</td>';
-                    echo '<td class="text-left">'.$results['data_penawaran']->currency.' '.number_format($other_item->harga).'</td>';
-                    echo '<td class="text-left">'.$results['data_penawaran']->currency.' '.number_format($other_item->total).'</td>';
-                    echo '</tr>';
-
-                    $harga_seb_diskon += $other_item->total;
-                    $harga_ses_diskon += $other_item->total;
-                    $no++;
-                }
-
-                if ($harga_seb_diskon > 0 && $harga_ses_diskon > 0) {
-                    $ttl_persen_diskon = (($harga_seb_diskon - $harga_ses_diskon) / $harga_seb_diskon);
-                }
-                ?>
-            </tbody>
-            <tbody>
-                <tr>
-                    <th class="text-right" colspan="7">TOTAL NETT</th>
-                    <th class="text-right"><?= $results['data_penawaran']->currency ?> <?= number_format($harga_seb_diskon) ?></th>
-                </tr>
-                <?php 
-                    if($results['show_disc'] !== '' && $results['show_disc'] !== null) {
-                        echo '
-                            <tr>
-                                <th class="text-right" colspan="7">DISCOUNT</th>
-                                <th class="text-right">'.$results['data_penawaran']->currency.' '. number_format($ttl_diskon) .'</th>
-                            </tr>
-                        ';
-                    }
-                ?>
-                <tr>
-                    <th class="text-right" colspan="7">VAT <?= number_format($results['data_penawaran']->ppn) ?>%</th>
-                    <th class="text-right"><?= $results['data_penawaran']->currency ?> <?= number_format(($harga_ses_diskon * $results['data_penawaran']->ppn / 100)) ?></th>
-                </tr>
-                <tr>
-                    <th class="text-right" colspan="7">GRAND TOTAL NETT</th>
-                    <th class="text-right"><?= $results['data_penawaran']->currency ?> <?= number_format($harga_ses_diskon + ($harga_ses_diskon * $results['data_penawaran']->ppn / 100)) ?></th>
-                </tr>
-            </tbody>
+                        <tr style="font-size: 15px;">
+                            <td>
+                                <p>&nbsp;&nbsp;<?=  @$AddressPT ?><br>
+                                &nbsp;&nbsp;<?=  @$Address2PT ?></p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <table border="0" class="contact-table" style="font-size: 15px;">
+                                    <tr>
+                                        <td>No. Telepon Kantor</td>
+                                        <td>:</td>
+                                        <td><?= @$PhonePT ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td>No. Fax</td>
+                                        <td>:</td>
+                                        <td><?= @$FaxePT ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Email</td>
+                                        <td>:</td>
+                                        <td>
+                                            <a href="mailto:<?= @$EmailPT ?>" class="link-print"><?= @$EmailPT ?></a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Webiste</td>
+                                        <td>:</td>
+                                        <td>
+                                            <a href="https://<?= preg_replace('#^https?://#', '', @$WebsitePT) ?>" class="link-print" target="_blank">
+                                                <?= @$WebsitePT ?>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
         </table>
-    </div>
+        <!-- END BAGIAN AKHIR HEADER KOP SURAT -->
+        
+        <!-- GARIS PEMISAH TEBAL -->
+        <hr style="border: 3px solid black; margin: 10px 0;" width=800>
 
-    <div class="breakarea"></div>
+        <!-- START BODY / ISI BAGAIN 1-->
+        <table border="0" width="800" style="font-weight: bold; font-size: 15px;">
+            <tr>
+                <td>No</td>
+                <td>:</td>
+                <td><?= @$NoPenawaran ?></td>
+                <td><div style="width: 200px;"></div></td>
+                <td><?= @$TglPenawaranFix ?></td>
+            </tr>
+            <tr>
+                <td>Hal</td>
+                <td>:</td>
+                <td>Penawaran Harga</td>
+                <td><div style="width: 200px;"></div></td>
+                <td>&nbsp;</td>
+            </tr>
+        </table>
+        <!-- END BODY / ISI BAGAIN 1-->
+        <br>
+        <!-- START BODY / ISI BAGAIN 2-->
+        <tabla border="0" width="800" class="header-pt">
+            <tr>
+                <td>
+                    <p style="font-weight: bold; font-size: 15px;">Kepada Yth,</p>
+                </td>
+                <td>
+                    <p style="font-weight: bold; font-size: 15px;"><?= @$NameCustomer ?></p>
+                </td>
+            </tr>
+            <tr >
+                <td><div style="height: 20px;">&nbsp;</div></td>
+            </tr>
+            <tr>
+                <td>
+                    <p style="font-size: 15px;">
+                    Berikut ini kami sampaikan penawaran dengan spesifikasi produk sebagai berikut :
+                    </p>
+                </td>
+            </tr>
+        </table>
+        <!-- END BODY / ISI BAGAIN 2-->
+        <br>
+        <!-- START BODY / ISI BAGAIN 3-->
+        <!-- style="border-collapse: collapse; border: 1px solid black;" -->
+        <table border="1" width="800" style="font-weight: bold; font-size: 15px; border-collapse: collapse; border: 1px solid black; text-align: center;">
+            <tr>
+                <td>No</td>
+                <td>Description</td>
+                <td>Unit Harga Satuan</td>
+                <td>Quantity</td>
+                <td>Jumlah</td>
+            </tr>
+            <!-- <tr>
+                <td>1</td> 
+                <td style="text-align: left;">Saluran Beton U-Ditch</td> 
+                <td>340.000</td> 
+                <td>42 pcs</td> 
+                <td>14.280.000</td>            
+            </tr> -->
+            <!-- START LOOPING DATA DETAIL -->
+            <?php 
+            $numb = 0;
+            $harga_seb_diskon = 0;
+            $harga_ses_diskon = 0;
+            $ttl_diskon = 0;
+            $ttl_persen_diskon = 0;
+            $total_value_before_dc = 0;
+            foreach($results['data_penawaran_detail'] AS $detail_penawaran){
+            $numb++;
+            $harga_ses_diskon += (($detail_penawaran->harga_satuan + $detail_penawaran->cutting_fee + $detail_penawaran->delivery_fee) * $detail_penawaran->qty);
+            ?>
+            <tr>
+                <td><?= $numb ?></td>
+                <td style="text-align: left;"><?= $detail_penawaran->nama_produk ?></td>
+                <td><?= number_format($detail_penawaran->harga_satuan)  ?></td>
+                <td><?= round($detail_penawaran->qty).' pcs'  ?></td>
+                <td><?= number_format($detail_penawaran->total_harga) ?></td>
+            </tr>
+            <?php 
+            }
+            ?>
+            <!-- END LOOPING DATA DETAIL -->
+            <tr>
+                <td colspan="4">Total Value Before Delivery Cost</td>
+                <td><?= number_format(@$GrandTotal) ?></td>
+            </tr>
+            <tr>
+                <td colspan="4">Grand Total After Delivery Cost and PPN</td>
+                <td><?= number_format(@$GrandTotalAfterDC) ?></td>
+            </tr>
+        </table>
+        <!-- END BODY / ISI BAGAIN 3-->
+        <br>
+        <!-- START BODY / ISI BAGAIN 4-->
+        <table border="0" widht="800" class="header-pt" style="font-size: 15px;">
+            <tr>
+                <td style="">
+                    <p style="font-weight: bold; font-size: 15px;">Catatan :</p>
+                    <ul style="list-style-type: none; padding-left: 0;">
+                        <li>- Harga di atas belum termasuk ongkos pengiriman sampai lokasi</li>
+                        <li>- Harga diatas tidak termasuk biaya kuli / preman di lapangan</li>
+                        <li>- Berlakunya Penawaran 14 (Empat Belas) Hari Setelah tanggal Penawaran</li>
+                        <li>- Harga di atas tidak termasuk PPN</li>
+                        <li>- Sistem Pembayaran : <bold><i><u><?= @$KetTOP ?></bold></i></u></li>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+        <!-- END BODY / ISI BAGAIN 4-->
+        <!-- <br> -->
+        <!-- START BODY / ISI BAGAIN 5-->
+        <table border="0" widht="800" class="header-pt" style="font-size: 15px;">
+            <tr>
+                <td style="">
+                    <p style="font-weight: bold; font-size: 15px;">Spefikasi Teknis Produk Saluran Beton U-Ditch :</p>
+                    <ul>
+                        <li>
+                            <table border="0"  class="contact-table">
+                                <tr>
+                                    <td style="width: 100px;">Mutu Beton</td>
+                                    <td>:</td>
+                                    <td>K-350</td>
+                                </tr>
+                            </table>
+                        </li>
+                        <li>
+                            <table border="0"  class="contact-table">
+                                <tr>
+                                    <td style="width: 100px;">Mutu Besi</td>
+                                    <td>:</td>
+                                    <td>U 50 Hard Drawn Wiremesh</td>
+                                </tr>
+                            </table>
+                        </li>
+                        <li>
+                            <table border="0"  class="contact-table">
+                                <tr>
+                                    <td style="width: 100px;">Semen</td>
+                                    <td>:</td>
+                                    <td>Type I</td>
+                                </tr>
+                            </table>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+        <!-- END BODY / ISI BAGAIN 5-->
 
-    <table class="table w-100">
-        <tr>
-            <td rowspan="2" style="width: 100px;">
-               
-            </td>
-            <td style="vertical-align: middle; border-bottom: 1px solid #ccc;">
-                <h3 style="font-style: italic;font-weight: bold;">PT. MEGACON BANGUN PERKASA</h3>
-            </td>
-            <!-- <td class="text-center" style="width:200px; border-bottom: 1px solid #ccc;"> -->
-                <!-- <img src="<?= base_url('assets/images/ISO.png'); ?>" width="100" alt=""> -->
-            <!-- </td> -->
-            <!-- <td class="text-right" style="vertical-align: top;">
-                Jl. Pembangunan 2 No. 34 <br>
-                Kec. Batuceper, Kota Tanggerang, Banten 15121 <br>
-                <span style="font-weight:bold;">Hotline Service :</span> (+62) 21 557 66 153 <span style="font-weight:bold;">WhatsApp :</span> (+62) 858 9138 3212
-            </td> -->
-        </tr>
-        <!-- <tr>
-            <td style="height: 60px;">
-                <?= strtoupper($results['pt_name']) ?>
-            </td>
-            <td class="text-right">
-                Jl. Pembangunan II
-                Kel. Batusari,
-                Kec. Batuceper,
-                Kota Tangerang Postal
-                Code 15122
-                Indonesia
-            </td>
-        </tr> -->
-    </table>
+        <!-- START BODY / ISI BAGAIN 6-->
+        <table border="0" widht="800" class="header-pt" style="font-size: 15px;">
+            <tr>
+                <td style="">
+                    <p style="">
+                    Demikianlah penawaran Harga ini kami sampaikan. Bila ada yang kurang jelas harap segera
+                    menguhubungi kami,<br>Terima kasih atas perhatiannya pada produk kami. Kami tunggu kabar baik
+                    selanjutnya.
+                    </p>
+                </td>
+            </tr>
+        </table>
+        <!-- END BODY / ISI BAGAIN 6-->
 
-    <!-- <div class="col-md-2"> -->
-    <table style="width: 60%;">
-        <tr>
-            <td>*</td>
-            <td>Time Of Delivery</td>
-            <td class="text-center" style="min-width:50px;">:</td>
-            <td><?= $results['data_penawaran']->time_delivery ?></td>
-        </tr>
-        <tr>
-            <td>*</td>
-            <td>Offer Period</td>
-            <td class="text-center" style="min-width:50px;">:</td>
-            <td><?= $results['data_penawaran']->offer_period ?></td>
-        </tr>
-        <tr>
-            <td>*</td>
-            <td>Delivery Term</td>
-            <td class="text-center" style="min-width:50px;">:</td>
-            <td><?= $results['data_penawaran']->delivery_term ?></td>
-        </tr>
-        <tr>
-            <td>*</td>
-            <td>Stage Payment of Fees</td>
-            <td class="text-center" style="min-width:50px;">:</td>
-            <td><?= $results['data_penawaran']->nama_top . ' ' . $results['data_penawaran']->top_custom ?></td>
-        </tr>
-        <tr>
-            <td>*</td>
-            <td>Warranty</td>
-            <td class="text-center" style="min-width:50px;">:</td>
-            <td><?= $results['data_penawaran']->warranty ?></td>
-        </tr>
-    </table>
-    <!-- </div> -->
+        <!-- START BODY / ISI BAGAIN 7-->
+        <!-- <div style="text-align: right; width: 800;"> -->
+        <table border="0" width="800" class="" style="font-size: 15px; display: inline-block;">
+            <tr>
+                <td style="width: 670px;"></td>
+                <td style="">
+                    <p style="">Hormat Kami.</p>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 670px;"></td>
+                <td style="">
+                    <p style="">&nbsp;</p>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 670px;"></td>
+                <td style="">
+                    <p style="text-align: center; font-weight: bold;"><u><?= @$NameCreateQuotation ?></u></p>
+                </td>
+            </tr>
+        </table>
+        <!-- </div> -->
+        <!-- END BODY / ISI BAGAIN 7-->
 
-    <?php
-    if ($results['data_penawaran']->quote_by == 'ORINDO') {
-        echo '
-                <div style="padding-top: 10px;">
-                    <b style="text-transform: underline;">Terms & Conditions :</b>
-                    <ol class="custom-list" >
-                        <li>Above costs are including the Loading Cost at PT. Orindo Eratec Warehouse.</li>
-                        <li>Every event of late payment will incur 0.1% / day and maximum penalty of 10% of total Purchase Order.</li>
-                        <li>Any delay in delivery and /or determination of production upon request from customer side, will incur additional cost as follow: temporary storage charges will be billed. If the product is in our factory and /or stop of delivery within three weeks and more at a price Rp. 15.000/ m2 / day</li>
-                        <li>Any disputes arising from the implementation of the activities referred to this Proposal Offer, all parties involved will resolve by deliberation to reach consensus. If the process fo deliberation and consensus does not occur, then all parties involved agree to resolve it and choosing legal common law in Central Jakarta District Court. The laws governing this agreement is the law of the Republic Indonesia</li>
-                        <li>PT. Orindo Eratec will be not responsible for problems resulting from external causes such as accident, abuse, misuse, mishandling, negligence, fire / water damage, theft, vandalism, riot, explosion, natural disaster, or other external causes unrelated to product performance.</li>
-                    </ol>
-                </div>
+	</table>
 
-                <p>As above are the basic condition from us, if there are unclear matter, please do not hesitate to contact our representative offices or agents. Thank you for your attention and trust.</p>
-            ';
-    } else {
-        echo '
-            <div style="padding-top: 10px;">
-                <b style="text-transform: underline;">Terms & Conditions :</b>
-                <ol class="custom-list" >
-                    <li>Above costs are including the Loading Cost at PT. Origa Mulia FRP.</li>
-                    <li>Every event of late payment will incur 0.1% / day and maximum penalty of 10% of total Purchase Order.</li>
-                    <li>Any delay in delivery and /or determination of production upon request from customer side, will incur additional cost as follow: temporary storage charges will be billed. If the product is in our factory and /or stop of delivery within three weeks and more at a price Rp. 15.000/ m2 / day</li>
-                    <li>Any disputes arising from the implementation of the activities referred to this Proposal Offer, all parties involved will resolve by deliberation to reach consensus. If the process fo deliberation and consensus does not occur, then all parties involved agree to resolve it and choosing legal common law in Central Jakarta District Court. The laws governing this agreement is the law of the Republic Indonesia</li>
-                    <li>PT.  Origa Mulia FRP will be not responsible for problems resulting from external causes such as accident, abuse, misuse, mishandling, negligence, fire / water damage, theft, vandalism, riot, explosion, natural disaster, or other external causes unrelated to product performance.</li>
-                </ol>
-            </div>
+	<script>
+		// window.print();
+	</script>
+</body>
 
-            <p>As above are the basic condition from us, if there are unclear matter, please do not hesitate to contact our representative offices or agents. Thank you for your attention and trust.</p>
-            ';
-    }
-    ?>
-
-    <div style="padding-top: 60px;">
-        <b style="text-decoration: underline;">Yours Faithfully</b> <br>
-        <img src="<?= base_url($tanda_tangan) ?>" alt="" width="100" height="100">
-        <br><br><br>
-        <b style="text-decoration: underline;"><?= $results['data_penawaran']->nama_sales ?></b>
-    </div>
-    <!-- </div> -->
-    <!-- /.box-body -->
-</div>
-
-<!-- <div class="text-right unprint">
-    <button type="button" class="btn btn-sm btn-info" onclick="window.print()">Print</button>
-</div> -->
-
-<!-- awal untuk modal dialog -->
-<!-- Modal -->
-
-<!-- /.modal -->
-
-<!-- DataTables -->
-<script src="<?= base_url('assets/plugins/datatables/jquery.dataTables.min.js') ?>"></script>
-<script src="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.min.js') ?>"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-
-<!-- page script -->
-<script>
-    // function printDiv(divId) {
-    //     var printContents = document.getElementById(divId).innerHTML;
-    //     var originalContents = document.body.innerHTML;
-
-    //     document.body.innerHTML = printContents;
-
-    //     window.print();
-
-    //     document.body.innerHTML = originalContents;
-    // }
-
-    window.print();
-</script>
+</html>
