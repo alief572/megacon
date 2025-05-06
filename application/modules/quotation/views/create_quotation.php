@@ -533,7 +533,7 @@
                                                         </tr>
                                                     </table>
 
-                                                    <table class="w-100" border="0">
+                                                    <table class="w-100" border="0" style="display: none;">
                                                         <tr>
                                                             <td class="text-center" style="vertical-align: top;">Delivery Fee</td>
                                                             <td class="text-center" style="vertical-align: top;">:</td>
@@ -625,7 +625,7 @@
                                                 </tr>
                                             </table>
 
-                                            <table class="w-100" border="0">
+                                            <table class="w-100" border="0" style="display: none;">
                                                 <tr>
                                                     <td class="text-center" style="vertical-align: top;">Cutting Fee</td>
                                                     <td class="text-center" style="vertical-align: top;">:</td>
@@ -1296,7 +1296,7 @@ $total_all_qty += $qty;
                     <div class="col-lg-8"></div>
                     <div class="col-lg-4">
                         <div class="form-group" style="">
-                            <label class="col-sm-4 control-label">PPN (11%)(<?= $results['curr']; ?>)</label>
+                            <label class="col-sm-4 control-label">PPN (%)(<?= $results['curr']; ?>)</label>
                             <div class="col-sm-6">
                             <input type="text" name="ppn_check" id="ppn_check" class="form-control text-right" 
                             value="<?= (isset($results['data_penawaran']) && $results['data_penawaran']->ppn == '11') ? '11' : '0' ?>">
@@ -1542,6 +1542,7 @@ $(document).ready(function() {
     // }
 
     hitungTruckDanDelivery();
+    updateBeratAktualStyle();
 
 });
 
@@ -2206,6 +2207,7 @@ swal({
                         cache: false,
                         success: function(result) {
                             cek_detail_penawaran(no_surat);
+                            updateBeratAktualStyle();
                         }
                     });
                 }
@@ -2220,6 +2222,7 @@ swal({
                         cache: false,
                         success: function(result) {
                             cek_detail_penawaran(no_surat);
+                            updateBeratAktualStyle();
                         }
                     });
                 }
@@ -2673,6 +2676,57 @@ function clearTruckFields() {
                         }
                     });
                 });
+
+// function updateBeratAktualStyle() {
+function updateBeratAktualStyle() {
+    const id_truck = $('.get_data_truck').val();
+    const no_penawaran = $('#no_surat').val();
+    const grand_total_input = $('#grand_total').val();
+    const grand_total = parseFloat(grand_total_input.replace(/,/g, '')) || 0;
+
+    if (!id_truck) return;
+
+    $.ajax({
+        type: 'POST',
+        url: siteurl + active_controller + 'get_data_truck',
+        data: {
+            id_truck: id_truck,
+            no_penawaran: no_penawaran,
+            grand_total: grand_total
+        },
+        dataType: 'json',
+        success: function(result) {
+            const kapasitas = parseFloat(result.kapasitas) || 0;
+            const total_all_qty = parseFloat(result.all_qty_penawaran) || 0;
+            const total_berat_all = parseFloat($('#total_berat_all_new').val()) || 0;
+            const $beratAktualInput = $('#berat_aktual_truck_dc');
+
+            // Hitung ulang berat aktual jika diperlukan
+            const berat_aktual = total_berat_all - kapasitas;
+            $beratAktualInput.val(berat_aktual.toFixed(2)); // Update input
+
+            // Ubah warna sesuai logika
+            if (total_berat_all > kapasitas) {
+                $beratAktualInput.css('background-color', 'red');
+                $beratAktualInput.css('color', 'white');
+            } else {
+                $beratAktualInput.css('background-color', '#90EE90');
+                $beratAktualInput.css('color', 'white');
+            }
+
+            // Update kapasitas jika diperlukan
+            $('#kapasitas_truck_dc').val(kapasitas);
+            $('#total_pengiriman_ba').val(total_all_qty);
+        },
+        error: function(xhr, status, error) {
+            console.error("Error update style from truck:", error);
+        }
+    });
+}
+
+// $(document).on('input change', '#total_berat_all_new, #kapasitas_truck_dc, #total_all_qty', function () {
+//     updateBeratAktualStyle();
+// });
 
 $(document).on('change', '#id_truck', function() {
     var id_truck = $(this).val();

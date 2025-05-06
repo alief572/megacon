@@ -205,7 +205,7 @@ $EmailPT = isset($headerPT) ? $headerPT->email : '';
                                     <tr>
                                         <td>No. Fax</td>
                                         <td>:</td>
-                                        <td><?= @$FaxePT ?></td>
+                                        <td><?= @$FaxPT ?></td>
                                     </tr>
                                     <tr>
                                         <td>Email</td>
