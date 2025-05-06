@@ -2139,18 +2139,19 @@ class Purchase_order extends Admin_Controller
 		$data['nm_depart'] = $nm_depart;
 
 		$this->load->view('print2', $data);
-		$html = ob_get_contents();
+		// START VERSION OLD
+		// $html = ob_get_contents();
 
-		require_once('./assets/html2pdf/html2pdf/html2pdf.class.php');
-		$html2pdf = new HTML2PDF('P', 'A4', 'en', true, 'UTF-8', array(10, 5, 10, 5));
-		$html2pdf->pdf->SetDisplayMode('fullpage');
-		$html = ob_get_contents();
+		// require_once('./assets/html2pdf/html2pdf/html2pdf.class.php');
+		// $html2pdf = new HTML2PDF('P', 'A4', 'en', true, 'UTF-8', array(10, 5, 10, 5));
+		// $html2pdf->pdf->SetDisplayMode('fullpage');
+		// $html = ob_get_contents();
 
-		$html2pdf->WriteHTML($html);
+		// $html2pdf->WriteHTML($html);
 
-		ob_end_clean();
-		$html2pdf->Output('Purchase Order.pdf', 'I');
-
+		// ob_end_clean();
+		// $html2pdf->Output('Purchase Order.pdf', 'I');
+		// END VERSION OLD
 		// $this->template->title('Testing');
 		// $this->template->render('print2');
 	}
