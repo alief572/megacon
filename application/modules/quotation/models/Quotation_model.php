@@ -1423,9 +1423,9 @@ class Quotation_model extends BF_Model
 			// 	}
 			// }
 
-			// $btn_print = '<a href="' . base_url() . 'quotation/print_quotation/' . $item['no_penawaran'] . '" class="btn btn-sm bg-purple" target="_blank">Print</a>';
+			$btn_print = '<a href="' . base_url() . 'quotation/print_quotation/' . $item['no_penawaran'] . '" class="btn btn-sm bg-purple" target="_blank">Print</a>';
 
-			$btn_print = '<a href="javascript:void(0);" class="btn btn-sm bg-purple print_quotation" data-id_penawaran="' . $item['no_penawaran'] . '">Print</a>';
+			// $btn_print = '<a href="javascript:void(0);" class="btn btn-sm bg-purple print_quotation" data-id_penawaran="' . $item['no_penawaran'] . '">Print</a>';
 
 			// $btn_print = '<a href="javascript:"></a>';
 
