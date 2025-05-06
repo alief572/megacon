@@ -366,9 +366,10 @@ class Sales_order_model extends BF_Model
 		$start = $this->input->post('start');
 		$search = $this->input->post('search');
 
-		$this->db->select('a.*, b.nm_customer, c.no_so, f.req_app, f.approve');
+		$this->db->select('a.*, b.name_customer as nm_customer, c.no_so, f.req_app, f.approve');
 		$this->db->from('tr_penawaran a');
-		$this->db->join('customer b', 'b.id_customer = a.id_customer', 'left');
+		// $this->db->join('customer b', 'b.id_customer = a.id_customer', 'left');
+		$this->db->join('master_customers b', 'b.id_customer = a.id_customer', 'left');
 		$this->db->join('tr_sales_order c', 'c.no_penawaran = a.no_penawaran', 'left');
 		$this->db->join('tr_sales_order f', 'f.no_penawaran = a.no_penawaran', 'left');
 		$this->db->group_start();
@@ -379,7 +380,7 @@ class Sales_order_model extends BF_Model
 			$this->db->group_start();
 			$this->db->like('DATE_FORMAT(a.tgl_penawaran, "%d %M %Y")', $search['value'], 'both');
 			$this->db->or_like('c.no_so', $search['value'], 'both');
-			$this->db->or_like('b.nm_customer', $search['value'], 'both');
+			$this->db->or_like('b.name_customer', $search['value'], 'both');
 			$this->db->or_like('a.no_penawaran', $search['value'], 'both');
 			$this->db->or_like('a.project', $search['value'], 'both');
 			$this->db->group_end();
@@ -388,9 +389,10 @@ class Sales_order_model extends BF_Model
 		$this->db->limit($length, $start);
 		$get_data = $this->db->get();
 
-		$this->db->select('a.*, b.nm_customer, c.no_so, f.req_app, f.approve');
+		$this->db->select('a.*, b.name_customer as nm_customer, c.no_so, f.req_app, f.approve');
 		$this->db->from('tr_penawaran a');
-		$this->db->join('customer b', 'b.id_customer = a.id_customer', 'left');
+		// $this->db->join('customer b', 'b.id_customer = a.id_customer', 'left');
+		$this->db->join('master_customers b', 'b.id_customer = a.id_customer', 'left');
 		$this->db->join('tr_sales_order c', 'c.no_penawaran = a.no_penawaran', 'left');
 		$this->db->join('tr_sales_order f', 'f.no_penawaran = a.no_penawaran', 'left');
 		$this->db->group_start();
@@ -401,7 +403,7 @@ class Sales_order_model extends BF_Model
 			$this->db->group_start();
 			$this->db->like('DATE_FORMAT(a.tgl_penawaran, "%d %M %Y")', $search['value'], 'both');
 			$this->db->or_like('c.no_so', $search['value'], 'both');
-			$this->db->or_like('b.nm_customer', $search['value'], 'both');
+			$this->db->or_like('b.name_customer', $search['value'], 'both');
 			$this->db->or_like('a.no_penawaran', $search['value'], 'both');
 			$this->db->or_like('a.project', $search['value'], 'both');
 			$this->db->group_end();

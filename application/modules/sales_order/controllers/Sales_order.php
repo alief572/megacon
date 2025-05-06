@@ -67,7 +67,10 @@ class Sales_order extends Admin_Controller
     $product    = $this->Sales_order_model->get_data('ms_inventory_category2');
     $top = $this->db->get_where('list_help', ['group_by' => 'top invoice'])->result();
 
-    $get_penawaran = $this->db->query('SELECT a.*, b.nm_customer, b.alamat, c.nm_pic, d.nm_lengkap FROM tr_penawaran a LEFT JOIN customer b ON b.id_customer = a.id_customer LEFT JOIN customer_pic c ON c.id_pic = a.pic_customer LEFT JOIN users d ON d.id_user = a.created_by WHERE a.no_penawaran = "' . $no_penawaran . '"')->row();
+    // $get_penawaran = $this->db->query('SELECT a.*, b.nm_customer, b.alamat, c.nm_pic, d.nm_lengkap FROM tr_penawaran a LEFT JOIN customer b ON b.id_customer = a.id_customer LEFT JOIN customer_pic c ON c.id_pic = a.pic_customer LEFT JOIN users d ON d.id_user = a.created_by WHERE a.no_penawaran = "' . $no_penawaran . '"')->row();
+    $get_penawaran = $this->db->query('SELECT a.*, b.name_customer as nm_customer, b.address_office as alamat, c.name_pic as nm_pic, d.nm_lengkap FROM tr_penawaran a LEFT JOIN master_customers b ON b.id_customer = a.id_customer LEFT JOIN child_customer_pic c ON c.id_pic = a.pic_customer LEFT JOIN users d ON d.id_user = a.created_by WHERE a.no_penawaran = "' . $no_penawaran . '"')->row();
+    // print_r($this->db->last_query());
+    // die();
 
     $get_penawaran_detail = $this->db->query('
       SELECT 
