@@ -396,7 +396,7 @@ $EmailPT = isset($headerPT) ? $headerPT->email : '';
         <!-- START BODY / ISI BAGAIN 4-->
         <table border="0" widht="800" class="header-pt" style="font-size: 15px;">
             <tr>
-                <td>Terbilang : <?php echo ucfirst(number_to_words(intval(12500000))) . " Rupiah"; ?></td>
+                <td>Terbilang : <?php echo ucfirst(number_to_words(intval($header->subtotal))) . " Rupiah"; ?></td>
             </tr>
             <tr>
                 <td style="">
