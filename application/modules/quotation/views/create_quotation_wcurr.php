@@ -1240,7 +1240,7 @@ $total_all_qty += $qty;
                     <div class="col-lg-8"></div>
                     <div class="col-lg-4">
                         <div class="form-group" style="">
-                            <label class="col-sm-4 control-label">PPN (%)(<?= $results['curr']; ?>)</label>
+                            <label class="col-sm-4 control-label">PPN (%)</label>
                             <div class="col-sm-6">
                             <input type="text" name="ppn_check" id="ppn_check" class="form-control text-right" 
                             value="<?= (isset($results['data_penawaran']) && $results['data_penawaran']->ppn == '11') ? '11' : '0' ?>">
