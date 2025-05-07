@@ -74,6 +74,9 @@ class Approval_quotation extends Admin_Controller
 		if ($action == 'Reject') {
 			$keterangan_approve = $post['keterangan_approve'];
 		}
+		// print_r($action);
+		// print_r($keterangan_approve);
+		// die();
 
 		$app_quote = 1;
 
@@ -113,7 +116,7 @@ class Approval_quotation extends Admin_Controller
 				$this->db->update('tr_req_quot', array('approved' => 'Y', 'approved_by' => $this->auth->user_id(), 'approved_date' => date('Y-m-d H:i:s')), array('id' => $get_req_quot->id));
 			}
 		} else {
-			$this->db->update('tr_penawaran', array('status' => 0), array('no_penawaran' => $post['no_surat']));
+			$this->db->update('tr_penawaran', array('status' => 0, 'keterangan_approve' => $keterangan_approve), array('no_penawaran' => $post['no_surat']));
 			$this->db->delete('tr_req_quot', array('id_quotation' => $post['no_surat']));
 		}
 

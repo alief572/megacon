@@ -40,10 +40,11 @@
                                                 </div>
                                                 <div class="col-md-8">
                                                     <select id="id_customer" name="id_customer" class="form-control select2 get_data_customer" disabled>
-                                                        <option value="">--Pilih--</option>
+                                                        <!-- <option value="">--Pilih--</option> -->
                                                         <?php foreach ($results['customers'] as $customers) { ?>
-                                                            <option value="<?= $customers->id_customer ?>" <?= (isset($results['data_penawaran']) && $customers->id_customer == $results['data_penawaran']->id_customer) ? 'selected' : null ?>><?= ucfirst($customers->nm_customer) ?></option>
+                                                            <option value="<?= $customers->id_customer ?>" <?= (isset($results['data_penawaran']) && $customers->id_customer == $results['data_penawaran']->id_customer) ? 'selected' : null ?>><?= ucfirst($customers->name_customer) ?></option>
                                                         <?php } ?>
+
                                                     </select>
                                                 </div>
                                             </div>
@@ -73,14 +74,14 @@
                                                 </div>
                                                 <div class='col-md-8' id="pic_slot">
                                                     <select id='pic_customer' name='pic_customer' class='form-control select2' disabled>
-                                                        <option value=''>--Pilih--</option>
+                                                        <!-- <option value=''>--Pilih--</option> -->
                                                         <?php
                                                         foreach ($results['pic_cust'] as $pic) {
                                                             $selected = '';
                                                             if (isset($results['data_penawaran']) && $results['data_penawaran']->pic_customer == $pic->id_pic) {
                                                                 $selected = 'selected';
                                                             }
-                                                            echo '<option value="' . $pic->id_pic . '" ' . $selected . '>' . ucfirst($pic->nm_pic) . '</option>';
+                                                            echo '<option value="' . $pic->id_pic . '" ' . $selected . '>' . ucfirst($pic->name_pic) . '</option>';
                                                         }
                                                         ?>
                                                     </select>

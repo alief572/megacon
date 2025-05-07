@@ -44,6 +44,7 @@ $ENABLE_DELETE  = has_permission('Quotation.Delete');
 					<th class="text-center">Project</th>
 					<th class="text-center">Rev</th>
 					<th class="text-center">Status</th>
+					<th class="text-center">Reject Reason</th>
 					<?php if ($ENABLE_MANAGE) : ?>
 						<th>Action</th>
 					<?php endif; ?>
@@ -581,6 +582,9 @@ $ENABLE_DELETE  = has_permission('Quotation.Delete');
 				},
 				{
 					data: 'status'
+				},
+				{
+					data: 'reject_reason'
 				},
 				{
 					data: 'option'

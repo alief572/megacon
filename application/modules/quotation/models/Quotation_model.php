@@ -1290,7 +1290,7 @@ class Quotation_model extends BF_Model
 		$start = $this->input->post('start');
 		$search = $this->input->post('search');
 
-		$this->db->select('a.no_penawaran, a.tgl_penawaran, a.project, a.status, a.req_app1, a.app_1, a.req_app2, a.app_2, a.req_app3, a.app_3, b.name_customer as nm_customer');
+		$this->db->select('a.no_penawaran, a.tgl_penawaran, a.project, a.status, a.req_app1, a.app_1, a.req_app2, a.app_2, a.req_app3, a.app_3, b.name_customer as nm_customer, a.keterangan_approve');
 		$this->db->from('tr_penawaran a');
 		// $this->db->join('customer b', 'b.id_Customer = a.id_customer', 'left');
 		$this->db->join('master_customers b', 'b.id_Customer = a.id_customer', 'left');
@@ -1300,12 +1300,13 @@ class Quotation_model extends BF_Model
 			$this->db->or_like('a.no_penawaran', $search['value'], 'both');
 			$this->db->or_like('a.project', $search['value'], 'both');
 			$this->db->or_like('a.no_revisi', $search['value'], 'both');
+			$this->db->or_like('a.keterangan_approve', $search['value'], 'both');
 		}
 		$this->db->order_by('a.created_on', 'desc');
 		$this->db->limit($length, $start);
 		$get_data = $this->db->get();
 
-		$this->db->select('a.no_penawaran, a.tgl_penawaran, a.status, a.project, a.req_app1, a.app_1, a.req_app2, a.app_2, a.req_app3, a.app_3, b.name_customer as nm_customer');
+		$this->db->select('a.no_penawaran, a.tgl_penawaran, a.status, a.project, a.req_app1, a.app_1, a.req_app2, a.app_2, a.req_app3, a.app_3, b.name_customer as nm_customer, a.keterangan_approve');
 		$this->db->from('tr_penawaran a');
 		// $this->db->join('customer b', 'b.id_Customer = a.id_customer', 'left');
 		$this->db->join('master_customers b', 'b.id_Customer = a.id_customer', 'left');
@@ -1315,6 +1316,7 @@ class Quotation_model extends BF_Model
 			$this->db->or_like('a.no_penawaran', $search['value'], 'both');
 			$this->db->or_like('a.project', $search['value'], 'both');
 			$this->db->or_like('a.no_revisi', $search['value'], 'both');
+			$this->db->or_like('a.keterangan_approve', $search['value'], 'both');
 		}
 		$this->db->order_by('a.created_on', 'desc');
 		$get_data_all = $this->db->get();
@@ -1470,6 +1472,7 @@ class Quotation_model extends BF_Model
 				'project' => $item['project'],
 				'rev' => $item['revisi'],
 				'status' => $Status,
+				'reject_reason' => $item['keterangan_approve'],
 				'option' => $buttons
 			];
 		}

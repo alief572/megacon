@@ -11,9 +11,11 @@ class Approval_quotation_model extends BF_Model
 	{
 		$session = $this->session->userdata('app_session');
 
-		$Cust = $this->db->query("SELECT a.* FROM customer a")->result();
+		// $Cust = $this->db->query("SELECT a.* FROM customer a")->result();
+		$Cust = $this->db->query("SELECT a.* FROM master_customers a")->result();
 		$User = $this->db->query("SELECT a.* FROM users a")->result();
-		$pic_cust = $this->db->query("SELECT a.* FROM customer_pic a WHERE a.nm_pic <> ''")->result();
+		// $pic_cust = $this->db->query("SELECT a.* FROM customer_pic a WHERE a.nm_pic <> ''")->result();
+		$pic_cust = $this->db->query("SELECT a.* FROM child_customer_pic a ")->result();
 
 		$get_penawaran_detail = $this->db->get_where('tr_penawaran_detail', ['no_penawaran' => $session['id_user']])->result();
 
@@ -41,6 +43,8 @@ class Approval_quotation_model extends BF_Model
 				$this->db->order_by('a.level', 'asc');
 				$this->db->limit(1, 1);
 				$get_req_quot_after = $this->db->get()->row();
+				// print_r($this->db->last_query());
+				// die();
 
 				// $this->db->select('a.tingkatan');
 				// $this->db->from('ms_diskon a');
@@ -295,9 +299,11 @@ class Approval_quotation_model extends BF_Model
 	{
 		$session = $this->session->userdata('app_session');
 
-		$Cust = $this->db->query("SELECT a.* FROM customer a")->result();
+		// $Cust = $this->db->query("SELECT a.* FROM customer a")->result();
+		$Cust = $this->db->query("SELECT a.* FROM master_customers a")->result();
 		$User = $this->db->query("SELECT a.* FROM users a")->result();
-		$pic_cust = $this->db->query("SELECT a.* FROM customer_pic a WHERE a.nm_pic <> ''")->result();
+		// $pic_cust = $this->db->query("SELECT a.* FROM customer_pic a WHERE a.nm_pic <> ''")->result();
+		$pic_cust = $this->db->query("SELECT a.* FROM child_customer_pic a ")->result();
 
 		$get_penawaran_detail = $this->db->get_where('tr_penawaran_detail', ['no_penawaran' => $session['id_user']])->result();
 		$get_top = $this->db->get_where('list_help', ['group_by' => 'top invoice'])->result();
@@ -417,9 +423,10 @@ class Approval_quotation_model extends BF_Model
 		// echo "<br>";
 		// echo $no_step;
 		// echo "<br>";
-		$this->db->select('a.no_penawaran, a.tgl_penawaran, a.project, a.status, a.req_app1, a.app_1, a.req_app2, a.app_2, a.req_app3, a.app_3, b.nm_customer');
+		$this->db->select('a.no_penawaran, a.tgl_penawaran, a.project, a.status, a.req_app1, a.app_1, a.req_app2, a.app_2, a.req_app3, a.app_3, b.name_customer as nm_customer');
 		$this->db->from('tr_penawaran a');
-		$this->db->join('customer b', 'b.id_customer = a.id_customer', 'left');
+		// $this->db->join('customer b', 'b.id_customer = a.id_customer', 'left');
+		$this->db->join('master_customers b', 'b.id_customer = a.id_customer', 'left');
 		$this->db->join('tr_req_quot c', 'c.id_quotation = a.no_penawaran');
 		$this->db->where('a.status', 1);
 		if (!empty($no_step)) {
@@ -434,7 +441,7 @@ class Approval_quotation_model extends BF_Model
 			// $this->db->like('DATE_FORMAT(a.tgl_penawaran, "%d-%M-%Y")', $search['value'], 'both');
 			// $this->db->where("DATE_FORMAT(a.tgl_penawaran, '%d-%M-%Y') LIKE", "%" . $search['value'] . "%", false);
 			$this->db->like('a.tgl_penawaran', date('Y-m-d', strtotime($search['value'])), 'both');
-			$this->db->or_like('b.nm_customer', $search['value'], 'both');
+			$this->db->or_like('b.name_customer', $search['value'], 'both');
 			$this->db->or_like('a.no_penawaran', $search['value'], 'both');
 			$this->db->or_like('a.project', $search['value'], 'both');
 			$this->db->or_like('a.no_revisi', $search['value'], 'both');
@@ -447,9 +454,10 @@ class Approval_quotation_model extends BF_Model
 		// echo $this->db->last_query();
 		// die();
 
-		$this->db->select('a.no_penawaran, a.tgl_penawaran, a.status, a.project, a.req_app1, a.app_1, a.req_app2, a.app_2, a.req_app3, a.app_3, b.nm_customer');
+		$this->db->select('a.no_penawaran, a.tgl_penawaran, a.status, a.project, a.req_app1, a.app_1, a.req_app2, a.app_2, a.req_app3, a.app_3, b.name_customer as nm_customer');
 		$this->db->from('tr_penawaran a');
-		$this->db->join('customer b', 'b.id_customer = a.id_customer', 'left');
+		// $this->db->join('customer b', 'b.id_customer = a.id_customer', 'left');
+		$this->db->join('master_customers b', 'b.id_customer = a.id_customer', 'left');
 		$this->db->join('tr_req_quot c', 'c.id_quotation = a.no_penawaran');
 		$this->db->where('a.status', 1);
 		if (!empty($no_step)) {
@@ -463,7 +471,7 @@ class Approval_quotation_model extends BF_Model
 			// $this->db->like('DATE_FORMAT(a.tgl_penawaran, "%d-%M-%Y")', $search['value'], 'both');
 			// $this->db->where("DATE_FORMAT(a.tgl_penawaran, '%d-%M-%Y') LIKE", "%" . $search['value'] . "%", false);
 			$this->db->like('a.tgl_penawaran', date('Y-m-d', strtotime($search['value'])), 'both');
-			$this->db->or_like('b.nm_customer', $search['value'], 'both');
+			$this->db->or_like('b.name_customer', $search['value'], 'both');
 			$this->db->or_like('a.no_penawaran', $search['value'], 'both');
 			$this->db->or_like('a.project', $search['value'], 'both');
 			$this->db->or_like('a.no_revisi', $search['value'], 'both');
