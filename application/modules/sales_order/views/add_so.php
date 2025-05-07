@@ -108,10 +108,12 @@ $no_po          = (!empty($header)) ? $header[0]->no_po : '';
 						<button type="button" id="addFileInput">Add More Files</button> -->
 					</td>
 					<th>
-						Delivery
+						<!-- Delivery -->
 					</th>
-					<th>:</th>
-					<td>
+					<th>
+					<!-- : -->
+					</th>
+					<td style="display: none;">
 						<select name="pengiriman" id="" class="form-control form-control-sm">
 							<option value="Franco">Franco</option>
 							<option value="Ex Work">Ex Work</option>

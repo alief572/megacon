@@ -183,10 +183,12 @@ class Sales_order extends Admin_Controller
     $no_so   = $this->input->post('no_so');
     $header = $this->db->get_where('sales_order_header', array('no_so' => $no_so))->result();
     $detail = $this->db->get_where('sales_order_detail', array('no_so' => $no_so))->result_array();
-    $customer    = $this->Sales_order_model->get_data('master_customer');
+    // $customer    = $this->Sales_order_model->get_data('master_customer');
+    $customer    = $this->Sales_order_model->get_data('master_customers');
     $shipping  = $this->Sales_order_model->get_data('list', 'category', 'shipping');
 
-    $sales_order = $this->db->query('SELECT a.*, b.nm_customer, b.alamat, c.nm_pic, d.nm_lengkap FROM tr_sales_order a LEFT JOIN customer b ON b.id_customer = a.id_customer LEFT JOIN customer_pic c ON c.id_pic = a.pic_customer LEFT JOIN users d ON d.id_user = a.created_by WHERE a.no_so = "' . $no_so . '"')->row();
+    // $sales_order = $this->db->query('SELECT a.*, b.nm_customer, b.alamat, c.nm_pic, d.nm_lengkap FROM tr_sales_order a LEFT JOIN customer b ON b.id_customer = a.id_customer LEFT JOIN customer_pic c ON c.id_pic = a.pic_customer LEFT JOIN users d ON d.id_user = a.created_by WHERE a.no_so = "' . $no_so . '"')->row();
+    $sales_order = $this->db->query('SELECT a.*, b.name_customer as nm_customer, b.address_office as alamat, c.name_pic as nm_pic, d.nm_lengkap FROM tr_sales_order a LEFT JOIN master_customers b ON b.id_customer = a.id_customer LEFT JOIN child_customer_pic c ON c.id_pic = a.pic_customer LEFT JOIN users d ON d.id_user = a.created_by WHERE a.no_so = "' . $no_so . '"')->row();
 
     $get_top = $this->db->get_where('list_help', ['id' => $sales_order->top])->row();
     $top = $get_top->name;
@@ -266,10 +268,12 @@ class Sales_order extends Admin_Controller
     $no_so   = $this->input->post('no_so');
     $header = $this->db->get_where('sales_order_header', array('no_so' => $no_so))->result();
     $detail = $this->db->get_where('sales_order_detail', array('no_so' => $no_so))->result_array();
-    $customer    = $this->Sales_order_model->get_data('master_customer');
+    // $customer    = $this->Sales_order_model->get_data('master_customer');
+    $customer    = $this->Sales_order_model->get_data('master_customers');
     $shipping  = $this->Sales_order_model->get_data('list', 'category', 'shipping');
 
-    $sales_order = $this->db->query('SELECT a.*, b.nm_customer, b.alamat, c.nm_pic, d.nm_lengkap FROM tr_sales_order a LEFT JOIN customer b ON b.id_customer = a.id_customer LEFT JOIN customer_pic c ON c.id_pic = a.pic_customer LEFT JOIN users d ON d.id_user = a.created_by WHERE a.no_so = "' . $no_so . '"')->row();
+    // $sales_order = $this->db->query('SELECT a.*, b.nm_customer, b.alamat, c.nm_pic, d.nm_lengkap FROM tr_sales_order a LEFT JOIN customer b ON b.id_customer = a.id_customer LEFT JOIN customer_pic c ON c.id_pic = a.pic_customer LEFT JOIN users d ON d.id_user = a.created_by WHERE a.no_so = "' . $no_so . '"')->row();
+    $sales_order = $this->db->query('SELECT a.*, b.name_customer as nm_customer, b.address_office as alamat, c.name_pic as nm_pic, d.nm_lengkap FROM tr_sales_order a LEFT JOIN master_customers b ON b.id_customer = a.id_customer LEFT JOIN child_customer_pic c ON c.id_pic = a.pic_customer LEFT JOIN users d ON d.id_user = a.created_by WHERE a.no_so = "' . $no_so . '"')->row();
 
     $get_top = $this->db->get_where('list_help', ['id' => $sales_order->top])->row();
     $top = $get_top->name;
@@ -526,7 +530,7 @@ class Sales_order extends Admin_Controller
       'invoice_address' => $data['invoice_address'],
       'tgl_so' => $get_penawaran->tgl_penawaran,
       'req_app' => 1,
-      'pengiriman' => $data['pengiriman'],
+      // 'pengiriman' => $data['pengiriman'],//version old // kemungkinan tidak dipakai
       'po_date' => $data['po_date'],
       'po_no' => $data['po_no'],
       'tipe_so' => 1

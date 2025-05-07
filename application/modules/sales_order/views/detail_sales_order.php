@@ -73,10 +73,14 @@
 					}
 					?>
 				</td>
-				<th>Pengiriman</th>
-				<th>:</th>
+				<th>
+					<!-- Pengiriman -->
+				</th>
+				<th>
+				<!-- : -->
+				</th>
 				<td>
-					<?= ($sales_order->pengiriman !== '') ? ucfirst($sales_order->pengiriman) : null ?>
+					<!-- <?= ($sales_order->pengiriman !== '') ? ucfirst($sales_order->pengiriman) : null ?> -->
 				</td>
 			</tr>
 		</table>
