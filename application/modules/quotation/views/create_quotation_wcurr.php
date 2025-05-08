@@ -2630,16 +2630,23 @@ $(document).on('change', '.get_data_truck', function() {
             biaya_angkut = biaya_angkut.toFixed(2);
             var biaya_charger = parseFloat(biaya_angkut) + estimasi_tol;
             // var biaya_charger_final = biaya_charger * (charger_biaya / 100);
-            var biaya_charger_final = biaya_charger * charger_biaya_final;
+            // var biaya_charger_final = biaya_charger * charger_biaya_final;
+            var biaya_charger_final = charger_biaya_final;
+            // console.log(parseFloat(biaya_angkut));
+            // console.log(estimasi_tol);
+            // console.log(biaya_charger_final);
             var total_biaya_delivery = parseFloat(biaya_angkut) + estimasi_tol + biaya_charger_final;
             // var grand_total_delivery = total_price_before_discount + total_biaya_delivery;//version 1
+            // console.log(result.grand_total);
+            // console.log(total_biaya_delivery);
+            var biayaDelivery = total_biaya_delivery ?? 0; // jika null atau undefined, jadi 0
             if(total_biaya_delivery == 0 || total_biaya_delivery == ''){
-                var grand_total_delivery = result.grand_total;
+                var grand_total_delivery = result.grand_total + biayaDelivery;
             }else{
                 var grand_total_delivery = result.grand_total + total_biaya_delivery;
             }
             // var grand_total_delivery = result.grand_total + total_biaya_delivery;
-            console.log(result.grand_total);
+            // console.log(result.grand_total);
             // Set nilai input
             $('#kapasitas_truck_dc').val(kapasitas); // Set kapasitas truck
             $('#berat_aktual_truck_dc').val(berat_aktual); // Set berat aktual truck
@@ -2662,7 +2669,7 @@ $(document).on('change', '.get_data_truck', function() {
                 $('#berat_aktual_truck_dc').css('background-color', '#90EE90'); // Hijau jika kurang atau sama dengan kapasitas
                 $('#berat_aktual_truck_dc').css('color', 'white'); // Teks putih untuk kontras
             }
-            // hitungTruckDanDelivery();
+            hitungTruckDanDelivery();
             // Jika diperlukan, bisa juga menampilkan hasilnya di elemen lain
             // $('#result_display').html('Berat Aktual: ' + berat_aktual);
             // Simpan ID Truck ke LocalStorage
@@ -2789,11 +2796,16 @@ function hitungTruckDanDelivery() {
     biaya_angkut = biaya_angkut.toFixed(2);
     var biaya_charger = parseFloat(biaya_angkut) + estimasi_tol;
     // var biaya_charger_final = biaya_charger * (charger_biaya / 100);
-    var biaya_charger_final = biaya_charger * charger_biaya_final;
+    var biaya_charger_final = charger_biaya_final;
+    // console.log(parseFloat(biaya_angkut));
+    // console.log(estimasi_tol);
+    // console.log(biaya_charger_final);
     var total_biaya_delivery = parseFloat(biaya_angkut) + estimasi_tol + biaya_charger_final;
     // var grand_total_delivery = total_price_before_discount + total_biaya_delivery;
     // var biaya_ppn = (total_price_before_discount + total_biaya_delivery) * (ppn_check / 100);
     // var grand_total_final = (total_price_before_discount + total_biaya_delivery) + biaya_ppn;
+    // console.log(grand_total);
+    // console.log(total_biaya_delivery);
     var grand_total_delivery = grand_total + total_biaya_delivery;
     var biaya_ppn = (grand_total + total_biaya_delivery) * (ppn_check / 100);
     var grand_total_final = (grand_total + total_biaya_delivery) + biaya_ppn;
