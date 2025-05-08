@@ -1257,11 +1257,12 @@ $total_all_qty += $qty;
                         <div class="form-group " style="padding-top:15px;">
                             <label class="col-sm-4 control-label">Charger Biaya Lain-Lain (%)</label>
                             <div class="col-sm-6">
-                            <input type="text" name="charger_biaya_cbl" class="form-control text-right" id="charger_biaya_cbl"  value="<?= @$results['get_delivery_cost_header']->charger_biaya_lain_lain ?>" >
+                            <input type="hidden" name="charger_biaya_cbl" class="form-control text-right" id="charger_biaya_cbl"  value="<?= @$results['get_delivery_cost_header']->charger_biaya_lain_lain ?>" >
+                            <input type="text" name="biaya_cbl" class="form-control text-right" id="biaya_cbl" value="<?= @$results['get_delivery_cost_header']->total_charger_biaya_lain_lain ?>" >
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-12"></div>
+                    <!-- <div class="col-lg-12"></div>
                     <div class="col-lg-4">
                         <div class="form-group " style="padding-top:15px;">
                             <label class="col-sm-4 control-label">&nbsp;</label>
@@ -1269,7 +1270,7 @@ $total_all_qty += $qty;
                             <input type="text" name="biaya_cbl" class="form-control text-right" id="biaya_cbl" readonly value="<?= @$results['get_delivery_cost_header']->total_charger_biaya_lain_lain ?>" >
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                     <div class="col-lg-12"></div>
                     <div class="col-lg-12">
                         <h3>Total Biaya Pengiriman</h3>
@@ -2588,6 +2589,7 @@ function clearTruckFields() {
                     var jarak_pengiriman = parseFloat($('#jarak_pengiriman_truck_dc').val()) || 0;
                     var estimasi_tol = parseFloat($('#estimasi_tol_bt').val()) || 0;
                     var charger_biaya = parseFloat($('#charger_biaya_cbl').val()) || 0;
+                    var charger_biaya_final = parseFloat($('#biaya_cbl').val()) || 0;
                     var total_price_before_discount = parseFloat($('#total_price_before_discount_new').val()) || 0;
 
                     // console.log("DEBUG id_truck = ", id_truck);
@@ -2630,7 +2632,8 @@ function clearTruckFields() {
                             var biaya_angkut = rate_biaya_angkut * total_all_qty * jarak_pengiriman;
                             biaya_angkut = biaya_angkut.toFixed(2);
                             var biaya_charger = parseFloat(biaya_angkut) + estimasi_tol;
-                            var biaya_charger_final = biaya_charger * (charger_biaya / 100);
+                            // var biaya_charger_final = biaya_charger * (charger_biaya / 100);
+                            var biaya_charger_final = biaya_charger * charger_biaya_final;
                             var total_biaya_delivery = parseFloat(biaya_angkut) + estimasi_tol + biaya_charger_final;
                             // var grand_total_delivery = total_price_before_discount + total_biaya_delivery;//version 1
                             if(total_biaya_delivery == 0 || total_biaya_delivery == ''){
@@ -2649,7 +2652,7 @@ function clearTruckFields() {
                             $('#biaya_angkut_ba').val(biaya_angkut);
                             // $('#biaya_cbl').val(number_format($biaya_charger_final, 2));
                             // $('#biaya_cbl').val(number_format($biaya_charger_final));
-                            $('#biaya_cbl').val(formatRupiahTanpaSimbol(biaya_charger_final));
+                            // $('#biaya_cbl').val(formatRupiahTanpaSimbol(biaya_charger_final));
                             $('#total_biaya_delivery_tbp').val(formatRupiahTanpaSimbol(total_biaya_delivery));
                             $('#grand_total_tbp').val(formatRupiahTanpaSimbol(grand_total_delivery));
 
@@ -2753,6 +2756,7 @@ function hitungTruckDanDelivery() {
     var jarak_pengiriman = parseFloat($('#jarak_pengiriman_truck_dc').val()) || 0;
     var estimasi_tol = parseFloat($('#estimasi_tol_bt').val()) || 0;
     var charger_biaya = parseFloat($('#charger_biaya_cbl').val()) || 0;
+    var charger_biaya_final = parseFloat($('#biaya_cbl').val()) || 0;
     var total_price_before_discount = parseFloat($('#total_price_before_discount_new').val()) || 0;
     var kapasitas = parseFloat($('#kapasitas_truck_dc').val()) || 0;
     var rate_truck = parseFloat($('#rate_truck_ba').val()) || 0;
@@ -2777,7 +2781,8 @@ function hitungTruckDanDelivery() {
     var biaya_angkut = rate_biaya_angkut * total_all_qty * jarak_pengiriman;
     biaya_angkut = biaya_angkut.toFixed(2);
     var biaya_charger = parseFloat(biaya_angkut) + estimasi_tol;
-    var biaya_charger_final = biaya_charger * (charger_biaya / 100);
+    // var biaya_charger_final = biaya_charger * (charger_biaya / 100);
+    var biaya_charger_final = biaya_charger * charger_biaya_final;
     var total_biaya_delivery = parseFloat(biaya_angkut) + estimasi_tol + biaya_charger_final;
     // var grand_total_delivery = total_price_before_discount + total_biaya_delivery;
     // var biaya_ppn = (total_price_before_discount + total_biaya_delivery) * (ppn_check / 100);
@@ -2788,7 +2793,7 @@ function hitungTruckDanDelivery() {
 
     $('#rate_biaya_angkut_ba').val(formatRupiahTanpaSimbol(rate_biaya_angkut));
     $('#biaya_angkut_ba').val(formatRupiahTanpaSimbol(biaya_angkut));
-    $('#biaya_cbl').val(formatRupiahTanpaSimbol(biaya_charger_final));
+    // $('#biaya_cbl').val(formatRupiahTanpaSimbol(biaya_charger_final));
     $('#total_biaya_delivery_tbp').val(formatRupiahTanpaSimbol(total_biaya_delivery));
     $('#grand_total_tbp').val(formatRupiahTanpaSimbol(grand_total_delivery));
     $('#ppn_final').val(formatRupiahTanpaSimbol(biaya_ppn));
@@ -2808,7 +2813,7 @@ function hitungTruckDanDelivery() {
 }
 
 
-$(document).on('input', '#jarak_pengiriman_truck_dc, #estimasi_tol_bt, #charger_biaya_cbl, #ppn_check', function() {
+$(document).on('input', '#jarak_pengiriman_truck_dc, #estimasi_tol_bt, #biaya_cbl, #ppn_check', function() {
     hitungTruckDanDelivery(); // Hitung ulang saat input manual
 });
 
