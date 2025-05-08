@@ -1361,7 +1361,8 @@ class Quotation_model extends BF_Model
 				
 				$num_approval = $get_master_disc['tingkatan'];
 
-				$Status = "<span class='badge bg-blue'>Waiting Approval " . $num_approval . "</span>";
+				// $Status = "<span class='badge bg-blue'>Waiting Approval " . $num_approval . "</span>";
+				$Status = "<span class='badge bg-blue'>Waiting Approval </span>";
 			} elseif ($item['status'] == '2') {
 				$Status = "<span class='badge bg-green'>Waiting SO</span>";
 			} elseif ($item['status'] == '3') {
@@ -1403,6 +1404,8 @@ class Quotation_model extends BF_Model
 					$tingkatan = $no_awd;
 				}
 			}
+
+			// $tingkatan = 1;
 
 			$btn_ajukan = '<a href="javascript:void(0);" class="btn btn-sm btn-success ajukan" data-id="' . $item['no_penawaran'] . '" data-status="' . $item['status'] . '" data-tingkatan="' . $tingkatan . '">Ajukan</a>';
 

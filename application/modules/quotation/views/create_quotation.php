@@ -29,7 +29,7 @@
                                                     <label for="customer">Quotation No :</label>
                                                 </div>
                                                 <div class="col-md-8">
-                                                    <input type="text" class="form-control no_surat" id="" required name="no_surat" readonly placeholder="Quotation No" value="<?= (isset($results['data_penawaran'])) ? $results['data_penawaran']->no_penawaran : null ?>">
+                                                    <input type="text" class="form-control no_surat" id="no_surat" required name="no_surat" readonly placeholder="Quotation No" value="<?= (isset($results['data_penawaran'])) ? $results['data_penawaran']->no_penawaran : null ?>">
                                                 </div>
                                             </div>
                                         </div>
@@ -2678,7 +2678,7 @@ function clearTruckFields() {
                 });
 
 // function updateBeratAktualStyle() {
-function updateBeratAktualStyle() {
+    function updateBeratAktualStyle() {
     const id_truck = $('.get_data_truck').val();
     const no_penawaran = $('#no_surat').val();
     const grand_total_input = $('#grand_total').val();

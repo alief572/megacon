@@ -53,7 +53,8 @@ class Approval_quotation_model extends BF_Model
 				// $this->db->limit(1, 1);
 				// $get_next_approval = $this->db->get()->row();
 
-				$action_app = 'Request Approval ' . $get_req_quot_after->tingkatan;
+				// $action_app = 'Request Approval ' . $get_req_quot_after->tingkatan;
+				$action_app = 'Approval ' . $get_req_quot_after->tingkatan;
 			}
 
 			$get_top = $this->db->get_where('list_help', ['group_by' => 'top invoice'])->result();
@@ -142,7 +143,8 @@ class Approval_quotation_model extends BF_Model
 				$this->db->limit(1, 2);
 				$get_next_approval = $this->db->get()->row();
 
-				$action_app = 'Request Approval ' . $get_next_approval->tingkatan;
+				// $action_app = 'Request Approval ' . $get_next_approval->tingkatan;
+				$action_app = 'Approval ' . $get_next_approval->tingkatan;
 			}
 
 			$get_top = $this->db->get_where('list_help', ['group_by' => 'top invoice'])->result();

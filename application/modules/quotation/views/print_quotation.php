@@ -317,10 +317,10 @@ $EmailPT = isset($headerPT) ? $headerPT->email : '';
             }
             ?>
             <!-- END LOOPING DATA DETAIL -->
-            <tr>
+            <!-- <tr>
                 <td colspan="4">Total Value Before Delivery Cost</td>
                 <td><?= number_format(@$GrandTotal) ?></td>
-            </tr>
+            </tr> -->
             <tr>
                 <td colspan="4">Grand Total After Delivery Cost and PPN</td>
                 <td><?= number_format(@$GrandTotalAfterDC) ?></td>
