@@ -103,9 +103,14 @@ class Quotation_model extends BF_Model
 		// $pic_cust = $this->db->query("SELECT a.* FROM child_customer_pic a WHERE a.name_pic <> '' and position_pic = 'PIC' ")->result();
 		$pic_cust = $this->db->query("SELECT a.* FROM child_customer_pic a WHERE a.name_pic <> '' ")->result();
 
-		$get_penawaran_detail = $this->db->get_where('tr_penawaran_detail', ['no_penawaran' => $session['id_user'], 'curr' => $curr])->result();
-
-		$get_other_cost = $this->db->get_where('tr_penawaran_other_cost', ['id_penawaran' => $session['id_user'], 'curr' => $curr])->result();
+		//START VERSION OLD
+		// $get_penawaran_detail = $this->db->get_where('tr_penawaran_detail', ['no_penawaran' => $session['id_user'], 'curr' => $curr])->result();
+		// $get_other_cost = $this->db->get_where('tr_penawaran_other_cost', ['id_penawaran' => $session['id_user'], 'curr' => $curr])->result();
+		// //END VERSION OLD
+		//START VERSION NEW
+		$get_penawaran_detail = $this->db->get_where('tr_penawaran_detail', ['no_penawaran' => '___tidak_ada___', 'curr' => $curr])->result();
+		$get_other_cost = $this->db->get_where('tr_penawaran_other_cost', ['id_penawaran' => '___tidak_ada___', 'curr' => $curr])->result();
+		//END VERSION NEW
 
 		$get_top = $this->db->get_where('list_help', ['group_by' => 'top invoice'])->result();
 
