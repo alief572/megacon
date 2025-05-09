@@ -108,6 +108,10 @@ class Quotation_model extends BF_Model
 		// $get_other_cost = $this->db->get_where('tr_penawaran_other_cost', ['id_penawaran' => $session['id_user'], 'curr' => $curr])->result();
 		// //END VERSION OLD
 		//START VERSION NEW
+		$this->db->where('no_penawaran', $session['id_user']);
+		$this->db->delete('tr_penawaran_detail');
+		$this->db->where('id_penawaran', $session['id_user']);
+		$this->db->delete('tr_penawaran_other_cost');
 		$get_penawaran_detail = $this->db->get_where('tr_penawaran_detail', ['no_penawaran' => '___tidak_ada___', 'curr' => $curr])->result();
 		$get_other_cost = $this->db->get_where('tr_penawaran_other_cost', ['id_penawaran' => '___tidak_ada___', 'curr' => $curr])->result();
 		//END VERSION NEW
@@ -141,6 +145,8 @@ class Quotation_model extends BF_Model
 		// $get_list_item_others = $this->db->get_where('tr_penawaran_other_item', ['id_penawaran' => $this->auth->user_id()])->result();
 		//END VERSION OLD
 		//START VERSION NEW
+		$this->db->where('id_penawaran', $session['id_user']);
+		$this->db->delete('tr_penawaran_other_item');
 		$get_list_item_others = $this->db->get_where('tr_penawaran_other_item', ['id_penawaran' => '___tidak_ada___'])->result();
 		//END VERSION NEW
 
