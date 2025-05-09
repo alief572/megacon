@@ -105,6 +105,7 @@ class Truck_rate_model extends BF_Model
             $hasil[] = [
                 'no' => $no,
                 'kd_asset' => $item->nm_asset,
+                'maksimal_muatan' => number_format($item->maksimal_muatan, 2),
                 'truck_rate' => number_format($item->rate_truck, 2),
                 'last_update_by' => $last_update_by,
                 'last_update' => $last_update,

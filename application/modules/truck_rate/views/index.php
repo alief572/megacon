@@ -29,6 +29,7 @@ $ENABLE_DELETE  = has_permission('Rate_Borongan.Delete');
                     <th class="text-center">Action</th> -->
                     <th class="text-center">No</th>
                     <th class="text-center">Kendaraan</th>
+                    <th class="text-center">Maksimal Muatan</th>
                     <th class="text-center">Rate Trucking</th>
                     <th class="text-center">Last Update By</th>
                     <th class="text-center">Last Update</th>
@@ -294,6 +295,9 @@ $ENABLE_DELETE  = has_permission('Rate_Borongan.Delete');
                 },
                 {
                     data: 'kd_asset'
+                },
+                {
+                    data: 'maksimal_muatan'
                 },
                 {
                     data: 'truck_rate'
