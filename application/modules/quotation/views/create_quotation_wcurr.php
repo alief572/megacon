@@ -2573,7 +2573,7 @@ function clearTruckFields() {
     localStorage.removeItem('selected_id_truck');
 }
                 
-$(document).on('change', '.get_data_truck', function() {
+$(document).on('change', '.get_data_truck', function() {//test
     var id_truck = $(this).val();
     var no_penawaran = $('#no_surat').val();
     var grand_total_input = $('#grand_total').val();

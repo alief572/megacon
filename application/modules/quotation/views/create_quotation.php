@@ -2994,7 +2994,7 @@ function hitungTruckDanDelivery() {
 
 
 $(document).on('input', '#jarak_pengiriman_truck_dc, #estimasi_tol_bt, #biaya_cbl, #ppn_check', function() {
-    hitungTruckDanDelivery(); // Hitung ulang saat input manual
+    hitungTruckDanDelivery(); // Hitung ulang saat input manuals
 });
 
 
