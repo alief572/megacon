@@ -1121,7 +1121,7 @@ $total_all_qty += $qty;
                         <div class="form-group " style="padding-top:15px;">
                             <label class="col-sm-4 control-label">Jarak Pengiriman (PP) (Km)</label>
                             <div class="col-sm-6">
-                            <input type="text" name="jarak_pengiriman_truck_dc" class="form-control text-right" id="jarak_pengiriman_truck_dc">
+                            <input type="text" name="jarak_pengiriman_truck_dc" class="form-control text-right" id="jarak_pengiriman_truck_dc" onkeyup="formatNumber(this)">
                             </div>
                         </div>
                     </div>
@@ -1189,7 +1189,7 @@ $total_all_qty += $qty;
                         <div class="form-group " style="padding-top:15px;">
                             <label class="col-sm-4 control-label">Estimasi Tol (PP) (Rp)</label>
                             <div class="col-sm-6">
-                            <input type="text" name="estimasi_tol_bt" class="form-control text-right" id="estimasi_tol_bt" >
+                            <input type="text" name="estimasi_tol_bt" class="form-control text-right" id="estimasi_tol_bt" onkeyup="formatNumber(this)">
                             </div>
                         </div>
                     </div>
@@ -1202,7 +1202,7 @@ $total_all_qty += $qty;
                             <label class="col-sm-4 control-label">Charger Biaya Lain-Lain (%)</label>
                             <div class="col-sm-6">
                             <input type="hidden" name="charger_biaya_cbl" class="form-control text-right" id="charger_biaya_cbl" >
-                            <input type="text" name="biaya_cbl" class="form-control text-right" id="biaya_cbl">
+                            <input type="text" name="biaya_cbl" class="form-control text-right" id="biaya_cbl" onkeyup="formatNumber(this)">
                         </div>
                         </div>
                     </div>
@@ -1424,6 +1424,14 @@ $total_all_qty += $qty;
             <script>
 function formatRupiahTanpaSimbol(angka) {
     return new Intl.NumberFormat('id-ID').format(angka);
+}
+
+// Fungsi untuk memformat angka saat mengetik
+function formatNumber(input) {
+    // Hapus semua karakter non-numerik kecuali angka
+    let value = input.value.replace(/[^0-9]/g, '');
+    // Tambahkan pemisah ribuan
+    input.value = new Intl.NumberFormat('id-ID').format(value);
 }
 
 $(document).ready(function() {
@@ -2583,10 +2591,10 @@ $(document).on('change', '.get_data_truck', function() {//test
     var total_berat_all = parseFloat($('#total_berat_all_new').val()) || 0;  // Ambil nilai total berat all
     // var total_all_qty = parseFloat($('#total_all_qty').val()) || 0;
     var total_all_qty = parseFloat($('#total_all_qty').val().replace(/[^0-9.-]+/g,"")) || 0;
-    var jarak_pengiriman = parseFloat($('#jarak_pengiriman_truck_dc').val()) || 0;
-    var estimasi_tol = parseFloat($('#estimasi_tol_bt').val()) || 0;
+    var jarak_pengiriman = parseFloat($('#jarak_pengiriman_truck_dc').val().replace(/\./g, '')) || 0;
+    var estimasi_tol = parseFloat($('#estimasi_tol_bt').val().replace(/\./g, '')) || 0;
     var charger_biaya = parseFloat($('#charger_biaya_cbl').val()) || 0;
-    var charger_biaya_final = parseFloat($('#biaya_cbl').val()) || 0;
+    var charger_biaya_final = parseFloat($('#biaya_cbl').val().replace(/\./g, '')) || 0;
     var total_price_before_discount = parseFloat($('#total_price_before_discount_new').val()) || 0;
 
     console.log("DEBUG id_truck = ", id_truck);
@@ -2767,10 +2775,10 @@ $(document).on('change', '#id_truck', function() {
 function hitungTruckDanDelivery() {
     var total_berat_all = parseFloat($('#total_berat_all_new').val()) || 0;
     var total_all_qty = parseFloat($('#total_all_qty').val()) || 0;
-    var jarak_pengiriman = parseFloat($('#jarak_pengiriman_truck_dc').val()) || 0;
-    var estimasi_tol = parseFloat($('#estimasi_tol_bt').val()) || 0;
+    var jarak_pengiriman = parseFloat($('#jarak_pengiriman_truck_dc').val().replace(/\./g, '')) || 0;
+    var estimasi_tol = parseFloat($('#estimasi_tol_bt').val().replace(/\./g, '')) || 0;
     var charger_biaya = parseFloat($('#charger_biaya_cbl').val()) || 0;
-    var charger_biaya_final = parseFloat($('#biaya_cbl').val()) || 0;
+    var charger_biaya_final = parseFloat($('#biaya_cbl').val().replace(/\./g, '')) || 0;
     var total_price_before_discount = parseFloat($('#total_price_before_discount_new').val()) || 0;
     var kapasitas = parseFloat($('#kapasitas_truck_dc').val()) || 0;
     var rate_truck = parseFloat($('#rate_truck_ba').val()) || 0;
@@ -2800,7 +2808,8 @@ function hitungTruckDanDelivery() {
     // console.log(parseFloat(biaya_angkut));
     // console.log(estimasi_tol);
     // console.log(biaya_charger_final);
-    var total_biaya_delivery = parseFloat(biaya_angkut) + estimasi_tol + biaya_charger_final;
+    // var total_biaya_delivery = parseFloat(biaya_angkut) + estimasi_tol + biaya_charger_final;
+    var total_biaya_delivery = parseFloat(biaya_angkut) + parseFloat(estimasi_tol) + biaya_charger_final;
     // var grand_total_delivery = total_price_before_discount + total_biaya_delivery;
     // var biaya_ppn = (total_price_before_discount + total_biaya_delivery) * (ppn_check / 100);
     // var grand_total_final = (total_price_before_discount + total_biaya_delivery) + biaya_ppn;
@@ -2812,7 +2821,7 @@ function hitungTruckDanDelivery() {
 
     $('#rate_biaya_angkut_ba').val(formatRupiahTanpaSimbol(rate_biaya_angkut));
     $('#biaya_angkut_ba').val(formatRupiahTanpaSimbol(biaya_angkut));
-    // $('#biaya_cbl').val(formatRupiahTanpaSimbol(biaya_charger_final));
+    // $('#biaya_cbl').val(formatRupiahTanpaSimbol(biaya_charger_final));\
     $('#total_biaya_delivery_tbp').val(formatRupiahTanpaSimbol(total_biaya_delivery));
     $('#grand_total_tbp').val(formatRupiahTanpaSimbol(grand_total_delivery));
     $('#ppn_final').val(formatRupiahTanpaSimbol(biaya_ppn));
@@ -2833,7 +2842,7 @@ function hitungTruckDanDelivery() {
 
 
 $(document).on('input', '#jarak_pengiriman_truck_dc, #estimasi_tol_bt, #biaya_cbl, #ppn_check', function() {
-    hitungTruckDanDelivery(); // Hitung ulang saat input manual
+    hitungTruckDanDelivery(); //Hitung ulang saat input manual
 });
 
 

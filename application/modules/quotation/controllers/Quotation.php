@@ -699,7 +699,7 @@ class Quotation extends Admin_Controller
 					'id_truck_rate' => $post['jenis_truck'],
 					'kapasitas' => $post['kapasitas_truck_dc'],
 					'berat_vs_kapasitas' => $post['berat_aktual_truck_dc'],
-					'jarak_pengiriman' => $post['jarak_pengiriman_truck_dc'],
+					'jarak_pengiriman' => $this->bersihkan_format_uang($post['jarak_pengiriman_truck_dc']),
 					'rate_truck' => $this->bersihkan_format_uang($post['rate_truck_ba']),
 					'total_pengiriman' => $this->bersihkan_format_uang($post['total_pengiriman_ba']),
 					'rate_biaya_angkut' => $this->bersihkan_format_uang($post['rate_biaya_angkut_ba']),

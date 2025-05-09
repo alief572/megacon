@@ -1177,7 +1177,7 @@ $total_all_qty += $qty;
                         <div class="form-group " style="padding-top:15px;">
                             <label class="col-sm-4 control-label">Jarak Pengiriman (PP) (Km)</label>
                             <div class="col-sm-6">
-                            <input type="text" name="jarak_pengiriman_truck_dc" class="form-control text-right" id="jarak_pengiriman_truck_dc" value="<?= @$results['get_delivery_cost_header']->jarak_pengiriman ?>">
+                            <input type="text" name="jarak_pengiriman_truck_dc" class="form-control text-right" id="jarak_pengiriman_truck_dc" value="<?= @$results['get_delivery_cost_header']->jarak_pengiriman ?>" onkeyup="formatNumber(this)">
                             </div>
                         </div>
                     </div>
@@ -1245,7 +1245,7 @@ $total_all_qty += $qty;
                         <div class="form-group " style="padding-top:15px;">
                             <label class="col-sm-4 control-label">Estimasi Tol (PP) (Rp)</label>
                             <div class="col-sm-6">
-                            <input type="text" name="estimasi_tol_bt" class="form-control text-right" id="estimasi_tol_bt" value="<?= @$results['get_delivery_cost_header']->estimasi_tol ?>">
+                            <input type="text" name="estimasi_tol_bt" class="form-control text-right" id="estimasi_tol_bt" value="<?= @$results['get_delivery_cost_header']->estimasi_tol ?>" onkeyup="formatNumber(this)">
                             </div>
                         </div>
                     </div>
@@ -1258,7 +1258,7 @@ $total_all_qty += $qty;
                             <label class="col-sm-4 control-label">Charger Biaya Lain-Lain (%)</label>
                             <div class="col-sm-6">
                             <input type="hidden" name="charger_biaya_cbl" class="form-control text-right" id="charger_biaya_cbl"  value="<?= @$results['get_delivery_cost_header']->charger_biaya_lain_lain ?>" >
-                            <input type="text" name="biaya_cbl" class="form-control text-right" id="biaya_cbl" value="<?= @$results['get_delivery_cost_header']->total_charger_biaya_lain_lain ?>" >
+                            <input type="text" name="biaya_cbl" class="form-control text-right" id="biaya_cbl" value="<?= @$results['get_delivery_cost_header']->total_charger_biaya_lain_lain ?>" onkeyup="formatNumber(this)">
                             </div>
                         </div>
                     </div>
@@ -1480,6 +1480,14 @@ $total_all_qty += $qty;
             <script>
 function formatRupiahTanpaSimbol(angka) {
     return new Intl.NumberFormat('id-ID').format(angka);
+}
+
+// Fungsi untuk memformat angka saat mengetik
+function formatNumber(input) {
+    // Hapus semua karakter non-numerik kecuali angka
+    let value = input.value.replace(/[^0-9]/g, '');
+    // Tambahkan pemisah ribuan
+    input.value = new Intl.NumberFormat('id-ID').format(value);
 }
 
 $(document).ready(function() {
@@ -2690,10 +2698,10 @@ $(document).on('change', '.get_data_truck', function() {
     var total_berat_all = parseFloat($('#total_berat_all_new').val()) || 0;  // Ambil nilai total berat all
     // var total_all_qty = parseFloat($('#total_all_qty').val()) || 0;
     var total_all_qty = parseFloat($('#total_all_qty').val().replace(/[^0-9.-]+/g,"")) || 0;
-    var jarak_pengiriman = parseFloat($('#jarak_pengiriman_truck_dc').val()) || 0;
-    var estimasi_tol = parseFloat($('#estimasi_tol_bt').val()) || 0;
+    var jarak_pengiriman = parseFloat($('#jarak_pengiriman_truck_dc').val().replace(/[^0-9.-]+/g,"")) || 0;
+    var estimasi_tol = parseFloat($('#estimasi_tol_bt').val().replace(/[^0-9.-]+/g,"")) || 0;
     var charger_biaya = parseFloat($('#charger_biaya_cbl').val()) || 0;
-    var charger_biaya_final = parseFloat($('#biaya_cbl').val()) || 0;
+    var charger_biaya_final = parseFloat($('#biaya_cbl').val().replace(/[^0-9.-]+/g,"")) || 0;
     var total_price_before_discount = parseFloat($('#total_price_before_discount_new').val()) || 0;
 
     // console.log("DEBUG id_truck = ", id_truck);
@@ -2928,10 +2936,10 @@ $(document).on('change', '#id_truck', function() {
 function hitungTruckDanDelivery() {
     var total_berat_all = parseFloat($('#total_berat_all_new').val()) || 0;
     var total_all_qty = parseFloat($('#total_all_qty').val()) || 0;
-    var jarak_pengiriman = parseFloat($('#jarak_pengiriman_truck_dc').val()) || 0;
-    var estimasi_tol = parseFloat($('#estimasi_tol_bt').val()) || 0;
+    var jarak_pengiriman = parseFloat($('#jarak_pengiriman_truck_dc').val().replace(/[^0-9.-]+/g,"")) || 0;
+    var estimasi_tol = parseFloat($('#estimasi_tol_bt').val().replace(/[^0-9.-]+/g,"")) || 0;
     var charger_biaya = parseFloat($('#charger_biaya_cbl').val()) || 0;
-    var charger_biaya_final = parseFloat($('#biaya_cbl').val()) || 0;
+    var charger_biaya_final = parseFloat($('#biaya_cbl').val().replace(/[^0-9.-]+/g,"")) || 0;
     var total_price_before_discount = parseFloat($('#total_price_before_discount_new').val()) || 0;
     var kapasitas = parseFloat($('#kapasitas_truck_dc').val()) || 0;
     var rate_truck = parseFloat($('#rate_truck_ba').val()) || 0;
