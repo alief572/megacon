@@ -137,7 +137,12 @@ class Quotation_model extends BF_Model
 				a.deleted_by IS NULL
 		")->result();
 
-		$get_list_item_others = $this->db->get_where('tr_penawaran_other_item', ['id_penawaran' => $this->auth->user_id()])->result();
+		//START VERSION OLD
+		// $get_list_item_others = $this->db->get_where('tr_penawaran_other_item', ['id_penawaran' => $this->auth->user_id()])->result();
+		//END VERSION OLD
+		//START VERSION NEW
+		$get_list_item_others = $this->db->get_where('tr_penawaran_other_item', ['id_penawaran' => '___tidak_ada___'])->result();
+		//END VERSION NEW
 
 		$this->template->set('results', [
 			'customers' => $Cust,
