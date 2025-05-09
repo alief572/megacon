@@ -2285,7 +2285,7 @@ class Quotation extends Admin_Controller
 								</td>
 							</tr>
 						</table>
-						<table class="w-100" border="0">
+						<table class="w-100" border="0" style="display: none;">
 							<tr>
 								<td class="text-center" style="vertical-align: top;">Delivery Fee</td>
 								<td class="text-center" style="vertical-align: top;">:</td>

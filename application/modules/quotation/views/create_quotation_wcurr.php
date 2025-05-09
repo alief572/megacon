@@ -2589,7 +2589,7 @@ $(document).on('change', '.get_data_truck', function() {
     var charger_biaya_final = parseFloat($('#biaya_cbl').val()) || 0;
     var total_price_before_discount = parseFloat($('#total_price_before_discount_new').val()) || 0;
 
-    // console.log("DEBUG id_truck = ", id_truck);
+    console.log("DEBUG id_truck = ", id_truck);
     // console.log("DEBUG siteurl = ", siteurl);
     // console.log("DEBUG active_controller = ", active_controller);
 
