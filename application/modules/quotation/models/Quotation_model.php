@@ -149,6 +149,12 @@ class Quotation_model extends BF_Model
 		$this->db->delete('tr_penawaran_other_item');
 		$get_list_item_others = $this->db->get_where('tr_penawaran_other_item', ['id_penawaran' => '___tidak_ada___'])->result();
 		//END VERSION NEW
+		//START BAGIAN DELETE DATA DELIVERY COST
+		$this->db->where('no_penawaran', $session['id_user']);
+		$this->db->delete('delivery_cost_detail');
+		$this->db->where('no_penawaran', $session['id_user']);
+		$this->db->delete('delivery_cost_header');
+		//END BAGIAN DELETE DATA DELIVERY COST
 
 		$this->template->set('results', [
 			'customers' => $Cust,
@@ -1339,7 +1345,8 @@ class Quotation_model extends BF_Model
 
 		$hasil = [];
 
-		$no = 0;
+		// $no = 0;
+		$no = $start;
 		foreach ($get_data->result_array() as $item) {
 			$no++;
 
