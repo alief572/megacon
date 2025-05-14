@@ -77,16 +77,16 @@ class Spk_material_model extends BF_Model
       $nestedData[]  = "<div align='center'>" . strtoupper($row['so_number']) . "</div>";
       $nestedData[]  = "<div align='left'>" . strtoupper($row['nm_customer']) . "</div>";
       $nestedData[]  = "<div align='left'>" . strtoupper($row['nama_level4'] . $variant_product . $color_product . $surface_product) . "</div>";
-      $nestedData[]  = "<div align='center'>" . date('d-M-Y', strtotime($row['due_date'])) . "</div>";
+      // $nestedData[]  = "<div align='center'>" . date('d-M-Y', strtotime($row['due_date'])) . "</div>";
       $username = (!empty($GET_USER[$row['created_by']]['username'])) ? $GET_USER[$row['created_by']]['username'] : '-';
       $nestedData[]  = "<div align='left'>" . strtolower($username) . "</div>";
-      $nestedData[]  = "<div align='center'>" . number_format($row['propose']) . "</div>";
-      $nestedData[]  = "<div align='center'>" . number_format($row['qty_spk']) . "</div>";
+      // $nestedData[]  = "<div align='center'>" . number_format($row['propose']) . "</div>";
+      // $nestedData[]  = "<div align='center'>" . number_format($row['qty_spk']) . "</div>";
       $qty_sisa = $row['propose'] - $row['qty_spk'];
-      $nestedData[]  = "<div align='center' id='sisa_" . $row['id'] . "'>" . number_format($qty_sisa) . "</div>";
-      $nestedData[]  = "<div align='center'>
-                        <input type='text' id='qty_" . $row['id'] . "' data-id='" . $row['id'] . "' class='form-control text-center input-sm autoNumeric0 changeQty' style='width:80px;'><script>$('.autoNumeric0').autoNumeric('init', {mDec: '0', aPad: false})</script>
-                      </div>";
+      // $nestedData[]  = "<div align='center' id='sisa_" . $row['id'] . "'>" . number_format($qty_sisa) . "</div>";
+      // $nestedData[]  = "<div align='center'>
+      //                   <input type='text' id='qty_" . $row['id'] . "' data-id='" . $row['id'] . "' class='form-control text-center input-sm autoNumeric0 changeQty' style='width:80px;'><script>$('.autoNumeric0').autoNumeric('init', {mDec: '0', aPad: false})</script>
+      //                 </div>";
       $release = "";
       if ($qty_sisa > 0 and $this->ENABLE_MANAGE) {
         $release  = "<button type='button' class='btn btn-sm btn-primary release' data-id='" . $row['id'] . "' title='SPK' data-role='qtip'><i class='fa fa-hand-pointer-o'></i></a>";
@@ -128,12 +128,13 @@ class Spk_material_model extends BF_Model
               d.variant_product,
               '' AS color_product,
               '' AS surface_product,
-              c.nm_customer
+              c.name_customer as nm_customer
             FROM
               so_internal a
               LEFT JOIN so_internal_spk b ON a.id=b.id_so AND b.status_id = '1'
               LEFT JOIN new_inventory_4 z ON a.code_lv4 = z.code_lv4
-              LEFT JOIN customer c ON a.id_customer=c.id_customer
+              -- LEFT JOIN customer c ON a.id_customer=c.id_customer
+              LEFT JOIN master_customers c ON a.id_customer=c.id_customer
               LEFT JOIN bom_header d ON a.no_bom=d.no_bom,
               (SELECT @row:=0) r
             WHERE a.deleted_date IS NULL AND z.code_lv1 != 'P123000009' " . $sales_order_where . " " . $code_lv1_where . " AND (
@@ -141,7 +142,7 @@ class Spk_material_model extends BF_Model
               OR z.nama LIKE '%" . $this->db->escape_like_str($like_value) . "%'
               OR d.variant_product LIKE '%" . $this->db->escape_like_str($like_value) . "%'
               OR a.so_number LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-              OR c.nm_customer LIKE '%" . $this->db->escape_like_str($like_value) . "%'
+              OR c.name_customer LIKE '%" . $this->db->escape_like_str($like_value) . "%'
             )
             GROUP BY a.id
             ";

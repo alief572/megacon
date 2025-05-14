@@ -30,7 +30,13 @@
 					?>
 				</select>
 			</div>
+			
 			<div class="col-md-8">
+				<a class="btn btn-success btn-sm" style='float:right;' href="<?= base_url('spk_material/create_plan') ?>" title="Create Plan">Create Plan</a>
+			</div>
+			<div class="col-md-8">
+			</div>
+			<div class="col-md-8" style="margin-top: 5px;">
 				<a class="btn btn-primary btn-sm" style='float:right;' href="<?= base_url('spk_material/reprint_spk') ?>" title="Re-Print SPK">Re-Print SPK</a>
 			</div>
 		</div>
@@ -43,13 +49,13 @@
 					<th class='text-center'>#</th>
 					<th class='text-center'>Sales Order</th>
 					<th class='text-center'>Customer</th>
-					<th class='text-center'>Product</th>
-					<th class='text-center'>Due Date</th>
+					<th class='text-center'>Periode Planning</th>
+					<!-- <th class='text-center'>Due Date</th> -->
 					<th class='text-center'>By</th>
-					<th class='text-center'>Qty SO</th>
+					<!-- <th class='text-center'>Qty SO</th>
 					<th class='text-center no-sort'>SPK Released</th>
 					<th class='text-center no-sort'>Qty Sisa</th>
-					<th class='text-center no-sort'>Qty SPK</th>
+					<th class='text-center no-sort'>Qty SPK</th> -->
 					<th class='text-center no-sort'>Option</th>
 				</tr>
 			</thead>

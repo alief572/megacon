@@ -80,13 +80,14 @@ class Stock_origa_model extends BF_Model
       $nestedData[]  = "<div align='left'>" . strtoupper($row['nama_level4']) . "</div>";
       $nestedData[]  = "<div align='center'>" . number_format($row['stock_ng']) . "</div>";
       $nestedData[]  = "<div align='center'>" . number_format($row['stock_akhir']) . "</div>";
-      $nestedData[]  = "<div align='center'>" . number_format($row['booking_akhir']) . "</div>";
-      $nestedData[]  = "<div align='center'>" . number_format($row['stock_akhir'] - $row['booking_akhir']) . "</div>";
-      $nestedData[]  = "<div align='center'>" . number_format($row['min_stok']) . "</div>";
+      // $nestedData[]  = "<div align='center'>" . number_format($row['booking_akhir']) . "</div>";
+      // $nestedData[]  = "<div align='center'>" . number_format($row['stock_akhir'] - $row['booking_akhir']) . "</div>";
+      // $nestedData[]  = "<div align='center'>" . number_format($row['min_stok']) . "</div>";
       $nestedData[]  = "<div align='center'>" . number_format($row['max_stok']) . "</div>";
       $propose = 0;
       if ($row['stock_akhir'] - $row['booking_akhir'] < $row['min_stok']) {
-        $propose = $row['max_stok'];
+        // $propose = $row['max_stok'];//version old
+        $propose = $row['max_stok'] - ($row['stock_ng'] + $row['stock_akhir']);
       }
       $nestedData[]  = "<div align='center'>" . number_format($propose) . "</div>";
 

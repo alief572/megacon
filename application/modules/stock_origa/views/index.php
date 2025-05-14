@@ -58,12 +58,12 @@ $ENABLE_DELETE  = has_permission('Stock_Milik_Origa.Delete');
 					<th class='text-center'>#</th>
 					<th>Type BOM</th>
 					<th>Product Name</th>
-					<th class='text-center no-sort'>Actual Stock<br>Downgrade</th>
-					<th class='text-center no-sort'>Actual Stock<br>Oke</th>
-					<th class='text-center no-sort'>Booking<br>Stock</th>
-					<th class='text-center no-sort'>Free Stock<br>Oke</th>
-					<th class='text-center no-sort'>Min</th>
-					<th class='text-center no-sort'>MOQ</th>
+					<th class='text-center no-sort'>Actual Stock<br>Belum Matang</th>
+					<th class='text-center no-sort'>Actual Stock<br>Matang</th>
+					<!-- <th class='text-center no-sort'>Booking<br>Stock</th> -->
+					<!-- <th class='text-center no-sort'>Free Stock<br>Oke</th> -->
+					<!-- <th class='text-center no-sort'>Min</th> -->
+					<th class='text-center no-sort'>Max</th>
 					<th class='text-center no-sort'>Propose</th>
 					<th class='text-center no-sort'>Option</th>
 				</tr>

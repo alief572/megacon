@@ -33,12 +33,28 @@ $ENABLE_DELETE  = has_permission('Sales_Order.Delete');
 <link rel="stylesheet" href="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.css') ?>">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
+<?php
+$headerPT   = $this->db->query("SELECT * FROM companies LIMIT 1")->row();
+$NamePT = isset($headerPT) ? $headerPT->name : '';
+$AddressPT = isset($headerPT) ? $headerPT->address : '';
+$Address2PT = isset($headerPT) ? $headerPT->address2 : '';
+$NpwpPT = isset($headerPT) ? $headerPT->taxid : '';
+$BankNamePT = isset($headerPT) ? $headerPT->bank_name : '';
+$AccountBeneficiaryPT = isset($headerPT) ? $headerPT->account_beneficiary : '';
+$BankAccountPT = isset($headerPT) ? $headerPT->bank_account : '';
+$PhonePT = isset($headerPT) ? $headerPT->phone : '';
+$FaxPT = isset($headerPT) ? $headerPT->fax : '';
+$WebsitePT = isset($headerPT) ? $headerPT->homepage : '';
+$EmailPT = isset($headerPT) ? $headerPT->email : '';
+?>
+
 <div class="box" id="printed_area">
     <!-- <div class="box-body"> -->
     <table class=" w-100" border="0">
         <tr>
             <td rowspan="2" style="width: 100px;">
-                <?= $results['logo'] ?>
+                <!-- <?= $results['logo'] ?> -->
+                <img src="<?= base_url("assets/images/logo.jpg") ?>" width="180">
             </td>
             <td style="vertical-align: middle;">
 
@@ -67,49 +83,62 @@ $ENABLE_DELETE  = has_permission('Sales_Order.Delete');
         </tr> -->
     </table>
 
-    <b>Jl. Pembangunan II Kel. Batusari, <br>
+    <!-- <b>Jl. Pembangunan II Kel. Batusari, <br>
         Kec. Batuceper, Kota Tangerang Postal <br>
-        Code 15122 Indonesia <br></b>
+        Code 15122 Indonesia <br></b> -->
+    <b>
+    <p>&nbsp;&nbsp;<?=  @$AddressPT ?><br>
+    &nbsp;&nbsp;<?=  @$Address2PT ?></p>
+    </b>
     <table style="width: 350px;">
         <tr>
             <th>Phone No</th>
             <th class="text-left">:</th>
-            <th>021-55776153</th>
+            <th>
+                <!-- 021-55776153 -->
+                <?= @$PhonePT ?>
+            </th>
         </tr>
         <tr>
             <th>Email</th>
             <th class="text-left">:</th>
-            <th>sales.origa@gmail.com</th>
+            <th>
+                <!-- sales.origa@gmail.com -->
+                <a href="mailto:<?= @$EmailPT ?>" class="link-print"><?= @$EmailPT ?></a>
+            </th>
         </tr>
     </table>
 
     <table style="width: 100%">
         <tr>
-            <td>To</td>
+            <td>Ordered By</td>
             <td class="text-center">:</td>
-            <td><?= 'Loco On Truck ' . ($results['data_penawaran']->quote_by == 'ORIGA') ? 'PT Origa Mulia FRP' : 'PT Orindo Eratec' ?></td>
+            <td><?= $results['data_penawaran']->nm_customer ?></td>
+            <!-- . ($results['data_penawaran']->quote_by == 'ORIGA') ? 'PT Origa Mulia FRP' : 'PT Orindo Eratec' -->
             <td>SO Date</td>
             <td class="text-center">:</td>
             <td><?= date('d F Y', strtotime($results['data_penawaran']->tgl_so)) ?></td>
         </tr>
         <tr>
-            <td>Ordered By</td>
+            <td>Address</td>
             <td class="text-center">:</td>
-            <td><?= $results['data_penawaran']->nm_customer ?></td>
+            <td><?= $results['data_penawaran']->delivery_address ?></td>
             <td>SO No</td>
             <td class="text-center">:</td>
             <td><?= $results['data_penawaran']->no_so ?></td>
         </tr>
         <tr>
-            <td>Address</td>
-            <td class="text-center">:</td>
-            <td><?= $results['data_penawaran']->delivery_address ?></td>
+            <!-- <td>Address</td> -->
+            <!-- <td class="text-center">:</td> -->
+            <td colspan="3"></td>
             <td>PO Date</td>
             <td class="text-center">:</td>
             <td><?= ($results['data_penawaran']->po_date !== '' && $results['data_penawaran']->po_date !== null) ? date('d F Y', strtotime($results['data_penawaran']->po_date)) : null ?></td>
         </tr>
         <tr>
-            <td colspan="3"></td>
+            <td>Attn</td>
+            <td class="text-center">:</td>
+            <td><?= $results['data_penawaran']->nm_pic ?></td>
             <td>PO No.</td>
             <td class="text-center">:</td>
             <td><?= $results['data_penawaran']->po_no ?></td>
@@ -121,32 +150,39 @@ $ENABLE_DELETE  = has_permission('Sales_Order.Delete');
             <td></td>
         </tr>
         <tr>
-            <td>Attn</td>
-            <td class="text-center">:</td>
-            <td><?= $results['data_penawaran']->nm_pic ?></td>
-            <td>Shipment</td>
-            <td class="text-center">:</td>
-            <td><?= $results['data_penawaran']->pengiriman . ' ' . (($results['data_penawaran']->quote_by == 'ORIGA') ? 'PT Origa Mulia FRP' : 'PT Orindo Eratec')  ?></td>
-        </tr>
-        <tr>
             <td>Telp</td>
             <td class="text-center">:</td>
             <td><?= $results['data_penawaran']->pic_hp ?></td>
-            <td>Estimated Delivery</td>
+            <td>Shipment</td>
             <td class="text-center">:</td>
-            <td><?= date('d F Y', strtotime($results['data_penawaran']->delivery_date))  ?></td>
+            <td><?= $results['data_penawaran']->pengiriman ?></td>
+            <!-- . ' ' . (($results['data_penawaran']->quote_by == 'ORIGA') ? 'PT Origa Mulia FRP' : 'PT Orindo Eratec')  -->
         </tr>
         <tr>
             <td>Fax</td>
             <td class="text-center">:</td>
             <td><?= $results['data_penawaran']->fax ?></td>
-            <td colspan="3"></td>
+            <td>Estimated Delivery</td>
+            <td class="text-center">:</td>
+            <td><?= date('d F Y', strtotime($results['data_penawaran']->delivery_date))  ?></td>
         </tr>
         <tr>
             <td>Payment</td>
             <td class="text-center">:</td>
             <td><?= $results['data_penawaran']->nama_top ?></td>
             <td colspan="3"></td>
+        </tr>
+        <!-- <tr>
+            <td>Payment</td>
+            <td class="text-center">:</td>
+            <td><?= $results['data_penawaran']->nama_top ?></td>
+            <td colspan="3"></td>
+        </tr> -->
+        <tr>
+            <td colspan="3"></td>
+            <td></td>
+            <td></td>
+            <td></td>
         </tr>
     </table>
 
