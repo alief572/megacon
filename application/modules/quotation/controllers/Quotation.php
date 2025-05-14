@@ -2771,10 +2771,12 @@ $total_all_qty += $qty;
 		// $get_data_truck = $this->db->query('SELECT a.name_pic, a.id_pic, a.email_pic, b.name_customer FROM child_customer_pic a JOIN master_customers b ON b.id_customer = a.id_customer WHERE position_pic = "' . $PIC . '" AND b.id_customer = "' . $id_customer . '" LIMIT 1 ')->row();
 		$get_data_truck = $this->db->query('SELECT a.id_truck_rate, a.maksimal_muatan, a.rate_truck, b.nm_asset FROM tr_truck_rate a LEFT JOIN asset b ON a.kd_asset = b.kd_asset where a.id_truck_rate = "' . $id_truck . '" ')->row();
 		// echo $this->db->last_query();
+		// die();
 		// echo $get_data_truck->maksimal_muatan;
 		$list_truck = '<option value="' . $get_data_truck->id_truck_rate . '">' . $get_data_truck->nm_asset . '</option>';
 
 		$get_data_detail_penawaran = $this->db->query('SELECT SUM(a.qty) as sum_qty FROM tr_penawaran_detail a where a.no_penawaran = "' . $no_penawarans . '" ')->row();
+		// echo $this->db->last_query();
 		// print_r($get_data_detail_penawaran->sum_qty);
 		// echo $this->db->last_query();
 		// die();
