@@ -72,10 +72,24 @@ class Spk_material_model extends BF_Model
       $color_product     = (!empty($row['color_product'])) ? '; Color ' . $row['color_product'] : '';
       $surface_product   = (!empty($row['surface_product'])) ? '; Surface ' . $row['surface_product'] : '';
 
+      //start validasi new
+      $NO_SO = '';
+      $Customer = '';
+      if($row['project'] == 'Pengisian Stok Internal'){
+        $NO_SO = strtoupper($row['so_number']);
+        $Customer = 'Megacon';
+      }else{
+        $NO_SO = strtoupper($row['so_number']);
+        $Customer = 'Megacon';
+      }
+      //end validasi new
+
       $nestedData   = array();
       $nestedData[]  = "<div align='center'>" . $nomor . "</div>";
-      $nestedData[]  = "<div align='center'>" . strtoupper($row['so_number']) . "</div>";
-      $nestedData[]  = "<div align='left'>" . strtoupper($row['nm_customer']) . "</div>";
+      // $nestedData[]  = "<div align='center'>" . strtoupper($row['so_number']) . "</div>";//version old
+      // $nestedData[]  = "<div align='left'>" . strtoupper($row['nm_customer']) . "</div>";//version old
+      $nestedData[]  = "<div align='center'>" . $NO_SO . "</div>";//version old
+      $nestedData[]  = "<div align='left'>" . $Customer . "</div>";//version old
       $nestedData[]  = "<div align='left'>" . strtoupper($row['nama_level4'] . $variant_product . $color_product . $surface_product) . "</div>";
       // $nestedData[]  = "<div align='center'>" . date('d-M-Y', strtotime($row['due_date'])) . "</div>";
       $username = (!empty($GET_USER[$row['created_by']]['username'])) ? $GET_USER[$row['created_by']]['username'] : '-';
@@ -91,7 +105,20 @@ class Spk_material_model extends BF_Model
       if ($qty_sisa > 0 and $this->ENABLE_MANAGE) {
         $release  = "<button type='button' class='btn btn-sm btn-primary release' data-id='" . $row['id'] . "' title='SPK' data-role='qtip'><i class='fa fa-hand-pointer-o'></i></a>";
       }
-      $nestedData[]  = "<div align='center'>" . $release . "</div>";
+
+      //start bagian button
+      $btn_edit = '<a href="spk_material/edit_spk_material/' . $row['id'] . '" class="btn btn-sm btn-success">Edit</a>';
+      $btn_delete = '<a href="javascript:void(0);" class="btn btn-sm btn-danger loss" data-id="' . $row['id'] . '">Delete</a>';
+      $btn_view = '<a href="spk_material/view_spk_material/' . $row['id'] . '" class="btn btn-sm btn-info">View</a>';
+      $btn_download_excel = '<a href="spk_material/download_excel/' . $row['id'] . '" class="btn btn-sm btn-warning">Download Excel</a>';
+      //end bagian button
+
+      $nestedData[]  =  "<div align='center'>"
+                          . $btn_edit . '&nbsp;'
+                          . $btn_delete . '&nbsp;'
+                          . $btn_view . '&nbsp;'
+                          . $btn_download_excel .
+                        "</div>";
       $data[] = $nestedData;
       $urut1++;
       $urut2++;

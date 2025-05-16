@@ -322,7 +322,7 @@ $EmailPT = isset($headerPT) ? $headerPT->email : '';
                 <td><?= number_format(@$GrandTotal) ?></td>
             </tr> -->
             <tr>
-                <td colspan="4">Grand Total After Delivery Cost and PPN</td>
+                <td colspan="4">Grand Total</td>
                 <td><?= number_format(@$GrandTotalAfterDC) ?></td>
             </tr>
         </table>
