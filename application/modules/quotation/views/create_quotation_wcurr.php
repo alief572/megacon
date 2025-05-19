@@ -1165,7 +1165,7 @@ $total_all_qty += $qty;
                     <div class="col-lg-12"></div>
                     <div class="col-lg-4">
                         <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Rate Biaya Angkut 2 (Rp/Km)</label>
+                            <label class="col-sm-4 control-label">Rate Biaya Angkut (Rp/Km)</label>
                             <div class="col-sm-6">
                                 <input type="text" name="rate_biaya_angkut_ba" class="form-control input-sm text-right" id="rate_biaya_angkut_ba" readonly>
                             </div>
@@ -1199,7 +1199,7 @@ $total_all_qty += $qty;
                     </div>
                     <div class="col-lg-4">
                         <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Charger Biaya Lain-Lain (%)</label>
+                            <label class="col-sm-4 control-label">Charger Biaya Lain-Lain</label>
                             <div class="col-sm-6">
                             <input type="hidden" name="charger_biaya_cbl" class="form-control text-right" id="charger_biaya_cbl" >
                             <input type="text" name="biaya_cbl" class="form-control text-right" id="biaya_cbl" onkeyup="formatNumber(this)">
@@ -1230,7 +1230,7 @@ $total_all_qty += $qty;
                     <div class="col-lg-12"></div>
                     <div class="col-lg-4">
                         <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">&nbsp;</label>
+                            <label class="col-sm-4 control-label">Total Biaya Produk + Delivery Cost</label>
                             <div class="col-sm-6">
                             <input type="text" name="grand_total_tbp" class="form-control text-right" id="grand_total_tbp" readonly>
                             </div>
