@@ -988,13 +988,14 @@ $ViewCustName = $get_data_cust->name_customer;
                     </div>
                     <div class="col-lg-4">
                         <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">Charger Biaya Lain-Lain (%)</label>
+                            <label class="col-sm-4 control-label">Charger Biaya Lain-Lain</label>
                             <div class="col-sm-6">
-                            <input type="text" name="charger_biaya_cbl" class="form-control text-right" id="charger_biaya_cbl"  value="<?= @$results['get_delivery_cost_header']->charger_biaya_lain_lain ?>" >
+                            <input type="hidden" name="charger_biaya_cbl" class="form-control text-right" id="charger_biaya_cbl"  value="<?= @$results['get_delivery_cost_header']->charger_biaya_lain_lain ?>" >
+                            <input type="text" name="biaya_cbl" class="form-control text-right" id="biaya_cbl" value="<?= @$results['get_delivery_cost_header']->total_charger_biaya_lain_lain ?>">
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-12"></div>
+                    <!-- <div class="col-lg-12"></div>
                     <div class="col-lg-4">
                         <div class="form-group " style="padding-top:15px;">
                             <label class="col-sm-4 control-label">&nbsp;</label>
@@ -1002,7 +1003,7 @@ $ViewCustName = $get_data_cust->name_customer;
                             <input type="text" name="biaya_cbl" class="form-control text-right" id="biaya_cbl" readonly value="<?= @$results['get_delivery_cost_header']->total_charger_biaya_lain_lain ?>" >
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                     <div class="col-lg-12"></div>
                     <div class="col-lg-12">
                         <h3>Total Biaya Pengiriman</h3>
@@ -1018,7 +1019,7 @@ $ViewCustName = $get_data_cust->name_customer;
                     <div class="col-lg-12"></div>
                     <div class="col-lg-4">
                         <div class="form-group " style="padding-top:15px;">
-                            <label class="col-sm-4 control-label">&nbsp;</label>
+                            <label class="col-sm-4 control-label">Total Biaya Produk + Delivery Cost</label>
                             <div class="col-sm-6">
                             <input type="text" name="grand_total_tbp" class="form-control text-right" id="grand_total_tbp" readonly value="<?= @$results['get_delivery_cost_header']->biaya_pengiriman ?>" >
                             </div>
