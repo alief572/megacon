@@ -66,12 +66,13 @@
 						<td class='text-bold' id='total_cycletime'></td>
 					</tr> -->
 				</table>
-				<input type="hidden" id='cycletime' name='cycletime' value='<?=$cycletime?>'>
-				<input type="hidden" id='propose' name='propose' value='<?=$qty?>'>
+				<input type="hidden" id='cycletime' name='cycletime' value=''>
+				<input type="hidden" id='propose' name='propose' value=''>
 				<input type="hidden" id='id' name='id' value=''>
 				<input type="hidden" id='so_number' name='so_number' value=''>
 				<input type="hidden" id='due_date' name='due_date' value=''>
 				<input type="hidden" id='max_date' name='max_date' value=''>
+				<input type="hidden" id='rowIndex' name='rowIndex' value=''>
 			</div>
         </div>
 		<h4>Schedule Detil</h4>
@@ -100,17 +101,21 @@
 						<td align='center'></td>
 						<td align='center'></td>
 						<td align='center'></td>
-						<td align='center'></td>
+						<!-- <td align='center'></td> -->
 						<td align='center' colspan="2" style="text-align: right;">Total Kubikasi Tgl :</td>
 						<!-- <td align='center'></td> -->
-						<td align='center'>9999</td>
+						<!-- <td align='center'>9999</td> -->
+						<td align='center' colspan='2'>
+              <input type='text' id='grand_total_kubikasi' class='form-control input-md text-center' placeholder='Grand Total Kubikasi' readonly>
+            </td>
 					</tr>
 				</table>
 			</div>
         </div>
 		<div class="form-group row">
 			<div class="col-md-6">
-				<button type="button" class="btn btn-primary" name="save" id="save">Save</button>
+				<!-- <button type="button" class="btn btn-primary" name="save" id="save">Save</button> -->
+				<button type="button" class="btn btn-primary" name="save_new" id="save_new">Save</button>
 				<button type="button" class="btn btn-danger" style='margin-left:5px;' name="back" id="back">Back</button>
 			</div>
         </div>
@@ -177,6 +182,322 @@ function updateDatepickersByMonthYear() {
 $('#bulan, #tahun').on('change', function () {
 	updateDatepickersByMonthYear();
 });
+
+
+//START JAVASCRIPT NEW
+function updateGrandTotalKubikasi() {
+  let grandTotal = 0;
+  $('.total_kubikasi').each(function() {
+      let val = parseFloat($(this).val().replace(',', '.')) || 0;
+      grandTotal += val;
+  });
+
+  $('#grand_total_kubikasi').val(grandTotal.toFixed(2)); // Atur jumlah desimal sesuai kebutuhan
+}
+
+// Panggil fungsi setiap kali input total_kubikasi berubah nilainya
+$(document).on('input', '.total_kubikasi', function() {
+  updateGrandTotalKubikasi();
+});
+
+
+$(document).on('change', '.get_data_product', function() {//test
+    var id_product = $(this).val();
+    var rowIndex	= $('#rowIndex').val()
+    // var no_penawaran = $('#no_surat').val();
+    // var grand_total_input = $('#grand_total').val();
+    // var total_all_qty = parseFloat($('#total_all_qty').val().replace(/[^0-9.-]+/g,"")) || 0;
+    // var jarak_pengiriman = parseFloat($('#jarak_pengiriman_truck_dc').val().replace(/\./g, '')) || 0;
+    // var estimasi_tol = parseFloat($('#estimasi_tol_bt').val().replace(/\./g, '')) || 0;
+
+    // console.log("DEBUG id_product = ", id_product);
+    // console.log("DEBUG siteurl = ", siteurl);
+    // console.log("DEBUG active_controller = ", active_controller);
+
+    if (!id_product) {
+        console.warn("ID product kosong saat pilih pertama!");
+        return; // Jangan lanjut Ajax kalau id_truck kosong
+    }
+
+    // console.log(id_product);
+    // return;
+
+    $.ajax({
+        type: 'post',
+        url: siteurl + active_controller + '/get_data_product',
+        data: {
+            'id_product': id_product,
+            'rowIndex': rowIndex
+        },
+        cache: false,
+        dataType: 'json',
+        success: function(result) {
+            // console.log("Success result = ", result);
+            // location.reload();
+            // $("#Detail[" + rowIndex + "][propose]");
+            // $(`input[name="Detail[${rowIndex}][propose]"]`).val(data.propose);
+            // Pastikan data.propose ada sebelum diset
+						if (result && typeof result.propose !== 'undefined') {
+						    const selector = `input[name="Detail[${rowIndex}][propose]"]`;
+						    $(selector).val(result.propose);
+						} else {
+						    console.warn(`Propose data tidak ditemukan untuk rowIndex ${rowIndex}`);
+						}
+						if (result && typeof result.volumeM3 !== 'undefined') {
+						    const selector = `input[name="Detail[${rowIndex}][m3]"]`;
+						    $(selector).val(result.volumeM3);
+						} else {
+						    console.warn(`m3/pcs data tidak ditemukan untuk rowIndex ${rowIndex}`);
+						}
+						updateGrandTotalKubikasi(); // <-- panggil di sini
+        },
+        error: function(xhr, status, error) {
+            console.error("AJAX Error: ", status, error);
+            console.log(xhr.responseText); // ini supaya kita tahu detail error dari server
+        }
+    });
+});
+
+$(document).on('input', 'input[name^="Detail"][name$="[shift1]"], input[name^="Detail"][name$="[shift2]"]', function () {
+    let inputName = $(this).attr('name'); // e.g., Detail[3][shift1]
+    
+    // Ambil row index dari nama input
+    let match = inputName.match(/^Detail\[(\d+)\]\[shift[12]\]$/);
+    if (!match) return;
+
+    let rowIndex = match[1];
+
+    // Ambil nilai shift1, shift2, dan propose
+    let shift1 = parseFloat($(`input[name="Detail[${rowIndex}][shift1]"]`).val()) || 0;
+    let shift2 = parseFloat($(`input[name="Detail[${rowIndex}][shift2]"]`).val()) || 0;
+    let propose = parseFloat($(`input[name="Detail[${rowIndex}][propose]"]`).val()) || 0;
+
+    let total = shift1 + shift2;
+
+    if (total > propose) {
+        alert(`Total Shift 1 + Shift 2 (${total}) tidak boleh lebih dari Propose (${propose})`);
+        
+        // Reset input yang terakhir diubah ke 0
+        $(this).val(0);
+        updateGrandTotalKubikasi(); // <-- panggil di sini
+    }else{
+    	$(`input[name="Detail[${rowIndex}][total_kubikasi]"]`).val(total);
+    	updateGrandTotalKubikasi(); // <-- panggil di sini
+    }
+});
+
+$('#save_new').click(function(e){
+	e.preventDefault();
+	let propose = $('#propose').val()
+	let selectval;
+	//plan date
+	$('.datepicker').each(function(){
+		selectval = $(this).val();
+		
+		if(selectval == ''){
+			return false;
+		}
+	});
+	if(selectval == ''){
+		swal({
+		title	: "Error Message!",
+		text	: 'Plan date belum dipilih...',
+		type	: "warning"
+		});
+		return false;
+	}
+	//start new
+	//product	
+	$('.product').each(function(){
+		selectval = $(this).val();
+		
+		if(selectval == '0'){
+			return false;
+		}
+	});
+	if(selectval == '0'){
+		swal({
+		title	: "Error Message!",
+		text	: 'Product belum dipilih...',
+		type	: "warning"
+		});
+		return false;
+	}
+  //propose
+	$('.propose').each(function(){
+		selectval = $(this).val();
+		
+		if(selectval == ''){
+			return false;
+		}
+	});
+	if(selectval == ''){
+		swal({
+		title	: "Error Message!",
+		text	: 'Propose Production belum terisi...',
+		type	: "warning"
+		});
+		return false;
+	}
+	//m3.pcs
+	$('.m3').each(function(){
+		selectval = $(this).val();
+		
+		if(selectval == ''){
+			return false;
+		}
+	});
+	if(selectval == ''){
+		swal({
+		title	: "Error Message!",
+		text	: 'm3/pcs belum terisi...',
+		type	: "warning"
+		});
+		return false;
+	}
+	//shift 1
+	$('.shift1').each(function(){
+		selectval = $(this).val();
+		
+		if(selectval == '' || selectval <= 0){
+			return false;
+		}
+	});
+	if(selectval == ''){
+		swal({
+		title	: "Error Message!",
+		text	: 'Shift 1 tidak boleh kosong / Nol...',
+		type	: "warning"
+		});
+		return false;
+	}
+	//shift 2
+	$('.shift2').each(function(){
+		selectval = $(this).val();
+		
+		if(selectval == '' || selectval <= 0){
+			return false;
+		}
+	});
+	if(selectval == ''){
+		swal({
+		title	: "Error Message!",
+		text	: 'Shift 2 tidak boleh kosong / Nol...',
+		type	: "warning"
+		});
+		return false;
+	}
+
+	//end new
+	//qty_spk
+	// $('.qty_spk').each(function(){
+	// 	selectval = $(this).val();
+		
+	// 	if(selectval == '' || selectval <= 0){
+	// 		return false;
+	// 	}
+	// });
+	// if(selectval == ''){
+	// 	swal({
+	// 	title	: "Error Message!",
+	// 	text	: 'Qty tidak boleh kosong / Nol...',
+	// 	type	: "warning"
+	// 	});
+	// 	return false;
+	// }
+
+	//CHECK QTY
+	// let SUM = 0
+	// $('.qty_spk').each(function(){
+	// 	qty = getNum($(this).val().split(",").join(""));
+		
+	// 	SUM += qty
+	// });
+
+	// if(SUM != propose){
+	// 	swal({
+	// 	title	: "Error Message!",
+	// 	text	: 'Jumlah Qty SPK dan Propose Harus Sama !',
+	// 	type	: "warning"
+	// 	});
+	// 	return false;
+	// }
+
+	swal({
+		  title: "Are you sure?",
+		  text: "You will not be able to process again this data!",
+		  type: "warning",
+		  showCancelButton: true,
+		  confirmButtonClass: "btn-danger",
+		  confirmButtonText: "Yes, Process it!",
+		  cancelButtonText: "No, cancel process!",
+		  closeOnConfirm: true,
+		  closeOnCancel: false
+		},
+		function(isConfirm) {
+		  if (isConfirm) {
+				var formData 	=new FormData($('#data-form')[0]);
+				var baseurl=siteurl+active_controller+'/add_new';
+				$.ajax({
+					url			: baseurl,
+					type		: "POST",
+					data		: formData,
+					cache		: false,
+					dataType	: 'json',
+					processData	: false,
+					contentType	: false,
+					success		: function(data){
+						if(data.status == 1){
+							swal({
+								  title	: "Save Success!",
+								  text	: data.pesan,
+								  type	: "success",
+								  timer	: 7000
+								});
+								// window.open(base_url + active_controller+'/print_spk/'+data.kode,'_blank');
+								window.location.href = base_url + active_controller
+						}else{
+
+							if(data.status == 2){
+								swal({
+								  title	: "Save Failed!",
+								  text	: data.pesan,
+								  type	: "warning",
+								  timer	: 7000
+								});
+							}else{
+								swal({
+								  title	: "Save Failed!",
+								  text	: data.pesan,
+								  type	: "warning",
+								  timer	: 7000
+								});
+							}
+
+						}
+					},
+					error: function() {
+
+						swal({
+						  title				: "Error Message !",
+						  text				: 'An Error Occured During Process. Please try again..',
+						  type				: "warning",
+						  timer				: 7000
+						});
+					}
+				});
+		  } else {
+			swal("Cancelled", "Data can be process again :)", "error");
+			return false;
+		  }
+	});
+});
+
+
+
+//END JAVASCRIPT NEW
+
+
 
 	$(document).ready(function(){
 		$('.chosen-select').select2();
@@ -250,6 +571,7 @@ $('#bulan, #tahun').on('change', function () {
 					$('.datepicker').datepicker({ dateFormat: 'dd-M-yy' });
 					$('.datepicker2').datepicker({ dateFormat: 'dd-M-yy' });
 					updateDatepickersByMonthYear();
+					$('#rowIndex').val(data.rowIndex);
 					swal.close();
 				},
 				error: function() {
@@ -291,7 +613,7 @@ $('#bulan, #tahun').on('change', function () {
 
 		});
 
-		$('#save').click(function(e){
+		$('#save').click(function(e){//version old
 			e.preventDefault();
 			let propose = $('#propose').val()
 			let selectval;

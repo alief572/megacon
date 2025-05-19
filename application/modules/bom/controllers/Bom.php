@@ -54,7 +54,7 @@ class Bom extends Admin_Controller
 			// exit;
 			$session 		  = $this->session->userdata('app_session');
 			$Detail 	    = $data['detail_material'];
-			$detail_material_lain = $data['detail_material_lain'];
+			@$detail_material_lain = @$data['detail_material_lain'];
 			$Ym					  = date('ym');
 			$no_bom        = $data['no_bom'];
 			$no_bomx        = $data['no_bom'];
@@ -106,18 +106,21 @@ class Bom extends Admin_Controller
 			}
 
 			$ArrDetail2	= array();
-			foreach ($detail_material_lain as $val => $valx) {
-				$urut				= sprintf('%03s', $val);
-				$ArrDetail2[$val]['no_bom'] = $no_bom;
-				$ArrDetail2[$val]['id_material'] = $valx['id_material'];
-				$ArrDetail2[$val]['material_name'] = $valx['material_name'];
-				$ArrDetail2[$val]['kebutuhan'] = $valx['kebutuhan'];
-				$ArrDetail2[$val]['id_satuan'] = $valx['id_satuan'];
-				$ArrDetail2[$val]['nm_satuan'] = $valx['satuan'];
-				$ArrDetail2[$val]['keterangan'] = $valx['keterangan'];
-				$ArrDetail2[$val]['created_by'] = $this->auth->user_id();
-				$ArrDetail2[$val]['created_date'] = date('Y-m-d H:i:s');
+			if(!empty($detail_material_lain)){
+				foreach (@$detail_material_lain as $val => $valx) {
+					$urut				= sprintf('%03s', $val);
+					$ArrDetail2[$val]['no_bom'] = $no_bom;
+					$ArrDetail2[$val]['id_material'] = $valx['id_material'];
+					$ArrDetail2[$val]['material_name'] = $valx['material_name'];
+					$ArrDetail2[$val]['kebutuhan'] = $valx['kebutuhan'];
+					$ArrDetail2[$val]['id_satuan'] = $valx['id_satuan'];
+					$ArrDetail2[$val]['nm_satuan'] = $valx['satuan'];
+					$ArrDetail2[$val]['keterangan'] = $valx['keterangan'];
+					$ArrDetail2[$val]['created_by'] = $this->auth->user_id();
+					$ArrDetail2[$val]['created_date'] = date('Y-m-d H:i:s');
+				}
 			}
+			
 
 			$this->db->trans_start();
 			if (empty($no_bomx)) {
@@ -203,7 +206,7 @@ class Bom extends Admin_Controller
 			$this->db->select('a.*');
 			$this->db->from('bom_material_lain a');
 			$this->db->where('a.no_bom', $no_bom);
-			$detail_material_lain = $this->db->get()->result();
+			@$detail_material_lain = $this->db->get()->result();
 
 			$product    = $this->bom_model->get_data_where_array('new_inventory_4', array('deleted_date' => NULL, 'category' => 'product', 'code_lv1 <>' => 'P123000008'));
 			$material    = $this->bom_model->get_data_where_array('new_inventory_4', array('deleted_date' => NULL, 'category' => 'material'));
@@ -236,7 +239,7 @@ class Bom extends Admin_Controller
 				'material' => $material,
 				'jenis_beton' => $jenis_beton,
 				'list_satuan' => $list_satuan,
-				'detail_material_lain' => $detail_material_lain,
+				'detail_material_lain' => @$detail_material_lain,
 				'list_material' => $get_list_material
 			];
 			$this->template->set('results', $data);
