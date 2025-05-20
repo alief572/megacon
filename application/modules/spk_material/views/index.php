@@ -40,6 +40,16 @@
 					?>
 				</select>
 			</div>
+			<div class="col-md-2">
+				<select name='nm_customer' id='nm_customer' class='form-control input-sm chosen-select'>
+					<option value='0'>All Customer</option>
+					<?php
+					foreach ($listCust as $key => $value) {
+						echo "<option value='" . $value['id_customer'] . "'>" . $value['name_customer'] . "</option>";
+					}
+					?>
+				</select>
+			</div>
 			
 			<div class="col-md-8">
 				<a class="btn btn-success btn-sm" style='float:right;' href="<?= base_url('spk_material/create_plan') ?>" title="Create Plan">Create Plan</a>
@@ -224,5 +234,65 @@
 					}
 				}
 			});
+
+		$(document).on('click', '.deletePlan', function(e) {
+			e.preventDefault();
+
+			let id = $(this).data('id')
+			// let qty = getNum($('#qty_' + id).val().split(",").join(""))
+
+			// if (qty < 1) {
+			// 	swal({
+			// 		title: "Error Message!",
+			// 		text: 'Qty wajib diisi!',
+			// 		type: "warning"
+			// 	});
+			// 	return false;
+			// }
+
+			swal({
+					title: "Are you sure?",
+					text: "Delete Planning Harian!",
+					type: "warning",
+					showCancelButton: true,
+					confirmButtonClass: "btn-danger",
+					confirmButtonText: "Yes, Process it!",
+					cancelButtonText: "No, cancel process!",
+					closeOnConfirm: false,
+					closeOnCancel: false
+				},
+				function(isConfirm) {
+					if (isConfirm) {
+						// loading_spinner();
+						var baseurl = base_url + active_controller + '/delete_plan';
+						$.ajax({
+							url: baseurl,
+							type: "POST",
+							data: {
+								id: id
+								// qty: qty
+							},
+							cache: false,
+							dataType: 'json',
+							success: function(data) {
+								// window.open(base_url + active_controller + 'add/' + data.id + '/' + data.qty, '_self');
+								window.location.href = base_url + active_controller;
+							},
+							error: function() {
+								swal({
+									title: "Error Message !",
+									text: 'An Error Occured During Process. Please try again..',
+									type: "warning",
+									timer: 3000
+								});
+							}
+						});
+					} else {
+						swal("Cancelled", "Data can be process again :)", "error");
+						return false;
+					}
+				});
+		});
+
 		}
 	</script>

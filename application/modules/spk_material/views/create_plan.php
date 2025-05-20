@@ -1,4 +1,7 @@
-
+<?php
+// print_r($DataPlan_detail);
+// die();
+?>
 <div class="box box-primary">
     <div class="box-body">
 		<form id="data-form" method="post" autocomplete="off"><br>
@@ -78,7 +81,7 @@
 		<h4>Schedule Detil</h4>
 		<div class="form-group row">
         	<div class="col-md-12">
-				<table class="table table-bordered table-striped" width='100%' border="1">
+				<table class="table table-bordered table-striped" width='100%' border="1"  id="myTable">
 					<tr>
 						<td colspan="4"></td>
 						<td colspan="3" style="text-align: center; background-color: orange;">Schedule</td>
@@ -96,6 +99,28 @@
 						<th class='text-center' width='15%'>Total Kubikasi</th>
 						<th class='text-center' width='5%'>Option</th>
 					</tr>
+<?php
+if (isset($DataPlan_detail)) {
+	foreach ($DataPlan_detail as $plan_detail) {
+?>
+					<tr>
+						<td class='text-center' width='10%'><?= $plan_detail->plan_date ?></td>
+						<td class='text-center' width='15%'><?= $plan_detail->name_product ?></td>
+						<td class='text-center' width='15%'><?= $plan_detail->propose_production ?></td>
+						<td class='text-center' width='15%'><?= $plan_detail->m3_pcs ?></td>
+						<td class='text-center' width='15%'><?= $plan_detail->shift1 ?></td>
+						<td class='text-center' width='15%'><?= $plan_detail->shift2 ?></td>
+						<td class='text-center' width='15%'><?= $plan_detail->total_kubikasi ?></td>
+						<td class='text-center' width='5%'>
+							<!-- <button type='button' class='btn btn-sm btn-danger delPartPlan' title='Delete Part'><i class='fa fa-close'></i></button> -->
+							<button type='button' class="btn btn-sm btn-danger del_product_price_'<?= $plan_detail->id_planning_harian_detail ?>'" onclick="del_planning_harian('<?= $plan_detail->id_planning_harian_detail ?>')" title='Delete Part'><i class='fa fa-close'></i></button>
+							<!-- del_product_price_' . $penawaran_detail->id_penawaran_detail . '" onclick="del_product_price(' . $penawaran_detail->id_penawaran_detail . ')" -->
+						</td>
+					</tr>
+<?php
+	}
+}
+?>
 					<tr id='add_0'>
 						<td align='left'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button type='button' class='btn btn-sm btn-warning addPartPlan' title='Add'><i class='fa fa-plus'></i>&nbsp;&nbsp;Add</button></td>
 						<td align='center'></td>
@@ -115,7 +140,17 @@
 		<div class="form-group row">
 			<div class="col-md-6">
 				<!-- <button type="button" class="btn btn-primary" name="save" id="save">Save</button> -->
+				<?php
+				if (!empty($DataPlan_detail)) {
+				?>
+				<button type="button" class="btn btn-primary" name="update_new" id="update_new">Update</button>
+				<?php
+				}else{
+				?>
 				<button type="button" class="btn btn-primary" name="save_new" id="save_new">Save</button>
+				<?php
+				}
+				?>
 				<button type="button" class="btn btn-danger" style='margin-left:5px;' name="back" id="back">Back</button>
 			</div>
         </div>
@@ -141,6 +176,10 @@
 
 <script src="<?= base_url('assets/js/jquery.maskMoney.js')?>"></script>
 <script src="<?= base_url('assets/js/autoNumeric.js')?>"></script>
+
+<!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
+<!-- <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script> -->
+
 <style>
     .datepicker, .datepicker2{
         cursor: pointer;
@@ -565,6 +604,8 @@ $('#save_new').click(function(e){
 		$('.chosen-select').select2();
     	$('.autoNumeric0').autoNumeric('init', {mDec: '0', aPad: false})
 
+		// $('#myTable').DataTable({});
+
     	//back
 		$(document).on('click', '#back', function(){
 		    window.location.href = base_url + active_controller
@@ -655,11 +696,17 @@ $('#save_new').click(function(e){
 			$("."+get_id).remove();
 		});
 
+		// $(document).on('click', '.delPartPlan', function(){
+		// 	var get_id 		= $(this).parent().parent().attr('class');
+		// 	$("."+get_id).remove();
+		// 	updateGrandTotalKubikasiTerakhirTgl();
+		// });
+
 		$(document).on('click', '.delPartPlan', function(){
-			var get_id 		= $(this).parent().parent().attr('class');
-			$("."+get_id).remove();
-			updateGrandTotalKubikasiTerakhirTgl();
-		});
+	    var get_id = $(this).closest('tr').attr('class');
+	    $("." + get_id).remove();
+	    updateGrandTotalKubikasiTerakhirTgl(); // panggil fungsi update total jika perlu
+	  });
 
 		$(document).on('keyup', '.qty_spk', function(){
 			let cycletime = $('#cycletime').val()
@@ -877,6 +924,39 @@ $('#save_new').click(function(e){
 		}
 		return s.join(dec);
 	}
+
+function del_planning_harian(id) {
+	// var id_header = segments[4]; // index ke-4 = segment ke-5
+	// Ambil path dari URL, misalnya: /megacon/spk_material/create_plan/27
+	var path = window.location.pathname;
+	// Pisah berdasarkan slash
+	var segments = path.split('/');
+	// Ambil segment terakhir (angka 27)
+	var lastSegment = segments.pop() || segments.pop(); // handle jika ada slash di akhir URL
+  $.ajax({
+      type: 'post',
+      url: siteurl + active_controller + '/del_planning_harian',
+      data: {
+          'id': id
+      },
+      cache: false,
+      success: function(result) {
+          // cek_detail_penawaran(no_surat);
+          // updateBeratAktualStyle();
+          // updateGrandTotalKubikasiTerakhirTgl(); // panggil fungsi update total jika perlu
+      	window.location.href = base_url + active_controller + '/create_plan/' + lastSegment;
+      	// refreshAjaxTable('#myTable');
+      }
+  });
+}	
+
+function refreshAjaxTable(tableId) {
+    if ($.fn.DataTable.isDataTable(tableId)) {
+        $(tableId).DataTable().ajax.reload(null, false); // false agar tetap di halaman sekarang
+    } else {
+        console.warn("DataTable belum diinisialisasi pada:", tableId);
+    }
+}
 
 
 </script>

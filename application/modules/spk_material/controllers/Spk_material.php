@@ -33,10 +33,12 @@ class Spk_material extends Admin_Controller
     $listSO = $this->db->get_where('so_internal', array('deleted_date' => NULL))->result_array();
     $listPlanning = $this->db->get_where('planning_harian', array('deleted_date' => NULL))->result_array();
     $listType = $this->db->get_where('new_inventory_1', array('deleted_date' => NULL, 'category' => 'product', 'code_lv1 <>' => 'P123000009'))->result_array();
+    $listCust = $this->db->query("SELECT a.* FROM master_customers a")->result_array();
     $data = [
       'listSO' => $listSO,
       'listType' => $listType,
-      'listPlan' => $listPlanning
+      'listPlan' => $listPlanning,
+      'listCust' => $listCust
     ];
 
     history("View data spk material");
@@ -67,6 +69,41 @@ class Spk_material extends Admin_Controller
       'id'    => $id,
       'qty'    => $qty
     );
+    echo json_encode($Arr_Data);
+  }
+
+  public function delete_plan()
+  {
+    $data         = $this->input->post();
+    $session      = $this->session->userdata('app_session');
+
+    $id         = $data['id'];
+    // $qty        = str_replace(',', '', $data['qty']);
+
+    $ArrHeaderPlan = array(
+      'deleted_by'      => $this->id_user,
+      'deleted_date'    => $this->datetime
+    );
+
+    $this->db->trans_start();
+    $this->db->where('id_planning_harian', $id);
+    $this->db->update('planning_harian', $ArrHeaderPlan);
+    $this->db->trans_complete();
+
+    if ($this->db->trans_status() === FALSE) {
+      $this->db->trans_rollback();
+      $Arr_Data  = array(
+        'pesan'    => 'Delete gagal ...',
+        'status'  => 0
+      );
+    } else {
+      $this->db->trans_commit();
+      $Arr_Data  = array(
+        'pesan'    => 'Delete berhasil. Thanks ...',
+        'status'  => 1
+      );
+      history("Delete Planning Harian : " . $id);
+    }
     echo json_encode($Arr_Data);
   }
 
@@ -230,23 +267,24 @@ class Spk_material extends Admin_Controller
       $ArrInsert = [];
       $ArrInsertDetail = [];
       $ArrInsertMaterial = [];
+      $ArrInsert['periode_bulan'] = $bulan;
+      $ArrInsert['periode_tahun'] = $tahun;
+      $ArrInsert['kode_planning'] = $kode;
+      // $ArrInsert[$key]['kode_det'] = $kode . '-' . $key;
+      // $ArrInsert[$key]['no_spk'] = $no_spk;
+      // $ArrInsert[$key]['tanggal'] = date('Y-m-d', strtotime($value['tanggal']));
+      // $ArrInsert[$key]['tanggal_est_finish'] = date('Y-m-d', strtotime($value['tanggal_est_finish']));
+      // $ArrInsert[$key]['qty'] = $qty;
+      // $ArrInsert[$key]['id_costcenter'] = $value['costcenter'];
+      $ArrInsert['created_by'] = $this->id_user;
+      $ArrInsert['created_date'] = $this->datetime;
       foreach ($Detail as $key => $value) {
         // $ArrInsertDetail = $value;
         // print_r($value);
         // die();
         // $qty = str_replace(',', '', $value['qty']);
         // if ($qty > 0) {
-          $ArrInsert[$key]['periode_bulan'] = $bulan;
-          $ArrInsert[$key]['periode_tahun'] = $tahun;
-          $ArrInsert[$key]['kode_planning'] = $kode;
-          // $ArrInsert[$key]['kode_det'] = $kode . '-' . $key;
-          // $ArrInsert[$key]['no_spk'] = $no_spk;
-          // $ArrInsert[$key]['tanggal'] = date('Y-m-d', strtotime($value['tanggal']));
-          // $ArrInsert[$key]['tanggal_est_finish'] = date('Y-m-d', strtotime($value['tanggal_est_finish']));
-          // $ArrInsert[$key]['qty'] = $qty;
-          // $ArrInsert[$key]['id_costcenter'] = $value['costcenter'];
-          $ArrInsert[$key]['created_by'] = $this->id_user;
-          $ArrInsert[$key]['created_date'] = $this->datetime;
+          
 
           //start bagian planning detail
           $tanggal = $value['tanggal'];//'01-Jan-2025';
@@ -291,7 +329,8 @@ class Spk_material extends Admin_Controller
       $this->db->trans_start();
       if (!empty($ArrInsert)) {
         // $this->db->insert_batch('so_internal_spk', $ArrInsert);
-        $this->db->insert_batch('planning_harian', $ArrInsert);
+        // $this->db->insert_batch('planning_harian', $ArrInsert);
+        $this->db->insert('planning_harian', $ArrInsert);
       }
       if (!empty($ArrInsertDetail)) {
         // $this->db->insert_batch('so_internal_spk_material', $ArrInsertMaterial);
@@ -714,7 +753,10 @@ class Spk_material extends Admin_Controller
       echo json_encode($Arr_Data);
     } else {
 
-      // $getData = $this->db->get_where('so_internal', array('id' => $id))->result_array();
+      $getDataPlan = $this->db->get_where('planning_harian', array('id_planning_harian' => $id))->row();
+      $getDataPlan_detail = $this->db->get_where('planning_harian_detail', ['kode_planning' => @$getDataPlan->kode_planning])->result();
+      // print_r($getDataPlan_detail);
+      // die();
 
       $tgl1 = date_create();
       // $tgl2 = date_create($getData[0]['due_date']);
@@ -777,11 +819,28 @@ class Spk_material extends Admin_Controller
       // die();
 
       $data = [
-        'dataProduct' => $sql_product
+        'dataProduct' => $sql_product,
+        'DataPlan' => $getDataPlan,
+        'DataPlan_detail' => $getDataPlan_detail
       ];
 
       $this->template->title('Add Schedule Detil');
       $this->template->render('create_plan', $data);
+    }
+  }
+
+  public function del_planning_harian()
+  {
+    $id = $this->input->post('id');
+
+    $this->db->trans_begin();
+
+    $this->db->delete('planning_harian_detail', ['id_planning_harian_detail' => $id]);
+
+    if ($this->db->trans_status() === FALSE) {
+      $this->db->trans_rollback();
+    } else {
+      $this->db->trans_commit();
     }
   }
 

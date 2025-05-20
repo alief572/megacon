@@ -286,8 +286,8 @@ class Spk_material_model extends BF_Model
       // }
 
       //start bagian button
-      $btn_edit = '<a href="spk_material/edit_spk_material/' . $row['id_planning_harian'] . '" class="btn btn-sm btn-success">Edit</a>';
-      $btn_delete = '<a href="javascript:void(0);" class="btn btn-sm btn-danger loss" data-id="' . $row['id_planning_harian'] . '">Delete</a>';
+      $btn_edit = '<a href="spk_material/create_plan/' . $row['id_planning_harian'] . '" class="btn btn-sm btn-success">Edit</a>';
+      $btn_delete = '<a href="javascript:void(0);" class="btn btn-sm btn-danger deletePlan" data-id="' . $row['id_planning_harian'] . '">Delete</a>';
       $btn_view = '<a href="spk_material/view_spk_material/' . $row['id_planning_harian'] . '" class="btn btn-sm btn-info">View</a>';
       $btn_download_excel = '<a href="spk_material/download_excel/' . $row['id_planning_harian'] . '" class="btn btn-sm btn-warning">Download Excel</a>';
       //end bagian button
@@ -313,7 +313,7 @@ class Spk_material_model extends BF_Model
     echo json_encode($json_data);
   }
 
-  public function get_query_json_plan_harian($kode_planning, $nm_customer, $code_lv1, $like_value = NULL, $column_order = NULL, $column_dir = NULL, $limit_start = NULL, $limit_length = NULL)
+  public function get_query_json_plan_harian($kode_planning, $nm_customer, $like_value = NULL, $column_order = NULL, $column_dir = NULL, $limit_start = NULL, $limit_length = NULL)
   {
 
     $kode_planning_where = "";
@@ -338,7 +338,7 @@ class Spk_material_model extends BF_Model
         )";
     }
     // GROUP BY a.id_planning_harian
-    echo $sql; exit;
+    // echo $sql; exit;
 
     $data['totalData'] = $this->db->query($sql)->num_rows();
     $data['totalFiltered'] = $this->db->query($sql)->num_rows();
