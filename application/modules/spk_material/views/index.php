@@ -10,7 +10,7 @@
 	<div class="box-header">
 		<div class="form-group row">
 
-			<div class="col-md-2">
+			<div class="col-md-2" hidden>
 				<select name='sales_order' id='sales_order' class='form-control input-sm chosen-select'>
 					<option value='0'>All Sales Order</option>
 					<?php
@@ -20,12 +20,22 @@
 					?>
 				</select>
 			</div>
-			<div class="col-md-2">
+			<div class="col-md-2" hidden>
 				<select name='code_lv1' id='code_lv1' class='form-control input-sm chosen-select'>
 					<option value='0'>All Type</option>
 					<?php
 					foreach ($listType as $key => $value) {
 						echo "<option value='" . $value['code_lv1'] . "'>" . $value['nama'] . "</option>";
+					}
+					?>
+				</select>
+			</div>
+			<div class="col-md-2">
+				<select name='kode_planning' id='kode_planning' class='form-control input-sm chosen-select'>
+					<option value='0'>All Planning Harian</option>
+					<?php
+					foreach ($listPlan as $key => $value) {
+						echo "<option value='" . $value['kode_planning'] . "'>" . $value['kode_planning'] . "</option>";
 					}
 					?>
 				</select>
@@ -36,9 +46,9 @@
 			</div>
 			<div class="col-md-8">
 			</div>
-			<div class="col-md-8" style="margin-top: 5px;">
+			<!-- <div class="col-md-8" style="margin-top: 5px;">
 				<a class="btn btn-primary btn-sm" style='float:right;' href="<?= base_url('spk_material/reprint_spk') ?>" title="Re-Print SPK">Re-Print SPK</a>
-			</div>
+			</div> -->
 		</div>
 	</div>
 	<!-- /.box-header -->
@@ -89,12 +99,17 @@
 		$(document).ready(function() {
 			var sales_order = $("#sales_order").val();
 			var code_lv1 = $("#code_lv1").val();
-			DataTables(sales_order, code_lv1);
+			var kode_planning = $("#kode_planning").val();
+			var nm_customer = $("#nm_customer").val();
+			DataTables(sales_order, code_lv1, kode_planning, nm_customer);
 
-			$(document).on('change', '#sales_order, #code_lv1', function() {
+			$(document).on('change', '#sales_order, #code_lv1, #kode_planning, #nm_customer', function() {
 				var sales_order = $("#sales_order").val();
 				var code_lv1 = $("#code_lv1").val();
-				DataTables(sales_order, code_lv1);
+				var kode_planning = $("#kode_planning").val();
+				var nm_customer = $("#nm_customer").val();
+				// DataTables(sales_order, code_lv1);
+				DataTables(sales_order, code_lv1, kode_planning, nm_customer);
 			});
 		});
 
@@ -169,7 +184,7 @@
 				});
 		});
 
-		function DataTables(sales_order = null, code_lv1 = null) {
+		function DataTables(sales_order = null, code_lv1 = null, kode_planning = null, nm_customer = null) {
 			var dataTable = $('#example1').DataTable({
 				"processing": true,
 				"serverSide": true,
@@ -192,11 +207,14 @@
 					[10, 20, 50, 100, 150]
 				],
 				"ajax": {
-					url: siteurl + active_controller + 'data_side_spk_material',
+					// url: siteurl + active_controller + 'data_side_spk_material',
+					url: siteurl + active_controller + 'data_side_planning_harian',
 					type: "post",
 					data: function(d) {
 						d.sales_order = sales_order,
-							d.code_lv1 = code_lv1
+						d.code_lv1 = code_lv1,
+						d.kode_planning = kode_planning,
+						d.nm_customer = nm_customer
 					},
 					cache: false,
 					error: function() {

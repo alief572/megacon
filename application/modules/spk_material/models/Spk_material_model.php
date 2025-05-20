@@ -193,6 +193,175 @@ class Spk_material_model extends BF_Model
     return $data;
   }
 
+  public function data_side_planning_harian()
+  {
+    $controller      = ucfirst(strtolower($this->uri->segment(1)));
+    // $Arr_Akses     = getAcccesmenu($controller);
+    $requestData    = $_REQUEST;
+    $fetch          = $this->get_query_json_plan_harian(
+      $requestData['kode_planning'],
+      $requestData['nm_customer'],
+      $requestData['search']['value'],
+      $requestData['order'][0]['column'],
+      $requestData['order'][0]['dir'],
+      $requestData['start'],
+      $requestData['length']
+    );
+    $totalData      = $fetch['totalData'];
+    $totalFiltered  = $fetch['totalFiltered'];
+    $query          = $fetch['query'];
+
+    $data  = array();
+    $urut1  = 1;
+    $urut2  = 0;
+    $GET_USER = get_list_user();
+    foreach ($query->result_array() as $row) {
+      $total_data     = $totalData;
+      $start_dari     = $requestData['start'];
+      $asc_desc       = $requestData['order'][0]['dir'];
+      if ($asc_desc == 'asc') {
+        $nomor = ($total_data - $start_dari) - $urut2;
+      }
+      if ($asc_desc == 'desc') {
+        $nomor = $urut1 + $start_dari;
+      }
+
+      // $variant_product   = (!empty($row['variant_product'])) ? '; Variant ' . $row['variant_product'] : '';
+      // $color_product     = (!empty($row['color_product'])) ? '; Color ' . $row['color_product'] : '';
+      // $surface_product   = (!empty($row['surface_product'])) ? '; Surface ' . $row['surface_product'] : '';
+
+      //start validasi new
+      $NO_SO = '';
+      $Customer = '';
+      // if($row['project'] == 'Pengisian Stok Internal'){
+      //   $NO_SO = strtoupper($row['so_number']);
+      //   $Customer = 'Megacon';
+      // }else{
+      //   $NO_SO = strtoupper($row['so_number']);
+        $Customer = 'Megacon';
+      // }
+      //end validasi new
+
+      $bulanAngka = $row['periode_bulan']; // "01", "02", dst
+      $tahun = $row['periode_tahun']; // "2024"
+      // Mapping angka ke nama bulan Indonesia
+      $namaBulanIndonesia = [
+          '1' => 'Januari',
+          '2' => 'Februari',
+          '3' => 'Maret',
+          '4' => 'April',
+          '5' => 'Mei',
+          '6' => 'Juni',
+          '7' => 'Juli',
+          '8' => 'Agustus',
+          '9' => 'September',
+          '10' => 'Oktober',
+          '11' => 'November',
+          '12' => 'Desember'
+      ];
+      $namaBulan = isset($namaBulanIndonesia[$bulanAngka]) ? $namaBulanIndonesia[$bulanAngka] : 'Bulan Tidak Valid';
+      // Gabungkan jadi format "Januari 2024"
+      $periodeLabel = $namaBulan . ' ' . $tahun;
+
+      $nestedData   = array();
+      $nestedData[]  = "<div align='center'>" . $nomor . "</div>";
+      // $nestedData[]  = "<div align='center'>" . strtoupper($row['so_number']) . "</div>";//version old
+      // $nestedData[]  = "<div align='left'>" . strtoupper($row['nm_customer']) . "</div>";//version old
+      $nestedData[]  = "<div align='center'>" . $row['kode_planning'] . "</div>";//version old
+      $nestedData[]  = "<div align='left'>" . $Customer . "</div>";//version old
+      $nestedData[]  = "<div align='left'>" . $periodeLabel . "</div>";
+      // $nestedData[]  = "<div align='center'>" . date('d-M-Y', strtotime($row['due_date'])) . "</div>";
+      $username = (!empty($GET_USER[$row['created_by']]['username'])) ? $GET_USER[$row['created_by']]['username'] : '-';
+      $nestedData[]  = "<div align='left'>" . strtolower($username) . "</div>";
+      // $nestedData[]  = "<div align='center'>" . number_format($row['propose']) . "</div>";
+      // $nestedData[]  = "<div align='center'>" . number_format($row['qty_spk']) . "</div>";
+      // $qty_sisa = $row['propose'] - $row['qty_spk'];
+      // $nestedData[]  = "<div align='center' id='sisa_" . $row['id'] . "'>" . number_format($qty_sisa) . "</div>";
+      // $nestedData[]  = "<div align='center'>
+      //                   <input type='text' id='qty_" . $row['id'] . "' data-id='" . $row['id'] . "' class='form-control text-center input-sm autoNumeric0 changeQty' style='width:80px;'><script>$('.autoNumeric0').autoNumeric('init', {mDec: '0', aPad: false})</script>
+      //                 </div>";
+      $release = "";
+      // if ($qty_sisa > 0 and $this->ENABLE_MANAGE) {
+      //   $release  = "<button type='button' class='btn btn-sm btn-primary release' data-id='" . $row['id_planning_harian'] . "' title='SPK' data-role='qtip'><i class='fa fa-hand-pointer-o'></i></a>";
+      // }
+
+      //start bagian button
+      $btn_edit = '<a href="spk_material/edit_spk_material/' . $row['id_planning_harian'] . '" class="btn btn-sm btn-success">Edit</a>';
+      $btn_delete = '<a href="javascript:void(0);" class="btn btn-sm btn-danger loss" data-id="' . $row['id_planning_harian'] . '">Delete</a>';
+      $btn_view = '<a href="spk_material/view_spk_material/' . $row['id_planning_harian'] . '" class="btn btn-sm btn-info">View</a>';
+      $btn_download_excel = '<a href="spk_material/download_excel/' . $row['id_planning_harian'] . '" class="btn btn-sm btn-warning">Download Excel</a>';
+      //end bagian button
+
+      $nestedData[]  =  "<div align='center'>"
+                          . $btn_edit . '&nbsp;'
+                          . $btn_delete . '&nbsp;'
+                          . $btn_view . '&nbsp;'
+                          . $btn_download_excel .
+                        "</div>";
+      $data[] = $nestedData;
+      $urut1++;
+      $urut2++;
+    }
+
+    $json_data = array(
+      "draw"              => intval($requestData['draw']),
+      "recordsTotal"      => intval($totalData),
+      "recordsFiltered"   => intval($totalFiltered),
+      "data"              => $data
+    );
+
+    echo json_encode($json_data);
+  }
+
+  public function get_query_json_plan_harian($kode_planning, $nm_customer, $code_lv1, $like_value = NULL, $column_order = NULL, $column_dir = NULL, $limit_start = NULL, $limit_length = NULL)
+  {
+
+    $kode_planning_where = "";
+    if ($kode_planning != '0') {
+      $kode_planning_where = " AND a.kode_planning = '" . $kode_planning . "'";
+    }
+
+    $sql = "SELECT
+              (@row:=@row+1) AS nomor,
+              a.*,
+              c.name_customer as nm_customer
+            FROM
+              planning_harian a
+              LEFT JOIN master_customers c ON a.id_customer=c.id_customer,
+              (SELECT @row:=0) r
+            WHERE a.deleted_date IS NULL " . $kode_planning_where . " 
+            ";
+    if (!empty($like_value) && !is_numeric($like_value)) {
+        $sql .= " AND (
+            a.kode_planning LIKE '%" . $this->db->escape_like_str($like_value) . "%'
+            OR c.name_customer LIKE '%" . $this->db->escape_like_str($like_value) . "%'
+        )";
+    }
+    // GROUP BY a.id_planning_harian
+    echo $sql; exit;
+
+    $data['totalData'] = $this->db->query($sql)->num_rows();
+    $data['totalFiltered'] = $this->db->query($sql)->num_rows();
+    $columns_order_by = array(
+      0 => 'nomor',
+      1 => 'a.kode_planning',
+      2 => 'c.nm_customer',
+      4 => 'a.periode_bulan',
+      5 => 'a.periode_tahun'
+    );
+
+    // $sql .= " ORDER BY  " . $columns_order_by[$column_order] . " " . $column_dir . " ";
+    $order_column = isset($columns_order_by[$column_order]) ? $columns_order_by[$column_order] : 'a.kode_planning';
+    $order_dir = in_array(strtolower($column_dir), ['asc', 'desc']) ? $column_dir : 'asc';
+    $sql .= " ORDER BY $order_column $order_dir ";
+    $limit_start = isset($limit_start) ? $limit_start : 0;
+    $limit_length = isset($limit_length) ? $limit_length : 10;
+    $sql .= " LIMIT " . $limit_start . " ," . $limit_length . " ";
+    // echo $sql; exit;
+    $data['query'] = $this->db->query($sql);
+    return $data;
+  }
+
   //Re-Print
   public function data_side_spk_reprint()
   {

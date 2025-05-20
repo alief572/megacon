@@ -60,12 +60,21 @@ class Sales_order extends Admin_Controller
 
     $session  = $this->session->userdata('app_session');
     $no_so     = $this->uri->segment(3);
+    // print_r($no_penawaran);die();
     $header   = $this->db->get_where('sales_order_header', array('no_so' => $no_so))->result();
     $detail   = $this->db->get_where('sales_order_detail', array('no_so' => $no_so))->result_array();
-    $customer = $this->Sales_order_model->get_data('master_customer');
+    // $customer = $this->Sales_order_model->get_data('master_customer');//version old
+    $customer = $this->db->query("SELECT a.* FROM master_customers a")->result();
+    $jenis_truck = $this->db->query("SELECT a.*, b.nm_asset FROM tr_truck_rate a LEFT JOIN asset b ON a.kd_asset = b.kd_asset where (a.deleted_by IS NULL OR a.deleted_by = '') ")->result();
     $shipping = $this->Sales_order_model->get_data('list', 'category', 'shipping');
     $product    = $this->Sales_order_model->get_data('ms_inventory_category2');
     $top = $this->db->get_where('list_help', ['group_by' => 'top invoice'])->result();
+
+    $get_delivery_cost_header = $this->db->get_where('delivery_cost_header', ['no_penawaran' => $no_so])->row();
+    // print_r($get_delivery_cost_header->id_customer);
+    // die();
+
+    $get_delivery_cost_detail = $this->db->get_where('delivery_cost_detail', ['no_penawaran' => $no_so])->result();
 
     // $get_penawaran = $this->db->query('SELECT a.*, b.nm_customer, b.alamat, c.nm_pic, d.nm_lengkap FROM tr_penawaran a LEFT JOIN customer b ON b.id_customer = a.id_customer LEFT JOIN customer_pic c ON c.id_pic = a.pic_customer LEFT JOIN users d ON d.id_user = a.created_by WHERE a.no_penawaran = "' . $no_penawaran . '"')->row();
     $get_penawaran = $this->db->query('SELECT a.*, b.name_customer as nm_customer, b.address_office as alamat, c.name_pic as nm_pic, d.nm_lengkap FROM tr_penawaran a LEFT JOIN master_customers b ON b.id_customer = a.id_customer LEFT JOIN child_customer_pic c ON c.id_pic = a.pic_customer LEFT JOIN users d ON d.id_user = a.created_by WHERE a.no_penawaran = "' . $no_penawaran . '"')->row();
@@ -127,8 +136,12 @@ class Sales_order extends Admin_Controller
         a.id_penawaran = "' . $no_penawaran . '"
       GROUP BY a.id
     ')->result();
-
+    // print_r($this->db->last_query());
+    // die();
+    $get_penawaran_dc = $this->db->query('SELECT a.*, b.nm_lengkap FROM tr_penawaran a LEFT JOIN users b ON b.id_user = a.created_by WHERE a.no_penawaran = "' . $no_penawaran . '"')->row();
+    $get_penawaran_detail_dc = $this->db->get_where('tr_penawaran_detail', ['no_penawaran' => $no_penawaran])->result();
     // print_r($header);
+    // print_r($this->db->last_query());
     // exit;
     $data = [
       'header' => $header,
@@ -138,7 +151,14 @@ class Sales_order extends Admin_Controller
       'product' => $product,
       'data_penawaran' => $get_penawaran,
       'data_penawaran_detail' => $get_penawaran_detail,
-      'list_top' => $top
+      'curr' => $get_penawaran_dc->currency,
+      'data_penawaran_dc' => $get_penawaran_dc,
+      'data_penawaran_detail_dc' => $get_penawaran_detail_dc,
+      'list_penawaran_detail' => $get_penawaran_detail_dc,
+      'list_top' => $top,
+      'jenis_truck' => $jenis_truck,
+      'get_delivery_cost_header' => $get_delivery_cost_header,
+      'get_delivery_cost_detail' => $get_delivery_cost_detail
     ];
     $this->template->set('results', $data);
     $this->template->title('Deal SO');
@@ -184,7 +204,9 @@ class Sales_order extends Admin_Controller
     $header = $this->db->get_where('sales_order_header', array('no_so' => $no_so))->result();
     $detail = $this->db->get_where('sales_order_detail', array('no_so' => $no_so))->result_array();
     // $customer    = $this->Sales_order_model->get_data('master_customer');
-    $customer    = $this->Sales_order_model->get_data('master_customers');
+    // $customer    = $this->Sales_order_model->get_data('master_customers');
+    $customer = $this->db->query("SELECT a.* FROM master_customers a")->result();
+    $jenis_truck = $this->db->query("SELECT a.*, b.nm_asset FROM tr_truck_rate a LEFT JOIN asset b ON a.kd_asset = b.kd_asset where (a.deleted_by IS NULL OR a.deleted_by = '') ")->result();
     $shipping  = $this->Sales_order_model->get_data('list', 'category', 'shipping');
 
     // $sales_order = $this->db->query('SELECT a.*, b.nm_customer, b.alamat, c.nm_pic, d.nm_lengkap FROM tr_sales_order a LEFT JOIN customer b ON b.id_customer = a.id_customer LEFT JOIN customer_pic c ON c.id_pic = a.pic_customer LEFT JOIN users d ON d.id_user = a.created_by WHERE a.no_so = "' . $no_so . '"')->row();
@@ -253,11 +275,26 @@ class Sales_order extends Admin_Controller
         a.id_penawaran = "' . $sales_order->no_penawaran . '"
     ')->result();
     // print_r($header);
+
+    $get_delivery_cost_header = $this->db->get_where('delivery_cost_header', ['no_penawaran' => $sales_order->no_penawaran])->row();
+    // print_r($get_delivery_cost_header->id_customer);
+    // die();
+    $get_delivery_cost_detail = $this->db->get_where('delivery_cost_detail', ['no_penawaran' => $sales_order->no_penawaran])->result();
+    $get_penawaran_dc = $this->db->query('SELECT a.*, b.nm_lengkap FROM tr_penawaran a LEFT JOIN users b ON b.id_user = a.created_by WHERE a.no_penawaran = "' . $sales_order->no_penawaran . '"')->row();
+    $get_penawaran_detail_dc = $this->db->get_where('tr_penawaran_detail', ['no_penawaran' => $sales_order->no_penawaran])->result();
+
     $data = [
       'sales_order' => $sales_order,
       'data_sales_order_detail' => $sales_order_detail,
       'data_penawaran' => $get_penawaran,
-      'top_name' => $top
+      'top_name' => $top,
+      'curr' => $get_penawaran_dc->currency,
+      'data_penawaran_dc' => $get_penawaran_dc,
+      'data_penawaran_detail_dc' => $get_penawaran_detail_dc,
+      'list_penawaran_detail' => $get_penawaran_detail_dc,
+      'jenis_truck' => $jenis_truck,
+      'get_delivery_cost_header' => $get_delivery_cost_header,
+      'get_delivery_cost_detail' => $get_delivery_cost_detail
     ];
     $this->template->set('results', $data);
     $this->template->render('detail_sales_order', $data);
@@ -270,6 +307,8 @@ class Sales_order extends Admin_Controller
     $detail = $this->db->get_where('sales_order_detail', array('no_so' => $no_so))->result_array();
     // $customer    = $this->Sales_order_model->get_data('master_customer');
     $customer    = $this->Sales_order_model->get_data('master_customers');
+    // $customer = $this->db->query("SELECT a.* FROM master_customers a")->result();
+    $jenis_truck = $this->db->query("SELECT a.*, b.nm_asset FROM tr_truck_rate a LEFT JOIN asset b ON a.kd_asset = b.kd_asset where (a.deleted_by IS NULL OR a.deleted_by = '') ")->result();
     $shipping  = $this->Sales_order_model->get_data('list', 'category', 'shipping');
 
     // $sales_order = $this->db->query('SELECT a.*, b.nm_customer, b.alamat, c.nm_pic, d.nm_lengkap FROM tr_sales_order a LEFT JOIN customer b ON b.id_customer = a.id_customer LEFT JOIN customer_pic c ON c.id_pic = a.pic_customer LEFT JOIN users d ON d.id_user = a.created_by WHERE a.no_so = "' . $no_so . '"')->row();
@@ -343,12 +382,27 @@ class Sales_order extends Admin_Controller
         a.id_penawaran = "' . $sales_order->no_penawaran . '"
     ')->result();
     // print_r($header);
+
+    $get_delivery_cost_header = $this->db->get_where('delivery_cost_header', ['no_penawaran' => $sales_order->no_penawaran])->row();
+    // print_r($get_delivery_cost_header->id_customer);
+    // die();
+    $get_delivery_cost_detail = $this->db->get_where('delivery_cost_detail', ['no_penawaran' => $sales_order->no_penawaran])->result();
+    $get_penawaran_dc = $this->db->query('SELECT a.*, b.nm_lengkap FROM tr_penawaran a LEFT JOIN users b ON b.id_user = a.created_by WHERE a.no_penawaran = "' . $sales_order->no_penawaran . '"')->row();
+    $get_penawaran_detail_dc = $this->db->get_where('tr_penawaran_detail', ['no_penawaran' => $sales_order->no_penawaran])->result();
+
     $data = [
       'sales_order' => $sales_order,
       'data_sales_order_detail' => $sales_order_detail,
       'data_penawaran' => $get_penawaran,
       'data_penawaran_detail' => $get_penawaran_detail,
-      'top_name' => $top
+      'top_name' => $top,
+      'curr' => $get_penawaran_dc->currency,
+      'data_penawaran_dc' => $get_penawaran_dc,
+      'data_penawaran_detail_dc' => $get_penawaran_detail_dc,
+      'list_penawaran_detail' => $get_penawaran_detail_dc,
+      'jenis_truck' => $jenis_truck,
+      'get_delivery_cost_header' => $get_delivery_cost_header,
+      'get_delivery_cost_detail' => $get_delivery_cost_detail
     ];
     $this->template->set('results', $data);
     $this->template->render('approval_so');

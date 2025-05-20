@@ -31,10 +31,12 @@ class Spk_material extends Admin_Controller
     // $this->template->page_icon('fa fa-users');
 
     $listSO = $this->db->get_where('so_internal', array('deleted_date' => NULL))->result_array();
+    $listPlanning = $this->db->get_where('planning_harian', array('deleted_date' => NULL))->result_array();
     $listType = $this->db->get_where('new_inventory_1', array('deleted_date' => NULL, 'category' => 'product', 'code_lv1 <>' => 'P123000009'))->result_array();
     $data = [
       'listSO' => $listSO,
       'listType' => $listType,
+      'listPlan' => $listPlanning
     ];
 
     history("View data spk material");
@@ -46,6 +48,11 @@ class Spk_material extends Admin_Controller
   public function data_side_spk_material()
   {
     $this->spk_material_model->data_side_spk_material();
+  }
+
+  public function data_side_planning_harian()
+  {
+    $this->spk_material_model->data_side_planning_harian();
   }
 
   public function release_spk()
@@ -420,7 +427,7 @@ class Spk_material extends Admin_Controller
               a.no_bom, a.code_lv4
     ";
     $sql_product = $this->db->query($sql_product)->result_array();
-    // $propose = 0;
+    $propose = 0;
     // if ($row['stock_akhir'] - $row['booking_akhir'] < $row['min_stok']) {
     //   // $propose = $row['max_stok'];//version old
     //   $propose = $row['max_stok'] - ($row['stock_ng'] + $row['stock_akhir']);
@@ -516,11 +523,22 @@ class Spk_material extends Admin_Controller
     ';
     $get_data_product = $this->db->query($sql_product)->row();
     $propose = 0;
-      if ($get_data_product->stock_akhir - $get_data_product->booking_akhir < $get_data_product->min_stok) {
-        // $propose = $row['max_stok'];//version old
-        // $propose = $row['max_stok'] - ($row['stock_ng'] + $row['stock_akhir']);
-        $propose = $get_data_product->max_stok - ($get_data_product->stock_ng  + $get_data_product->stock_akhir);
-      }
+    //version old
+    // if ($get_data_product->stock_akhir - $get_data_product->booking_akhir < $get_data_product->min_stok) {
+    //   // $propose = $row['max_stok'];//version old
+    //   // $propose = $row['max_stok'] - ($row['stock_ng'] + $row['stock_akhir']);
+    //   $propose = $get_data_product->max_stok - ($get_data_product->stock_ng  + $get_data_product->stock_akhir);
+    // }
+    //version old
+    //start version new
+    if($get_data_product->stock_ng > $get_data_product->min_stok){
+      $propose = 0;
+    }elseif ($get_data_product->stock_ng < $get_data_product->min_stok) {
+      $propose = $get_data_product->min_stok - ($get_data_product->stock_ng + $get_data_product->stock_akhir);
+    }else{
+      $propose = 0;
+    }
+    //end version new
     $get_data_bom = $this->db->query('SELECT no_bom, volume_m3 FROM bom_header WHERE no_bom = "' . $get_data_product->no_bom . '" ')->row();
     $volumeM3 = $get_data_bom->volume_m3;
     // echo $this->db->last_query();

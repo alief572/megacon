@@ -185,6 +185,62 @@ $('#bulan, #tahun').on('change', function () {
 
 
 //START JAVASCRIPT NEW
+function updateGrandTotalKubikasiTerakhirTgl() {
+    let tanggalTerakhir = null;
+    let totalKubikasi = 0;
+
+    // Step 1: Ambil tanggal terbesar (terakhir)
+    $('input[name$="[tanggal]"]').each(function () {
+        let tglStr = $(this).val(); // Contoh: 01-Jan-2025
+        let dateObj = parseTanggal(tglStr);
+        if (dateObj && (!tanggalTerakhir || dateObj > tanggalTerakhir)) {
+            tanggalTerakhir = dateObj;
+        }
+    });
+
+    // Step 2: Hitung total kubikasi hanya untuk tanggal terakhir
+    $('tr').each(function () {
+        let $row = $(this);
+        let tglStr = $row.find('input[name$="[tanggal]"]').val();
+        let dateObj = parseTanggal(tglStr);
+
+        if (dateObj && tanggalTerakhir && +dateObj === +tanggalTerakhir) {
+            let val = parseFloat($row.find('.total_kubikasi').val()?.replace(',', '.') || 0);
+            totalKubikasi += val;
+        }
+    });
+
+    // Step 3: Tampilkan total kubikasi dari tanggal terakhir
+    $('#grand_total_kubikasi').val(totalKubikasi.toFixed(4));
+}
+
+// Fungsi bantu untuk parsing tanggal dari format "dd-MMM-yyyy"
+function parseTanggal(tglStr) {
+    if (!tglStr) return null;
+    let parts = tglStr.split('-');
+    if (parts.length !== 3) return null;
+
+    let day = parts[0].padStart(2, '0');
+    let month = bulanKeAngka(parts[1]);
+    let year = parts[2];
+
+    return new Date(`${year}-${month}-${day}`);
+}
+
+function bulanKeAngka(bulan) {
+    const map = {
+        Jan: '01', Feb: '02', Mar: '03', Apr: '04',
+        May: '05', Jun: '06', Jul: '07', Aug: '08',
+        Sep: '09', Oct: '10', Nov: '11', Dec: '12'
+    };
+    return map[bulan.substring(0, 3)] || '01';
+}
+
+// Jalankan ulang fungsi saat ada perubahan input
+$(document).on('input change', '.total_kubikasi, input[name$="[tanggal]"]', function () {
+    updateGrandTotalKubikasiTerakhirTgl();
+});
+
 function updateGrandTotalKubikasi() {
   let grandTotal = 0;
   $('.total_kubikasi').each(function() {
@@ -197,7 +253,8 @@ function updateGrandTotalKubikasi() {
 
 // Panggil fungsi setiap kali input total_kubikasi berubah nilainya
 $(document).on('input', '.total_kubikasi', function() {
-  updateGrandTotalKubikasi();
+  // updateGrandTotalKubikasi();
+  updateGrandTotalKubikasiTerakhirTgl();
 });
 
 
@@ -249,7 +306,8 @@ $(document).on('change', '.get_data_product', function() {//test
 						} else {
 						    console.warn(`m3/pcs data tidak ditemukan untuk rowIndex ${rowIndex}`);
 						}
-						updateGrandTotalKubikasi(); // <-- panggil di sini
+						// updateGrandTotalKubikasi(); // <-- panggil di sini
+						updateGrandTotalKubikasiTerakhirTgl();
         },
         error: function(xhr, status, error) {
             console.error("AJAX Error: ", status, error);
@@ -270,20 +328,24 @@ $(document).on('input', 'input[name^="Detail"][name$="[shift1]"], input[name^="D
     // Ambil nilai shift1, shift2, dan propose
     let shift1 = parseFloat($(`input[name="Detail[${rowIndex}][shift1]"]`).val()) || 0;
     let shift2 = parseFloat($(`input[name="Detail[${rowIndex}][shift2]"]`).val()) || 0;
+    let m3 = parseFloat($(`input[name="Detail[${rowIndex}][m3]"]`).val()) || 0;
     let propose = parseFloat($(`input[name="Detail[${rowIndex}][propose]"]`).val()) || 0;
 
-    let total = shift1 + shift2;
+    // let total = shift1 + shift2;//version old
+    let total = (shift1 + shift2) * m3;
 
-    if (total > propose) {
-        alert(`Total Shift 1 + Shift 2 (${total}) tidak boleh lebih dari Propose (${propose})`);
+    // if (total > propose) {
+    //     alert(`Total Shift 1 + Shift 2 (${total}) tidak boleh lebih dari Propose (${propose})`);
         
-        // Reset input yang terakhir diubah ke 0
-        $(this).val(0);
-        updateGrandTotalKubikasi(); // <-- panggil di sini
-    }else{
+    //     // Reset input yang terakhir diubah ke 0
+    //     $(this).val(0);
+    //     // updateGrandTotalKubikasi(); // <-- panggil di sini
+    //     updateGrandTotalKubikasiTerakhirTgl();
+    // }else{
     	$(`input[name="Detail[${rowIndex}][total_kubikasi]"]`).val(total);
-    	updateGrandTotalKubikasi(); // <-- panggil di sini
-    }
+    	// updateGrandTotalKubikasi(); // <-- panggil di sini
+    	updateGrandTotalKubikasiTerakhirTgl();
+    // }
 });
 
 $('#save_new').click(function(e){
@@ -596,6 +658,7 @@ $('#save_new').click(function(e){
 		$(document).on('click', '.delPartPlan', function(){
 			var get_id 		= $(this).parent().parent().attr('class');
 			$("."+get_id).remove();
+			updateGrandTotalKubikasiTerakhirTgl();
 		});
 
 		$(document).on('keyup', '.qty_spk', function(){

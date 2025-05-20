@@ -45,7 +45,7 @@ $ENABLE_DELETE  = has_permission('Sales_Order_New.Delete');
 
 
 <div class="modal modal-default fade" id="dialog-popup" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" style='width:50%; '>
+    <div class="modal-dialog modal-lg" style='width:80%; '>
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
