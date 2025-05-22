@@ -1283,7 +1283,7 @@ class Spk_material extends Admin_Controller
         }
 
         // Baris subtotal setelah tiap tanggal
-        $sheet->setCellValue('F' . $row, 'Subtotal ' . $date);
+        $sheet->setCellValue('F' . $row, 'Total Kubikasi Tgl ' . $date);
         $sheet->setCellValue('G' . $row, number_format($subtotal, 2));
         $sheet->getStyle('F' . $row)->getFont()->setBold(true);
         $sheet->getStyle('G' . $row)->getFont()->setBold(true);
