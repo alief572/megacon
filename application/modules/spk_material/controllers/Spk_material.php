@@ -13,7 +13,7 @@ class Spk_material extends Admin_Controller
   {
     parent::__construct();
 
-    $this->load->library(array('upload', 'Image_lib'));
+    $this->load->library(array('upload', 'Image_lib','PHPExcel'));
     $this->load->model(array(
       'Spk_material/spk_material_model'
     ));
@@ -435,9 +435,9 @@ class Spk_material extends Admin_Controller
     ));
   }
 
-  public function get_add_plan()
+  public function get_add_plan($id = 1)
   {
-    $id   = $this->uri->segment(3);
+    // $id   = $this->uri->segment(3);
     $no   = 0;
 
     $costcenter  = $this->db->query("SELECT * FROM ms_costcenter WHERE deleted='0' ORDER BY nama_costcenter ASC ")->result_array();
@@ -478,6 +478,7 @@ class Spk_material extends Admin_Controller
     // $d_Header .= "<tr>";
     $d_Header .= "<tr class='header_" . $id . "'>";
     $d_Header .= "<td align='left'>";
+    $d_Header .= "<input type='hidden' class='id' value=''>";
     $d_Header .= "<input type='text' name='Detail[" . $id . "][tanggal]' class='form-control input-md text-center datepicker' placeholder='Plan Date' readonly>";
     $d_Header .= "</td>";
     $d_Header .= "<td align='left'>";
@@ -507,23 +508,23 @@ class Spk_material extends Admin_Controller
     $d_Header .= "<input type='text' name='Detail[" . $id . "][total_kubikasi]' class='form-control input-md text-center total_kubikasi' placeholder='Total Kubikasi' readonly>";
     $d_Header .= "</td>";
     $d_Header .= "<td align='center'>";
-    $d_Header .= "<button type='button' class='btn btn-sm btn-danger delPartPlan' title='Delete Part'><i class='fa fa-close'></i></button>";
+    $d_Header .= "<button type='button' class='btn btn-sm btn-danger delPartPlan' title='Delete'><i class='fa fa-close'></i></button>";
     $d_Header .= "</td>";
     $d_Header .= "</tr>";
 
     //add part
-    $d_Header .= "<tr id='add_" . $id . "'>";
-    $d_Header .= "<td align='left'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button type='button' class='btn btn-sm btn-warning addPartPlan' title='Add'><i class='fa fa-plus'></i>&nbsp;&nbsp;Add</button></td>";
-    $d_Header .= "<td align='center'></td>";
-    $d_Header .= "<td align='center'></td>";
-    $d_Header .= "<td align='center'></td>";
+    // $d_Header .= "<tr id='add_" . $id . "'>";
+    // $d_Header .= "<td align='left'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button type='button' class='btn btn-sm btn-warning addPartPlan' title='Add'><i class='fa fa-plus'></i>&nbsp;&nbsp;Add</button></td>";
     // $d_Header .= "<td align='center'></td>";
-    $d_Header .= "<td align='center' colspan='2' style='text-align: right;'>Total Kubikasi Tgl : </td>";
     // $d_Header .= "<td align='center'></td>";
-    $d_Header .= "<td align='center' colspan='2'>
-                  <input type='text' id='grand_total_kubikasi' class='form-control input-md text-center' placeholder='Grand Total Kubikasi' readonly>
-                  </td>";
-    $d_Header .= "</tr>";
+    // $d_Header .= "<td align='center'></td>";
+    // // $d_Header .= "<td align='center'></td>";
+    // $d_Header .= "<td align='center' colspan='2' style='text-align: right;'>Total Kubikasi Tgl : </td>";
+    // // $d_Header .= "<td align='center'></td>";
+    // $d_Header .= "<td align='center' colspan='2'>
+    //               <input type='text' id='grand_total_kubikasi' class='form-control input-md text-center' placeholder='Grand Total Kubikasi' readonly>
+    //               </td>";
+    // $d_Header .= "</tr>";
 
     echo json_encode(array(
       'header'      => $d_Header,
@@ -752,38 +753,269 @@ class Spk_material extends Admin_Controller
       }
       echo json_encode($Arr_Data);
     } else {
-
       $getDataPlan = $this->db->get_where('planning_harian', array('id_planning_harian' => $id))->row();
       $getDataPlan_detail = $this->db->get_where('planning_harian_detail', ['kode_planning' => @$getDataPlan->kode_planning])->result();
+      $KodePlanning = @$getDataPlan->kode_planning;
+      $getSumPlanDetail = $this->db->query("SELECT COUNT(*) AS jmlh_data FROM planning_harian_detail WHERE kode_planning = '" . @$getDataPlan->kode_planning . "'")->row();
+      $JmlhDataDetail = @$getSumPlanDetail->jmlh_data;
       // print_r($getDataPlan_detail);
       // die();
 
       $tgl1 = date_create();
-      // $tgl2 = date_create($getData[0]['due_date']);
-      // $jarak = date_diff($tgl1, $tgl2);
-
-      // $maxDate = $jarak->days + 1;
-
       $GET_CYCLETIME = get_total_time_cycletime();
-      // $code_lv4 = $getData[0]['code_lv4'] . '-' . $getData[0]['no_bom'];
-      // $no_bom = $getData[0]['no_bom'];
 
-      // $getDataProduct = $this->db->get_where('bom_header', array('no_bom' => $getData[0]['no_bom']))->result_array();
+      $data = [
+        // 'dataProduct' => $sql_product,
+        'DataPlan' => $getDataPlan,
+        'DataPlan_detail' => $getDataPlan_detail,
+        'IdPlanningHarian' => $id,
+        'KodePlan' => $KodePlanning,
+        'JmlhDataDetail' => $JmlhDataDetail
+      ];
 
-      // $cycletimeMesin   = (!empty($GET_CYCLETIME[$code_lv4]['ct_machine'])) ? $GET_CYCLETIME[$code_lv4]['ct_machine'] : 0;
+      $this->template->title('Add Schedule Detil');
+      $this->template->render('create_plan', $data);
+    }
+  }
 
-      // $GetNamaBOMProduct  = get_name_product_by_bom($no_bom);
-      // $NamaProduct         = (!empty($GetNamaBOMProduct[$no_bom])) ? $GetNamaBOMProduct[$no_bom] : 0;
+  public function view_plan($id = null)
+  {
+      // $id_plan_detail   = $this->input->post('id');
+      $id  = $this->uri->segment(3);
+      $getDataPlan = $this->db->get_where('planning_harian', array('id_planning_harian' => $id))->row();
+      $getDataPlan_detail = $this->db->get_where('planning_harian_detail', ['kode_planning' => @$getDataPlan->kode_planning])->result();
+      $KodePlanning = @$getDataPlan->kode_planning;
+      $getSumPlanDetail = $this->db->query("SELECT COUNT(*) AS jmlh_data FROM planning_harian_detail WHERE kode_planning = '" . @$getDataPlan->kode_planning . "'")->row();
+      $JmlhDataDetail = @$getSumPlanDetail->jmlh_data;
+      // print_r($getDataPlan_detail);
+      // die();
 
-      // $data = [
-      //   'getData' => $getData,
-      //   'getDataProduct' => $getDataProduct,
-      //   'maxDate' => $maxDate,
-      //   'NamaProduct' => $NamaProduct,
-      //   'qty' => $qty,
-      //   'cycletime' => ($cycletimeMesin > 0) ? $cycletimeMesin / 60 : 0,
-      // ];
+      $tgl1 = date_create();
+      $GET_CYCLETIME = get_total_time_cycletime();
 
+      $data = [
+        // 'dataProduct' => $sql_product,
+        'DataPlan' => $getDataPlan,
+        'DataPlan_detail' => $getDataPlan_detail,
+        'IdPlanningHarian' => $id,
+        'KodePlan' => $KodePlanning,
+        'JmlhDataDetail' => $JmlhDataDetail
+      ];
+
+      $this->template->title('View Schedule Detil');
+      $this->template->render('view_plan_harian', $data);
+  }
+
+
+  public function del_planning_harian()
+  {
+    $id = $this->input->post('id');
+
+    $this->db->trans_begin();
+
+    $this->db->delete('planning_harian_detail', ['id_planning_harian_detail' => $id]);
+
+    if ($this->db->trans_status() === FALSE) {
+      $this->db->trans_rollback();
+    } else {
+      $this->db->trans_commit();
+    }
+  }
+
+  public function cek_schedule_detil()
+  {
+    $session = $this->session->userdata('app_session');
+    // $id   = $this->uri->segment(3);
+    $ids = $this->input->post('id');
+    if ($ids == '') {
+      // $id = $session['id_user'];
+      $ids = '0';
+    }
+    // print_r($id);
+    // die();
+
+    $post = $this->input->post();
+
+    $hasil = '';
+    $d_Header = '';
+    $hasil_delivery_cost = '';
+    $total_berat_all = 0;
+
+    $getDataPlan = $this->db->get_where('planning_harian', array('id_planning_harian' => $ids))->row();
+    // print_r($getDataPlan->kode_planning);
+    // die();
+
+    $sql_product = "
+          SELECT
+              (@row:=@row+1) AS nomor,
+              a.*,
+              (SELECT ng_stock FROM stock_product WHERE id = MAX(a.id)) AS stock_ng,
+              (SELECT actual_stock FROM stock_product WHERE id = MAX(a.id)) AS stock_akhir,
+              (SELECT booking_stock FROM stock_product WHERE id = MAX(a.id)) AS booking_akhir,
+              b.nama AS nama_level4,
+              b.min_stok,
+              b.max_stok,
+              c.category AS category_bom,
+              c.no_bom
+          FROM
+              stock_product a
+              JOIN bom_header c ON a.no_bom = c.no_bom
+              LEFT JOIN new_inventory_4 b ON a.code_lv4 = b.code_lv4,
+              (SELECT @row := 0) r
+          WHERE
+              1=1
+              AND c.category IN ('grid standard','standard','ftackel','custom')
+              AND a.deleted_date IS NULL
+          GROUP BY
+              a.no_bom, a.code_lv4
+    ";
+    $sql_product = $this->db->query($sql_product)->result_array();
+
+    // $get_penawaran_detail = $this->db->get_where('tr_penawaran_detail', ['no_penawaran' => $id, 'curr' => $curr])->result();//version old
+    $get_planning_detail = $this->db->get_where('planning_harian_detail', ['kode_planning' => @$getDataPlan->kode_planning])->result();
+    // print_r($get_planning_detail);
+    // die();
+    foreach ($get_planning_detail as $plan_detail) {
+
+    // $d_Header = "";
+    $d_Header .= "<tr>";
+    // $d_Header .= "<tr class='header_" . $id . "'>";
+    $d_Header .= "<td align='left'>";
+    $d_Header .= "<input type='text' name='Detail[tanggal]' class='form-control input-md text-center datepicker' placeholder='Plan Date' value='".$plan_detail->plan_date."'>";
+    $d_Header .= "</td>";
+    $d_Header .= "<td align='left'>";
+    $d_Header .= "<select name='Detail[product]' class='chosen-select form-control input-sm inline-blockd get_data_product product'>";
+    $d_Header .= "<option value='0'>Select Product</option>";
+    foreach ($sql_product as $val => $valx) {
+      // $d_Header .= "<option value='" . $valx['code_lv4'] . "'>" . strtoupper($valx['product_name']) . "</option>";
+      if($valx['code_lv4'] == $plan_detail->id_product){
+        $d_Header .= "<option value='" . $valx['id'] . "' selected>" . strtoupper($valx['product_name']) . "</option>";
+      }else{
+        $d_Header .= "<option value='" . $valx['id'] . "' >" . strtoupper($valx['product_name']) . "</option>";
+      }
+    }
+    $d_Header .=     "</select>";
+    $d_Header .= "</td>";
+    $d_Header .= "<td align='left'>";
+    $d_Header .= "<input type='text' name='Detail[propose]' class='form-control input-md text-center propose' placeholder='Propose' readonly value='".$plan_detail->propose_production."'>";
+    $d_Header .= "</td>";
+    $d_Header .= "<td align='left'>";
+    $d_Header .= "<input type='text' name='Detail[m3]' class='form-control input-md text-center m3' placeholder='m3/pcs' readonly value='".$plan_detail->m3_pcs."'>";
+    $d_Header .= "</td>";
+    $d_Header .= "</td>";
+    $d_Header .= "<td align='left'>";
+    $d_Header .= "<input type='text' name='Detail[shift1]' class='form-control input-md text-center shift1' placeholder='Shift 1' value='".$plan_detail->shift1."'>";
+    $d_Header .= "</td>";
+    $d_Header .= "</td>";
+    $d_Header .= "<td align='left'>";
+    $d_Header .= "<input type='text' name='Detail[shift2]' class='form-control input-md text-center shift2' placeholder='shift2' value='".$plan_detail->shift2."'>";
+    $d_Header .= "</td>";
+    $d_Header .= "<td align='left'>";
+    $d_Header .= "<input type='text' name='Detail[total_kubikasi]' class='form-control input-md text-center total_kubikasi' placeholder='Total Kubikasi' value='".$plan_detail->total_kubikasi."' readonly>";
+    $d_Header .= "</td>";
+    $d_Header .= "<td align='center'>";
+    // $d_Header .= "<button type='button' class='btn btn-sm btn-danger delPartPlan' title='Delete Part' onclick='del_planning_harian('".$plan_detail->id_planning_harian_detail."')'><i class='fa fa-close'></i></button>";
+    $d_Header .= "<button type=\"button\" class=\"btn btn-sm btn-danger delPartPlan\" title=\"Delete Part\" onclick=\"del_planning_harian('{$plan_detail->id_planning_harian_detail}')\"><i class=\"fa fa-close\"></i></button>";
+    $d_Header .= "</td>";
+    $d_Header .= "</tr>";
+
+    }
+
+    //add part
+    $d_Header .= "<tr>";
+    // $d_Header .= "<tr id='add_" . $id . "'>";
+    $d_Header .= "<td align='left'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button type='button' class='btn btn-sm btn-warning addPartPlan' title='Add'><i class='fa fa-plus'></i>&nbsp;&nbsp;Add</button></td>";
+    $d_Header .= "<td align='center'></td>";
+    $d_Header .= "<td align='center'></td>";
+    $d_Header .= "<td align='center'></td>";
+    // $d_Header .= "<td align='center'></td>";
+    $d_Header .= "<td align='center' colspan='2' style='text-align: right;'>Total Kubikasi Tgl : </td>";
+    // $d_Header .= "<td align='center'></td>";
+    $d_Header .= "<td align='center' colspan='2'>
+                  <input type='text' id='grand_total_kubikasi' class='form-control input-md text-center' placeholder='Grand Total Kubikasi' readonly>
+                  </td>";
+    $d_Header .= "</tr>";
+
+    echo json_encode([
+      'hasil' => $d_Header
+    ]);
+  }
+
+
+  public function update_schedule_detail()
+  {
+      if (!$this->input->is_ajax_request()) {
+          show_404();
+      }
+
+      $post = $this->input->post('Detail');
+      $kode_planning = $this->input->post('kode_planning');
+      // echo "<pre>";
+      // // foreach ($post as $row) {
+      //     // echo "ID: " . $row['id'] . "\n";
+      //   print_r($post);
+      // // }
+      // echo "</pre>";
+      // die();
+
+      foreach ($post as $row) {
+        $tanggal = $row['tanggal'];//'01-Jan-2025';
+        $formatted = date('Y-m-d', strtotime($tanggal));
+        $get_data_stock_product = $this->db->query('SELECT a.code_lv4 as product_id, a.product_name FROM stock_product a where a.id = "' . $row['product'] . '" ')->row();
+          $data = [
+              'kode_planning'      => $kode_planning,
+              'plan_date'          => $formatted,
+              'id_stock_product'   => $row['product'],
+              'id_product'         => $get_data_stock_product->product_id,
+              'name_product'       => $get_data_stock_product->product_name,
+              'propose_production' => $row['propose'],
+              'm3_pcs'             => $row['m3'],
+              'shift1'             => $row['shift1'],
+              'shift2'             => $row['shift2'],
+              'total_kubikasi'     => $row['total_kubikasi'],
+              'created_by'         => $this->id_user,
+              'created_date'       => $this->datetime,
+          ];
+
+          // $ArrInsertDetail[$key]['kode_planning'] = $kode;
+          // $ArrInsertDetail[$key]['plan_date'] = $formatted;
+          // $ArrInsertDetail[$key]['id_stock_product'] = $value['product'];
+          // $ArrInsertDetail[$key]['id_product'] = $get_data_stock_product->product_id;
+          // $ArrInsertDetail[$key]['name_product'] = $get_data_stock_product->product_name;
+          // $ArrInsertDetail[$key]['propose_production'] = $value['propose'];
+          // $ArrInsertDetail[$key]['m3_pcs'] = $value['m3'];
+          // $ArrInsertDetail[$key]['shift1'] = $value['shift1'];
+          // $ArrInsertDetail[$key]['shift2'] = $value['shift2'];
+          // $ArrInsertDetail[$key]['total_kubikasi'] = $value['total_kubikasi'];
+          // $ArrInsertDetail[$key]['created_by'] = $this->id_user;
+          // $ArrInsertDetail[$key]['created_date'] = $this->datetime;
+
+          if (!empty($row['id'])) {
+              $this->db->where('id_planning_harian_detail', $row['id']);
+              $this->db->update('planning_harian_detail', $data);
+            // echo "Update: ID = " . $row['id'] . "<br>";
+            // echo "Data: <pre>" . print_r($data, true) . "</pre><br>";
+            //   $this->db->where('id_planning_harian_detail', $row['id']);
+            //   $success = $this->db->update('planning_harian_detail', $data);
+
+            //   if (!$success) {
+            //       log_message('error', 'Gagal update id ' . $row['id'] . ': ' . $this->db->last_query());
+            //   }
+          } else {
+              $this->db->insert('planning_harian_detail', $data);
+          }
+      }
+
+      echo json_encode(['status' => true, 'message' => 'Berhasil disimpan!']);
+  }
+
+  public function edit_plan_harian(){
+      $this->auth->restrict($this->viewPermission);
+      $session = $this->session->userdata('app_session');
+
+      $this->template->page_icon('fa fa-users');
+      $id_plan_detail   = $this->input->post('id');
+      $get_plan_harian_detail = $this->db->get_where('planning_harian_detail', ['id_planning_harian_detail' => $id_plan_detail])->row();
       $sql_product = "
           SELECT
               (@row:=@row+1) AS nomor,
@@ -807,42 +1039,286 @@ class Spk_material extends Admin_Controller
               AND a.deleted_date IS NULL
           GROUP BY
               a.no_bom, a.code_lv4
-      ";
-      // . $product_where . " AND a.deleted_date IS NULL AND (
-      //   a.code_lv4 LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-      //   OR c.category LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-      //   OR b.nama LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-      // )
-      $sql_product = $this->db->query($sql_product)->result_array();
-      // echo $this->db->last_query();
-      // print_r($sql_product);
+    ";
+    $sql_product = $this->db->query($sql_product)->result_array();
+      // print_r($get_plan_harian_detail->kode_planning);
       // die();
+      // $get_plan_harian_detail = $this->db->get_where('delivery_cost_detail', ['no_penawaran' => $sales_order->no_penawaran])->result();
+      // $get_penawaran_dc = $this->db->query('SELECT a.*, b.nm_lengkap FROM tr_penawaran a LEFT JOIN users b ON b.id_user = a.created_by WHERE a.no_penawaran = "' . $sales_order->no_penawaran . '"')->row();
+      // $get_penawaran_detail_dc = $this->db->get_where('tr_penawaran_detail', ['no_penawaran' => $sales_order->no_penawaran])->result();
 
       $data = [
-        'dataProduct' => $sql_product,
-        'DataPlan' => $getDataPlan,
-        'DataPlan_detail' => $getDataPlan_detail
+        'id_plan_detail' => $id_plan_detail,
+        'DataPLanHarian' => $get_plan_harian_detail,
+        'DataProduct' => $sql_product
+      ];
+      
+      history("Editing planning harian");
+      $this->template->set($data);
+      $this->template->title('Edit Planning Harian');
+      $this->template->render('edit_plan_harian');
+  }
+
+  public function update_plan_detail($id=null){//ini hanya khusus update plan detail
+      if(empty($id)){
+        $this->auth->restrict($this->addPermission);
+      }
+      else{
+        $this->auth->restrict($this->managePermission);
+      }   
+      if($this->input->post()){
+        $post = $this->input->post();
+        // print_r($post);
+        // die();
+
+        $id   = $post['id'];
+        $plan_date = $post['plan_date'];
+        $id_stock = $post['id_stock'];
+        $id_product = $post['id_product'];
+        $name_product = $post['name_product'];
+        $propose = $post['propose'];
+        $m3 = $post['m3'];
+        $shift1 = $post['shift1'];
+        $shift2 = $post['shift2'];
+        $total_kubikasi = $post['total_kubikasi'];
+
+        $get_data_stock = $this->db->get_where('stock_product',array('id' => $id_stock))->row();
+        // $StockID = $get_data_stock->id_stock;
+        // $nm_customer = $this->Kredit_limit_model->get_nm_customer($id_cust);
+        // $get_rev = $this->Kredit_limit_model->get_rev($id);
+        // if($get_rev == Null || $get_rev == '' || $get_rev == '0'){
+        //   $get_revisi = 0;
+        // }else{
+        //   $get_revisi = $get_rev;
+        // }
+        // print_r($get_data_stock);
+        // die();
+
+        $last_by    = (!empty($id))?'updated_by':'created_by';
+        $last_date  = (!empty($id))?'updated_date':'created_date';
+        $label      = (!empty($id))?'Edit':'Add';
+
+        if(empty($id)){
+        $dataProcess = [
+          'id_customer'     => $id_cust,
+          'nm_customer'     =>  $nm_customer,
+          'kurs'    => $kurs,
+          // 'credit_limit'   => $credit_limit,
+          'credit_limit'    => str_replace('.', '', $credit_limit),
+          'rev' => 0,
+          'status_approval' => 0,
+          $last_by    => $this->id_user,
+          $last_date  => $this->datetime
+        ];
+        }else{
+          // $dataProcess = [
+          //   'id_customer'     => $id_cust,
+          //   'nm_customer'     =>  $nm_customer,
+          //   'kurs'    => $kurs,
+          //   // 'credit_limit'   => $credit_limit,
+          //   'credit_limit'    => str_replace('.', '', $credit_limit),
+          //   'rev' => @$get_revisi,
+          //   'status_approval' => 0,
+          //   $last_by    => $this->id_user,
+          //   $last_date  => $this->datetime
+          // ];
+          $dataProcess = [
+            'plan_date'     => $plan_date,
+            'id_stock_product'    =>  $get_data_stock->id,
+            'id_product'     =>  $get_data_stock->code_lv4,
+            'name_product'    => $get_data_stock->product_name,
+            'propose_production'    => $propose,
+            'm3_pcs' => @$m3,
+            'shift1' => @$shift1,
+            'shift2' => @$shift2,
+            'total_kubikasi' => @$total_kubikasi,
+            $last_by    => $this->id_user,
+            $last_date  => $this->datetime
+          ];
+        }
+
+        $this->db->trans_start();
+          if(empty($id)){
+            $this->db->insert('planning_harian_detail',$dataProcess);
+          }
+          else{
+            $this->db->where('id_planning_harian_detail',$id);
+            $this->db->update('planning_harian_detail',$dataProcess);
+          }
+        // echo $this->db->last_query();
+        // die();
+        $this->db->trans_complete();  
+
+        if($this->db->trans_status() === FALSE){
+          $this->db->trans_rollback();
+          $status = array(
+            'pesan'   =>'Failed process data!',
+            'status'  => 0
+          );
+        } else {
+          $this->db->trans_commit();
+          $status = array(
+            'pesan'   =>'Success process data!',
+            'status'  => 1
+          );
+          history($label." Planning Harian: ".$id);
+        }
+        echo json_encode($status);
+      }
+      else{
+        echo "salah if";
+        die();
+      }
+      // else{
+      //   $listData           = $this->db->get_where('ms_credit_limit',array('id' => $id))->result();
+      //   $data_customer      = $this->db->get_where('master_customers',array('sts_aktif'=>'Y'))->result_array(); 
+      //   $data_kurs          = $this->db->get('ms_kurs')->result_array();
+
+      //   $data = [
+      //     'listData' => $listData,
+      //     'data_customer' => $data_customer,
+      //     'data_kurs' => $data_kurs
+      //   ];
+      //   $this->template->set($data);
+      //   $this->template->render('add_kredit_limit_request');
+      // }
+    }
+
+  public function download_excel_plan_harian($id=null) {
+    // Ambil input dari form GET atau POST
+    // $start_date = $this->input->get('start_date');
+    // $end_date   = $this->input->get('end_date');
+    $id_plan = $id;
+
+    if (!$id_plan) {
+        show_error("ID Planning Harian Error!");
+        return;
+    }
+    // print_r($id_plan);
+    // die();
+
+    //START AMBIL DATA HEADER PLANNING HARIAN
+    $HeaderPlanHarian = $this->db->get_where('planning_harian', [
+        'id_planning_harian' => $id_plan
+    ])->row();
+
+    if (!$HeaderPlanHarian) {
+        show_error("Data planning tidak ditemukan.");
+        return;
+    }
+    //END AMBIL DATA HEADER PLANNING HARIAN
+
+    // AMBIL DATA KODE PLANNING
+    $getDataPlanningHeader = $this->db->get_where('planning_harian',array('id_planning_harian' => $id_plan))->row();
+    $KodePlaning = $getDataPlanningHeader->kode_planning;
+    $bulan = $getDataPlanningHeader->periode_bulan;
+    $tahun = $getDataPlanningHeader->periode_tahun;
+    // print_r($this->bulan_indo($bulan));
+    // die();
+
+    // Ambil data detail
+    // $details = $this->db->get_where('planning_harian_detail', [
+    //     'kode_planning' => $KodePlaning
+    // ])->result_array();
+    $this->db->order_by('plan_date', 'ASC');
+    $details = $this->db->get_where('planning_harian_detail', [
+        'kode_planning' => $KodePlaning
+    ])->result();
+    // print_r($KodePlaning);
+    // die();
+
+    // Buat Excel
+      $excel = new PHPExcel();
+      $sheet = $excel->getActiveSheet();
+      $sheet->setTitle("Schedule Detail");
+
+      // Judul
+      $sheet->setCellValue('A1', 'Periode Planning :');
+      $sheet->setCellValue('B1', $this->bulan_indo($bulan) . ' ' . $tahun);
+
+      // Header
+      $headers = [
+          'A3' => 'Plan Date',
+          'B3' => 'Product',
+          'C3' => 'Propose Production',
+          'D3' => 'm3/pcs',
+          'E3' => 'Shift 1',
+          'F3' => 'Shift 2',
+          'G3' => 'Total Kubikasi'
       ];
 
-      $this->template->title('Add Schedule Detil');
-      $this->template->render('create_plan', $data);
+      foreach ($headers as $cell => $label) {
+          $sheet->setCellValue($cell, $label);
+          $sheet->getStyle($cell)->getFont()->setBold(true);
+          $sheet->getColumnDimension(substr($cell, 0, 1))->setAutoSize(true);
+      }
+
+      // Isi Data
+      $row = 4;
+    $currentDate = '';
+    $subtotal = 0;
+
+    // Buat grouping berdasarkan tanggal (Y-m-d)
+    $grouped = [];
+    foreach ($details as $d) {
+        $date_key = date('Y-m-d', strtotime($d->plan_date)); // normalize format tanggal
+        $grouped[$date_key][] = $d;
     }
+
+    $row = 4;
+    foreach ($grouped as $date => $entries) {
+        $subtotal = 0;
+        foreach ($entries as $d) {
+            $total_kubikasi = ($d->shift1 + $d->shift2) * $d->m3_pcs;
+            $subtotal += $total_kubikasi;
+
+            $sheet->setCellValue('A' . $row, $d->plan_date);
+            $sheet->setCellValue('B' . $row, $d->name_product);
+            $sheet->setCellValue('C' . $row, $d->propose_production);
+            $sheet->setCellValue('D' . $row, $d->m3_pcs);
+            $sheet->setCellValue('E' . $row, $d->shift1);
+            $sheet->setCellValue('F' . $row, $d->shift2);
+            $sheet->setCellValue('G' . $row, number_format($total_kubikasi, 2));
+            $row++;
+        }
+
+        // Baris subtotal setelah tiap tanggal
+        $sheet->setCellValue('F' . $row, 'Subtotal ' . $date);
+        $sheet->setCellValue('G' . $row, number_format($subtotal, 2));
+        $sheet->getStyle('F' . $row)->getFont()->setBold(true);
+        $sheet->getStyle('G' . $row)->getFont()->setBold(true);
+        $row++;
+    }
+
+    // Nama file
+    $filename = 'Planning_' . $bulan . '_' . $tahun . '.xls';
+
+    ob_clean();
+    header_remove();
+
+    // Output Excel
+    header('Content-Type: application/vnd.ms-excel');
+    header("Content-Disposition: attachment; filename=\"$filename\"");
+    header('Cache-Control: max-age=0');
+
+    $objWriter = PHPExcel_IOFactory::createWriter($excel, 'Excel5');
+    $objWriter->save('php://output');
+    exit;
   }
 
-  public function del_planning_harian()
-  {
-    $id = $this->input->post('id');
-
-    $this->db->trans_begin();
-
-    $this->db->delete('planning_harian_detail', ['id_planning_harian_detail' => $id]);
-
-    if ($this->db->trans_status() === FALSE) {
-      $this->db->trans_rollback();
-    } else {
-      $this->db->trans_commit();
+    // Fungsi helper untuk format nama bulan
+    private function bulan_indo($bulan) {
+        $bulanList = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret',
+            4 => 'April',   5 => 'Mei',      6 => 'Juni',
+            7 => 'Juli',    8 => 'Agustus',  9 => 'September',
+            10 => 'Oktober',11 => 'November',12 => 'Desember'
+        ];
+        return isset($bulanList[$bulan]) ? $bulanList[$bulan] : $bulan;
     }
-  }
+
+
+
 
 
 }

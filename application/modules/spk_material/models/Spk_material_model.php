@@ -288,8 +288,9 @@ class Spk_material_model extends BF_Model
       //start bagian button
       $btn_edit = '<a href="spk_material/create_plan/' . $row['id_planning_harian'] . '" class="btn btn-sm btn-success">Edit</a>';
       $btn_delete = '<a href="javascript:void(0);" class="btn btn-sm btn-danger deletePlan" data-id="' . $row['id_planning_harian'] . '">Delete</a>';
-      $btn_view = '<a href="spk_material/view_spk_material/' . $row['id_planning_harian'] . '" class="btn btn-sm btn-info">View</a>';
-      $btn_download_excel = '<a href="spk_material/download_excel/' . $row['id_planning_harian'] . '" class="btn btn-sm btn-warning">Download Excel</a>';
+      $btn_view = '<a href="spk_material/view_plan/' . $row['id_planning_harian'] . '" class="btn btn-sm btn-info">View</a>';
+      $btn_download_excel = '<a href="spk_material/download_excel_plan_harian/' . $row['id_planning_harian'] . '" class="btn btn-sm btn-warning">Download Excel</a>';
+      // $btn_download_excel = '<a href="spk_material/download_excel_plan_harian/" class="btn btn-sm btn-warning">Download Excel</a>';
       //end bagian button
 
       $nestedData[]  =  "<div align='center'>"

@@ -14,30 +14,37 @@
 						<td>
 							<div style="display: flex; gap: 10px;">
 							<!-- <input type="month" id="bulanTahun" name="bulanTahun"> -->
-							<select id="bulan" name="bulan" class="form-control" style="width: 20%;">
-								<option value="01">Januari</option>
-								<option value="02">Februari</option>
-								<option value="03">Maret</option>
-								<option value="04">April</option>
-								<option value="05">Mei</option>
-								<option value="06">Juni</option>
-								<option value="07">Juli</option>
-								<option value="08">Agustus</option>
-								<option value="09">September</option>
-								<option value="10">Oktober</option>
-								<option value="11">November</option>
-								<option value="12">Desember</option>
+							<select id="bulan" name="bulan" class="form-control" style="width: 20%;" <?= (@$DataPlan->periode_bulan != '') ? 'disabled' : '' ?> >
+							    <option value="01" <?= (@$DataPlan->periode_bulan == '1' || @$DataPlan->periode_bulan == '01') ? 'selected' : '' ?>>Januari</option>
+							    <option value="02" <?= (@$DataPlan->periode_bulan == '2') ? 'selected' : '' ?>>Februari</option>
+							    <option value="03" <?= (@$DataPlan->periode_bulan == '3') ? 'selected' : '' ?>>Maret</option>
+							    <option value="04" <?= (@$DataPlan->periode_bulan == '4') ? 'selected' : '' ?>>April</option>
+							    <option value="05" <?= (@$DataPlan->periode_bulan == '5') ? 'selected' : '' ?>>Mei</option>
+							    <option value="06" <?= (@$DataPlan->periode_bulan == '6') ? 'selected' : '' ?>>Juni</option>
+							    <option value="07" <?= (@$DataPlan->periode_bulan == '7') ? 'selected' : '' ?>>Juli</option>
+							    <option value="08" <?= (@$DataPlan->periode_bulan == '8') ? 'selected' : '' ?>>Agustus</option>
+							    <option value="09" <?= (@$DataPlan->periode_bulan == '9') ? 'selected' : '' ?>>September</option>
+							    <option value="10" <?= (@$DataPlan->periode_bulan == '10') ? 'selected' : '' ?>>Oktober</option>
+							    <option value="11" <?= (@$DataPlan->periode_bulan == '11') ? 'selected' : '' ?>>November</option>
+							    <option value="12" <?= (@$DataPlan->periode_bulan == '12') ? 'selected' : '' ?>>Desember</option>
 							</select>
-							<select id="tahun" name="tahun" class="form-control" style="width: 20%;">
+							<select id="tahun" name="tahun" class="form-control" style="width: 20%;" <?= (@$DataPlan->periode_tahun != '') ? 'disabled' : '' ?> >
 							<script>
-								const tahunSelect = document.getElementById('tahun');
-								const tahunSekarang = new Date().getFullYear();
-								for (let i = tahunSekarang; i >= tahunSekarang - 10; i--) {
-								const option = document.createElement('option');
-								option.value = i;
-								option.textContent = i;
-								tahunSelect.appendChild(option);
-								}
+							    const tahunSelect = document.getElementById('tahun');
+							    const tahunSekarang = new Date().getFullYear();
+							    const selectedYear = tahunSelect.getAttribute('data-selected-year');
+
+							    for (let i = tahunSekarang; i >= tahunSekarang - 10; i--) {
+							        const option = document.createElement('option');
+							        option.value = i;
+							        option.textContent = i;
+
+							        if (selectedYear == i) {
+							            option.selected = true;
+							        }
+
+							        tahunSelect.appendChild(option);
+							    }
 							</script>
 							</select>
 							</div>
@@ -76,15 +83,22 @@
 				<input type="hidden" id='due_date' name='due_date' value=''>
 				<input type="hidden" id='max_date' name='max_date' value=''>
 				<input type="hidden" id='rowIndex' name='rowIndex' value=''>
+				<input type="hidden" id='id_planning_harian' name='id_planning_harian' value="<?= @$IdPlanningHarian ?>">
+				<input type="hidden" id='kode_planning' name='kode_planning' value="<?= @$KodePlan ?>">
+				<input type="hidden" id="jumlah_data_detail" name="jumlah_data_detail" value="<?= @$JmlhDataDetail ?>">
 			</div>
         </div>
 		<h4>Schedule Detil</h4>
 		<div class="form-group row">
         	<div class="col-md-12">
 				<table class="table table-bordered table-striped" width='100%' border="1"  id="myTable">
+					<thead>
 					<tr>
 						<td colspan="4"></td>
-						<td colspan="3" style="text-align: center; background-color: orange;">Schedule</td>
+						<td colspan="3" style="text-align: center; background-color: orange;">
+							Schedule &nbsp;
+							<!-- <button type="button" class="btn btn-primary" name="btn_test" id="btn_test"  onclick="test_klik()">Test Btn</button> -->
+						</td>
 						<!-- <td>2</td>
 						<td>3</td> -->
 						<td></td>
@@ -97,27 +111,56 @@
 						<th class='text-center' width='15%'>Shift 1</th>
 						<th class='text-center' width='15%'>Shift 2</th>
 						<th class='text-center' width='15%'>Total Kubikasi</th>
-						<th class='text-center' width='5%'>Option</th>
+						<th class='text-center' width='10%'>Option</th>
 					</tr>
+				</thead>
+				<tbody id="list_schedule_detil">
 <?php
 if (isset($DataPlan_detail)) {
+	$index = 0;
 	foreach ($DataPlan_detail as $plan_detail) {
 ?>
-					<tr>
-						<td class='text-center' width='10%'><?= $plan_detail->plan_date ?></td>
-						<td class='text-center' width='15%'><?= $plan_detail->name_product ?></td>
-						<td class='text-center' width='15%'><?= $plan_detail->propose_production ?></td>
-						<td class='text-center' width='15%'><?= $plan_detail->m3_pcs ?></td>
-						<td class='text-center' width='15%'><?= $plan_detail->shift1 ?></td>
-						<td class='text-center' width='15%'><?= $plan_detail->shift2 ?></td>
-						<td class='text-center' width='15%'><?= $plan_detail->total_kubikasi ?></td>
-						<td class='text-center' width='5%'>
+					<tr class="header_<?= $index ?>">
+						<td class='text-center' width='10%'>
+							<!-- <?= $plan_detail->plan_date ?> -->
+							<input type="hidden" class="id" value="<?= $plan_detail->id_planning_harian_detail ?>">
+							<input type="hidden" name="Detail[<?= $index ?>][tanggal]" class="form-control input-md text-center datepicker" placeholder="Plan Date" value="<?= $plan_detail->plan_date ?>" readonly>
+							<input type="text" name="tanggal_view" class="form-control input-md text-center" placeholder="Plan Date" value="<?= $plan_detail->plan_date ?>" readonly>
+						</td>
+						<td class='text-center' width='15%'>
+							<!-- <?= $plan_detail->name_product ?> -->
+							<input type="hidden" name="Detail[<?= $index ?>][product]" class="form-control input-md text-center get_data_product product" placeholder="Plan Date" value="<?= $plan_detail->id_stock_product ?>" >
+							<input type="text" name="name_product_view" class="form-control input-md text-center" placeholder="" value="<?= $plan_detail->name_product ?>" readonly>
+						</td>
+						<td class='text-center' width='15%'>
+							<!-- <?= $plan_detail->propose_production ?> -->
+							<input type="text" name="Detail[<?= $index ?>][propose]" class="form-control input-md text-center propose" placeholder="Plan Date" value="<?= $plan_detail->propose_production ?>" readonly>
+						</td>
+						<td class='text-center' width='15%'>
+							<!-- <?= $plan_detail->m3_pcs ?> -->
+							<input type="text" name="Detail[<?= $index ?>][m3]" class="form-control input-md text-center m3" placeholder="Plan Date" value="<?= $plan_detail->m3_pcs ?>" readonly>
+						</td>
+						<td class='text-center' width='15%'>
+							<!-- <?= $plan_detail->shift1 ?> -->
+							<input type="text" name="Detail[<?= $index ?>][shift1]" class="form-control input-md text-center shift1" placeholder="Plan Date" value="<?= $plan_detail->shift1 ?>" readonly>
+						</td>
+						<td class='text-center' width='15%'>
+							<!-- <?= $plan_detail->shift2 ?> -->
+							<input type="text" name="Detail[<?= $index ?>][shift2]" class="form-control input-md text-center shift2" placeholder="Plan Date" value="<?= $plan_detail->shift2 ?>" readonly>
+						</td>
+						<td class='text-center' width='15%'>
+							<!-- <?= $plan_detail->total_kubikasi ?> -->
+							<input type="text" name="Detail[<?= $index ?>][total_kubikasi]" class="form-control input-md text-center total_kubikasi" placeholder="Plan Date" value="<?= $plan_detail->total_kubikasi ?>" readonly>
+						</td>
+						<td class='text-center' width='10%'>
 							<!-- <button type='button' class='btn btn-sm btn-danger delPartPlan' title='Delete Part'><i class='fa fa-close'></i></button> -->
-							<button type='button' class="btn btn-sm btn-danger del_product_price_'<?= $plan_detail->id_planning_harian_detail ?>'" onclick="del_planning_harian('<?= $plan_detail->id_planning_harian_detail ?>')" title='Delete Part'><i class='fa fa-close'></i></button>
+							<button type='button' class='btn btn-sm btn-success editPlan' title='Edit' data-id="<?= $plan_detail->id_planning_harian_detail ?>">Edit</button>
+							<button type='button' class="btn btn-sm btn-danger del_product_price_'<?= $plan_detail->id_planning_harian_detail ?>'" onclick="del_planning_harian('<?= $plan_detail->id_planning_harian_detail ?>')" title='Delete'><i class='fa fa-close'></i></button>
 							<!-- del_product_price_' . $penawaran_detail->id_penawaran_detail . '" onclick="del_product_price(' . $penawaran_detail->id_penawaran_detail . ')" -->
 						</td>
 					</tr>
 <?php
+		$index++;
 	}
 }
 ?>
@@ -134,6 +177,7 @@ if (isset($DataPlan_detail)) {
               <input type='text' id='grand_total_kubikasi' class='form-control input-md text-center' placeholder='Grand Total Kubikasi' readonly>
             </td>
 					</tr>
+				</tbody>
 				</table>
 			</div>
         </div>
@@ -143,7 +187,7 @@ if (isset($DataPlan_detail)) {
 				<?php
 				if (!empty($DataPlan_detail)) {
 				?>
-				<button type="button" class="btn btn-primary" name="update_new" id="update_new">Update</button>
+				<button type="button" class="btn btn-primary" name="update_new" id="update_new" onclick="saveScheduleDetail()">Update</button>
 				<?php
 				}else{
 				?>
@@ -161,7 +205,7 @@ if (isset($DataPlan_detail)) {
 </div>
 
 <div class="modal modal-default fade" id="dialog-popup" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg" style='width:70%;'>
+  <div class="modal-dialog modal-lg" style='width:40%;'>
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
@@ -653,10 +697,18 @@ $('#save_new').click(function(e){
 			// loading_spinner();
 			var get_id 		= $(this).parent().parent().attr('id');
 			var split_id	= get_id.split('_');
-			var id 			= parseInt(split_id[1])+1;
-			var id_bef 		= split_id[1];
+			// var id 			= parseInt(split_id[1])+1;//version old
+			// let rowIndexCounter = parseInt(<?= $index+1 ?>); // mulai dari jumlah data lama //version new
+			// var id_bef 		= split_id[1];//version old
+			// var id_bef 		= <?= $index ?>;//version new
+
+			var id_bef = parseInt($('#jumlah_data_detail').val()) || 0;
+			var id     = id_bef + 1;
+
 			var due_date	= $('#due_date').val()
 			var max_date	= $('#max_date').val()
+			// console.log(id)
+			// return;
 
 			$.ajax({
 				url: base_url+active_controller+'/get_add_plan/'+id,
@@ -664,8 +716,13 @@ $('#save_new').click(function(e){
 				type: "POST",
 				dataType: "json",
 				success: function(data){
-					$("#add_"+id_bef).before(data.header);
-					$("#add_"+id_bef).remove();
+					console.log('Response:', data);
+					console.log("Selector: ", "#add_" + id_bef);
+					console.log("Exists in DOM:", $("#add_" + id_bef).length > 0);
+					// $("#add_"+id_bef).before(data.header);
+					// $("#add_"+id_bef).remove();
+					// $("#add_row").before(data.header);
+					$("#add_0").before(data.header);
 					$('.autoNumeric0').autoNumeric('init', {mDec: '0', aPad: false})
 					$('.chosen-select').select2();
 					// $('.datepicker').datepicker({ dateFormat: 'dd-M-yy', maxDate:'+'+max_date+'d' });//version old
@@ -675,6 +732,7 @@ $('#save_new').click(function(e){
 					$('.datepicker2').datepicker({ dateFormat: 'dd-M-yy' });
 					updateDatepickersByMonthYear();
 					$('#rowIndex').val(data.rowIndex);
+					$('#jumlah_data_detail').val(id);
 					swal.close();
 				},
 				error: function() {
@@ -690,6 +748,61 @@ $('#save_new').click(function(e){
 				}
 			});
 		});
+
+// $(document).on('click', '.addPartPlan', function () {
+//   // Ambil ID baris saat ini (format: add_0, add_1, dst.)
+//   var get_id     = $(this).closest('tr').attr('id');
+//   var split_id   = get_id.split('_');
+//   var id         = parseInt(split_id[1]) + 1;
+
+//   // Ambil index terakhir dari PHP
+//   var id_bef     = <?= $JmlhDataDetail ?>;
+
+//   // Ambil tanggal untuk batasan datepicker
+//   var due_date   = $('#due_date').val();
+//   var max_date   = $('#max_date').val();
+
+//   $.ajax({
+//       url: base_url + active_controller + '/get_add_plan/' + id,
+//       cache: false,
+//       type: "POST",
+//       dataType: "json",
+//       success: function (data) {
+//           // Sisipkan row baru sebelum row 'add'
+//           $("#add_" + id_bef).before(data.header);
+
+//           // Hapus row add sebelumnya
+//           $("#add_" + id_bef).remove();
+
+//           // Inisialisasi ulang plugin yang digunakan
+//           $('.autoNumeric0').autoNumeric('init', { mDec: '0', aPad: false });
+//           $('.chosen-select').select2();
+//           $('.datepicker').datepicker({ dateFormat: 'dd-M-yy' });
+//           $('.datepicker2').datepicker({ dateFormat: 'dd-M-yy' });
+
+//           // Update datepicker jika pakai navigasi bulan/tahun custom
+//           updateDatepickersByMonthYear();
+
+//           // Update index terakhir yang disimpan di hidden input
+//           $('#rowIndex').val(data.rowIndex);
+
+//           // Tutup swal jika sebelumnya ada spinner
+//           swal.close();
+//       },
+//       error: function () {
+//           swal({
+//               title: "Error Message!",
+//               text: 'Connection Time Out. Please try again..',
+//               type: "warning",
+//               timer: 3000,
+//               showCancelButton: false,
+//               showConfirmButton: false,
+//               allowOutsideClick: false
+//           });
+//       }
+//   });
+// });
+
 
 		$(document).on('click', '.delPart', function(){
 			var get_id 		= $(this).parent().parent().attr('class');
@@ -926,6 +1039,7 @@ $('#save_new').click(function(e){
 	}
 
 function del_planning_harian(id) {
+	var id_planning_harian	= $('#id_planning_harian').val();
 	// var id_header = segments[4]; // index ke-4 = segment ke-5
 	// Ambil path dari URL, misalnya: /megacon/spk_material/create_plan/27
 	var path = window.location.pathname;
@@ -941,10 +1055,12 @@ function del_planning_harian(id) {
       },
       cache: false,
       success: function(result) {
-          // cek_detail_penawaran(no_surat);
-          // updateBeratAktualStyle();
-          // updateGrandTotalKubikasiTerakhirTgl(); // panggil fungsi update total jika perlu
-      	window.location.href = base_url + active_controller + '/create_plan/' + lastSegment;
+        // cek_detail_penawaran(no_surat);
+        // updateBeratAktualStyle();
+        // updateGrandTotalKubikasiTerakhirTgl(); // panggil fungsi update total jika perlu
+      	// cek_schedule_detil(id_planning_harian);
+      	location.reload(); // atau refresh table
+      	// window.location.href = base_url + active_controller + '/create_plan/' + lastSegment;
       	// refreshAjaxTable('#myTable');
       }
   });
@@ -958,5 +1074,164 @@ function refreshAjaxTable(tableId) {
     }
 }
 
+function test_klik(){
+	var id_planning_harian	= $('#id_planning_harian').val();
+	cek_schedule_detil(id_planning_harian);
+	updateGrandTotalKubikasiTerakhirTgl(); // panggil fungsi update total jika perlu
+}
+
+function cek_schedule_detil(id) {
+  // var id = '';
+  // var ppn = $('.ppn_check:checked').val();
+  // var curr = $('.curr').val();
+  // var get_id 		= $(this).parent().parent().attr('id');
+	// var split_id	= get_id.split('_');
+  // var id_uri		= parseInt(split_id[1])+1;
+
+  $.ajax({
+      type: 'post',
+      url: siteurl + active_controller + '/cek_schedule_detil',
+      data: {
+          'id': id
+          // 'no_surat': no_surat,
+          // 'ppn': ppn,
+          // 'curr': curr
+      },
+      cache: false,
+      dataType: 'JSON',
+      success: function(result) {
+          $('#list_schedule_detil').html(result.hasil);
+      }
+  });
+}
+
+function saveScheduleDetail() {
+    let dataDetail = [];
+
+    $('#list_schedule_detil tr').each(function () {
+        const row = $(this);
+        const id = row.find('.id').val() || '';
+        // const id = $('.id').val() || '';
+        const tanggal = row.find('.datepicker').val();
+        const product = row.find('.product').val();
+        const propose = row.find('.propose').val();
+        const m3 = row.find('.m3').val();
+        const shift1 = row.find('.shift1').val();
+        const shift2 = row.find('.shift2').val();
+        const total_kubikasi = row.find('.total_kubikasi').val();
+
+        // skip jika semua kosong
+        if (!tanggal || !product) return;
+
+        dataDetail.push({
+            id: id,
+            tanggal: tanggal,
+            product: product,
+            propose: propose,
+            m3: m3,
+            shift1: shift1,
+            shift2: shift2,
+            total_kubikasi: total_kubikasi
+        });
+    });
+
+    const kode_planning = $('#kode_planning').val(); // pastikan ada input hidden atau select untuk ini
+
+    $.ajax({
+        // url: "<?= base_url('spk_material/update_schedule_detail') ?>",
+        url: siteurl + active_controller + '/update_schedule_detail',
+        type: "POST",
+        dataType: "json",
+        data: {
+            kode_planning: kode_planning,
+            Detail: dataDetail
+        },
+        success: function (res) {
+            if (res.status) {
+                alert("Data berhasil disimpan!");
+                location.reload(); // atau refresh table
+            } else {
+                alert("Gagal menyimpan data.");
+            }
+        },
+        error: function (xhr, status, error) {
+            alert("Terjadi kesalahan koneksi.");
+        }
+    });
+}
+
+//START BAGIAN MODAL EDIT PLAN DETAIL
+$(document).on('click', '.editPlan', function() {
+    var id = $(this).data('id');
+    // alert(id);
+    $("#head_title").html("<i class='fa fa-list-alt'></i><b>Detail Planning Harian</b>");
+    $.ajax({
+        type: 'POST',
+        // url: siteurl + active_controller + '/detail_sales_order/' + id,
+        url: siteurl + active_controller + '/edit_plan_harian/' + id,
+        data: {
+            'id': id
+        },
+        success: function(data) {
+            $("#dialog-popup").modal();
+            $("#ModalView").html(data);
+
+            $('.modal-footer').html('');
+        }
+    });
+});
+//END BAGIAN MODAL EDIT PLAN DETAIL
+
+$(document).on('submit', '#data_form', function(e) {
+	e.preventDefault()
+	var data = $('#data_form').serialize();
+	// alert(data);
+
+	swal({
+			title: "Anda Yakin?",
+			text: "Data akan diproses!",
+			type: "warning",
+			showCancelButton: true,
+			confirmButtonClass: "btn-info",
+			confirmButtonText: "Yes",
+			cancelButtonText: "No",
+			closeOnConfirm: false
+		},
+		function() {
+			$.ajax({
+				type: 'POST',
+				url: siteurl + active_controller + '/update_plan_detail',
+				dataType: "json",
+				data: data,
+				success: function(data) {
+					if (data.status == '1') {
+						swal({
+								title: "Sukses",
+								text: data.pesan,
+								type: "success"
+							},
+							function() {
+								window.location.reload(true);
+							})
+					} else {
+						swal({
+							title: "Error",
+							text: data.pesan,
+							type: "error"
+						})
+
+					}
+				},
+				error: function() {
+					swal({
+						title: "Error",
+						text: "Error proccess !",
+						type: "error"
+					})
+				}
+			})
+		});
+
+})
 
 </script>
