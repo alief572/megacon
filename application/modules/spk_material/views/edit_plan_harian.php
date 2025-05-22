@@ -26,8 +26,8 @@
 				<label for="">Product <span class='text-danger'>*</span></label>
 				</div>
 				<div class="col-md-9">
-				<input type="text" class="form-control" id="id_stock" name="id_stock" value='<?= $DataPLanHarian->id_stock_product ?>'>
-				<input type="text" class="form-control" id="id_product" name="id_product" value='<?= $DataPLanHarian->id_product ?>'>
+				<input type="hidden" class="form-control" id="id_stock" name="id_stock" value='<?= $DataPLanHarian->id_stock_product ?>'>
+				<input type="hidden" class="form-control" id="id_product" name="id_product" value='<?= $DataPLanHarian->id_product ?>'>
 				<input type="text" class="form-control" id="name_product" name="name_product" value='<?= $DataPLanHarian->name_product ?>' readonly>
 				<!-- <select name='id_customer' id='id_customer' class='form-control input-md' required>
 					<option value='0'>Select Customers</option>
