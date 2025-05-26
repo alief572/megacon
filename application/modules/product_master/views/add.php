@@ -152,10 +152,10 @@
 			</div>
 			<div class="form-group row">
 				<div class="col-md-2">
-					<label>MOQ</label>
+					<label>Max</label>
 				</div>
 				<div class="col-md-4">
-					<input type="text" class="form-control maskM" id="max_stok" name="max_stok" value='<?=$max_stok;?>' placeholder="MOQ">
+					<input type="text" class="form-control maskM" id="max_stok" name="max_stok" value='<?=$max_stok;?>' placeholder="Max">
 				</div>
 				<div class="col-md-2">
 					<label>Minimum Stok</label>

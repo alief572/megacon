@@ -144,7 +144,7 @@ class Mat_plan_base_on_produksi extends Admin_Controller
         )
         ->result_array();
       $detail     = $this->db
-        ->select('a.*, b.satuan_lainnya as nominal_kg, c.nama as nm_material, c.max_stok, c.min_stok')
+        ->select('a.*, b.satuan_lainnya as nominal_kg, c.nama as nm_material, c.max_stok, c.min_stok, c.daily_usage_qty')
         ->join('tr_jenis_beton_detail b', 'b.id_detail_material = a.id_material', 'left')
         ->join('new_inventory_4 c', 'b.id_material = c.code_lv4', 'left')
         ->get_where(
@@ -154,6 +154,8 @@ class Mat_plan_base_on_produksi extends Admin_Controller
           )
         )
         ->result_array();
+        // echo $this->db->last_query();
+        // die();
 
       $data = [
         'so_number' => $so_number,
@@ -221,4 +223,147 @@ class Mat_plan_base_on_produksi extends Admin_Controller
     }
     echo json_encode($Arr_Data);
   }
+
+  public function add_tgl($id=null,$so=null){ 
+      if(empty($id)){
+        $this->auth->restrict($this->addPermission);
+      }
+      else{
+        $this->auth->restrict($this->managePermission);
+      }   
+      if($this->input->post()){
+        $post = $this->input->post();
+
+        $id   = $post['id'];
+        // $status = (!empty($id))?$post['status']:1;
+        $id_cust = $post['id_customer'];
+        //
+        // $get_nm_cust = $this->db->get_where('master_customer',array('id_customer' => $id_cust))->result();
+        // $nm_customer = $this->Kredit_limit_model->get_nm_customer($id_cust);
+        // $get_rev = $this->Kredit_limit_model->get_rev($id);
+        // if($get_rev == Null || $get_rev == '' || $get_rev == '0'){
+        //   $get_revisi = 0;
+        // }else{
+        //   $get_revisi = $get_rev;
+        // }
+        // // print_r($get_nm_cust);
+        // // die();
+        // $kurs = $post['kurs'];
+        // $credit_limit = $post['credit_limit'];
+
+        $last_by    = (!empty($id))?'updated_by':'created_by';
+        $last_date  = (!empty($id))?'updated_date':'created_date';
+        $label      = (!empty($id))?'Edit':'Add';
+
+        if(empty($id)){
+        $dataProcess = [
+          'id_customer'     => $id_cust,
+          'nm_customer'     =>  $nm_customer,
+          'kurs'    => $kurs,
+          // 'credit_limit'   => $credit_limit,
+          'credit_limit'    => str_replace('.', '', $credit_limit),
+          'rev' => 0,
+          'status_approval' => 0,
+          $last_by    => $this->id_user,
+          $last_date  => $this->datetime
+        ];
+        }else{
+          $dataProcess = [
+            'id_customer'     => $id_cust,
+            'nm_customer'     =>  $nm_customer,
+            'kurs'    => $kurs,
+            // 'credit_limit'   => $credit_limit,
+            'credit_limit'    => str_replace('.', '', $credit_limit),
+            'rev' => @$get_revisi,
+            'status_approval' => 0,
+            $last_by    => $this->id_user,
+            $last_date  => $this->datetime
+          ];
+        }
+
+        $this->db->trans_start();
+          if(empty($id)){
+            $this->db->insert('ms_credit_limit',$dataProcess);
+          }
+          else{
+            $this->db->where('id',$id);
+            $this->db->update('ms_credit_limit',$dataProcess);
+          }
+        // echo $this->db->last_query();
+        // die();
+        $this->db->trans_complete();  
+
+        if($this->db->trans_status() === FALSE){
+          $this->db->trans_rollback();
+          $status = array(
+            'pesan'   =>'Failed process data!',
+            'status'  => 0
+          );
+        } else {
+          $this->db->trans_commit();
+          $status = array(
+            'pesan'   =>'Success process data!',
+            'status'  => 1
+          );
+          history($label." credit limit: ".$id);
+        }
+        echo json_encode($status);
+      }
+      else{
+        $listDataHeader           = $this->db->get_where('material_planning_base_on_produksi',array('so_number' => $so))->result();
+        $listDataDetail           = $this->db->get_where('material_planning_base_on_produksi_detail',array('id' => $id))->result();
+        // $data_customer      = $this->db->get_where('master_customers',array('sts_aktif'=>'Y'))->result_array(); 
+        // $data_kurs          = $this->db->get('ms_kurs')->result_array();
+
+        $data = [
+          'listDataHeader' => $listDataHeader,
+          'listDataDetail' => $listDataDetail
+          // 'data_customer' => $data_customer,
+          // 'data_kurs' => $data_kurs
+        ];
+        $this->template->set($data);
+        $this->template->render('material_planning');
+      }
+    }
+
+  public function plan_detail_tgl($id = null,$so = null)
+  {
+      $header   = $this->db
+        ->select('a.*, b.due_date, c.nm_customer')
+        ->join('so_internal b', 'a.so_number=b.so_number', 'left')
+        ->join('customer c', 'a.id_customer=c.id_customer', 'left')
+        ->get_where(
+          'material_planning_base_on_produksi a',
+          array(
+            'a.so_number' => $so
+          )
+        )
+        ->result_array();
+      $detail   = $this->db
+        ->select('a.*, b.satuan_lainnya as nominal_kg, c.nama as nm_material, c.max_stok, c.min_stok, c.daily_usage_qty')
+        ->join('tr_jenis_beton_detail b', 'b.id_detail_material = a.id_material', 'left')
+        ->join('new_inventory_4 c', 'b.id_material = c.code_lv4', 'left')
+        ->get_where(
+          'material_planning_base_on_produksi_detail a',
+          array(
+            'a.so_number' => $so
+          )
+        )
+        ->result_array();
+        // echo $this->db->last_query();
+        // die();
+
+      $data = [
+        'so_number' => $so,
+        'header' => $header,
+        'detail' => $detail
+        // 'GET_LEVEL4'   => get_inventory_lv4(),
+        // 'GET_STOK_PUSAT' => getStokMaterial(1)
+      ];
+
+      $this->template->title('Set Detail Plan Tanggal');
+      $this->template->render('material_planning_detail_tgl', $data);
+    
+  }
+
 }

@@ -158,16 +158,9 @@
 								echo "<td align='center'><input type='text' class='form-control input-sm text-right autoNumeric5 jumlah_sekali_pengiriman' style='width: 120px;' name='detail[" . $key . "][jumlah_sekali_pengiriman]' value=''></td>";
 								echo "<td align='center'><input type='text' class='form-control input-sm text-right autoNumeric5 cycle_order' style='width: 120px;' name='detail[" . $key . "][cycle_order]' value=''></td>";
 								echo "<td class='text-right'>
-									";
-								// <button type='button' class='btn btn-success btn-sm' onclick='addTgl(this)' data-key='" . $key . "'><i class='fa fa-plus'></i></button>
-								// 	<button type='button' class='btn btn-danger btn-sm' onclick='removeTgl(this)' data-key='" . $key . "'><i class='fa fa-trash'></i></button>
-								// 	<a class='btn btn-primary btn-sm edit_tgl' href='javascript:void(0)' title='Edit' data-id='" . $value['id'] . "' data-so='" . $value['so_number'] . "'><i class='fa fa-edit'></i></a>
-								$url1 = 'Mat_plan_base_on_produksi/plan_detail_tgl/'.$value['id'].'/'.$value['so_number'];
-								$link_add_tgl = base_url($url1);
-								?>
-								<a class="btn btn-success btn-sm" style="float:right;" href="<?= $link_add_tgl ?>" title='Add Tanggal'>Add Tanggal</a>
-								<?php
-								echo "</td>";
+									<button type='button' class='btn btn-success btn-sm' onclick='addTgl(this)' data-key='" . $key . "'><i class='fa fa-plus'></i></button>
+									<button type='button' class='btn btn-danger btn-sm' onclick='removeTgl(this)' data-key='" . $key . "'><i class='fa fa-trash'></i></button>
+								</td>";
 								echo "</tr>";
 								$i++;
 							}
@@ -358,15 +351,15 @@
 			return s.join(dec);
 		}
 
-		$(document).on('click', '.edit_tgl', function(e) {
+		$(document).on('click', '.add_tgl', function(e) {
 			var id = $(this).data('id');
 			var so = $(this).data('so');
-			// console.log(id + '||' + so);
+			// console.log(id);
 			// return;
-			$("#head_title").html("<b>Detail Plan Tanggal</b>");
+			$("#head_title").html("<b>Add Tanggal</b>");
 			$.ajax({
 				type: 'POST',
-				url: siteurl + active_controller + '/plan_detail_tgl/' + id + '/' + so,
+				url: siteurl + active_controller + '/add_tgl/' + id + '/' + so,
 				success: function(data) {
 					$("#dialog-popup").modal();
 					$("#ModalView").html(data);
