@@ -448,6 +448,8 @@ class Request_pr_material extends Admin_Controller
         )
       )
       ->result_array();
+      // echo $this->db->last_query();
+      // die();
 
     $data = [
       'so_number' => $so_number,

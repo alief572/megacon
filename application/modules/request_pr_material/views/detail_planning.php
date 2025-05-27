@@ -143,9 +143,9 @@ if (!empty($header)) {
 							<th class='text-center th'>Stock Free (Kg)</th>
 							<th class='text-center th'>Use Stock (Kg)</th>
 							<th class='text-center th'>Sisa Stock Free (Kg)</th> -->
-								<th class='text-center th'>Min Stock</th>
+								<!-- <th class='text-center th'>Min Stock</th>
 								<th class='text-center th'>Max Stock</th>
-								<th class='text-center th'>Min Order</th>
+								<th class='text-center th'>Min Order</th> -->
 								<th class='text-center th'>Qty PR</th>
 								<th class='text-center th'>Qty Rev</th>
 								<th class='text-center th'>Note</th>
@@ -156,27 +156,39 @@ if (!empty($header)) {
 							<?php
 							foreach ($detail as $key => $value) {
 								$key++;
+								if(is_numeric($value['id_material'])){
+									$dataMaterial = $this->db->get_where('tr_jenis_beton_detail', [
+						            'id_detail_material' => $value['id_material']
+						        	])->row();
+								}else{
+									$dataMaterial = $this->db->get_where('tr_jenis_beton_detail', [
+						            'id_material' => $value['id_material']
+						        	])->row();
+								}
 								$nm_material 	= $value['nm_material'];
+								$name_material = @$dataMaterial->nm_material;
 								// $nm_material 	= (!empty($GET_LEVEL4[$value['id_material']]['nama'])) ? $GET_LEVEL4[$value['id_material']]['nama'] : '';
 								$stock_free 	= $value['stock_free'];
 								$use_stock 		= $value['use_stock'];
 								$sisa_free 		= $stock_free - $use_stock;
 								$propose 		= $value['propose_purchase'];
+								$total_estimasi_material 		= $value['total_estimasi_material'];
 
-								if ($propose > 0) {
+								// if ($propose > 0) {
 									echo "<tr>";
 									echo "<td class='text-center'>" . $key . "</td>";
-									echo "	<td class='text-left'>" . $nm_material . "
+									echo "	<td class='text-left'>" . $name_material . "
 										<input type='hidden' name='detail[" . $key . "][id]' value='" . $value['id'] . "'>
 										</td>";
 									// echo "<td class='text-right qty_order'>".number_format($value['qty_order'],5)."</td>";
 									// echo "<td class='text-right stock_free'>".number_format($stock_free,5)."</td>";
 									// echo "<td class='text-right stock_free'>".number_format($use_stock,5)."</td>";
 									// echo "<td class='text-right sisa_free'>".number_format($sisa_free,5)."</td>";
-									echo "<td class='text-right min_stok'>" . number_format($value['min_stok'], 2) . "</td>";
-									echo "<td class='text-right max_stok'>" . number_format($value['max_stok'], 2) . "</td>";
-									echo "<td class='text-right min_order'>" . number_format(0, 2) . "</td>";
-									echo "<td class='text-right'>" . number_format($propose, 2) . "</td>";
+									// echo "<td class='text-right min_stok'>" . number_format($value['min_stok'], 2) . "</td>";
+									// echo "<td class='text-right max_stok'>" . number_format($value['max_stok'], 2) . "</td>";
+									// echo "<td class='text-right min_order'>" . number_format(0, 2) . "</td>";
+									// echo "<td class='text-right'>" . number_format($propose, 2) . "</td>";
+									echo "<td class='text-right'>" . number_format($total_estimasi_material, 2) . "</td>";
 									echo "<td class='text-center'>" . number_format($value['propose_rev'], 2) . "</td>";
 									echo "<td class='text-left'>".$value['note']."</td>";
 									if ($value['status_app'] == 'N') {
@@ -189,7 +201,7 @@ if (!empty($header)) {
 										echo "<td class='text-center'><span class='badge bg-red text-bold'>Rejected</span></td>";
 									}
 									echo "</tr>";
-								}
+								// }
 							}
 							?>
 						</tbody>

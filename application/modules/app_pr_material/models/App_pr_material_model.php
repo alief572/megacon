@@ -69,9 +69,35 @@ class App_pr_material_model extends BF_Model
         $nomor = $urut1 + $start_dari;
       }
 
+      $bulanAngka = $row['periode_bulan']; // "01", "02", dst
+      $tahun = $row['periode_tahun']; // "2024"
+      // Mapping angka ke nama bulan Indonesia
+      $namaBulanIndonesia = [
+          '1' => 'Januari',
+          '2' => 'Februari',
+          '3' => 'Maret',
+          '4' => 'April',
+          '5' => 'Mei',
+          '6' => 'Juni',
+          '7' => 'Juli',
+          '8' => 'Agustus',
+          '9' => 'September',
+          '10' => 'Oktober',
+          '11' => 'November',
+          '12' => 'Desember'
+      ];
+    $namaBulan = isset($namaBulanIndonesia[$bulanAngka]) ? $namaBulanIndonesia[$bulanAngka] : 'Bulan Tidak Valid';
+    // Gabungkan jadi format "Januari 2024"
+    $periodeLabel = $namaBulan . ' ' . $tahun;
+
       $nestedData   = array();
       $nestedData[]  = "<div align='center'>" . $nomor . "</div>";
-      $nestedData[]  = "<div align='left'>" . strtoupper('PRODUCTION PLANNING ' . $row['so_number']) . "</div>";
+      if($row['category'] == 'base on production'){
+        $nestedData[]  = "<div align='left'>" . strtoupper('Material Planning Periode ' . $periodeLabel) . "</div>";
+      }else{
+        $nestedData[]  = "<div align='left'>" . strtoupper('Isi Ulang Stok') . "</div>";
+      }
+      // $nestedData[]  = "<div align='left'>" . strtoupper('PRODUCTION PLANNING ' . $row['so_number']) . "</div>";//version old
       $nestedData[]  = "<div align='left'>" . strtoupper($row['so_number']) . "</div>";
       $nestedData[]  = "<div align='center'>" . strtoupper($row['no_pr']) . "</div>";
       $nestedData[]  = "<div align='left'>" . strtoupper($row['project']) . "</div>";
