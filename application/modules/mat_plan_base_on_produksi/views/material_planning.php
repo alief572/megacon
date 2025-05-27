@@ -17,38 +17,32 @@
 							<td width='29%'>
 								<div style="display: flex; gap: 10px;">
 								<!-- <input type="month" id="bulanTahun" name="bulanTahun"> -->
-								<select id="bulan" name="bulan" class="form-control" style="width: 20%;" <?= (@$DataPlan->periode_bulan != '') ? 'disabled' : '' ?> >
-								    <option value="01" <?= (@$DataPlan->periode_bulan == '1' || @$DataPlan->periode_bulan == '01') ? 'selected' : '' ?>>Januari</option>
-								    <option value="02" <?= (@$DataPlan->periode_bulan == '2') ? 'selected' : '' ?>>Februari</option>
-								    <option value="03" <?= (@$DataPlan->periode_bulan == '3') ? 'selected' : '' ?>>Maret</option>
-								    <option value="04" <?= (@$DataPlan->periode_bulan == '4') ? 'selected' : '' ?>>April</option>
-								    <option value="05" <?= (@$DataPlan->periode_bulan == '5') ? 'selected' : '' ?>>Mei</option>
-								    <option value="06" <?= (@$DataPlan->periode_bulan == '6') ? 'selected' : '' ?>>Juni</option>
-								    <option value="07" <?= (@$DataPlan->periode_bulan == '7') ? 'selected' : '' ?>>Juli</option>
-								    <option value="08" <?= (@$DataPlan->periode_bulan == '8') ? 'selected' : '' ?>>Agustus</option>
-								    <option value="09" <?= (@$DataPlan->periode_bulan == '9') ? 'selected' : '' ?>>September</option>
-								    <option value="10" <?= (@$DataPlan->periode_bulan == '10') ? 'selected' : '' ?>>Oktober</option>
-								    <option value="11" <?= (@$DataPlan->periode_bulan == '11') ? 'selected' : '' ?>>November</option>
-								    <option value="12" <?= (@$DataPlan->periode_bulan == '12') ? 'selected' : '' ?>>Desember</option>
-								</select>
-								<select id="tahun" name="tahun" class="form-control" style="width: 20%;" <?= (@$DataPlan->periode_tahun != '') ? 'disabled' : '' ?> >
-								<script>
-								    const tahunSelect = document.getElementById('tahun');
-								    const tahunSekarang = new Date().getFullYear();
-								    const selectedYear = tahunSelect.getAttribute('data-selected-year');
-
-								    for (let i = tahunSekarang; i >= tahunSekarang - 10; i--) {
-								        const option = document.createElement('option');
-								        option.value = i;
-								        option.textContent = i;
-
-								        if (selectedYear == i) {
-								            option.selected = true;
-								        }
-
-								        tahunSelect.appendChild(option);
+								<!-- SELECT BULAN -->
+								<!-- <?= (!empty($header[0]['periode_bulan'])) ? 'disabled' : '' ?> -->
+								<select id="bulan" name="bulan" class="form-control" style="width: 20%;"  >
+								    <?php
+								    $namaBulan = [
+								        1 => 'Januari', 2 => 'Februari', 3 => 'Maret',
+								        4 => 'April', 5 => 'Mei', 6 => 'Juni',
+								        7 => 'Juli', 8 => 'Agustus', 9 => 'September',
+								        10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+								    ];
+								    for ($i = 1; $i <= 12; $i++) {
+								        $selected = ($header[0]['periode_bulan'] == $i || $header[0]['periode_bulan'] == sprintf('%02d', $i)) ? 'selected' : '';
+								        echo "<option value=\"$i\" $selected>{$namaBulan[$i]}</option>";
 								    }
-								</script>
+								    ?>
+								</select>
+								<!-- SELECT TAHUN -->
+								<!-- <?= (!empty($header[0]['periode_tahun'])) ? 'disabled' : '' ?> -->
+								<select id="tahun" name="tahun" class="form-control" style="width: 20%;"  >
+								    <?php
+								    $tahunSekarang = date('Y');
+								    for ($i = $tahunSekarang; $i >= $tahunSekarang - 10; $i--) {
+								        $selected = ($header[0]['periode_tahun'] == $i) ? 'selected' : '';
+								        echo "<option value=\"$i\" $selected>$i</option>";
+								    }
+								    ?>
 								</select>
 								</div>
 							</td>
@@ -106,72 +100,112 @@
 						</thead>
 						<tbody>
 							<?php
-							 $i = 1;
-							$GET_OUTANDING_PR = get_pr_on_progress();
+							$i = 1;
+							$GET_OUTSTANDING_PR = get_pr_on_progress();
+
 							foreach ($detail as $key => $value) {
-								$key++;
-								$nm_material = $value['nm_material'];
-								$stock_free = (!empty($GET_STOK_PUSAT[$value['id_material']]['stok'])) ? (float)$GET_STOK_PUSAT[$value['id_material']]['stok'] : 0;
-								$use_stock = (!empty($value['use_stock'])) ? $value['use_stock'] : $value['qty_order'];
-								if ($stock_free < $use_stock) {
-									$use_stock = $stock_free;
-								}
+							    $key++;
 
-								$use_stock_new = 0;
-								if ($use_stock > 0) {
-									$use_stock_new = $use_stock;
-								}
+							    // Ambil data material
+							    $nm_material = $value['nm_material'];
+							    $stock_free = !empty($GET_STOK_PUSAT[$value['id_material']]['stok']) 
+							        ? (float)$GET_STOK_PUSAT[$value['id_material']]['stok'] 
+							        : 0;
 
-								$sisa_free = $stock_free - $use_stock;
+							    // Gunakan stok atau qty_order
+							    $use_stock = !empty($value['use_stock']) 
+							        ? $value['use_stock'] 
+							        : $value['qty_order'];
 
-								$propose = 0;
-								if (empty($value['propose_purchase'])) {
-									if ($stock_free < $value['min_stok']) {
-										$propose = ($value['min_stok'] - $sisa_free) + ($value['max_stok'] - $value['min_stok']);
-									}
-								} else {
-									$propose = $value['propose_purchase'];
-								}
+							    // Sesuaikan use_stock jika stok kurang
+							    if ($stock_free < $use_stock) {
+							        $use_stock = $stock_free;
+							    }
 
-								$outanding_pr = (!empty($GET_OUTANDING_PR[$value['id_material']]) and $GET_OUTANDING_PR[$value['id_material']] > 0) ? $GET_OUTANDING_PR[$value['id_material']] : 0;
-								$pemakaian_sehari = (!empty($value['daily_usage_qty'])) ? $value['daily_usage_qty'] : 0;
-								if ($pemakaian_sehari > 0) {
-									$hasil = $stock_free / $pemakaian_sehari;
-								} else {
-									$hasil = 0;
-								}
-								$sisa_kecukupan = $hasil;
+							    $use_stock_new = ($use_stock > 0) ? $use_stock : 0;
+							    $sisa_free = $stock_free - $use_stock;
 
-								echo "<tr data-key='". $key. "' >";
-								echo "<td class='text-center'>" . $i . "</td>";
-								echo "<td class='text-left'>" . $nm_material . "
-									<input type='hidden' name='detail[" . $key . "][id]' value='" . $value['id'] . "'>
-									<input type='hidden' name='detail[" . $key . "][code_material]' value='" . $value['id_material'] . "'>
-									<input type='hidden' name='detail[" . $key . "][stock_free]' value='" . $stock_free . "'>
-									<input type='hidden' name='detail[" . $key . "][min_stok]' value='" . $value['min_stok'] . "'>
-									<input type='hidden' name='detail[" . $key . "][max_stok]' value='" . $value['max_stok'] . "'>
-									</td>";
-								echo "<td class='text-right qty_order'>" . number_format($value['nominal_kg'], 5) . "</td>";
-								echo "<td class='text-right stock_free'>" . number_format($stock_free, 5) . "</td>";
-								echo "<td align='center'><input type='text' class='form-control input-sm text-right autoNumeric5 pemakaian_sehari' style='width: 120px;' name='detail[" . $key . "][pemakaian_sehari]' value='" . $pemakaian_sehari . "'></td>";
-								echo "<td class='text-right sisa_free'>" . number_format($sisa_kecukupan, 5) . "</td>";
-								echo "<td align='center'><input type='text' class='form-control input-sm text-right autoNumeric5 jumlah_sekali_pengiriman' style='width: 120px;' name='detail[" . $key . "][jumlah_sekali_pengiriman]' value=''></td>";
-								echo "<td align='center'><input type='text' class='form-control input-sm text-right autoNumeric5 cycle_order' style='width: 120px;' name='detail[" . $key . "][cycle_order]' value=''></td>";
-								echo "<td class='text-right'>
-									";
-								// <button type='button' class='btn btn-success btn-sm' onclick='addTgl(this)' data-key='" . $key . "'><i class='fa fa-plus'></i></button>
-								// 	<button type='button' class='btn btn-danger btn-sm' onclick='removeTgl(this)' data-key='" . $key . "'><i class='fa fa-trash'></i></button>
-								// 	<a class='btn btn-primary btn-sm edit_tgl' href='javascript:void(0)' title='Edit' data-id='" . $value['id'] . "' data-so='" . $value['so_number'] . "'><i class='fa fa-edit'></i></a>
-								$url1 = 'Mat_plan_base_on_produksi/plan_detail_tgl/'.$value['id'].'/'.$value['so_number'];
-								$link_add_tgl = base_url($url1);
-								?>
-								<a class="btn btn-success btn-sm" style="float:right;" href="<?= $link_add_tgl ?>" title='Add Tanggal'>Add Tanggal</a>
-								<?php
-								echo "</td>";
-								echo "</tr>";
-								$i++;
+							    // Hitung kebutuhan pengadaan (propose)
+							    $propose = 0;
+							    if (empty($value['propose_purchase'])) {
+							        if ($stock_free < $value['min_stok']) {
+							            $propose = ($value['min_stok'] - $sisa_free) + ($value['max_stok'] - $value['min_stok']);
+							        }
+							    } else {
+							        $propose = $value['propose_purchase'];
+							    }
+
+							    // Outstanding PR
+							    $outstanding_pr = (!empty($GET_OUTSTANDING_PR[$value['id_material']]) && $GET_OUTSTANDING_PR[$value['id_material']] > 0) 
+							        ? $GET_OUTSTANDING_PR[$value['id_material']] 
+							        : 0;
+
+							    // Pemakaian per hari
+							    $pemakaian_sehari = !empty($value['daily_use_qty']) ? $value['daily_use_qty'] : 0;
+							    $sisa_kecukupan = ($pemakaian_sehari > 0) ? $stock_free / $pemakaian_sehari : 0;
+							    $sisa_kecukupan_text = !empty($value['sisa_kecukupan']) ? $value['sisa_kecukupan'] : $sisa_kecukupan;
+							    $estimasi_sekali_kirim = !empty($value['estimasi_sekali_kirim']) ? $value['estimasi_sekali_kirim'] : 0;
+							    $cycle_order = !empty($value['cycle_order']) ? $value['cycle_order'] : 0;
+
+							    // Mulai generate row
+							    echo "<tr data-key='{$key}' class='row-detail'>";
+
+							    echo "<td class='text-center'>{$i}</td>";
+
+							    echo "<td class='text-left'>{$nm_material}
+							        <input type='hidden' name='detail[{$key}][id]' value='{$value['id']}'>
+							        <input type='hidden' name='detail[{$key}][code_material]' value='{$value['id_material']}'>
+							        <input type='hidden' name='detail[{$key}][stock_free]' value='{$stock_free}'>
+							        <input type='hidden' name='detail[{$key}][min_stok]' value='{$value['min_stok']}'>
+							        <input type='hidden' name='detail[{$key}][max_stok]' value='{$value['max_stok']}'>
+							    </td>";
+
+							    echo "<td class='text-right qty_order'>" . number_format($value['nominal_kg'], 5) . "
+							        <input type='hidden' name='detail[{$key}][total_estimasi_material]' value='{$value['nominal_kg']}'>
+							    </td>";
+
+							    echo "<td class='text-right stock_free'>" . number_format($stock_free, 5) . "</td>";
+
+							    echo "<td align='center'>
+							        <input type='text' class='form-control input-sm text-right daily_use_qty' 
+							               style='width: 120px;' 
+							               name='detail[{$key}][daily_use_qty]' 
+							               value='{$pemakaian_sehari}'>
+							    </td>";
+
+							    echo "<td class='text-right sisa_free'>" . number_format($sisa_kecukupan_text) . "
+							        <input type='hidden' class='form-control input-sm text-right sisa_kecukupan' name='detail[{$key}][sisa_kecukupan]' value='{$sisa_kecukupan_text}'>
+							    </td>";
+
+							    echo "<td align='center'>
+							        <input type='text' class='form-control input-sm text-right estimasi_sekali_kirim' 
+							               style='width: 120px;' 
+							               name='detail[{$key}][estimasi_sekali_kirim]' 
+							               value='{$estimasi_sekali_kirim}'>
+							    </td>";
+
+							    echo "<td align='center'>
+							        <input type='text' class='form-control input-sm text-right cycle_order' 
+							               style='width: 120px;' 
+							               name='detail[{$key}][cycle_order]' 
+							               value='{$cycle_order}' 
+							               readonly>
+							    </td>";
+
+							    // Link add tanggal
+							    $url1 = 'Mat_plan_base_on_produksi/plan_detail_tgl/' . $value['id'] . '/' . $value['so_number'];
+							    $link_add_tgl = base_url($url1);
+
+							    echo "<td class='text-right'>
+							        <a class='btn btn-success btn-sm' style='float:right;' href='{$link_add_tgl}' title='Add Tanggal'>Add Tanggal</a>
+							    </td>";
+
+							    echo "</tr>";
+
+							    $i++;
 							}
 							?>
+
 						</tbody>
 					</table>
 				</div>
@@ -208,6 +242,61 @@
 			cursor: pointer;
 		}
 	</style>
+
+
+<script>
+class CycleOrderRow {
+    constructor(row) {
+        this.row = row;
+        this.pemakaianInput = row.querySelector('.daily_use_qty');
+        this.jumlahInput = row.querySelector('.estimasi_sekali_kirim');
+        this.cycleOutput = row.querySelector('.cycle_order');
+
+        this.init();
+    }
+
+    init() {
+        if (!this.pemakaianInput || !this.jumlahInput || !this.cycleOutput) return;
+
+        this.jumlahInput.addEventListener('input', () => this.hitung());
+        this.pemakaianInput.addEventListener('input', () => this.hitung());
+
+        // Hitung awal jika ada nilai default
+        this.hitung();
+    }
+
+    parseNumber(str) {
+        if (!str) return 0;
+        return parseFloat(str.replace(/[^0-9.,]/g, '').replace(/\./g, '').replace(',', '.'));
+    }
+
+    hitung() {
+        const pemakaian = this.parseNumber(this.pemakaianInput.value);
+        const jumlah = this.parseNumber(this.jumlahInput.value);
+
+        // if (!isNaN(pemakaian) && pemakaian > 0 && !isNaN(jumlah)) {
+        //     const cycle = jumlah / pemakaian;
+        //     this.cycleOutput.value = cycle.toFixed(2);
+        // } else {
+        //     this.cycleOutput.value = '';
+        // }
+        if (!isNaN(pemakaian) && !isNaN(jumlah)) {
+		    const cycle = pemakaian === 0 ? 0 : jumlah / pemakaian;
+		    this.cycleOutput.value = cycle.toFixed(2);
+		} else {
+		    this.cycleOutput.value = '';
+		}
+    }
+}
+
+// Jalankan saat halaman siap
+			document.addEventListener('DOMContentLoaded', function () {
+			    document.querySelectorAll('.row-detail').forEach(row => {
+			        new CycleOrderRow(row);
+			    });
+			});
+
+</script>
 
 	<script type="text/javascript">
 		//$('#input-kendaraan').hide();
@@ -262,12 +351,34 @@
 
 			$('#save').click(function(e) {
 				e.preventDefault();
-				var tgl_dibutuhkan = $("#tgl_dibutuhkan").val();
+				// var tgl_dibutuhkan = $("#tgl_dibutuhkan").val();
+				var tgl_dibutuhkan = $("#bulan").val();
+				var tgl_dibutuhkan = $("#tahun").val();
 
-				if (tgl_dibutuhkan == '') {
+				// if (tgl_dibutuhkan == '') {
+				// 	swal({
+				// 		title: "Error Message!",
+				// 		text: 'Tanggal Dibutuhkan masih kosong ...',
+				// 		type: "warning"
+				// 	});
+				// 	$('#save').prop('disabled', false);
+				// 	return false;
+				// }
+
+				if (bulan == '') {
 					swal({
 						title: "Error Message!",
-						text: 'Tanggal Dibutuhkan masih kosong ...',
+						text: 'Bulan masih kosong ...',
+						type: "warning"
+					});
+					$('#save').prop('disabled', false);
+					return false;
+				}
+
+				if (tahun == '') {
+					swal({
+						title: "Error Message!",
+						text: 'Tahun masih kosong ...',
 						type: "warning"
 					});
 					$('#save').prop('disabled', false);
@@ -330,6 +441,13 @@
 							return false;
 						}
 					});
+			});
+
+			// Jalankan saat halaman siap
+			document.addEventListener('DOMContentLoaded', function () {
+			    document.querySelectorAll('.row-detail').forEach(row => {
+			        new CycleOrderRow(row);
+			    });
 			});
 
 		});
@@ -417,4 +535,6 @@ function deleteTgl(btn) {
     }
   }
 }
+
 </script>
+

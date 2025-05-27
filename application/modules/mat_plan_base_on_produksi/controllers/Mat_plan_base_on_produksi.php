@@ -63,10 +63,15 @@ class Mat_plan_base_on_produksi extends Admin_Controller
     if ($this->input->post()) {
       $data         = $this->input->post();
       $session      = $this->session->userdata('app_session');
-
+      // print_r($data);
+      // die();
       $so_number        = $data['so_number'];
       $tgl_dibutuhkan    = (!empty($data['tgl_dibutuhkan'])) ? date('Y-m-d', strtotime($data['tgl_dibutuhkan'])) : NULL;
-      $detail            = $data['detail'];
+      $bulan = (!empty($data['bulan']) && !empty($data['tahun'])) ? date('m', strtotime($data['tahun'] . '-' . $data['bulan'] . '-01')) : NULL;
+      $tahun = (!empty($data['bulan']) && !empty($data['tahun'])) ? date('Y', strtotime($data['tahun'] . '-' . $data['bulan'] . '-01')) : NULL;
+      $detail = $data['detail'];
+      // print_r($bulan.'||'.$tahun);
+      // die();
 
 
       $ArrPlanningDetail = [];
@@ -76,29 +81,45 @@ class Mat_plan_base_on_produksi extends Admin_Controller
       if (!empty($detail)) {
         foreach ($detail as $key => $value) {
           //Planning
-          $use_stock = str_replace(',', '', $value['use_stock']);
-          $propose = str_replace(',', '', $value['propose']);
+          // $use_stock = str_replace(',', '', $value['use_stock']);//version old
+          // $propose = str_replace(',', '', $value['propose']);//version old
+          $total_estimasi_material = str_replace(',', '', $value['total_estimasi_material']);
 
           $ArrPlanningDetail[$key]['id'] = $value['id'];
           $ArrPlanningDetail[$key]['stock_free'] = $value['stock_free'];
           $ArrPlanningDetail[$key]['min_stock'] = $value['min_stok'];
           $ArrPlanningDetail[$key]['max_stock'] = $value['max_stok'];
-          $ArrPlanningDetail[$key]['use_stock'] = $use_stock;
-          $ArrPlanningDetail[$key]['propose_purchase'] = $propose;
-          $ArrPlanningDetail[$key]['note'] = $value['note'];
+          // $ArrPlanningDetail[$key]['use_stock'] = $use_stock;//version old
+          // $ArrPlanningDetail[$key]['propose_purchase'] = $propose;//version old
+          // $ArrPlanningDetail[$key]['note'] = $value['note'];//version old
+          $ArrPlanningDetail[$key]['total_estimasi_material'] = $total_estimasi_material;
+          $ArrPlanningDetail[$key]['daily_use_qty'] = $value['daily_use_qty'];
+          $ArrPlanningDetail[$key]['sisa_kecukupan'] = $value['sisa_kecukupan'];
+          $ArrPlanningDetail[$key]['estimasi_sekali_kirim'] = $value['estimasi_sekali_kirim'];
+          $ArrPlanningDetail[$key]['cycle_order'] = $value['cycle_order'];
+          $ArrPlanningDetail[$key]['updated_by'] = $this->id_user;
+          $ArrPlanningDetail[$key]['updated_date'] = $this->datetime;
 
           $ArrStock[$key]['id'] = $value['code_material'];
-          $ArrStock[$key]['qty'] = $use_stock;
+          // $ArrStock[$key]['qty'] = $use_stock;
 
-          $SUM_USE += $use_stock;
-          $SUM_PROPOSE += $propose;
+          // $SUM_USE += $use_stock;
+          // $SUM_PROPOSE += $propose;
         }
       }
 
+      //start version old
+      // $ArrHeader_old = array(
+      //   'tgl_dibutuhkan'  => $tgl_dibutuhkan,
+      //   'qty_use_stok'  => $SUM_USE,
+      //   'qty_propose'  => $SUM_PROPOSE,
+      //   'updated_by'      => $this->id_user,
+      //   'updated_date'    => $this->datetime
+      // );
+      //end version old
       $ArrHeader = array(
-        'tgl_dibutuhkan'  => $tgl_dibutuhkan,
-        'qty_use_stok'  => $SUM_USE,
-        'qty_propose'  => $SUM_PROPOSE,
+        'periode_bulan'  => $bulan,
+        'periode_tahun' => $tahun,
         'updated_by'      => $this->id_user,
         'updated_date'    => $this->datetime
       );
@@ -350,20 +371,182 @@ class Mat_plan_base_on_produksi extends Admin_Controller
           )
         )
         ->result_array();
+        // $detail_tgl   = $this->db
+        // ->select('a.*, b.satuan_lainnya as nominal_kg, c.nama as nm_material, c.max_stok, c.min_stok, c.daily_usage_qty')
+        // ->join('tr_jenis_beton_detail b', 'b.id_detail_material = a.id_material', 'left')
+        // ->join('new_inventory_4 c', 'b.id_material = c.code_lv4', 'left')
+        // ->get_where(
+        //   'material_planning_base_on_produksi_detail_tgl a',
+        //   array(
+        //     'a.so_number' => $so,
+        //     'a.deleted_by' => NULL
+        //   )
+        // )
+        // ->result_array();
+        $detail_tgl = $this->db
+        ->select('a.*, b.satuan_lainnya as nominal_kg, c.nama as nm_material, c.max_stok, c.min_stok, c.daily_usage_qty')
+        ->from('material_planning_base_on_produksi_detail_tgl a')
+        ->join('tr_jenis_beton_detail b', 'b.id_detail_material = a.id_material', 'left')
+        ->join('new_inventory_4 c', 'b.id_material = c.code_lv4', 'left')
+        ->where('a.so_number', $so)
+        ->where('a.deleted_by IS NULL', null, false) // penting: false untuk raw query
+        ->get()
+        ->result_array();
+
         // echo $this->db->last_query();
         // die();
 
       $data = [
+        'id_detail' => $id,
         'so_number' => $so,
         'header' => $header,
-        'detail' => $detail
+        'detail' => $detail,
+        'detail_tgl' => $detail_tgl
         // 'GET_LEVEL4'   => get_inventory_lv4(),
         // 'GET_STOK_PUSAT' => getStokMaterial(1)
       ];
 
       $this->template->title('Set Detail Plan Tanggal');
       $this->template->render('material_planning_detail_tgl', $data);
-    
   }
+
+  public function add_plan_date($id=null,$so=null,$id_plan_detail=null,$id_material=null){  
+      // print_r($id.'||'.$so);
+      // die();
+      if(empty($id)){
+        $this->auth->restrict($this->addPermission);
+      }
+      else{
+        $this->auth->restrict($this->managePermission);
+      }
+      if($this->input->post()){
+        $post = $this->input->post();
+        // print_r($post);
+        // echo "<br>";
+        // print_r($id_plan_detail);
+        // die();
+        $id_plan_detail   = $post['id_detail'];
+        $id   = $post['id'];
+        $so_number   = $post['so_number'];
+        $id_material = $post['id_material'];
+        $tgl_rencana = $post['tgl_rencana'];
+        $getDataMaterial = $this->db->get_where('tr_jenis_beton_detail',array('id_detail_material' => $id_material))->row();
+        $MaterialName = $getDataMaterial->nm_material;
+        // $id_plan_detail = (!empty($id_plan_detail))?$id_plan_detail : NULL;
+        // $nama = $post['nama'];
+        // print_r($getDataMaterial->nm_material);
+        // die();
+
+        $last_by    = (!empty($id))?'updated_by':'created_by';
+        $last_date  = (!empty($id))?'updated_date':'created_date';
+        $label      = (!empty($id))?'Edit':'Add';
+
+        $dataHeader = $this->db->get_where('material_planning_base_on_produksi',array('so_number' => $so))->row();
+        $dataDetail = $this->db->get_where('material_planning_base_on_produksi_detail',array('id' => $id))->row();
+        // $listData_tgl = null;
+
+        $dataProcess = [
+          'id_material_planning_base_on_produksi_detail' => $id,
+          'so_number' => $so_number,
+          'id_material' => $id_material,
+          'name_material' => $MaterialName,
+          'tgl_rencana_kedatangan' => $tgl_rencana,
+          $last_by    => $this->id_user,
+          $last_date  => $this->datetime
+        ];
+
+        $dataProcessUpdate = [
+          'tgl_rencana_kedatangan' => $tgl_rencana,
+          $last_by    => $this->id_user,
+          $last_date  => $this->datetime
+        ];
+
+        // print_r($dataProcessUpdate);
+        // echo "<br>";
+        // print_r($id);
+        // die();
+
+        $this->db->trans_start();
+          if(empty($id)){
+            $this->db->insert('material_planning_base_on_produksi_detail_tgl',$dataProcess);
+          }
+          else{
+            $this->db->where('id',$id);
+            $this->db->update('material_planning_base_on_produksi_detail_tgl',$dataProcessUpdate);
+          }
+        $this->db->trans_complete();  
+
+        if($this->db->trans_status() === FALSE){
+          $this->db->trans_rollback();
+          $status = array(
+            'pesan'   =>'Failed process data!',
+            'status'  => 0
+          );
+        } else {
+          $this->db->trans_commit();
+          $status = array(
+            'pesan'   =>'Success process data!',
+            'status'  => 1
+          );
+          history($label." Material Planning Base On produksi Detail Tanggal : ".$id);
+        }
+        echo json_encode($status);
+      }
+      else{
+        // $listData = $this->db->get_where('ms_department',array('id' => $id))->result();
+        // print_r($id.'||no save||'.$so.'||'.$id_plan_detail);
+        // die();
+        $dataHeader = $this->db->get_where('material_planning_base_on_produksi',array('so_number' => $so))->row();
+        $dataDetail = $this->db->get_where('material_planning_base_on_produksi_detail',array('id' => $id))->row();
+        $listData_tgl = $this->db->get_where('material_planning_base_on_produksi_detail_tgl',array('id' => $id_plan_detail))->row();
+        // echo $this->db->last_query($listData_tgl);
+        // die();
+        // print_r($listData_tgl->tgl_rencana_kedatangan);
+        // die();
+        $data = [
+          'dataHeader' => $dataHeader,
+          'dataDetail' => $dataDetail,
+          'listDataTgl' => $listData_tgl,
+          'id_detail' => $id,
+          'so_number' => $so
+        ];
+        $this->template->set($data);
+        $this->template->render('modal_material_planning_detail_tgl');
+      }
+    }
+
+    public function delete_date_plan(){
+      $this->auth->restrict($this->deletePermission);
+      
+      $id = $this->input->post('id');
+      $data = [
+        'deleted_by'    => $this->id_user,
+        'deleted_date'  => $this->datetime
+      ];
+      // print_r($data);
+      // echo "<br>";
+      // print_r($id);
+      // die();
+
+      $this->db->trans_begin();
+      $this->db->where('id',$id)->update("material_planning_base_on_produksi_detail_tgl",$data);
+
+      if($this->db->trans_status() === FALSE){
+        $this->db->trans_rollback();
+        $status = array(
+          'pesan'   =>'Failed process data!',
+          'status'  => 0
+        );
+      } else {
+        $this->db->trans_commit();
+        $status = array(
+          'pesan'   =>'Success process data!',
+          'status'  => 1
+        );
+        history("Delete department : ".$id);
+      }
+      echo json_encode($status);
+    }
+
 
 }

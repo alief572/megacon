@@ -60,13 +60,13 @@ if($free_stock < $min_stock){
                 <input type="text" name='due_date' id='due_date' class='form-control text-center datepicker' readonly>
         	</div>
         </div>
-        <div class="form-group row">
+        <div class="form-group row" hidden>
         	<div class="col-md-2">
-				<label for="customer">Propose <span class='text-red'>*</span></label>
-			</div>
-			<div class="col-md-2">
-            <input type="text" name='propose' id='propose' class='form-control text-center autoNumeric0' value='<?=$propose;?>'>
-            </div>
+						<label for="customer">Propose <span class='text-red'>*</span></label>
+					</div>
+					<div class="col-md-2">
+		          <input type="text" name='propose' id='propose' class='form-control text-center autoNumeric0' value='<?=$propose;?>'>
+      		</div>
         </div>
 		
 		<div class="form-group row">

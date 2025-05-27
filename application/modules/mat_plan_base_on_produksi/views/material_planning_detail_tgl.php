@@ -1,7 +1,8 @@
 <div class="box box-primary">
 	<div class="box-body">
 		<form id="data-form" method="post" autocomplete="off"><br>
-			<input type="hidden" name='so_number' value='<?= $header[0]['so_number']; ?>'>
+			<input type="hidden" name='so_number' id='so_number' value='<?= $header[0]['so_number']; ?>'>
+			<input type="hidden" name='id_material_plan_detail' id='id_material_plan_detail' value='<?= $id_detail; ?>'>
 			<div class="form-group row">
 				<div class="col-md-12">
 					<table class='table' width='70%'>
@@ -17,38 +18,28 @@
 							<td width='29%'>
 								<div style="display: flex; gap: 10px;">
 								<!-- <input type="month" id="bulanTahun" name="bulanTahun"> -->
-								<select id="bulan" name="bulan" class="form-control" style="width: 20%;" <?= (@$DataPlan->periode_bulan != '') ? 'disabled' : '' ?> >
+								<select id="bulan" name="bulan" class="form-control" style="width: 20%;" <?= (!empty($header[0]['periode_bulan'])) ? 'disabled' : '' ?> >
 								    <option value="01" <?= (@$DataPlan->periode_bulan == '1' || @$DataPlan->periode_bulan == '01') ? 'selected' : '' ?>>Januari</option>
-								    <option value="02" <?= (@$DataPlan->periode_bulan == '2') ? 'selected' : '' ?>>Februari</option>
-								    <option value="03" <?= (@$DataPlan->periode_bulan == '3') ? 'selected' : '' ?>>Maret</option>
-								    <option value="04" <?= (@$DataPlan->periode_bulan == '4') ? 'selected' : '' ?>>April</option>
-								    <option value="05" <?= (@$DataPlan->periode_bulan == '5') ? 'selected' : '' ?>>Mei</option>
-								    <option value="06" <?= (@$DataPlan->periode_bulan == '6') ? 'selected' : '' ?>>Juni</option>
-								    <option value="07" <?= (@$DataPlan->periode_bulan == '7') ? 'selected' : '' ?>>Juli</option>
-								    <option value="08" <?= (@$DataPlan->periode_bulan == '8') ? 'selected' : '' ?>>Agustus</option>
-								    <option value="09" <?= (@$DataPlan->periode_bulan == '9') ? 'selected' : '' ?>>September</option>
-								    <option value="10" <?= (@$DataPlan->periode_bulan == '10') ? 'selected' : '' ?>>Oktober</option>
-								    <option value="11" <?= (@$DataPlan->periode_bulan == '11') ? 'selected' : '' ?>>November</option>
-								    <option value="12" <?= (@$DataPlan->periode_bulan == '12') ? 'selected' : '' ?>>Desember</option>
+								    <option value="02" <?= (@$header[0]['periode_bulan'] == '2') ? 'selected' : '' ?>>Februari</option>
+								    <option value="03" <?= (@$header[0]['periode_bulan'] == '3') ? 'selected' : '' ?>>Maret</option>
+								    <option value="04" <?= (@$header[0]['periode_bulan'] == '4') ? 'selected' : '' ?>>April</option>
+								    <option value="05" <?= (@$header[0]['periode_bulan'] == '5') ? 'selected' : '' ?>>Mei</option>
+								    <option value="06" <?= (@$header[0]['periode_bulan'] == '6') ? 'selected' : '' ?>>Juni</option>
+								    <option value="07" <?= (@$header[0]['periode_bulan'] == '7') ? 'selected' : '' ?>>Juli</option>
+								    <option value="08" <?= (@$header[0]['periode_bulan'] == '8') ? 'selected' : '' ?>>Agustus</option>
+								    <option value="09" <?= (@$header[0]['periode_bulan'] == '9') ? 'selected' : '' ?>>September</option>
+								    <option value="10" <?= (@$header[0]['periode_bulan'] == '10') ? 'selected' : '' ?>>Oktober</option>
+								    <option value="11" <?= (@$header[0]['periode_bulan'] == '11') ? 'selected' : '' ?>>November</option>
+								    <option value="12" <?= (@$header[0]['periode_bulan'] == '12') ? 'selected' : '' ?>>Desember</option>
 								</select>
-								<select id="tahun" name="tahun" class="form-control" style="width: 20%;" <?= (@$DataPlan->periode_tahun != '') ? 'disabled' : '' ?> >
-								<script>
-								    const tahunSelect = document.getElementById('tahun');
-								    const tahunSekarang = new Date().getFullYear();
-								    const selectedYear = tahunSelect.getAttribute('data-selected-year');
-
-								    for (let i = tahunSekarang; i >= tahunSekarang - 10; i--) {
-								        const option = document.createElement('option');
-								        option.value = i;
-								        option.textContent = i;
-
-								        if (selectedYear == i) {
-								            option.selected = true;
-								        }
-
-								        tahunSelect.appendChild(option);
+								<select id="tahun" name="tahun" class="form-control" style="width: 20%;" <?= (!empty($header[0]['periode_tahun'])) ? 'disabled' : '' ?> >
+								    <?php
+								    $tahunSekarang = date('Y');
+								    for ($i = $tahunSekarang; $i >= $tahunSekarang - 10; $i--) {
+								        $selected = ($header[0]['periode_tahun'] == $i) ? 'selected' : '';
+								        echo "<option value=\"$i\" $selected>$i</option>";
 								    }
-								</script>
+								    ?>
 								</select>
 								</div>
 							</td>
@@ -56,7 +47,9 @@
 						<tr hidden>
 							<td>Customer</td>
 							<td>:</td>
-							<td><?= @$header[0]['nm_customer']; ?></td>
+							<td>
+								&nbsp;
+							</td>
 							<td></td>
 							<td></td>
 							<td></td>
@@ -75,30 +68,21 @@
 					</table>
 				</div>
 				<div class="col-md-12">
+					<div style="align-items: left;">
+							<!-- <a class="btn btn-success btn-sm add_tgl_plan" style='float:left;' href="<?= base_url('Mat_plan_base_on_produksi/create_add_detail_tgl') ?>" title="Create Plan">Create Tanggal</a> -->
+							<a class="btn btn-success btn-sm add_tgl_plan" style='float:left;' title="Create Plan" data-id="<?= $id_detail ?>" data-so="<?= $so_number ?>"><i class="fa fa-plus"></i>&nbsp;&nbsp;Add Tanggal</a>
+					</div>
 					<table class='table table-striped table-bordered table-hover table-condensed' width='100%' id="planningTable">
 						<thead class='thead'>
-							<!-- <tr class='bg-blue'>
-								<th class='text-center th'>#</th>
-								<th class='text-center th'>Material Name</th>
-								<th class='text-center th'>Estimasi (Kg)</th>
-								<th class='text-center th'>Stock Free (Kg)</th>
-								<th class='text-center th'>Use Stock (Kg)</th>
-								<th class='text-center th'>Sisa Stock Free (Kg)</th>
-								<th class='text-center th'>Min Stock</th>
-								<th class='text-center th'>Max Stock</th>
-								<th class='text-center th'>PR On Progress</th>
-								<th class='text-center th'>Propose Purchase</th>
-								<th class='text-center th'>Keterangan</th>
-							</tr> -->
 							<tr class='bg-blue' id="mainHeader">
 								<th class='text-center th'>#</th>
 								<th class='text-center th'>Material Name</th>
-								<th class='text-center th'>Estimasi (1 Bulan)</th>
-								<th class='text-center th'>Stock Saat ini</th>
+								<th class='text-center th'>Tanggal Rencana Kedatangan</th>
+								<!-- <th class='text-center th'>Stock Saat ini</th>
 								<th class='text-center th'>Pemakaian Sehari</th>
 								<th class='text-center th'>Sisa Kecukupan</th>
 								<th class='text-center th'>Jumlah Sekali Pengiriman</th>
-								<th class='text-center th'>Cycle Order</th>
+								<th class='text-center th'>Cycle Order</th> -->
 								<th class='text-center th'>Option</th>
 								<!-- <th class='text-center th'>Propose Purchase</th>
 								<th class='text-center th'>Keterangan</th> -->
@@ -108,59 +92,26 @@
 							<?php
 							 $i = 1;
 							$GET_OUTANDING_PR = get_pr_on_progress();
-							foreach ($detail as $key => $value) {
+							foreach ($detail_tgl as $key => $value) {
 								$key++;
-								$nm_material = $value['nm_material'];
-								$stock_free = (!empty($GET_STOK_PUSAT[$value['id_material']]['stok'])) ? (float)$GET_STOK_PUSAT[$value['id_material']]['stok'] : 0;
-								$use_stock = (!empty($value['use_stock'])) ? $value['use_stock'] : $value['qty_order'];
-								if ($stock_free < $use_stock) {
-									$use_stock = $stock_free;
-								}
+								$nm_material = $value['name_material'];
 
-								$use_stock_new = 0;
-								if ($use_stock > 0) {
-									$use_stock_new = $use_stock;
-								}
-
-								$sisa_free = $stock_free - $use_stock;
-
-								$propose = 0;
-								if (empty($value['propose_purchase'])) {
-									if ($stock_free < $value['min_stok']) {
-										$propose = ($value['min_stok'] - $sisa_free) + ($value['max_stok'] - $value['min_stok']);
-									}
-								} else {
-									$propose = $value['propose_purchase'];
-								}
-
-								$outanding_pr = (!empty($GET_OUTANDING_PR[$value['id_material']]) and $GET_OUTANDING_PR[$value['id_material']] > 0) ? $GET_OUTANDING_PR[$value['id_material']] : 0;
-								$pemakaian_sehari = (!empty($value['daily_usage_qty'])) ? $value['daily_usage_qty'] : 0;
-								if ($pemakaian_sehari > 0) {
-									$hasil = $stock_free / $pemakaian_sehari;
-								} else {
-									$hasil = 0;
-								}
-								$sisa_kecukupan = $hasil;
-
-								echo "<tr data-key='". $key. "' >";
+								// echo "<tr data-key='". $key. "' >";
+								echo "<tr >";
 								echo "<td class='text-center'>" . $i . "</td>";
 								echo "<td class='text-left'>" . $nm_material . "
 									<input type='hidden' name='detail[" . $key . "][id]' value='" . $value['id'] . "'>
-									<input type='hidden' name='detail[" . $key . "][code_material]' value='" . $value['id_material'] . "'>
-									<input type='hidden' name='detail[" . $key . "][stock_free]' value='" . $stock_free . "'>
-									<input type='hidden' name='detail[" . $key . "][min_stok]' value='" . $value['min_stok'] . "'>
-									<input type='hidden' name='detail[" . $key . "][max_stok]' value='" . $value['max_stok'] . "'>
+									<input type='hidden' name='detail[" . $key . "][id_material_planning_base_on_produksi_detail]' value='" . $value['id_material_planning_base_on_produksi_detail'] . "'>
 									</td>";
-								echo "<td class='text-right qty_order'>" . number_format($value['nominal_kg'], 5) . "</td>";
-								echo "<td class='text-right stock_free'>" . number_format($stock_free, 5) . "</td>";
-								echo "<td align='center'><input type='text' class='form-control input-sm text-right autoNumeric5 pemakaian_sehari' style='width: 120px;' name='detail[" . $key . "][pemakaian_sehari]' value='" . $pemakaian_sehari . "'></td>";
-								echo "<td class='text-right sisa_free'>" . number_format($sisa_kecukupan, 5) . "</td>";
-								echo "<td align='center'><input type='text' class='form-control input-sm text-right autoNumeric5 jumlah_sekali_pengiriman' style='width: 120px;' name='detail[" . $key . "][jumlah_sekali_pengiriman]' value=''></td>";
-								echo "<td align='center'><input type='text' class='form-control input-sm text-right autoNumeric5 cycle_order' style='width: 120px;' name='detail[" . $key . "][cycle_order]' value=''></td>";
-								echo "<td class='text-right'>
-									<button type='button' class='btn btn-success btn-sm' onclick='addTgl(this)' data-key='" . $key . "'><i class='fa fa-plus'></i></button>
-									<button type='button' class='btn btn-danger btn-sm' onclick='removeTgl(this)' data-key='" . $key . "'><i class='fa fa-trash'></i></button>
-								</td>";
+								// echo "<td align='center'><input type='date' class='form-control input-sm text-right datepicker' style='width: 120px;' name='detail[" . $key . "][tgl_rencana]' value=''></td>";
+								echo "<td class='text-left'>" . $value['tgl_rencana_kedatangan'] . "</td>";
+								echo "<td class='text-right'>";
+								?>
+								<a class="btn btn-success btn-sm edit_tgl_plan" title="Edit Tanggal" data-id="<?= $id_detail ?>"  data-so="<?= $value['so_number'] ?>" data-id_plan_detail="<?= $value['id'] ?>" data-id_material="<?= $value['id_material'] ?>"><i class="fa fa-edit"></i></a>
+								<a class="btn btn-danger btn-sm delete_tgl_plan" href="javascript:void(0)" title="Delete" data-id="<?= $value['id'] ?>"><i class="fa fa-trash"></i>
+									</a>
+								<?php
+								echo "</td>";
 								echo "</tr>";
 								$i++;
 							}
@@ -172,7 +123,7 @@
 
 			<div class="form-group row">
 				<div class="col-md-12">
-					<button type="button" class="btn btn-primary" name="save" id="save">Process</button>
+					<!-- <button type="button" class="btn btn-primary" name="save" id="save">Process</button> -->
 					<button type="button" class="btn btn-danger" style='margin-left:5px;' name="back" id="back">Back</button>
 				</div>
 			</div>
@@ -181,7 +132,7 @@
 </div>
 
 <div class="modal modal-default fade" id="dialog-popup" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-	<div class="modal-dialog modal-lg" style='width:70%;'>
+	<div class="modal-dialog modal-lg" style='width:30%;'>
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
@@ -219,7 +170,8 @@
 
 			//back
 			$(document).on('click', '#back', function() {
-				window.location.href = base_url + active_controller
+				var so_number = $("#so_number").val();
+				window.location.href = base_url + active_controller + '/material_planning/' + so_number
 			});
 
 			$(document).on('keyup', '.use_stock', function() {
@@ -410,4 +362,147 @@ function deleteTgl(btn) {
     }
   }
 }
+
+$(document).on('click', '.add_tgl_plan', function(e) {
+	var id = $(this).data('id');
+	var so = $(this).data('so');
+	// console.log(id + '||' + so);
+	// return;
+	$("#head_title").html("<b>Detail Plan Tanggal</b>");
+	$.ajax({
+		type: 'POST',
+		url: siteurl + active_controller + '/add_plan_date/' + id + '/' + so,
+		success: function(data) {
+			$("#dialog-popup").modal();
+			$("#ModalView").html(data);
+
+		}
+	})
+});
+
+$(document).on('click', '.edit_tgl_plan', function(e) {
+	var id = $(this).data('id');
+	var so = $(this).data('so');
+	var id_plan_detail = $(this).data('id_plan_detail');
+	var id_material = $(this).data('id_material');
+	// console.log(id + '||' + so);
+	// return;
+	$("#head_title").html("<b>Detail Plan Tanggal</b>");
+	$.ajax({
+		type: 'POST',
+		url: siteurl + active_controller + '/add_plan_date/' + id + '/' + so + '/' + id_plan_detail + '/' + id_material,
+		success: function(data) {
+			$("#dialog-popup").modal();
+			$("#ModalView").html(data);
+
+		}
+	})
+});
+
+$(document).on('submit', '#data_form', function(e) {
+	e.preventDefault()
+	var data = $('#data_form').serialize();
+	// alert(data);
+
+	swal({
+			title: "Anda Yakin?",
+			text: "Data akan diproses!",
+			type: "warning",
+			showCancelButton: true,
+			confirmButtonClass: "btn-info",
+			confirmButtonText: "Yes",
+			cancelButtonText: "No",
+			closeOnConfirm: false
+		},
+		function() {
+			$.ajax({
+				type: 'POST',
+				url: siteurl + active_controller + '/add_plan_date',
+				dataType: "json",
+				data: data,
+				success: function(data) {
+					if (data.status == '1') {
+						swal({
+								title: "Sukses",
+								text: data.pesan,
+								type: "success"
+							},
+							function() {
+								window.location.reload(true);
+							})
+					} else {
+						swal({
+							title: "Error",
+							text: data.pesan,
+							type: "error"
+						})
+
+					}
+				},
+				error: function() {
+					swal({
+						title: "Error",
+						text: "Error proccess !",
+						type: "error"
+					})
+				}
+			})
+		});
+})
+
+
+// DELETE DATA
+		$(document).on('click', '.delete_tgl_plan', function(e) {
+			e.preventDefault()
+			var id = $(this).data('id');
+			// alert(id);
+			swal({
+					title: "Anda Yakin?",
+					text: "Data akan di hapus!",
+					type: "warning",
+					showCancelButton: true,
+					confirmButtonClass: "btn-info",
+					confirmButtonText: "Yes",
+					cancelButtonText: "No",
+					closeOnConfirm: false
+				},
+				function() {
+					$.ajax({
+						type: 'POST',
+						url: siteurl + active_controller + '/delete_date_plan',
+						dataType: "json",
+						data: {
+							'id': id
+						},
+						success: function(data) {
+							if (data.status == '1') {
+								swal({
+										title: "Sukses",
+										text: data.pesan,
+										type: "success"
+									},
+									function() {
+										window.location.reload(true);
+									})
+							} else {
+								swal({
+									title: "Error",
+									text: data.pesan,
+									type: "error"
+								})
+
+							}
+						},
+						error: function() {
+							swal({
+								title: "Error",
+								text: "Error proccess !",
+								type: "error"
+							})
+						}
+					})
+				});
+
+		})
+
 </script>

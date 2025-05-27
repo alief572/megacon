@@ -98,7 +98,7 @@ class Stock_origa_model extends BF_Model
       }else{
         $propose = 0;
       }
-      $nestedData[]  = "<div align='center'>" . number_format($propose) . "</div>";
+      // $nestedData[]  = "<div align='center'>" . number_format($propose) . "</div>";//di hide
 
       $edit  = "";
       $delete  = "";

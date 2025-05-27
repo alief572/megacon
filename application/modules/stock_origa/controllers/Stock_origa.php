@@ -55,7 +55,8 @@ class Stock_origa extends Admin_Controller
       $nama_product  = $data['nama_product'];
       $no_bom        = $data['no_bom'];
       $due_date      = date('Y-m-d', strtotime($data['due_date']));
-      $propose      = str_replace(',', '', $data['propose']);
+      // $propose      = str_replace(',', '', $data['propose']);
+      $propose = (isset($data['propose']) && trim($data['propose']) !== '') ? str_replace(',', '', $data['propose']) : 0;
       $id_customer  = 'C100-2401002';
       $project      = 'Pengisian Stok Internal';
       $so_customer  = NULL;
