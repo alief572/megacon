@@ -70,6 +70,26 @@ $ENABLE_DELETE  = has_permission('PR_Material.Delete');
 				<?php
 				$nomor = 1;
 				foreach ($list_pr as $row) {
+					$bulanAngka = $row['periode_bulan']; // "01", "02", dst
+			      	$tahun = $row['periode_tahun']; // "2024"
+			      	// Mapping angka ke nama bulan Indonesia
+			      	$namaBulanIndonesia = [
+				          '1' => 'Januari',
+				          '2' => 'Februari',
+				          '3' => 'Maret',
+				          '4' => 'April',
+				          '5' => 'Mei',
+				          '6' => 'Juni',
+				          '7' => 'Juli',
+				          '8' => 'Agustus',
+				          '9' => 'September',
+				          '10' => 'Oktober',
+				          '11' => 'November',
+				          '12' => 'Desember'
+				      ];
+				    $namaBulan = isset($namaBulanIndonesia[$bulanAngka]) ? $namaBulanIndonesia[$bulanAngka] : 'Bulan Tidak Valid';
+				    // Gabungkan jadi format "Januari 2024"
+				    $periodeLabel = $namaBulan . ' ' . $tahun;
 					echo '<tr>';
 					$list_barang = [];
 					$list_qty_barang = [];
@@ -117,11 +137,22 @@ $ENABLE_DELETE  = has_permission('PR_Material.Delete');
 					$nestedData   = array();
 					echo "<td align='center'>" . $nomor . "</td>";
 					echo "<td align'center'>" . $row['no_pr'] . "</td>";
-					echo "<td align'center'>" . $list_barang . "</td>";
-					echo "<td align'center'>" . $list_qty_barang . "</td>";
-					echo "<td align'center'>" . date('d F Y', strtotime($row['tgl_dibutuhkan'])) . "</td>";
-
-
+					if($row['category'] == 'base on production'){
+						echo "<td align'center'>" . $periodeLabel . "</td>";
+						echo "<td align'center'></td>";
+						echo "<td align'center'>" . $periodeLabel . "</td>";
+					}else{
+						echo "<td align'center'>" . $list_barang . "</td>";
+						echo "<td align'center'>" . $list_qty_barang . "</td>";
+						echo "<td align'center'>" . date('d F Y', strtotime($row['tgl_dibutuhkan'])) . "</td>";
+					}
+					// echo "<td align'center'>" . $list_qty_barang . "</td>";
+					// if($row['category'] == 'base on production'){
+					// 	echo "<td align'center'>" . $periodeLabel . "</td>";
+					// }else{
+					// 	echo "<td align'center'>" . date('d F Y', strtotime($row['tgl_dibutuhkan'])) . "</td>";
+					// }
+					
 					$getCheck = $this->db->get_where('material_planning_base_on_produksi_detail', array('so_number' => $row['so_number'], 'status_app' => 'N'))->result();
 
 					$getCheckReject = $this->db->get_where('material_planning_base_on_produksi_detail', array('so_number' => $row['so_number'], 'status_app' => 'D'))->result();

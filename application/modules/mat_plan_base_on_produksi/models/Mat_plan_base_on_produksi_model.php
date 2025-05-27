@@ -93,7 +93,7 @@ class Mat_plan_base_on_produksi_model extends BF_Model
         }
       }
       $view  = "<button type='button' class='btn btn-sm btn-warning detail' title='Detail' data-so_number='" . $row['so_number'] . "'><i class='fa fa-eye'></i></button>";
-      $btn_download_excel = "<a href='" . site_url($this->uri->segment(1)) . '/download_excel/' . $row['so_number'] . "' class='btn btn-sm btn-success' title='Download File'>Download Excel</a>";
+      $btn_download_excel = "<a href='" . site_url($this->uri->segment(1)) . '/download_excel_material_plan/' . $row['so_number'] . "' class='btn btn-sm btn-success' title='Download File'>Download Excel</a>";
       $nestedData[]  = "<div align='center'>" . $view . " " . $edit . " " . $booking . " " . $btn_download_excel . "</div>";
       $data[] = $nestedData;
       $urut1++;

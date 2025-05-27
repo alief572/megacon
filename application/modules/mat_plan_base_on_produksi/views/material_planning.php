@@ -195,11 +195,14 @@
 							    // Link add tanggal
 							    $url1 = 'Mat_plan_base_on_produksi/plan_detail_tgl/' . $value['id'] . '/' . $value['so_number'];
 							    $link_add_tgl = base_url($url1);
+							    $type = 'view';
+							    $url2 = 'Mat_plan_base_on_produksi/plan_detail_tgl/' . $value['id'] . '/' . $value['so_number'].'/'.$type;
+							    $link_view_tgl = base_url($url2);
 
 							    echo "<td class='text-right'>
-							        <a class='btn btn-success btn-sm' style='float:right;' href='{$link_add_tgl}' title='Add Tanggal'>Add Tanggal</a>
-							    </td>";
-
+							    	<a class='btn btn-warning btn-sm' style='' href='{$link_view_tgl}' title='View Tanggal'>View Tanggal</a>
+							        &nbsp;&nbsp;<a class='btn btn-success btn-sm' style='float:right;' href='{$link_add_tgl}' title='Add Tanggal'>Add Tanggal</a>
+							    	</td>";
 							    echo "</tr>";
 
 							    $i++;

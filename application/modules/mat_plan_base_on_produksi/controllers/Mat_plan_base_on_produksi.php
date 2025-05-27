@@ -347,8 +347,10 @@ class Mat_plan_base_on_produksi extends Admin_Controller
       }
     }
 
-  public function plan_detail_tgl($id = null,$so = null)
+  public function plan_detail_tgl($id = null,$so = null,$type=null)
   {
+      // print_r($type);
+      // die();
       $header   = $this->db
         ->select('a.*, b.due_date, c.nm_customer')
         ->join('so_internal b', 'a.so_number=b.so_number', 'left')
@@ -389,6 +391,7 @@ class Mat_plan_base_on_produksi extends Admin_Controller
         ->join('tr_jenis_beton_detail b', 'b.id_detail_material = a.id_material', 'left')
         ->join('new_inventory_4 c', 'b.id_material = c.code_lv4', 'left')
         ->where('a.so_number', $so)
+        ->where('a.id_material_planning_base_on_produksi_detail', $id)
         ->where('a.deleted_by IS NULL', null, false) // penting: false untuk raw query
         ->get()
         ->result_array();
@@ -401,7 +404,8 @@ class Mat_plan_base_on_produksi extends Admin_Controller
         'so_number' => $so,
         'header' => $header,
         'detail' => $detail,
-        'detail_tgl' => $detail_tgl
+        'detail_tgl' => $detail_tgl,
+        'type' => $type
         // 'GET_LEVEL4'   => get_inventory_lv4(),
         // 'GET_STOK_PUSAT' => getStokMaterial(1)
       ];
@@ -430,6 +434,7 @@ class Mat_plan_base_on_produksi extends Admin_Controller
         $so_number   = $post['so_number'];
         $id_material = $post['id_material'];
         $tgl_rencana = $post['tgl_rencana'];
+        $qty_kedatangan = $post['qty_kedatangan'];
         $getDataMaterial = $this->db->get_where('tr_jenis_beton_detail',array('id_detail_material' => $id_material))->row();
         $MaterialName = $getDataMaterial->nm_material;
         // $id_plan_detail = (!empty($id_plan_detail))?$id_plan_detail : NULL;
@@ -446,22 +451,24 @@ class Mat_plan_base_on_produksi extends Admin_Controller
         // $listData_tgl = null;
 
         $dataProcess = [
-          'id_material_planning_base_on_produksi_detail' => $id,
+          'id_material_planning_base_on_produksi_detail' => $id_plan_detail,
           'so_number' => $so_number,
           'id_material' => $id_material,
           'name_material' => $MaterialName,
           'tgl_rencana_kedatangan' => $tgl_rencana,
+          'qty_kedatangan' => $qty_kedatangan,
           $last_by    => $this->id_user,
           $last_date  => $this->datetime
         ];
 
         $dataProcessUpdate = [
           'tgl_rencana_kedatangan' => $tgl_rencana,
+          'qty_kedatangan' => $qty_kedatangan,
           $last_by    => $this->id_user,
           $last_date  => $this->datetime
         ];
 
-        // print_r($dataProcessUpdate);
+        // print_r($dataProcess);
         // echo "<br>";
         // print_r($id);
         // die();
@@ -547,6 +554,275 @@ class Mat_plan_base_on_produksi extends Admin_Controller
       }
       echo json_encode($status);
     }
+
+  public function download_excel_material_plan_old($so=null) {
+    $so_number = $so;
+
+    if (!$so_number) {
+        show_error("SO Number Error!");
+        return;
+    }
+    // print_r($so_number);
+    // die();
+
+    //START AMBIL DATA HEADER Material Planning
+    $HeaderMaterialPlan = $this->db->get_where('material_planning_base_on_produksi', [
+        'so_number' => $so_number
+    ])->row();
+
+    if (!$HeaderMaterialPlan) {
+        show_error("Data Header Material tidak ditemukan.");
+        return;
+    }
+    //END AMBIL DATA HEADER Material PLANNING
+
+    //START AMBIL DATA DETAIL Material Planning
+    $this->db->order_by('id', 'ASC');
+    $DetailMaterialPlan = $this->db->get_where('material_planning_base_on_produksi_detail', [
+        'so_number' => $so_number
+    ])->result();
+
+    if (!$DetailMaterialPlan) {
+        show_error("Data Detail Material tidak ditemukan.");
+        return;
+    }
+    //END AMBIL DATA DETAIL Material PLANNING
+
+    //START AMBIL DATA DETAIL Material Planning TANGGAL
+    $this->db->order_by('id', 'ASC');
+    $DetailMaterialPlanTgl = $this->db->get_where('material_planning_base_on_produksi_detail_tgl', [
+        'so_number' => $so_number
+    ])->result();
+
+    if (!$DetailMaterialPlanTgl) {
+        show_error("Data Detail Material Tanggal tidak ditemukan.");
+        return;
+    }
+    //END AMBIL DATA DETAIL Material PLANNING TANGGAL
+
+    // Buat Excel
+    $excel = new PHPExcel();
+    $sheet = $excel->getActiveSheet();
+    $sheet->setTitle("PURCHASE ORDER");
+
+    // Judul
+    $sheet->setCellValue('A1', 'Nama Vendor :');
+    $sheet->setCellValue('B1', 'PT. test vendor');
+
+    // Header
+    $headers = [
+        'A3' => 'No',
+        'B3' => 'Deskripsi Permintaan Material'
+    ];
+
+    foreach ($headers as $cell => $label) {
+        $sheet->setCellValue($cell, $label);
+        $sheet->getStyle($cell)->getFont()->setBold(true);
+        $sheet->getColumnDimension(substr($cell, 0, 1))->setAutoSize(true);
+    }
+
+    // Isi Data
+    $row = 4;
+    $currentDate = '';
+    $subtotal = 0;
+
+    // Buat grouping berdasarkan tanggal (Y-m-d)
+    // $grouped = [];
+    // foreach ($details as $d) {
+    //     $date_key = date('Y-m-d', strtotime($d->plan_date)); // normalize format tanggal
+    //     $grouped[$date_key][] = $d;
+    // }
+
+    $row = 4;
+    $no = 0;
+    foreach ($DetailMaterialPlan as $value) {
+        $no++;
+        $dataMaterial = $this->db->get_where('tr_jenis_beton_detail', array('id_detail_material' => $value->id_material))->row();
+        $sheet->setCellValue('A' . $row, $no);
+        $sheet->setCellValue('B' . $row, $dataMaterial->nm_material);
+        $row++; // Tambahkan ini agar pindah ke baris berikutnya setiap loop
+    }
+
+    // Nama file
+    $filename = 'Material_Planning_' . $so_number . '.xls';
+
+    ob_clean();
+    header_remove();
+
+    // Output Excel
+    header('Content-Type: application/vnd.ms-excel');
+    header("Content-Disposition: attachment; filename=\"$filename\"");
+    header('Cache-Control: max-age=0');
+
+    $objWriter = PHPExcel_IOFactory::createWriter($excel, 'Excel5');
+    $objWriter->save('php://output');
+    exit;
+  }
+
+  public function download_excel_material_plan($so = null){
+    $so_number = $so;
+
+    if (!$so_number) {
+        show_error("SO Number Error!");
+        return;
+    }
+
+    // Ambil Header
+    $HeaderMaterialPlan = $this->db->get_where('material_planning_base_on_produksi', [
+        'so_number' => $so_number
+    ])->row();
+
+    if (!$HeaderMaterialPlan) {
+        show_error("Data Header Material tidak ditemukan.");
+        return;
+    }
+
+    // Ambil Detail Material
+    $this->db->order_by('id', 'ASC');
+    $DetailMaterialPlan = $this->db->get_where('material_planning_base_on_produksi_detail', [
+        'so_number' => $so_number
+    ])->result();
+
+    // Ambil Detail Tanggal
+    $this->db->order_by('tgl_rencana_kedatangan', 'ASC');
+    $DetailMaterialPlanTgl = $this->db->get_where('material_planning_base_on_produksi_detail_tgl', [
+        'so_number' => $so_number
+    ])->result();
+
+    // Index berdasarkan id_material
+    $groupedByMaterial = [];
+    foreach ($DetailMaterialPlanTgl as $row) {
+        $groupedByMaterial[$row->id_material][] = $row;
+    }
+
+    // Load PHPExcel
+    $excel = new PHPExcel();
+    $sheet = $excel->getActiveSheet();
+    $sheet->setTitle("Material Planning");
+
+    // Informasi Vendor dan Dokumen
+    $sheet->setCellValue('A1', 'Nama Vendor :');
+    $sheet->setCellValue('B1', '');
+    $sheet->setCellValue('D1', 'No. Dokumen :');
+    $sheet->setCellValue('E1', $so_number);
+
+    $sheet->setCellValue('A2', 'Alamat :');
+    $sheet->setCellValue('D2', 'Alamat Pengiriman :');
+
+    $sheet->setCellValue('A3', 'No. Telp :');
+
+    // Tabel Utama (Deskripsi Permintaan Material)
+    $startRow = 5;
+    $sheet->setCellValue("A{$startRow}", 'No');
+    $sheet->setCellValue("B{$startRow}", 'Deskripsi Permintaan Material');
+    $sheet->getStyle("A{$startRow}:B{$startRow}")->getFont()->setBold(true);
+
+    $no = 1;
+    $row = $startRow + 1;
+    foreach ($DetailMaterialPlan as $value) {
+        $dataMaterial = $this->db->get_where('tr_jenis_beton_detail', [
+            'id_detail_material' => $value->id_material
+        ])->row();
+
+        if (!$dataMaterial) continue;
+
+        $sheet->setCellValue("A{$row}", $no++);
+        $sheet->setCellValue("B{$row}", $dataMaterial->nm_material);
+        $row++;
+    }
+
+    // Border untuk tabel utama
+    $sheet->getStyle("A{$startRow}:B" . ($row - 1))->applyFromArray([
+        'borders' => [
+            'allborders' => ['style' => PHPExcel_Style_Border::BORDER_THIN]
+        ]
+    ]);
+
+    // Spasi
+    $row += 2;
+
+    // Detail Tanggal per Material
+    $no = 1;
+    foreach ($DetailMaterialPlan as $value) {
+        $dataMaterial = $this->db->get_where('tr_jenis_beton_detail', [
+            'id_detail_material' => $value->id_material
+        ])->row();
+
+        if (!$dataMaterial) continue;
+
+        // Judul merah
+        $sheet->setCellValue("A{$row}", "{$no}. {$dataMaterial->nm_material}");
+        $sheet->getStyle("A{$row}")->getFont()->setBold(true)->getColor()->setRGB('FF0000');
+        $row++;
+
+        // Header tabel
+        $sheet->setCellValue("A{$row}", 'No');
+        $sheet->setCellValue("B{$row}", 'Tgl Dibutuhkan');
+        $sheet->setCellValue("C{$row}", 'Qty Dibutuhkan');
+        $sheet->setCellValue("D{$row}", 'Satuan');
+        $sheet->getStyle("A{$row}:D{$row}")->getFont()->setBold(true);
+        $sheet->getStyle("A{$row}:D{$row}")->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        $headerRow = $row;
+        $row++;
+
+        $i = 1;
+        if (!empty($groupedByMaterial[$value->id_material])) {
+            foreach ($groupedByMaterial[$value->id_material] as $dt) {
+                $sheet->setCellValue("A{$row}", $i++);
+                $sheet->setCellValue("B{$row}", PHPExcel_Shared_Date::PHPToExcel(strtotime($dt->tgl_rencana_kedatangan)));
+                $sheet->setCellValue("C{$row}", $dt->qty_kedatangan);
+                // $sheet->setCellValue("D{$row}", $dataMaterial->satuan ?? '-');
+                $sheet->setCellValue("D{$row}", isset($dataMaterial->satuan) ? $dataMaterial->satuan : '-');
+                $sheet->getStyle("B{$row}")->getNumberFormat()->setFormatCode('d-mmm-yy');
+                $row++;
+            }
+
+            // Border untuk tabel ini
+            $sheet->getStyle("A{$headerRow}:D" . ($row - 1))->applyFromArray([
+                'borders' => [
+                    'allborders' => ['style' => PHPExcel_Style_Border::BORDER_THIN]
+                ]
+            ]);
+        } else {
+            $sheet->setCellValue("A{$row}", 'Tidak ada data tanggal');
+            $row++;
+        }
+
+        $row += 2;
+        $no++;
+    }
+
+    // Autosize kolom
+    foreach (range('A', 'E') as $col) {
+        $sheet->getColumnDimension($col)->setAutoSize(true);
+    }
+
+    // Nama file
+    $filename = 'Material_Planning_' . $so_number . '.xls';
+
+    ob_clean();
+    header_remove();
+    header('Content-Type: application/vnd.ms-excel');
+    header("Content-Disposition: attachment; filename=\"$filename\"");
+    header('Cache-Control: max-age=0');
+
+    $writer = PHPExcel_IOFactory::createWriter($excel, 'Excel5');
+    $writer->save('php://output');
+    exit;
+}
+
+
+
+  // Fungsi helper untuk format nama bulan
+  private function bulan_indo($bulan) {
+      $bulanList = [
+          1 => 'Januari', 2 => 'Februari', 3 => 'Maret',
+          4 => 'April',   5 => 'Mei',      6 => 'Juni',
+          7 => 'Juli',    8 => 'Agustus',  9 => 'September',
+          10 => 'Oktober',11 => 'November',12 => 'Desember'
+      ];
+      return isset($bulanList[$bulan]) ? $bulanList[$bulan] : $bulan;
+  }
 
 
 }

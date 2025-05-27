@@ -70,7 +70,13 @@
 				<div class="col-md-12">
 					<div style="align-items: left;">
 							<!-- <a class="btn btn-success btn-sm add_tgl_plan" style='float:left;' href="<?= base_url('Mat_plan_base_on_produksi/create_add_detail_tgl') ?>" title="Create Plan">Create Tanggal</a> -->
+							<?php
+							if($type != 'view'){
+							?>
 							<a class="btn btn-success btn-sm add_tgl_plan" style='float:left;' title="Create Plan" data-id="<?= $id_detail ?>" data-so="<?= $so_number ?>"><i class="fa fa-plus"></i>&nbsp;&nbsp;Add Tanggal</a>
+							<?php
+							}
+							?>
 					</div>
 					<table class='table table-striped table-bordered table-hover table-condensed' width='100%' id="planningTable">
 						<thead class='thead'>
@@ -78,12 +84,19 @@
 								<th class='text-center th'>#</th>
 								<th class='text-center th'>Material Name</th>
 								<th class='text-center th'>Tanggal Rencana Kedatangan</th>
+								<th class='text-center th'>Qty Kedatangan</th>
 								<!-- <th class='text-center th'>Stock Saat ini</th>
 								<th class='text-center th'>Pemakaian Sehari</th>
 								<th class='text-center th'>Sisa Kecukupan</th>
 								<th class='text-center th'>Jumlah Sekali Pengiriman</th>
 								<th class='text-center th'>Cycle Order</th> -->
+								<?php
+								if($type != 'view'){
+								?>
 								<th class='text-center th'>Option</th>
+								<?php
+								}
+								?>
 								<!-- <th class='text-center th'>Propose Purchase</th>
 								<th class='text-center th'>Keterangan</th> -->
 							</tr>
@@ -105,6 +118,8 @@
 									</td>";
 								// echo "<td align='center'><input type='date' class='form-control input-sm text-right datepicker' style='width: 120px;' name='detail[" . $key . "][tgl_rencana]' value=''></td>";
 								echo "<td class='text-left'>" . $value['tgl_rencana_kedatangan'] . "</td>";
+								echo "<td class='text-left'>" . $value['qty_kedatangan'] . "</td>";
+								if($type != 'view'){
 								echo "<td class='text-right'>";
 								?>
 								<a class="btn btn-success btn-sm edit_tgl_plan" title="Edit Tanggal" data-id="<?= $id_detail ?>"  data-so="<?= $value['so_number'] ?>" data-id_plan_detail="<?= $value['id'] ?>" data-id_material="<?= $value['id_material'] ?>"><i class="fa fa-edit"></i></a>
@@ -112,6 +127,7 @@
 									</a>
 								<?php
 								echo "</td>";
+								}
 								echo "</tr>";
 								$i++;
 							}
@@ -132,7 +148,7 @@
 </div>
 
 <div class="modal modal-default fade" id="dialog-popup" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-	<div class="modal-dialog modal-lg" style='width:30%;'>
+	<div class="modal-dialog modal-lg" style='width:40%;'>
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
