@@ -701,42 +701,42 @@ class Mat_plan_base_on_produksi extends Admin_Controller
     $sheet->setTitle("Material Planning");
 
     // Informasi Vendor dan Dokumen
-    $sheet->setCellValue('A1', 'Nama Vendor :');
-    $sheet->setCellValue('B1', '');
-    $sheet->setCellValue('D1', 'No. Dokumen :');
-    $sheet->setCellValue('E1', $so_number);
+    // $sheet->setCellValue('A1', 'Nama Vendor :');
+    // $sheet->setCellValue('B1', '');
+    // $sheet->setCellValue('D1', 'No. Dokumen :');
+    // $sheet->setCellValue('E1', $so_number);
 
-    $sheet->setCellValue('A2', 'Alamat :');
-    $sheet->setCellValue('D2', 'Alamat Pengiriman :');
+    // $sheet->setCellValue('A2', 'Alamat :');
+    // $sheet->setCellValue('D2', 'Alamat Pengiriman :');
 
-    $sheet->setCellValue('A3', 'No. Telp :');
+    // $sheet->setCellValue('A3', 'No. Telp :');
 
     // Tabel Utama (Deskripsi Permintaan Material)
-    $startRow = 5;
-    $sheet->setCellValue("A{$startRow}", 'No');
-    $sheet->setCellValue("B{$startRow}", 'Deskripsi Permintaan Material');
-    $sheet->getStyle("A{$startRow}:B{$startRow}")->getFont()->setBold(true);
+    // $startRow = 5;
+    // $sheet->setCellValue("A{$startRow}", 'No');
+    // $sheet->setCellValue("B{$startRow}", 'Deskripsi Permintaan Material');
+    // $sheet->getStyle("A{$startRow}:B{$startRow}")->getFont()->setBold(true);
 
-    $no = 1;
-    $row = $startRow + 1;
-    foreach ($DetailMaterialPlan as $value) {
-        $dataMaterial = $this->db->get_where('tr_jenis_beton_detail', [
-            'id_detail_material' => $value->id_material
-        ])->row();
+    // $no = 1;
+    // $row = $startRow + 1;
+    // foreach ($DetailMaterialPlan as $value) {
+    //     $dataMaterial = $this->db->get_where('tr_jenis_beton_detail', [
+    //         'id_detail_material' => $value->id_material
+    //     ])->row();
 
-        if (!$dataMaterial) continue;
+    //     if (!$dataMaterial) continue;
 
-        $sheet->setCellValue("A{$row}", $no++);
-        $sheet->setCellValue("B{$row}", $dataMaterial->nm_material);
-        $row++;
-    }
+    //     $sheet->setCellValue("A{$row}", $no++);
+    //     $sheet->setCellValue("B{$row}", $dataMaterial->nm_material);
+    //     $row++;
+    // }
 
-    // Border untuk tabel utama
-    $sheet->getStyle("A{$startRow}:B" . ($row - 1))->applyFromArray([
-        'borders' => [
-            'allborders' => ['style' => PHPExcel_Style_Border::BORDER_THIN]
-        ]
-    ]);
+    // // Border untuk tabel utama
+    // $sheet->getStyle("A{$startRow}:B" . ($row - 1))->applyFromArray([
+    //     'borders' => [
+    //         'allborders' => ['style' => PHPExcel_Style_Border::BORDER_THIN]
+    //     ]
+    // ]);
 
     // Spasi
     $row += 2;
