@@ -571,13 +571,14 @@ class Spk_material extends Admin_Controller
     // }
     //version old
     //start version new
-    if($get_data_product->stock_ng > $get_data_product->min_stok){
-      $propose = 0;
-    }elseif ($get_data_product->stock_ng < $get_data_product->min_stok) {
-      $propose = $get_data_product->min_stok - ($get_data_product->stock_ng + $get_data_product->stock_akhir);
-    }else{
-      $propose = 0;
-    }
+    // if($get_data_product->stock_ng > $get_data_product->min_stok){
+    //   $propose = 0;
+    // }elseif ($get_data_product->stock_ng < $get_data_product->min_stok) {
+      // $propose = $get_data_product->min_stok - ($get_data_product->stock_ng + $get_data_product->stock_akhir);
+    $propose = $get_data_product->max_stok - ($get_data_product->stock_akhir + $get_data_product->stock_ng);
+    // }else{
+    //   $propose = 0;
+    // }
     //end version new
     $get_data_bom = $this->db->query('SELECT no_bom, volume_m3 FROM bom_header WHERE no_bom = "' . $get_data_product->no_bom . '" ')->row();
     $volumeM3 = $get_data_bom->volume_m3;
