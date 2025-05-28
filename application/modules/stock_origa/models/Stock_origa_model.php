@@ -88,16 +88,28 @@ class Stock_origa_model extends BF_Model
       //start version old
       // if ($row['stock_akhir'] - $row['booking_akhir'] < $row['min_stok']) {
       //   // $propose = $row['max_stok'];//version old
-      //   $propose = $row['max_stok'] - ($row['stock_ng'] + $row['stock_akhir']);
+        // $propose = $row['max_stok'] - ($row['stock_ng'] + $row['stock_akhir']);
       // }
       //end version old
-      if($row['stock_ng'] > $row['min_stok']){
-        $propose = 0;
-      }elseif ($row['stock_ng'] < $row['min_stok']) {
-        $propose = $row['min_stok'] - ($row['stock_ng'] + $row['stock_akhir']);
-      }else{
-        $propose = 0;
-      }
+      //start version old 2
+      // if($row['stock_ng'] > $row['min_stok']){
+      //   $propose = 0;
+      // }elseif ($row['stock_ng'] < $row['min_stok']) {
+      //   $propose = $row['min_stok'] - ($row['stock_ng'] + $row['stock_akhir']);
+      // }else{
+      //   $propose = 0;
+      // }
+      //end version old 2
+      //start version new
+      // if($row['stock_ng'] > $row['min_stok']){
+      //   $propose = 0;
+      // }elseif ($row['stock_ng'] < $row['min_stok']) {
+        // $propose = $row['min_stok'] - ($row['stock_ng'] + $row['stock_akhir']);
+          $propose = $row['max_stok'] - ($row['stock_akhir'] + $row['stock_ng']);
+      // }else{
+      //   $propose = 0;
+      // }
+      //end version new
       $nestedData[]  = "<div align='center'>" . number_format($propose) . "</div>";//di hide
 
       $edit  = "";
