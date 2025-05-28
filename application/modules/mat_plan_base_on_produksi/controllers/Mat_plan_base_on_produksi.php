@@ -21,7 +21,7 @@ class Mat_plan_base_on_produksi extends Admin_Controller
   }
 
   public function index()
-  {
+  {//home
     $this->auth->restrict($this->viewPermission);
     $session  = $this->session->userdata('app_session');
 
