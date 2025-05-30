@@ -124,7 +124,8 @@ class Stock_origa_model extends BF_Model
         $delete  = "<button type='button' data-id='" . $row['id'] . "' class='btn btn-sm btn-danger hapus' title='Delete Stock' data-role='qtip'><i class='fa fa-trash'></i></button>";
       }
       $view  = "";
-      $nestedData[]  = "<div align='center'>" . $view . " " . $edit . " " . $delete . " " . $barcode . "</div>";
+      // $nestedData[]  = "<div align='center'>" . $view . " " . $edit . " " . $delete . " " . $barcode . "</div>";//VERSION OLD
+      $nestedData[]  = "<div align='center'>" . $view . " " . $delete . " " . $barcode . "</div>";
       $data[] = $nestedData;
       $urut1++;
       $urut2++;
