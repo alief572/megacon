@@ -234,10 +234,10 @@ class Spk_material extends Admin_Controller
     if ($this->input->post()) {
       $data         = $this->input->post();
       $session      = $this->session->userdata('app_session');
-      echo "<pre>";
-      print_r($data);
-      echo "<pre>";
-      die();
+      // echo "<pre>";
+      // print_r($data);
+      // echo "<pre>";
+      // die();
 
       // $id        = $data['id'];
       // $so_number = $data['so_number'];
@@ -278,6 +278,7 @@ class Spk_material extends Admin_Controller
       $no_spk          = "INT." . $Y . '.' . $urut2;
 
       $ArrInsert = [];
+      $ArrInsertSPK = [];
       $ArrInsertDetail = [];
       $ArrInsertMaterial = [];
       $ArrInsert['periode_bulan'] = $bulan;
@@ -293,14 +294,14 @@ class Spk_material extends Admin_Controller
       $ArrInsert['created_date'] = $this->datetime;
       foreach ($Detail as $key => $value) {
         //start insert so_internal_spk
-        $ArrInsert[$key]['kode_det'] = $kodeSPK . '-' . $key;
-        $ArrInsert[$key]['no_spk'] = $no_spk;
-        $ArrInsert[$key]['tanggal'] = date('Y-m-d');
+        $ArrInsertSPK[$key]['kode_det'] = $kodeSPK . '-' . $key;
+        $ArrInsertSPK[$key]['no_spk'] = $no_spk;
+        $ArrInsertSPK[$key]['tanggal'] = date('Y-m-d');
         // $ArrInsert[$key]['tanggal_est_finish'] = date('Y-m-d', strtotime($value['tanggal_est_finish']));
         // $ArrInsert[$key]['qty'] = $qty;
         // $ArrInsert[$key]['id_costcenter'] = $value['costcenter'];
-        $ArrInsert['created_by'] = $this->id_user;
-        $ArrInsert['created_date'] = $this->datetime;
+        $ArrInsertSPK['created_by'] = $this->id_user;
+        $ArrInsertSPK['created_date'] = $this->datetime;
         //end insert so_internal_spk
 
         // $ArrInsertDetail = $value;
