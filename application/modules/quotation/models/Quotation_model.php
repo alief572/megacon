@@ -1312,7 +1312,7 @@ class Quotation_model extends BF_Model
 		$start = $this->input->post('start');
 		$search = $this->input->post('search');
 
-		$this->db->select('a.no_penawaran, a.tgl_penawaran, a.project, a.status, a.req_app1, a.app_1, a.req_app2, a.app_2, a.req_app3, a.app_3, b.name_customer as nm_customer, a.keterangan_approve');
+		$this->db->select('a.no_penawaran, a.tgl_penawaran, a.project, a.status, a.req_app1, a.app_1, a.req_app2, a.app_2, a.req_app3, a.app_3, b.name_customer as nm_customer, a.keterangan_approve, a.created_by as creted_by_quotation');
 		$this->db->from('tr_penawaran a');
 		// $this->db->join('customer b', 'b.id_Customer = a.id_customer', 'left');
 		$this->db->join('master_customers b', 'b.id_Customer = a.id_customer', 'left');
@@ -1328,7 +1328,7 @@ class Quotation_model extends BF_Model
 		$this->db->limit($length, $start);
 		$get_data = $this->db->get();
 
-		$this->db->select('a.no_penawaran, a.tgl_penawaran, a.status, a.project, a.req_app1, a.app_1, a.req_app2, a.app_2, a.req_app3, a.app_3, b.name_customer as nm_customer, a.keterangan_approve');
+		$this->db->select('a.no_penawaran, a.tgl_penawaran, a.status, a.project, a.req_app1, a.app_1, a.req_app2, a.app_2, a.req_app3, a.app_3, b.name_customer as nm_customer, a.keterangan_approve, a.created_by as creted_by_quotation');
 		$this->db->from('tr_penawaran a');
 		// $this->db->join('customer b', 'b.id_Customer = a.id_customer', 'left');
 		$this->db->join('master_customers b', 'b.id_Customer = a.id_customer', 'left');
@@ -1490,10 +1490,14 @@ class Quotation_model extends BF_Model
 				$buttons = $btn_view . ' ' . $btn_print;
 			}
 
+			$getUser = $this->db->select('nm_lengkap')->get_where('users', array('id_user' => $item['creted_by_quotation']))->row();
+			$UserNmLengkap = (!empty($getUser)) ? $getUser->nm_lengkap : '';
+
 			$hasil[] = [
 				'no' => $no,
 				'tgl' => date('d F Y', strtotime($item['tgl_penawaran'])),
 				'customer' => strtoupper($item['nm_customer']),
+				'create_by' => strtoupper($UserNmLengkap),
 				'quotation_no' => $item['no_penawaran'],
 				'project' => $item['project'],
 				'rev' => $item['revisi'],

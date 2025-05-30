@@ -40,6 +40,7 @@ $ENABLE_DELETE  = has_permission('Quotation.Delete');
 					<th class="text-center">No</th>
 					<th class="text-center">Date</th>
 					<th class="text-center">Customer</th>
+					<th class="text-center">By</th>
 					<th class="text-center">Quotation No.</th>
 					<th class="text-center">Project</th>
 					<th class="text-center">Rev</th>
@@ -570,6 +571,9 @@ $ENABLE_DELETE  = has_permission('Quotation.Delete');
 				},
 				{
 					data: 'customer'
+				},
+				{
+					data: 'create_by'
 				},
 				{
 					data: 'quotation_no'
