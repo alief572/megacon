@@ -234,8 +234,10 @@ class Spk_material extends Admin_Controller
     if ($this->input->post()) {
       $data         = $this->input->post();
       $session      = $this->session->userdata('app_session');
-      // print_r($data);
-      // die();
+      echo "<pre>";
+      print_r($data);
+      echo "<pre>";
+      die();
 
       // $id        = $data['id'];
       // $so_number = $data['so_number'];
@@ -251,8 +253,19 @@ class Spk_material extends Admin_Controller
       $urutan2      = (int)substr($angkaUrut2, 7, 4);
       $urutan2++;
       $urut2        = sprintf('%04s', $urutan2);
-      // $kode          = "SPK" . $Ym . $urut2;
+      // $kodeSPK          = "SPK" . $Ym . $urut2;
       $kode          = "PL" . $Ym . $urut2;
+
+      //generate no spk
+      $SQL        = "SELECT MAX(kode) as maxP FROM so_internal_spk WHERE kode LIKE 'SPK" . $Ym . "%' ";
+      // $SQL        = "SELECT MAX(kode_planning) as maxP FROM planning_harian WHERE kode_planning LIKE 'PL" . $Ym . "%' ";
+      $result      = $this->db->query($SQL)->result_array();
+      $angkaUrut2    = $result[0]['maxP'];
+      $urutan2      = (int)substr($angkaUrut2, 7, 4);
+      $urutan2++;
+      $urut2        = sprintf('%04s', $urutan2);
+      $kodeSPK          = "SPK" . $Ym . $urut2;
+      // $kode          = "PL" . $Ym . $urut2;
 
       $Y          = date('y');
       $SQL        = "SELECT MAX(no_spk) as maxP FROM so_internal_spk WHERE no_spk LIKE 'INT." . $Y . ".%' ";
@@ -270,7 +283,7 @@ class Spk_material extends Admin_Controller
       $ArrInsert['periode_bulan'] = $bulan;
       $ArrInsert['periode_tahun'] = $tahun;
       $ArrInsert['kode_planning'] = $kode;
-      // $ArrInsert[$key]['kode_det'] = $kode . '-' . $key;
+      // $ArrInsert[$key]['kode_det'] = $kodeSPK . '-' . $key;
       // $ArrInsert[$key]['no_spk'] = $no_spk;
       // $ArrInsert[$key]['tanggal'] = date('Y-m-d', strtotime($value['tanggal']));
       // $ArrInsert[$key]['tanggal_est_finish'] = date('Y-m-d', strtotime($value['tanggal_est_finish']));
@@ -279,6 +292,17 @@ class Spk_material extends Admin_Controller
       $ArrInsert['created_by'] = $this->id_user;
       $ArrInsert['created_date'] = $this->datetime;
       foreach ($Detail as $key => $value) {
+        //start insert so_internal_spk
+        $ArrInsert[$key]['kode_det'] = $kodeSPK . '-' . $key;
+        $ArrInsert[$key]['no_spk'] = $no_spk;
+        $ArrInsert[$key]['tanggal'] = date('Y-m-d');
+        // $ArrInsert[$key]['tanggal_est_finish'] = date('Y-m-d', strtotime($value['tanggal_est_finish']));
+        // $ArrInsert[$key]['qty'] = $qty;
+        // $ArrInsert[$key]['id_costcenter'] = $value['costcenter'];
+        $ArrInsert['created_by'] = $this->id_user;
+        $ArrInsert['created_date'] = $this->datetime;
+        //end insert so_internal_spk
+
         // $ArrInsertDetail = $value;
         // print_r($value);
         // die();
@@ -486,7 +510,8 @@ class Spk_material extends Admin_Controller
     $d_Header .= "<option value='0'>Select Product</option>";
     foreach ($sql_product as $val => $valx) {
       // $d_Header .= "<option value='" . $valx['code_lv4'] . "'>" . strtoupper($valx['product_name']) . "</option>";
-      $d_Header .= "<option value='" . $valx['id'] . "'>" . strtoupper($valx['product_name']) . "</option>";
+      // $d_Header .= "<option value='" . $valx['id'] . "'>" . strtoupper($valx['product_name']) . "</option>";
+      $d_Header .= "<option value='" . $valx['id'] . "'>" . strtoupper($valx['nama_level4']) . "</option>";
     }
     $d_Header .=     "</select>";
     $d_Header .= "</td>";
