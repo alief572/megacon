@@ -119,12 +119,13 @@
 if (isset($DataPlan_detail)) {
 	$index = 0;
 	foreach ($DataPlan_detail as $plan_detail) {
+	$tanggal_plan = date('d-M-Y', strtotime($plan_detail->plan_date));
 ?>
 					<tr class="header_<?= $index ?>">
 						<td class='text-center' width='10%'>
 							<!-- <?= $plan_detail->plan_date ?> -->
 							<input type="hidden" class="id" value="<?= $plan_detail->id_planning_harian_detail ?>">
-							<input type="hidden" name="Detail[<?= $index ?>][tanggal]" class="form-control input-md text-center datepicker" placeholder="Plan Date" value="<?= $plan_detail->plan_date ?>" readonly>
+							<input type="text" name="Detail[<?= $index ?>][tanggal]" class="form-control input-md text-center datepicker" placeholder="Plan Date" value="<?= $plan_detail->plan_date ?>" readonly>
 							<input type="text" name="tanggal_view" class="form-control input-md text-center" placeholder="Plan Date" value="<?= $plan_detail->plan_date ?>" readonly>
 						</td>
 						<td class='text-center' width='15%'>
@@ -296,6 +297,65 @@ function updateGrandTotalKubikasiTerakhirTgl() {
     // Step 3: Tampilkan total kubikasi dari tanggal terakhir
     $('#grand_total_kubikasi').val(totalKubikasi.toFixed(4));
 }
+
+function updateGrandTotalKubikasiTerakhirTgl_new() {
+    let tanggalTerakhirStr = null;
+    let totalKubikasi = 0;
+
+    function normalizeTanggal(str) {
+        if (!str) return null;
+
+        if (/^\d{4}-\d{2}-\d{2}$/.test(str)) {
+            return str;
+        }
+
+        let parts = str.split('-');
+        if (parts.length === 3) {
+            const day = parts[0].padStart(2, '0');
+            const monthStr = parts[1].toLowerCase();
+            const year = parts[2];
+            const monthMap = {
+                jan: "01", feb: "02", mar: "03", apr: "04", may: "05",
+                jun: "06", jul: "07", aug: "08", sep: "09", oct: "10", nov: "11", dec: "12"
+            };
+            const month = monthMap[monthStr.slice(0, 3)];
+            if (month) return `${year}-${month}-${day}`;
+        }
+
+        return null;
+    }
+
+    // STEP 1: cari tanggal terakhir
+    $('tr').each(function () {
+        const $row = $(this);
+        const tgl1 = normalizeTanggal($row.find('input[name$="[tanggal]"]').val());
+        const tgl2 = normalizeTanggal($row.find('input[name$="[tanggal_view]"]').val());
+        const tgl = tgl1 || tgl2;
+
+        if (tgl && (!tanggalTerakhirStr || tgl > tanggalTerakhirStr)) {
+            tanggalTerakhirStr = tgl;
+        }
+    });
+
+    // STEP 2: hitung total_kubikasi untuk tanggal tersebut
+    $('tr').each(function () {
+        const $row = $(this);
+        const tgl1 = normalizeTanggal($row.find('input[name$="[tanggal]"]').val());
+        const tgl2 = normalizeTanggal($row.find('input[name$="[tanggal_view]"]').val());
+        const tgl = tgl1 || tgl2;
+
+        if (tgl === tanggalTerakhirStr) {
+            let kubikasi = $row.find('.total_kubikasi').val();
+            let val = parseFloat((kubikasi || "0").replace(',', '.')) || 0;
+            totalKubikasi += val;
+        }
+    });
+
+    $('#grand_total_kubikasi').val(totalKubikasi.toFixed(4));
+}
+
+
+
 
 // Fungsi bantu untuk parsing tanggal dari format "dd-MMM-yyyy"
 function parseTanggal(tglStr) {
@@ -728,7 +788,22 @@ $('#save_new').click(function(e){
 					// $('.datepicker').datepicker({ dateFormat: 'dd-M-yy', maxDate:'+'+max_date+'d' });//version old
 					// $('.datepicker2').datepicker({ dateFormat: 'dd-M-yy', maxDate:'+'+max_date+'d' });//version old
 					// Ambil bulan dan tahun dari dropdown
-					$('.datepicker').datepicker({ dateFormat: 'dd-M-yy' });
+					// $('.datepicker').datepicker({ dateFormat: 'dd-M-yy' });
+					$('.datepicker').datepicker({
+					    dateFormat: 'dd-M-yy',
+					    onSelect: function(dateText, inst) {
+					        const dateObj = $(this).datepicker('getDate');
+					        if (!dateObj) return;
+					        
+					        const yyyy = dateObj.getFullYear();
+					        const mm = ('0' + (dateObj.getMonth() + 1)).slice(-2);
+					        const dd = ('0' + dateObj.getDate()).slice(-2);
+					        const formatted = `${yyyy}-${mm}-${dd}`;
+
+					        // Temukan input dengan name yang mengandung [tanggal] dalam baris yang sama
+					        $(this).closest('tr').find('input[name$="[tanggal]"]').val(formatted);
+					    }
+					});
 					$('.datepicker2').datepicker({ dateFormat: 'dd-M-yy' });
 					updateDatepickersByMonthYear();
 					$('#rowIndex').val(data.rowIndex);
